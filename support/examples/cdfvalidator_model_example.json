@@ -1,0 +1,32 @@
+{
+    "Freezone":{
+        "author":"Toto",
+        "purpose":"The cdfvalidator model is a json format file that can be used to check the content of a given CDF format file. See howto.txt file for more details.",
+        "about-this-model":"The current model example is based on the xlsx2skt_example.model.cdf CDF format file. It can be used to test the cdfvalidator module."
+    },
+    "Header":{
+        "CDF_NAME":"xlsx2skt_example",
+        "FORMAT":"SINGLE"
+    },
+    "Gattrs":{
+        "Project":["XLSX2SKT>Excel to CDF skeleton table example",
+            "Python>Python 3"],
+        "PI_name":["Toto"]
+    },
+    "Vattrs":{
+        "FIELDNAME":"",
+        "FILLVAL":""
+    },
+    "zVariable":{
+        "EPOCH":{
+            "Data Type":"CDF_EPOCH",
+            "Dims":0
+        },
+        "Variable2":{
+            "Sizes":[3,5]
+        }
+    },
+    "Options":{
+        "CDF_CHECKSUM":"MD5"
+    }
+}
