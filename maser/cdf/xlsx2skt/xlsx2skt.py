@@ -255,9 +255,10 @@ class Convert:
         skt_path = self.write_skt(skt_body)
 
         if skt_path:
-            print("%s has been saved" % skt_path)
+            logger.info("%s has been saved corretly", skt_path)
             return True
         else:
+            logger.error("%s has not been saved correctly!", skt_path)
             return False
 
     def build_header(self, header_sheet, options_sheet):
@@ -509,35 +510,48 @@ class Convert:
         """ Make a CDF Master binary file from a ASCII
         skeleton table using the skeletoncdf program """
 
-        logger.info(os.environ["SHELL"])
-        sys.exit(0)
+        cmd = []
 
         # If skeletoncdf program path is not provided
         # then search it on the $PATH
         if program is None:
             program = which('skeletoncdf')
 
-        cmd = [program, self.skt_file, "-cdf", self.cdf_file]
+        if program is None:
+            logger.error("skeletoncdf PROGRAM IS NOT"
+                " IN THE $PATH VARIABLE!")
+            return None
+        cmd.append(program)
 
-        logger.info(" ".join(cmd))
+        if os.path.isfile(self.cdf_file) and self.overwrite:
+            logger.warning("%s existing file will be overwritten!",
+                           self.cdf_file)
+            cmd.append("-delete")
+
+        cmd.append(self.skt_file)
+        cmd.extend(["-cdf", self.cdf_file])
         try:
+            logger.info(" ".join(cmd))
             res = subprocess.Popen(cmd,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
             output, errors = res.communicate()
+        except TypeError as e:
+            logger.error(e)
         except OSError as e:
-            logger.error(e.strerror)
+            logger.error(e)
         except subprocess.TimeoutExpired as e:
-            logger.error("Time out expired:  %i sec.", e.timeout)
+            logger.error("TIME OUT EXPIRED:  %i SEC.", e.timeout)
         else:
             if res.wait() == 0:
-                return True
+                return self.cdf_file
             else:
-                logger.error("Error running command %s:\n " +
-                             "stdout:\n %s \n stderr:\n %s",
-                      ' '.join(cmd), str(output), str(errors))
+                logger.error("ERROR RUNNING COMMAND: ")
+                logger.error(" ".join(cmd))
+                logger.error("STDOUT - %s", str(output))
+                logger.error("STDERR - %s", str(errors))
 
-        return False
+        return None
 
 
 # ________________ Global Functions __________
@@ -667,7 +681,7 @@ def main():
         parser.print_help()
         sys.exit(0)
 
-    x2s = Convert(args.xlsx_file[0],
+    x2s = Convert(args.xlsx_file,
                   skt_file=args.skt_file,
                   cdf_file=args.cdf_file,
                   output_dir=args.output_dir,

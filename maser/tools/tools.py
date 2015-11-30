@@ -9,6 +9,7 @@ Tools Python 3 module for maser-py package
 # (Include here the modules to import, e.g. import sys)
 import os
 import logging
+import subprocess
 
 # ________________ HEADER _________________________
 
@@ -42,11 +43,14 @@ def setup_logging(filename=None,
     """Method to set up logging"""
 
     if debug:
-        logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s: %(message)s')
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(levelname)-8s: %(message)s')
     elif verbose:
-        logging.basicConfig(level=logging.INFO, format='%(levelname)-8s: %(message)s')
+        logging.basicConfig(level=logging.INFO,
+                            format='%(levelname)-8s: %(message)s')
     else:
-        logging.basicConfig(level=logging.CRITICAL, format='%(levelname)-8s: %(message)s')
+        logging.basicConfig(level=logging.ERROR,
+                            format='%(levelname)-8s: %(message)s')
 
     if quiet:
         logging.root.handlers[0].setLevel(logging.CRITICAL + 10)
@@ -55,18 +59,40 @@ def setup_logging(filename=None,
     elif debug:
         logging.root.handlers[0].setLevel(logging.DEBUG)
     else:
-        logging.root.handlers[0].setLevel(logging.CRITICAL)
+        logging.root.handlers[0].setLevel(logging.ERROR)
 
     if filename:
         fh = logging.FileHandler(filename, delay=True)
         fh.setFormatter(logging.Formatter('%(asctime)s %(name)-\
-                        12s %(levelname)-8s %(funcName)-12s %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+                        12s %(levelname)-8s %(funcName)-12s %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S'))
         if debug:
             fh.setLevel(logging.DEBUG)
         else:
             fh.setLevel(logging.INFO)
 
         logging.root.addHandler(fh)
+
+
+def run_command(cmd):
+
+    """ run a command with subprocess"""
+
+    logger = logging.getLogger(__name__)
+
+    try:
+        logger.info(" ".join(cmd))
+        res = subprocess.Popen(cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    except TypeError as e:
+        logger.error(e)
+    except OSError as e:
+        logger.error(e)
+    except subprocess.TimeoutExpired as e:
+        logger.error("TIME OUT EXPIRED:  %i SEC.", e.timeout)
+
+    return res
 
 
 def which(program):

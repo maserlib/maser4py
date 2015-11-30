@@ -1,0 +1,8 @@
+maser.egg-info
+doc/build
+doc/source
+*.pyc
+build
+tmp
+*.egg
+__pycache__

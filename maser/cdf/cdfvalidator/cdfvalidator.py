@@ -7,16 +7,15 @@ Python 3 module to validate a CDF format file
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
+import os
 import sys
 import json
 import argparse
-import subprocess
 import logging
 
 from spacepy import pycdf
 
-from ...tools import which, setup_logging
-from .istp_globals import FILLVALL
+from ...tools import which, setup_logging, run_command
 
 # ________________ HEADER _________________________
 
@@ -38,6 +37,9 @@ __change__ = {"version": "change"}
 # (define here the global variables)
 logger = logging.getLogger(__name__)
 
+ISTP_MOD_FILE = os.path.join(os.path.dirname(__file__),
+                             "cdfvalidator_model_istp.json")
+
 
 # ________________ Class Definition __________
 # (If required, define here classes)
@@ -46,48 +48,82 @@ class Validate():
     """Class that provides tools to validate a CDF format file"""
 
     def __init__(self, cdf_file,
+                 log_file=None,
                  verbose=False,
                  debug=False):
 
         # Setup the logging
         setup_logging(
-            filename=None, quiet=False,
+            filename=log_file, quiet=False,
             verbose=verbose, debug=debug)
 
         self.cdf_file = cdf_file
-        self.cdf = self.open_cdf(cdf_file)
+        self.cdf = self.open_cdf()
 
-    def open_cdf(self, cdf_file):
+    def open_cdf(self):
 
         """Open the input cdf file"""
 
+        logger.info("Opening " + self.cdf_file)
         try:
-            cdf = pycdf.CDF(cdf_file)
+            cdf = pycdf.CDF(self.cdf_file)
             cdf.readonly(True)
         except pycdf.CDFError as e:
             logger.error(e)
-            raise
+            raise pycdf.CDFError
         else:
             return cdf
 
     def close_cdf(self):
         """ Close current cdf file"""
+        logger.info("Closing " + self.cdf_file)
         self.cdf.close()
 
-    def check_istp(self,
+    def is_istp_compliant(self,
                     zvars=None):
 
         """Check that the input CDF is compliant with
             ISTP guidelines"""
+
+        issues = []
+
         cdf = self.cdf
+
+        logging.info("Importing %s", ISTP_MOD_FILE)
+        # Read JSON format model file for ISTP
+        with open(ISTP_MOD_FILE, 'r') as fbuff:
+            istpfile = json.load(fbuff)
+
+        print(istpfile)
+        sys.exit()
 
         if zvars is None:
             zvars = cdf.keys()
 
-        for zvar in zvars:
-            vattrs = cdf[zvar].attrs
-            for vattr in vattrs:
-                print(vattr)
+        # Check that input CDF has the primary Epoch variable
+        if ("Epoch" not in zvars and
+        "EPOCH" not in zvars and
+        "epoch" not in zvars):
+            issues.append("No Epoch primary variable found!")
+
+        # Check the list of mandatory global attributes
+        #gattrs =
+        #for
+
+
+        # Check the list of variable attributes
+        for zvar_name in zvars:
+            zvar = cdf[zvar_name]
+            for vattr_name in zvar.attrs:
+                vattr_entry = zvar.attrs[vattr_name]
+                print(vattr_name)
+                print(vattr_entry)
+                vattr = pycdf.zAttr(cdf, vattr_name)
+                #print(zvar_name + ":" + vattr_name)
+                #print(vattr.has_entry())
+                print(zvar.type())
+                print(vattr.type(0))
+
 
     def check_vattrs(self, vattrs,
                      zvars=None):
@@ -95,14 +131,14 @@ class Validate():
         """Check consistency of given variable attributes"""
         cdf = self.cdf
 
-        if (zvars is None):
+        if zvars is None:
             zvars = cdf.keys()
 
         for zvar in zvars:
             zvattrs = zvar.attrs
             for vattr in zvattrs.keys():
-                if (vattr in vattrs):
-                    if (zvattrs[vattr] != vattrs[vatrr]):
+                if vattr in vattrs:
+                    if zvattrs[vattr] != vattrs[vattr]:
                         print("TBD")
 
     def check_model(self, model_file):
@@ -121,19 +157,28 @@ class Validate():
 
         """Run the cdfvalidate program of the GSFC CDF distribution"""
 
+        cmd = []
+
         if program is None:
             program = which("cdfvalidate")
-            if program is None:
-                return False, "cdfvalidate program has not been found!"
 
-        pro = subprocess.Popen([program, self.cdf_file],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-        (output, error) = pro.communicate()
-        if (pro.wait() == 0):
-            return True, output
+        if program is None:
+            logger.error("skeletoncdf PROGRAM IS NOT"
+                " IN THE $PATH VARIABLE!")
+            return None
+        cmd.append(program)
+
+        res = run_command(cmd)
+        output, errors = res.communicate()
+        if res.wait() == 0:
+            logger.info(output)
+            return True
         else:
-            return False, error
+            logger.error("ERROR RUNNING COMMAND: ")
+            logger.error(" ".join(cmd))
+            logger.error("STDOUT - %s", str(output))
+            logger.error("STDERR - %s", str(errors))
+            return False
 
 
 # ________________ Global Functions __________
@@ -154,11 +199,19 @@ def main():
     parser.add_argument('-c', '--cdfvalidate', nargs='?',
                         default=None,
                         help='Path of the cdfvalidate program')
+    parser.add_argument('-l', '--log_file', nargs='?',
+                        default=None,
+                        help='Path of the output log file')
+    parser.add_argument('-I', '--ISTP', action='store_true',
+                        help='Check the ISTP guidelines compliance')
+    parser.add_argument('-C', '--CDFvalidate', action='store_true',
+                        help='Check the CDF integrity'
+                        'calling the CDFvalidate program')
     parser.add_argument('-O', '--Overwrite', action='store_true',
                         help='Overwrite existing output files')
     parser.add_argument('-V', '--Verbose', action='store_true',
                         help='Verbose mode')
-    parser.add_argument('-D', '--Derbose', action='store_true',
+    parser.add_argument('-D', '--Debug', action='store_true',
                         help='Debug mode')
     parser.add_argument('-A', '--All', action='store_true',
                         help='Perform all of the validations')
@@ -180,13 +233,25 @@ def main():
         parser.print_help()
         sys.exit(0)
 
-    cdfval = Validate(args.cdf_file,
+    if args.All:
+        args.ISTP = True
+        args.Consistency = True
+        args.CDFvalidate = True
+
+    # Initialize a Validate object
+    cdfvalid = Validate(args.cdf_file,
+                          log_file=args.log_file,
                           verbose=args.Verbose,
                           debug=args.Debug)
 
-    if args.ALL or args.model_file:
-        cdfval.check_model(args.model_file)
+    if args.ISTP:
+        cdfvalid.is_istp_compliant()
+
+    if args.model_file:
+        cdfvalid.check_model(args.model_file)
+
+    cdfvalid.close_cdf()
 
 # _________________ Main ____________________________
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     main()

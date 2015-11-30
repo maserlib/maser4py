@@ -2,16 +2,17 @@ running install
 running bdist_egg
 running egg_info
 writing requirements to maser.egg-info/requires.txt
-writing dependency_links to maser.egg-info/dependency_links.txt
-writing top-level names to maser.egg-info/top_level.txt
-writing entry points to maser.egg-info/entry_points.txt
 writing maser.egg-info/PKG-INFO
+writing entry points to maser.egg-info/entry_points.txt
+writing top-level names to maser.egg-info/top_level.txt
+writing dependency_links to maser.egg-info/dependency_links.txt
 reading manifest file 'maser.egg-info/SOURCES.txt'
 reading manifest template 'MANIFEST.in'
 writing manifest file 'maser.egg-info/SOURCES.txt'
 installing library code to build/bdist.macosx-10.6-intel/egg
 running install_lib
 running build_py
+copying maser/cdf/xlsx2skt/xlsx2skt.py -> build/lib/maser/cdf/xlsx2skt
 creating build/bdist.macosx-10.6-intel/egg
 creating build/bdist.macosx-10.6-intel/egg/maser
 copying build/lib/maser/__init__.py -> build/bdist.macosx-10.6-intel/egg/maser
@@ -24,8 +25,6 @@ copying build/lib/maser/cdf/cdfvalidator/cdfvalidator.py -> build/bdist.macosx-1
 copying build/lib/maser/cdf/cdfvalidator/istp_globals.py -> build/bdist.macosx-10.6-intel/egg/maser/cdf/cdfvalidator
 creating build/bdist.macosx-10.6-intel/egg/maser/cdf/xlsx2skt
 copying build/lib/maser/cdf/xlsx2skt/__init__.py -> build/bdist.macosx-10.6-intel/egg/maser/cdf/xlsx2skt
-copying build/lib/maser/cdf/xlsx2skt/autofill.py -> build/bdist.macosx-10.6-intel/egg/maser/cdf/xlsx2skt
-copying build/lib/maser/cdf/xlsx2skt/toolkit.py -> build/bdist.macosx-10.6-intel/egg/maser/cdf/xlsx2skt
 copying build/lib/maser/cdf/xlsx2skt/xlsx2skt.py -> build/bdist.macosx-10.6-intel/egg/maser/cdf/xlsx2skt
 copying build/lib/maser/maser.py -> build/bdist.macosx-10.6-intel/egg/maser
 copying build/lib/maser/settings.py -> build/bdist.macosx-10.6-intel/egg/maser
@@ -39,8 +38,6 @@ byte-compiling build/bdist.macosx-10.6-intel/egg/maser/cdf/cdfvalidator/__init__
 byte-compiling build/bdist.macosx-10.6-intel/egg/maser/cdf/cdfvalidator/cdfvalidator.py to cdfvalidator.cpython-34.pyc
 byte-compiling build/bdist.macosx-10.6-intel/egg/maser/cdf/cdfvalidator/istp_globals.py to istp_globals.cpython-34.pyc
 byte-compiling build/bdist.macosx-10.6-intel/egg/maser/cdf/xlsx2skt/__init__.py to __init__.cpython-34.pyc
-byte-compiling build/bdist.macosx-10.6-intel/egg/maser/cdf/xlsx2skt/autofill.py to autofill.cpython-34.pyc
-byte-compiling build/bdist.macosx-10.6-intel/egg/maser/cdf/xlsx2skt/toolkit.py to toolkit.cpython-34.pyc
 byte-compiling build/bdist.macosx-10.6-intel/egg/maser/cdf/xlsx2skt/xlsx2skt.py to xlsx2skt.cpython-34.pyc
 byte-compiling build/bdist.macosx-10.6-intel/egg/maser/maser.py to maser.cpython-34.pyc
 byte-compiling build/bdist.macosx-10.6-intel/egg/maser/settings.py to settings.cpython-34.pyc
@@ -60,8 +57,8 @@ Removing /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.
 Copying maser-1.0.0-py3.4.egg to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.4/site-packages
 maser 1.0.0 is already the active version in easy-install.pth
 Installing xlsx2skt script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
-Installing maser script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
 Installing cdfvalidator script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
+Installing maser script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
 
 Installed /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.4/site-packages/maser-1.0.0-py3.4.egg
 Processing dependencies for maser==1.0.0
@@ -120,22 +117,17 @@ Best match: decorator 4.0.4
 Adding decorator 4.0.4 to easy-install.pth file
 
 Using /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.4/site-packages
-Searching for Cython==0.23.4
-Best match: Cython 0.23.4
-Adding Cython 0.23.4 to easy-install.pth file
-Installing cython script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
-Installing cygdb script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
-Installing cythonize script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
-
-Using /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.4/site-packages
 Searching for six==1.10.0
 Best match: six 1.10.0
 Adding six 1.10.0 to easy-install.pth file
 
 Using /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.4/site-packages
-Searching for python-dateutil==2.4.2
-Best match: python-dateutil 2.4.2
-Adding python-dateutil 2.4.2 to easy-install.pth file
+Searching for Cython==0.23.4
+Best match: Cython 0.23.4
+Adding Cython 0.23.4 to easy-install.pth file
+Installing cythonize script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
+Installing cygdb script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
+Installing cython script to /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/bin
 
 Using /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.4/site-packages
 Searching for pyparsing==2.0.6
@@ -151,6 +143,11 @@ Using /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.4/s
 Searching for pytz==2015.7
 Best match: pytz 2015.7
 Adding pytz 2015.7 to easy-install.pth file
+
+Using /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.4/site-packages
+Searching for python-dateutil==2.4.2
+Best match: python-dateutil 2.4.2
+Adding python-dateutil 2.4.2 to easy-install.pth file
 
 Using /Users/xbonnin/Work/Software/Library/Python/Virtualenv/env/lib/python3.4/site-packages
 Finished processing dependencies for maser==1.0.0

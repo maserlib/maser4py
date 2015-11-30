@@ -37,14 +37,16 @@ setup(
     description="Python 3 module for MASER",
     author="X.Bonnin",
     packages=packages,
+    data_files=[('maser/cdf/cdfvalidator',
+                 ['maser/cdf/cdfvalidator/cdfvalidator_model_istp.json']),
+                        ('.', ['README.rst'])],
     cmdclass=cmdclass,
     entry_points={
         "console_scripts": ["maser=maser.maser:main",
             "xlsx2skt=maser.cdf.xlsx2skt:main",
-            "cdfvalidator=maser.cdf.cdfvalidator:main"
-                                        ],
+            "cdfvalidator=maser.cdf.cdfvalidator:main"],
     },
-    install_requires=['openpyxl', 'spacepy'],
+    install_requires=['openpyxl', 'spacepy', 'simplejson'],
     include_package_data=True
     #ext_modules=cythonize("maser/rpl/*.pyx"),
 )

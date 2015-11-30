@@ -1,0 +1,57 @@
+{
+    "General":{
+        "project": "MASER",
+        "author": "Xavier Bonnin",
+        "instiute": "LESIA, Observatoire de Paris, CNRS",
+        "description": "cdfvalidator mode file for ISTP compliance"
+    },
+    "Header":{
+        "CDF_NAME":"",
+        "DATA ENCODING":"",
+        "MAJORITY": "",
+        "FORMAT": "SINGLE"
+    },
+    "Options":{
+        "CDF_COMPRESSION":"None",
+        "VAR_COMPRESSION": "None"
+        },
+    "GlobalAttributes":{
+        "Data_type":[""],
+        "Data_version":[""],
+        "Descriptor":[""],
+        "Discipline":[""],
+        "Instrument_type":[""],
+        "Logical_file_id":[""],
+        "Logical_source":[""],
+        "Logical_source_description":[""],
+        "Mission_group":[""],
+        "PI_affiliation":[""],
+        "PI_name":[""],
+        "Project":[""],
+        "Source_name":[""],
+        "TEXT":[""]
+    },
+    "VariableAttributes":{
+        "CATDESC":[""],
+        "DEPEND_0":["Epoch"],
+        "DISPLAY_TYPE":[""],
+        "FIELDNAME":[""],
+        "FILLVAL":[ ""],
+        "VALIDMIN":[""],
+        "VALIDMAX":[""],
+        "VAR_TYPE":[""]
+        },
+    "ISTPMapping":{
+        "FILLVAL":{
+           "CDF_BYTE": "255",
+           "CDF_UINT1": "255",
+           "CDF_UINT2": "65535",
+           "CDF_UINT4": "4294967295 ",
+           "CDF_INT2": "-32768",
+           "CDF_INT4": "-2147483648",
+           "CDF_FLOAT": "-1.0e31",
+           "CDF_REAL4": "-1.0e31",
+           "CDF_DOUBLE": "-1.0e31",
+           "CDF_REAL8": "-1.0e31"}
+    }
+}
