@@ -1,0 +1,5 @@
+[console_scripts]
+cdfvalidator = maser.cdf.cdfvalidator:main
+maser = maser.maser:main
+xlsx2skt = maser.cdf.xlsx2skt:main
+

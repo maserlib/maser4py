@@ -4,11 +4,12 @@
 # --------------------------------------------------------------------------------------------------------------
 # All necessary import:
 # --------------------------------------------------------------------------------------------------------------
-#import versioneer
+# import versioneer
 
 from setuptools import find_packages
 from setuptools import setup
 from doc.utils import APIDoc
+from maser import _version
 
 
 # for management of the version string from various VCS
@@ -18,7 +19,7 @@ from doc.utils import APIDoc
 # versioneer.tag_prefix = ""
 # versioneer.parentdir_prefix = "maser-"
 
-#packages = find_packages(exclude=["rgts.tv", "tests"])
+packages = find_packages()
 
 # --------------------------------------------------------------------------------------------------------------
 # Call the setup function:
@@ -28,20 +29,22 @@ from doc.utils import APIDoc
 cmdclass = {
     "build_doc": APIDoc,
 }
-#cmdclass.update(versioneer.get_cmdclass())
+# cmdclass.update(versioneer.get_cmdclass())
 
 setup(
-    name='MASER-PY: Mesures, Analyses et Simulations d’Emissions Radio for Python',
-    version='0.1.0',
-    description="Python 3 module for maser",
+    name='maser',
+    version=_version.__version__,
+    description="Python 3 module for MASER",
     author="X.Bonnin",
-#  packages=packages,
+    packages=packages,
     cmdclass=cmdclass,
     entry_points={
-        "console_scripts": ["maser=maser:main",
+        "console_scripts": ["maser=maser.maser:main",
             "xlsx2skt=maser.cdf.xlsx2skt:main",
             "cdfvalidator=maser.cdf.cdfvalidator:main"
-            ],
+                                        ],
     },
+    install_requires=['openpyxl', 'spacepy'],
+    include_package_data=True
     #ext_modules=cythonize("maser/rpl/*.pyx"),
 )

@@ -7,6 +7,7 @@ maser __main__ module
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
-from maser import main
+from maser.maser import main
 
-main()
+if __name__ == '__main__':
+    main()

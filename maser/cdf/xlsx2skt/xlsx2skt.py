@@ -6,6 +6,27 @@ Module for Python 3 to convert an Excel (.xlsx) file
 into a CDF skeleton table (.skt).
 """
 
+# ________________ HEADER _________________________
+
+# Mandatory
+__version__ = "1.0.2"
+__author__ = "Xavier Bonnin"
+__date__ = "30-NOV-2015"
+
+# Optional
+__license__ = ""
+__credit__ = [""]
+__maintainer__ = "Xavier Bonnin"
+__email__ = "xavier.bonnin@obspm.fr"
+__institute__ = "LESIA, Observatoire de Paris, CNRS"
+__project__ = "MASER"
+__change__ = {'1.0.0': 'First release',
+                            '1.0.1': 'skt_file becomes optional.'
+                            ' Fix an error in skeletoncdf calling',
+                            '1.0.2': 'xlsx2skt is now a '
+                            'module of  the maser package.'
+                            'Xlsx2skt class renamed to Convert'}
+
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
 import sys
@@ -14,35 +35,16 @@ import argparse
 from datetime import datetime
 import subprocess
 import logging
-import logging.config
 
 from openpyxl import load_workbook
 from collections import OrderedDict
 
-from ...tools import which
-from ..maser import settings
+from ...tools import which, setup_logging
 
 # ________________ HEADER _________________________
 
-# Mandatory
-__version__ = "1.0.1"
-__author__ = "Xavier Bonnin"
-__date__ = "24-MAR-2015"
-
-# Optional
-__license__ = ""
-__credit__ = [""]
-__maintainer__ = ""
-__email__ = ""
-__institute__ = "LESIA, Observatoire de Paris"
-__project__ = "RPW Operation Centre (ROC)"
-__change__ = {'1.0.0': 'First release',
-                            '1.0.1': 'skt_file becomes optional.'
-                            ' Fix an error in skeletoncdf calling'}
-
 # ________________ Global Variables _____________
 # (define here the global variables)
-logging.config.fileConfig(settings.logconf)
 logger = logging.getLogger(__name__)
 
 CURRENT_DATETIME = datetime.now()
@@ -81,51 +83,75 @@ VATTRS_BOARD += "  ! --------         ----       -----"
 
 # ________________ Class Definition __________
 # (If required, define here classes)
-class Xlsx2skt:
+class Convert:
 
-    """ Class to transform a formatted Excel file into a CDF skeleton table"""
+    """ Class to convert a formatted Excel file into a CDF skeleton table"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, xlsx_file,
+                 skt_file=None,
+                 cdf_file=None,
+                 output_dir=None,
+                 overwrite=False,
+                 ignore_none=False,
+                 auto_pad=False,
+                 verbose=True,
+                 debug=False):
 
-        self.xlsx = kwargs.pop('xlsx_file')
-        self.skt = kwargs.pop('skt_file')
-        self.overwrite = kwargs.pop('Overwrite')
-        self.verbose = kwargs.pop('Verbose')
-        self.ignore = kwargs.pop('Ignore_none')
-        self.auto_pad = kwargs.pop('Auto_pad')
+        self.xlsx_file = xlsx_file
+        self.overwrite = overwrite
+        self.ignore = ignore_none
+        self.auto_pad = auto_pad
 
         self.cdf_items = {}
 
-        if self.skt is None:
-            self.skt = os.path.splitext(self.xlsx)[0] + ".skt"
+        if skt_file is None:
+            skt_file = os.path.splitext(self.xlsx_file)[0] + ".skt"
+
+        if cdf_file is None:
+            cdf_file = os.path.splitext(self.xlsx_file)[0] + ".cdf"
+
+        if output_dir is None:
+            output_dir = os.path.basename(xlsx_file)
+        else:
+            skt_file = os.path.join(output_dir, os.path.basename(skt_file))
+            cdf_file = os.path.join(output_dir, os.path.basename(cdf_file))
+
+        self.skt_file = skt_file
+        self.cdf_file = cdf_file
+
+    # Setup the logging
+        setup_logging(
+            filename=None, quiet=False,
+            verbose=verbose,
+            debug=debug)
 
     def parse_xlsx(self):
 
         """Parse the Excel 2007 format file"""
 
-        xlsx = self.xlsx
+        xlsx = self.xlsx_file
 
         if not os.path.isfile(xlsx):
-            sys.exit("Cannot find Excel file called %s!" % xlsx)
+            logger.error("Cannot find Excel file called %s!", xlsx)
+            raise
 
         if os.path.splitext(xlsx)[1] != ".xlsx":
-            sys.exit("Invalid input Excel format!")
+            logger.error("Invalid input Excel format!")
+            raise
 
-        if self.verbose:
-            print("Parsing %s file..." % (xlsx))
+        logger.info("Parsing %s file...", xlsx)
         wkbk = load_workbook(xlsx, read_only=True)
         sheet_names = wkbk.get_sheet_names()
 
         if ("rVariables" in sheet_names) or ("variables" in sheet_names):
-            print("Warning: rVariable type is not supported!")
+            logger.warning("rVariable type is not supported!")
 
         sheets = dict()
         for shtn in SHEET_NAMES:
-            if self.verbose:
-                print("Loading %s sheet..." % (shtn))
+            logger.info("Loading %s sheet...", shtn)
             if shtn not in sheet_names:
-                sys.exit("ERROR: Missing %s sheet in the input Excel file!"
-                         % (shtn))
+                logger.error("Missing %s sheet in the input Excel file!", shtn)
+                raise
             else:
                 wksht = wkbk[shtn]
 
@@ -152,13 +178,12 @@ class Xlsx2skt:
         self.cdf_items["zVariables"] = \
             uniq(sheets["zVariables"]["Variable Name"],
                  not_none=True)
-        if self.verbose:
-            print("%i GLOBAL attributes returned" %
-                  (len(self.cdf_items["GLOBALattributes"])))
-            print("%i Variable attributes returned" %
-                  (len(self.cdf_items["VARIABLEattributes"])))
-            print("%i zVariables returned" %
-                  (len(self.cdf_items["zVariables"])))
+        logger.info("%i GLOBAL attributes returned",
+                  len(self.cdf_items["GLOBALattributes"]))
+        logger.info("%i Variable attributes returned",
+                  len(self.cdf_items["VARIABLEattributes"]))
+        logger.info("%i zVariables returned",
+                  len(self.cdf_items["zVariables"]))
 
         return sheets
 
@@ -166,11 +191,10 @@ class Xlsx2skt:
 
         """Build the CDF skeleton table content using the Excel data"""
 
-        if self.verbose:
-            print("Building CDF skeleton table body... ")
+        logger.info("Building CDF skeleton table body... ")
 
-        skt_name = os.path.splitext(os.path.basename(self.skt))[0]
-        xlsx_name = os.path.basename(self.xlsx)
+        skt_name = os.path.splitext(os.path.basename(self.skt_file))[0]
+        xlsx_name = os.path.basename(self.xlsx_file)
 
         file_header = "!Skeleton table for the \"" + skt_name + "\" CDF.\n"
         file_header += "!Generated: " + \
@@ -200,17 +224,19 @@ class Xlsx2skt:
 
         """Write the CDF skeleton table file"""
 
-        skt = self.skt
+        skt = self.skt_file
 
         if os.path.splitext(skt)[1] != ".skt":
-            print(".skt extension will be automatically appended to %s" % skt)
+            logger.info(
+                ".skt extension will be automatically appended to %s",
+                skt)
             skt = skt + ".skt"
 
         if not (self.overwrite) and (os.path.isfile(skt)):
-            sys.exit("%s already exits!" % (skt))
+            logger.warning("%s already exits!", skt)
+            return skt
 
-        if self.verbose:
-            print("Writing %s..." % (skt))
+        logger.info("Writing %s...", skt)
 
         with open(skt, "w") as filew:
             filew.write(skt_body)
@@ -238,8 +264,7 @@ class Xlsx2skt:
 
         """Build the CDF skeleton table header part"""
 
-        if self.verbose:
-            print("Building skeleton table header...")
+        logger.info("Building skeleton table header...")
 
         header_body = ["#header", ""]
 
@@ -267,8 +292,7 @@ class Xlsx2skt:
 
         header_body = "\n".join(header_body)
 
-        if self.verbose:
-            print(header_body)
+        logger.info(header_body)
 
         return header_body
 
@@ -276,15 +300,15 @@ class Xlsx2skt:
 
         """Build the CDF skeleton table GLOBALattributes part"""
 
-        if self.verbose:
-            print("Building skeleton table global attributes section..")
+        logger.info("Building skeleton table global attributes section..")
 
         global_body = ["#GLOBALattributes", ""]
 
         global_body.append(GLOBAL_BOARD)
 
         if global_sheet["Attribute Name"][0] is None:
-            sys.exit("First Global attribute name must not be null!")
+            logger.error("First Global attribute name must not be null!")
+            raise
         else:
             last_valid_attr = global_sheet["Attribute Name"][0]
 
@@ -333,8 +357,7 @@ class Xlsx2skt:
         global_body.append(new_entry)
         global_body = "\n".join(global_body)
 
-        if self.verbose:
-            print(global_body)
+        logger.info(global_body)
 
         return global_body
 
@@ -342,8 +365,7 @@ class Xlsx2skt:
 
         """Build the list of variable attributes"""
 
-        if self.verbose:
-            print("Building skeleton table variable attributes section...")
+        logger.info("Building skeleton table variable attributes section...")
 
         vattrs_body = ["#VARIABLEattributes", ""]
 
@@ -352,8 +374,7 @@ class Xlsx2skt:
 
         vattrs_body = "\n".join(vattrs_body)
 
-        if self.verbose:
-            print(vattrs_body)
+        logger.info(vattrs_body)
 
         return vattrs_body
 
@@ -365,8 +386,7 @@ class Xlsx2skt:
         """Build the CDF skeleton table VARIABLEattributes
         and zVariables parts"""
 
-        if self.verbose:
-            print("Building skeleton table zvariable section...")
+        logger.info("Building skeleton table zvariable section...")
 
         zvar_body = ["#variables", ""]
         zvar_body.extend(["!No rVariables.", ""])
@@ -376,10 +396,11 @@ class Xlsx2skt:
 
             if zvar is None:
                 if ignore_none:
-                    print("Warning: current zVariable is NoneType, skipping!")
+                    logger.warning("Current zVariable is NoneType, skipping!")
                     continue
                 else:
-                    sys.exit("ERROR: Current zVariable is NoneType!")
+                    logger.error("ERROR: Current zVariable is NoneType!")
+                    raise
 
             zvar_body.append(VARIABLE_BOAD)
 
@@ -393,8 +414,7 @@ class Xlsx2skt:
             recvar_i = str(zvars_sheet["Record Variance"][i])
             dimvars_i = str(zvars_sheet["Dimension Variances"][i])
 
-            if self.verbose:
-                print("  " + quote(zvar) + "    " + dtype_i +
+            logger.info("  " + quote(zvar) + "    " + dtype_i +
                       "     " + nelem_i + "     " + dims_i + "     " +
                       sizes_i + "     " + recvar_i + "     " + dimvars_i)
 
@@ -439,9 +459,10 @@ class Xlsx2skt:
                     vattr_name = quote(str(vattrs_sheet["Attribute Name"][j]))
                     vattr_dtype = str(vattrs_sheet["Data Type"][j])
                     if vattr_dtype == "None":
-                        sys.exit("ERROR: Wrong Data Type for the " +
-                                 "attribute %s " % (vattr_name) +
-                                 "of the variable %s !" % (zvar))
+                        logger.error("Wrong Data Type for the " +
+                                    "attribute %s " +
+                                    "of the variable %s !", vattr_name, zvar)
+                        raise
 
                     vattr_value = str(vattrs_sheet["Value"][j])
 
@@ -468,7 +489,8 @@ class Xlsx2skt:
                     idx_k = str(nrv_sheet["Index"][k])
                     val_k = str(nrv_sheet["Value"][k])
                     if (idx_k == "") or (idx_k == "None"):
-                        sys.exit("ERROR: Wrong NRV index for %s!" % nrv_k)
+                        logger.error("Wrong NRV index for %s!", nrv_k)
+                        raise
                     nrv_body += "    [" + idx_k + "] = { " + \
                         quote(val_k) + " }\n"
 
@@ -482,14 +504,10 @@ class Xlsx2skt:
         zvar_body = "\n".join(zvar_body)
         return zvar_body
 
-    def write_cdf(self,
-                  program=None,
-                  output_cdfname=None):
+    def write_cdf(self, program=None):
 
         """ Make a CDF Master binary file from a ASCII
         skeleton table using the skeletoncdf program """
-
-        skt_file = self.skt
 
         logger.info(os.environ["SHELL"])
         sys.exit(0)
@@ -499,9 +517,7 @@ class Xlsx2skt:
         if program is None:
             program = which('skeletoncdf')
 
-        cmd = [program, skt_file]
-        if output_cdfname is not None:
-            cmd.append(output_cdfname)
+        cmd = [program, self.skt_file, "-cdf", self.cdf_file]
 
         logger.info(" ".join(cmd))
         try:
@@ -517,10 +533,12 @@ class Xlsx2skt:
             if res.wait() == 0:
                 return True
             else:
-                logger.error("Error running command %s:\n stdout:\n %s \n stderr:\n %s",
+                logger.error("Error running command %s:\n " +
+                             "stdout:\n %s \n stderr:\n %s",
                       ' '.join(cmd), str(output), str(errors))
 
         return False
+
 
 # ________________ Global Functions __________
 def uniq(seq, not_none=False):
@@ -611,16 +629,21 @@ def main():
     parser.add_argument('-s', '--skt_file', nargs='?',
                         default=None,
                         help='Output CDF skeleton table (.skt)')
-    parser.add_argument('-b', '--bin_file', nargs='?',
+    parser.add_argument('-c', '--cdf_file', nargs='?',
                         default=None,
-                        help='Output CDF binary file (.cdf)')
-    parser.add_argument('-c', '--skeletoncdf', nargs='?',
+                        help='Output CDF master file (.cdf)')
+    parser.add_argument('-e', '--skeletoncdf_exe', nargs='?',
                         default=None,
-                        help='Path of the skeletoncdf program')
+                        help='Path of the skeletoncdf program executable')
+    parser.add_argument('-o', '--output_dir', nargs='?',
+                        default=None,
+                        help='Path of the output directory')
     parser.add_argument('-O', '--Overwrite', action='store_true',
                         help='Overwrite existing output files')
     parser.add_argument('-V', '--Verbose', action='store_true',
                         help='Verbose mode')
+    parser.add_argument('-D', '--Debug', action='store_true',
+                        help='Debug mode')
     parser.add_argument('-I', '--Ignore_none', action='store_true',
                         help='Ignore NoneType zVariables')
     parser.add_argument('-A', '--Auto_pad', action='store_true',
@@ -632,30 +655,32 @@ def main():
                         help='Show change')
     args = parser.parse_args()
 
-    if (args.version):
+    if args.version:
         print(__version__)
         sys.exit(0)
 
-    if (args.change):
+    if args.change:
         print(__change__)
         sys.exit(0)
 
-    if not (args.xlsx_file):
+    if not args.xlsx_file:
         parser.print_help()
-        sys.exit(1)
+        sys.exit(0)
 
-    # Setup the logging
-    setup_logging(
-        filename=None, quiet=False,
-        verbose=verbose, debug=debug)
-
-    x2s = Xlsx2Skt(**args.__dict__)
+    x2s = Convert(args.xlsx_file[0],
+                  skt_file=args.skt_file,
+                  cdf_file=args.cdf_file,
+                  output_dir=args.output_dir,
+                  overwrite=args.Overwrite,
+                  ignore_none=args.Ignore_none,
+                  auto_pad=args.Auto_pad,
+                  verbose=args.Verbose,
+                  debug=args.Debug)
     if not x2s.run():
         sys.exit("Error encountered during execution!")
 
-    if args.skeletoncdf:
-        x2s.write_cdf(program=args.skeletoncdf,
-                    output_cdfname=args.bin_file)
+    if args.skeletoncdf_exe or args.cdf_file:
+        x2s.write_cdf(program=args.skeletoncdf_exe)
 
 # _________________ Main ____________________________
 if __name__ == "__main__":

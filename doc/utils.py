@@ -59,4 +59,4 @@ class APIDoc(Command):
         ])
 
         # build the documentation as provided by sphinx
-        self.run_command("sphinx-build " + sourcedir + " " + buildir)
+        self.run_command("sphinx-build")
