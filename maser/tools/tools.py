@@ -29,13 +29,14 @@ __change__ = {"version": "change"}
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-
+DEF_INDENT = " " * 16
 
 # ________________ Class Definition __________
 # (If required, define here classes)
 
 # ________________ Global Functions __________
 # (If required, define here gobal functions)
+
 
 def setup_logging(filename=None,
                   quiet=False, verbose=False, debug=False):
@@ -116,6 +117,59 @@ def which(program):
                 return exe_file
 
     return None
+
+
+def uniq(seq, not_none=False):
+
+    """Get list of unique elements from an input sequence of list type"""
+
+    seen = set()
+    seen_add = seen.add
+    if not_none:
+        return [x for x in seq if not (x in seen or seen_add(x) or x is None)]
+    else:
+        return [x for x in seq if not (x in seen or seen_add(x))]
+
+
+def quote(string, unquote=False):
+
+    """Double quote a given string"""
+
+    if string is not None:
+        if string.startswith("\""):
+            string = string[1:]
+        if string.endswith("\""):
+            string = string[:-1]
+        if unquote:
+            return string
+        return "\"" + string + "\""
+
+
+def truncate_str(string, max_length,
+                 gap=DEF_INDENT,
+                 min_length=3):
+
+    """ truncate a too long CDF_CHAR value"""
+
+    nstr = len(string)
+    new_string = ""
+    for i, val_c in enumerate(string):
+        if i > nstr - min_length:
+            new_string += string[i:]
+            break
+        new_string += val_c
+        if (i % max_length == 0) and (i != 0):
+            new_string += "\" - \n" + gap + "\""
+
+    return new_string
+
+
+def insert_char(string, char, pos):
+
+    """ Insert substring in a string """
+
+    return string[:pos] + char + string[pos:]
+
 
 # _________________ Main ____________________________
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .maser import main
-from .cdf import cdfvalidator, xlsx2skt
+from .cdf import cdfvalidator, cdfconverter
+from .settings import SUPPORT_DIR, DATA_DIR
 
-__all__ = ["main", "cdfvalidator", "xlsx2skt"]
+#__all__ = []

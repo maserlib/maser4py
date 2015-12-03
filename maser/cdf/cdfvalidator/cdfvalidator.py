@@ -15,7 +15,8 @@ import logging
 
 from spacepy import pycdf
 
-from ...tools import which, setup_logging, run_command
+from ...tools import which, setup_logging, run_command, quote
+from ...settings import SUPPORT_DIR
 
 # ________________ HEADER _________________________
 
@@ -37,7 +38,7 @@ __change__ = {"version": "change"}
 # (define here the global variables)
 logger = logging.getLogger(__name__)
 
-ISTP_MOD_FILE = os.path.join(os.path.dirname(__file__),
+ISTP_MOD_FILE = os.path.join(SUPPORT_DIR, "cdf",
                              "cdfvalidator_model_istp.json")
 
 
@@ -94,8 +95,19 @@ class Validate():
         with open(ISTP_MOD_FILE, 'r') as fbuff:
             istpfile = json.load(fbuff)
 
-        print(istpfile)
-        sys.exit()
+        # Check global attributes
+        gattrlist = cdf.attrs
+        for gattr_name in istpfile["GlobalAttributes"]:
+            if gattr_name not in gattrlist:
+                issues.append(gattr_name + " global attribute required!")
+            else:
+                gattr_istp = istpfile["GlobalAttributes"][gattr_name]
+                if len(gattr_istp[0]) > 0:
+                    gattr_cdf = cdf.attrs[gattr_name]
+                    if gattr_istp != gattr_cdf:
+                        issues.append(gattr_name +
+                                      " global attribute entry value(s)"
+                                      " mismatched!")
 
         if zvars is None:
             zvars = cdf.keys()
@@ -106,56 +118,109 @@ class Validate():
         "epoch" not in zvars):
             issues.append("No Epoch primary variable found!")
 
-        # Check the list of mandatory global attributes
-        #gattrs =
-        #for
-
-
         # Check the list of variable attributes
         for zvar_name in zvars:
             zvar = cdf[zvar_name]
-            for vattr_name in zvar.attrs:
-                vattr_entry = zvar.attrs[vattr_name]
-                print(vattr_name)
-                print(vattr_entry)
-                vattr = pycdf.zAttr(cdf, vattr_name)
-                #print(zvar_name + ":" + vattr_name)
-                #print(vattr.has_entry())
-                print(zvar.type())
-                print(vattr.type(0))
+            vattrlist = zvar.attrs
+            if "VAR_TYPE" not in vattrlist:
+                issues.append(zvar_name +
+                              ": VAR_TYPE variable attribute required!")
+            else:
+                if vattrlist["VAR_TYPE"] != "data":
+                    continue
+                for vattr_istp in istpfile["VariableAttributes"]:
+                    if vattr_istp not in vattrlist:
+                        issues.append(zvar_name + ": " +
+                                      vattr_istp +
+                                      " variable attribute required!")
 
+        # Display issues found
+        for issue in issues:
+            logger.warning(issue)
 
-    def check_vattrs(self, vattrs,
-                     zvars=None):
-
-        """Check consistency of given variable attributes"""
-        cdf = self.cdf
-
-        if zvars is None:
-            zvars = cdf.keys()
-
-        for zvar in zvars:
-            zvattrs = zvar.attrs
-            for vattr in zvattrs.keys():
-                if vattr in vattrs:
-                    if zvattrs[vattr] != vattrs[vattr]:
-                        print("TBD")
-
-    def check_model(self, model_file):
+    def is_model_compliant(self, model_file):
 
         """Check the CDF content compared to
         the input mode file"""
 
-        # Read CDF file
+        issues = []
+
+        # Retrieve CDF
         cdf = self.cdf
 
         # Read JSON format model file
+        logger.info("Loading " + model_file)
         with open(model_file, 'r') as fbuff:
             mfile = json.load(fbuff)
 
+        for item in mfile["CDFItems"]:
+            name = item['name']
+            categ = item['category']
+            logger.info("Checking " + name + " [" + categ + "]")
+            istype = ("type" in item)
+            isvalue = ("value" in item)
+            issize = ("size" in item)
+            isdims = ('dims' in item)
+            if categ == "GLOBALattributes":
+
+                if name in cdf.attrs:
+                    cdfitem = cdf.attrs[name]
+
+                    if isvalue:
+                        logger.debug("Checking value")
+                        if len(cdfitem) < len(item["value"]):
+                            issues.append(name + " " + categ
+                                          + " has missing entries!")
+                        else:
+                            for i in range(len(item["value"])):
+                                if cdfitem[i] != item["value"][i]:
+                                    issues.append(quote(name) + " " + categ
+                                                  + " has a wrong entry value: "
+                                                  + quote(item["value"][i]) +
+                                                  " (" + quote(cdfitem[i])
+                                                     + " expected)!")
+
+                    if istype:
+                        logger.debug("Checking data type")
+                        cdftype = pycdf.const.__dict__[item["type"]].value
+                        if cdfitem.type(0) != cdftype:
+                            issues.append(quote(name) + " " + categ
+                                          + " has the wrong data type:" +
+                                           quote(item["type"]) + " expected)!")
+
+                else:
+                    issues.append(name + " " + categ + " required!")
+            elif categ == "zVariables":
+
+                if name in cdf:
+                    cdfitem = cdf[name]
+
+                    logger.debug("Checking data size")
+                    if issize and cdfitem.shape != item["size"]:
+                        issues.append(name + " " +
+                                      categ + " has the wrong size!")
+
+                    logger.debug("Checking data dimension(s)")
+                    if isdims and len(cdfitem) != item["dims"]:
+                        issues.append(name + " " +
+                                      categ + " has the dims size!")
+
+                    logger.debug("Checking data type")
+                    if istype:
+                        cdftype = pycdf.const.__dict__[item["type"]].value
+                        if cdfitem.type() != cdftype:
+                            issues.append(name + " " + categ
+                                          + " has the wrong data type!")
+                else:
+                    issues.append(name + " " + categ + " required!")
+
+        # Display issues found
+        for issue in issues:
+            logger.warning(issue)
+
     def cdfvalidate(self, program=None):
 
-        """Run the cdfvalidate program of the GSFC CDF distribution"""
+        """Run the cdfvalidate program in the GSFC CDF distribution"""
 
         cmd = []
 
@@ -248,7 +313,7 @@ def main():
         cdfvalid.is_istp_compliant()
 
     if args.model_file:
-        cdfvalid.check_model(args.model_file)
+        cdfvalid.is_model_compliant(args.model_file)
 
     cdfvalid.close_cdf()
 

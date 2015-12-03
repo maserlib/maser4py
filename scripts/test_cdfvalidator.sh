@@ -19,16 +19,16 @@ scriptpath=`pwd`
 popd > /dev/null
 
 # CDF format file to validate
-cdffile=/tmp/xlsx2skt_example.cdf
+cdffile=/tmp/cdfconverter_example.cdf
 
 # JSON Validator model example file
-jsonfile=$scriptpath/../support/cdf/cdfvalidator_model_example.json
+jsonfile=$scriptpath/../maser/data/support/cdf/cdfvalidator_model_example.json
 
 if [ ! -f $cdffile ]; then
     echo $cdffile" does not exist, and will be created..."
-    bash $scriptpath/test_xlsx2skt.sh
+    bash $scriptpath/test_cdfconverter.sh
 fi
 
 # Perform all of the validation tests available
-cdfvalidator -VAIC $cdffile
+cdfvalidator -VC $cdffile -m $jsonfile
 

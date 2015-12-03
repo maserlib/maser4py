@@ -2,44 +2,25 @@
 # -*- coding: utf-8 -*-
 
 """
-Module for Python 3 to convert an Excel (.xlsx) file
+Module to convert an Excel (.xlsx) file
 into a CDF skeleton table (.skt).
 """
 
 # ________________ HEADER _________________________
 
-# Mandatory
-__version__ = "1.0.2"
-__author__ = "Xavier Bonnin"
-__date__ = "30-NOV-2015"
-
-# Optional
-__license__ = ""
-__credit__ = [""]
-__maintainer__ = "Xavier Bonnin"
-__email__ = "xavier.bonnin@obspm.fr"
-__institute__ = "LESIA, Observatoire de Paris, CNRS"
-__project__ = "MASER"
-__change__ = {'1.0.0': 'First release',
-                            '1.0.1': 'skt_file becomes optional.'
-                            ' Fix an error in skeletoncdf calling',
-                            '1.0.2': 'xlsx2skt is now a '
-                            'module of  the maser package.'
-                            'Xlsx2skt class renamed to Convert'}
-
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
 import sys
 import os
-import argparse
 from datetime import datetime
-import subprocess
 import logging
+import argparse
 
 from openpyxl import load_workbook
 from collections import OrderedDict
 
-from ...tools import which, setup_logging
+from ...tools import setup_logging, uniq, quote, truncate_str, insert_char
+from ..._version import __version__
 
 # ________________ HEADER _________________________
 
@@ -83,13 +64,12 @@ VATTRS_BOARD += "  ! --------         ----       -----"
 
 # ________________ Class Definition __________
 # (If required, define here classes)
-class Convert:
+class Xlsx2skt:
 
     """ Class to convert a formatted Excel file into a CDF skeleton table"""
 
     def __init__(self, xlsx_file,
                  skt_file=None,
-                 cdf_file=None,
                  output_dir=None,
                  overwrite=False,
                  ignore_none=False,
@@ -107,17 +87,12 @@ class Convert:
         if skt_file is None:
             skt_file = os.path.splitext(self.xlsx_file)[0] + ".skt"
 
-        if cdf_file is None:
-            cdf_file = os.path.splitext(self.xlsx_file)[0] + ".cdf"
-
         if output_dir is None:
             output_dir = os.path.basename(xlsx_file)
         else:
             skt_file = os.path.join(output_dir, os.path.basename(skt_file))
-            cdf_file = os.path.join(output_dir, os.path.basename(cdf_file))
 
         self.skt_file = skt_file
-        self.cdf_file = cdf_file
 
     # Setup the logging
         setup_logging(
@@ -242,8 +217,10 @@ class Convert:
             filew.write(skt_body)
 
         if os.path.isfile(skt):
+            logger.info(skt + " has been saved correctly")
             return skt
         else:
+            logger.error(skt + " has not been saved correctly!")
             return None
 
     def run(self):
@@ -255,10 +232,8 @@ class Convert:
         skt_path = self.write_skt(skt_body)
 
         if skt_path:
-            logger.info("%s has been saved corretly", skt_path)
             return True
         else:
-            logger.error("%s has not been saved correctly!", skt_path)
             return False
 
     def build_header(self, header_sheet, options_sheet):
@@ -293,7 +268,7 @@ class Convert:
 
         header_body = "\n".join(header_body)
 
-        logger.info(header_body)
+        logger.debug(header_body)
 
         return header_body
 
@@ -358,7 +333,7 @@ class Convert:
         global_body.append(new_entry)
         global_body = "\n".join(global_body)
 
-        logger.info(global_body)
+        logger.debug(global_body)
 
         return global_body
 
@@ -375,7 +350,7 @@ class Convert:
 
         vattrs_body = "\n".join(vattrs_body)
 
-        logger.info(vattrs_body)
+        logger.debug(vattrs_body)
 
         return vattrs_body
 
@@ -415,7 +390,7 @@ class Convert:
             recvar_i = str(zvars_sheet["Record Variance"][i])
             dimvars_i = str(zvars_sheet["Dimension Variances"][i])
 
-            logger.info("  " + quote(zvar) + "    " + dtype_i +
+            logger.debug("  " + quote(zvar) + "    " + dtype_i +
                       "     " + nelem_i + "     " + dims_i + "     " +
                       sizes_i + "     " + recvar_i + "     " + dimvars_i)
 
@@ -505,108 +480,8 @@ class Convert:
         zvar_body = "\n".join(zvar_body)
         return zvar_body
 
-    def write_cdf(self, program=None):
-
-        """ Make a CDF Master binary file from a ASCII
-        skeleton table using the skeletoncdf program """
-
-        cmd = []
-
-        # If skeletoncdf program path is not provided
-        # then search it on the $PATH
-        if program is None:
-            program = which('skeletoncdf')
-
-        if program is None:
-            logger.error("skeletoncdf PROGRAM IS NOT"
-                " IN THE $PATH VARIABLE!")
-            return None
-        cmd.append(program)
-
-        if os.path.isfile(self.cdf_file) and self.overwrite:
-            logger.warning("%s existing file will be overwritten!",
-                           self.cdf_file)
-            cmd.append("-delete")
-
-        cmd.append(self.skt_file)
-        cmd.extend(["-cdf", self.cdf_file])
-        try:
-            logger.info(" ".join(cmd))
-            res = subprocess.Popen(cmd,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
-            output, errors = res.communicate()
-        except TypeError as e:
-            logger.error(e)
-        except OSError as e:
-            logger.error(e)
-        except subprocess.TimeoutExpired as e:
-            logger.error("TIME OUT EXPIRED:  %i SEC.", e.timeout)
-        else:
-            if res.wait() == 0:
-                return self.cdf_file
-            else:
-                logger.error("ERROR RUNNING COMMAND: ")
-                logger.error(" ".join(cmd))
-                logger.error("STDOUT - %s", str(output))
-                logger.error("STDERR - %s", str(errors))
-
-        return None
-
 
 # ________________ Global Functions __________
-def uniq(seq, not_none=False):
-
-    """Get list of unique elements from an input sequence of list type"""
-
-    seen = set()
-    seen_add = seen.add
-    if not_none:
-        return [x for x in seq if not (x in seen or seen_add(x) or x is None)]
-    else:
-        return [x for x in seq if not (x in seen or seen_add(x))]
-
-
-def quote(string, unquote=False):
-
-    """Double quote a given string"""
-
-    if string is not None:
-        if string.startswith("\""):
-            string = string[1:]
-        if string.endswith("\""):
-            string = string[:-1]
-        if unquote:
-            return string
-        return "\"" + string + "\""
-
-
-def truncate_str(string, max_length,
-                 gap=DEF_INDENT,
-                 min_length=3):
-
-    """ truncate a too long CDF_CHAR value"""
-
-    nstr = len(string)
-    new_string = ""
-    for i, val_c in enumerate(string):
-        if i > nstr - min_length:
-            new_string += string[i:]
-            break
-        new_string += val_c
-        if (i % max_length == 0) and (i != 0):
-            new_string += "\" - \n" + gap + "\""
-
-    return new_string
-
-
-def insert_char(string, char, pos):
-
-    """ Insert substring in a string """
-
-    return string[:pos] + char + string[pos:]
-
-
 def assign_pad(data_type):
 
     """
@@ -634,21 +509,15 @@ def main():
     """xlsx2skt main program"""
 
     parser = argparse.ArgumentParser(
-        description='Convert a Excel 2007 ' +
+        description='CDF converter main modulea Excel 2007 ' +
         'format file into a CDF skeleton table',
         add_help=True)
-    parser.add_argument('xlsx_file', nargs='?',
+    parser.add_argument('excel', nargs='?',
                         default=None,
                         help='Excel 2007 format file (.xlsx)')
-    parser.add_argument('-s', '--skt_file', nargs='?',
+    parser.add_argument('-s', '--skeleton', nargs='?',
                         default=None,
                         help='Output CDF skeleton table (.skt)')
-    parser.add_argument('-c', '--cdf_file', nargs='?',
-                        default=None,
-                        help='Output CDF master file (.cdf)')
-    parser.add_argument('-e', '--skeletoncdf_exe', nargs='?',
-                        default=None,
-                        help='Path of the skeletoncdf program executable')
     parser.add_argument('-o', '--output_dir', nargs='?',
                         default=None,
                         help='Path of the output directory')
@@ -663,38 +532,16 @@ def main():
     parser.add_argument('-A', '--Auto_pad', action='store_true',
                         help='Value of !VAR_PADVALUE ' +
                         'is automatically assigned')
-    parser.add_argument('--version', action='store_true',
-                        help='Show version')
-    parser.add_argument('--change', action='store_true',
-                        help='Show change')
     args = parser.parse_args()
 
-    if args.version:
-        print(__version__)
-        sys.exit(0)
-
-    if args.change:
-        print(__change__)
-        sys.exit(0)
-
-    if not args.xlsx_file:
-        parser.print_help()
-        sys.exit(0)
-
-    x2s = Convert(args.xlsx_file,
-                  skt_file=args.skt_file,
-                  cdf_file=args.cdf_file,
+    Xlsx2skt(args.excel,
+                  skt_file=args.skeleton,
                   output_dir=args.output_dir,
                   overwrite=args.Overwrite,
                   ignore_none=args.Ignore_none,
                   auto_pad=args.Auto_pad,
                   verbose=args.Verbose,
-                  debug=args.Debug)
-    if not x2s.run():
-        sys.exit("Error encountered during execution!")
-
-    if args.skeletoncdf_exe or args.cdf_file:
-        x2s.write_cdf(program=args.skeletoncdf_exe)
+                  debug=args.Debug).run()
 
 # _________________ Main ____________________________
 if __name__ == "__main__":

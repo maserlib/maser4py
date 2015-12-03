@@ -1,0 +1,32 @@
+{
+    "Freezone":{
+        "author":"Toto",
+        "purpose":"The cdfvalidator model is a json format file that can be used to check the content of a given CDF format file. See howto.txt file for more details.",
+        "about-this-model":"The current model example is based on the cdfconverter_example.model.cdf CDF format file. It can be used to test the cdfvalidator module."
+    },
+    "CDFItems":[
+        {
+            "name":"Project",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "value":["MASER>Mesure Analyse et Simulations d'Emissions Radio",
+            "Python>Python 2"]
+        },
+        {
+            "name":"PI_name",
+            "category":"GLOBALattributes",
+            "value":["Toto"]
+        },
+        {
+            "name":"EPOCH",
+            "category":"zVariables",
+            "type":"CDF_EPOCH",
+            "dims":0
+        },
+        {
+            "name":"Variable2",
+            "category":"zVariables",
+            "sizes":[3,5]
+        }
+    ]
+}

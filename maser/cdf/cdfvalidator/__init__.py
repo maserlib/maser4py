@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .cdfvalidator import main, Validate
+from .cdfvalidator import Validate, main
 
-__all__ = ["Validate"]
+#__all__ = []

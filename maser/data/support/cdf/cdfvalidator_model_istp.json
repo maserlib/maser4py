@@ -2,7 +2,7 @@
     "General":{
         "project": "MASER",
         "author": "Xavier Bonnin",
-        "instiute": "LESIA, Observatoire de Paris, CNRS",
+        "institute": "LESIA, Observatoire de Paris, CNRS",
         "description": "cdfvalidator mode file for ISTP compliance"
     },
     "Header":{
@@ -11,10 +11,6 @@
         "MAJORITY": "",
         "FORMAT": "SINGLE"
     },
-    "Options":{
-        "CDF_COMPRESSION":"None",
-        "VAR_COMPRESSION": "None"
-        },
     "GlobalAttributes":{
         "Data_type":[""],
         "Data_version":[""],
