@@ -37,7 +37,8 @@ class Skt2cdf:
                  output_dir=None,
                  overwrite=False,
                  verbose=True,
-                 debug=False):
+                 debug=False,
+                 quiet=False):
 
         self.skt_file = skt_file
         self.overwrite = overwrite
@@ -57,7 +58,7 @@ class Skt2cdf:
 
     # Setup the logging
         setup_logging(
-            filename=None, quiet=False,
+            filename=None, quiet=quiet,
             verbose=verbose,
             debug=debug)
 
@@ -133,12 +134,15 @@ def main():
                         help='Verbose mode')
     parser.add_argument('-D', '--Debug', action='store_true',
                         help='Debug mode')
+    parser.add_argument('-Q', '--Quiet', action='store_true',
+                        help='Quiet mode')
     args = parser.parse_args()
 
     Skt2cdf(args.skeleton[0], cdf_file=args.cdf,
             output_dir=args.output_dir,
             overwrite=args.Overwrite, verbose=args.Verbose,
-            debug=args.Debug).make_master(exe=args.executable)
+            debug=args.Debug,
+            quiet=args.Quiet).make_master(exe=args.executable)
 
 
 # _________________ Main ____________________________

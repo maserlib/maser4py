@@ -1,11 +1,29 @@
--------------------------------------
- Maser python module
- -------------------------------------
+--------------------------------------------------------
+ MASER-PY:
+ The MASER project package for Python
+ --------------------------------------------------------
 
- The maser Python module
+ MASER-PY python package contains modules to
+ deal with services and data provided in the framework
+ on the MASER project.
+ For more information about MASER, please visit:
+ http://maser.lesia.obspm.fr/
 
- TBW
 
+ INSTALLATION
+ -----------------------
+
+ In order to install MASER-PY, be sure to have Python 3.4 or higher
+ on your system.
+
+ The package installation requires the following Python modules:
+    - setuptools (12.0.5 or higher)
+
+  If they are not found, the following Python modules will
+  be downloaded automatically during the installation:
+    - openpyxl
+    - spacepy
+    - simplejson
 
 
 

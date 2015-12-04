@@ -32,14 +32,28 @@ CURRENT_DATETIME = datetime.now()
 ROW_LENGTH_MAX = 79
 DEF_INDENT = " " * 16
 
-SHEET_NAMES = ["header", "GLOBALattributes",
-               "zVariables", "VARIABLEattributes", "Options", "NRV"]
+# Sheets and columns to be found in the Excel file
+SHEET_NAMES = {"header": ["CDF NAME", "DATA ENCODING", "MAJORITY", "FORMAT"],
+    "GLOBALattributes": ["Attribute Name", "Entry Number",
+        "Data Type", "Value"],
+    "zVariables": ["Variable Name", "Data Type",
+        "Number Elements", "Dims", "Sizes",
+        "Record Variance", "Dimension Variances"],
+    "VARIABLEattributes": ["Variable Name",
+        "Attribute Name", "Data Type", "Value"],
+     "Options": ["CDF_COMPRESSION",
+        "CDF_CHECKSUM", "VAR_COMPRESSION",
+        "VAR_SPARESERECORDS",
+        "VAR_PADVALUE"],
+     "NRV": ["Variable Name", "Index", "Value"]}
 
+# Available options
 CDF_OPTION_NAMES = ["CDF_COMPRESSION", "CDF_CHECKSUM"]
 VAR_OPTION_NAMES = ["VAR_COMPRESSION",
                     "VAR_SPARSERECORDS",
                     "VAR_PADVALUE"]
 
+# CDF skeleton headers format
 HEADER_BOARD = "! Variables     G.Attributes     " + \
     "V.Attributes     Records     Dims     Sizes\n"
 HEADER_BOARD += "! ---------           ------------     " + \
@@ -75,7 +89,8 @@ class Xlsx2skt:
                  ignore_none=False,
                  auto_pad=False,
                  verbose=True,
-                 debug=False):
+                 debug=False,
+                 quiet=False):
 
         self.xlsx_file = xlsx_file
         self.overwrite = overwrite
@@ -96,7 +111,7 @@ class Xlsx2skt:
 
     # Setup the logging
         setup_logging(
-            filename=None, quiet=False,
+            filename=None, quiet=quiet,
             verbose=verbose,
             debug=debug)
 
@@ -244,8 +259,14 @@ class Xlsx2skt:
 
         header_body = ["#header", ""]
 
-        for key, val in header_sheet.items():
-            header_body.append(HEADER_SPACE + key + ": " + val[0])
+        for col in SHEET_NAMES["header"]:
+            if col in header_sheet:
+                val = header_sheet[col]
+                header_body.append(HEADER_SPACE + col + ": " + val[0])
+            else:
+                logger.error(col +
+                             " column is missing in the sheet \"header\"!")
+                raise
 
         header_body.append("")
         header_body.append(HEADER_BOARD)
@@ -303,7 +324,9 @@ class Xlsx2skt:
             dtype_i = str(global_sheet["Data Type"][i])
             value_i = quote(str(global_sheet["Value"][i]), unquote=True)
 
-            if (value_i.lower() == "None") or (value_i == ""):
+            if (value_i is None or
+               value_i.lower() == "none" or
+               value_i == ""):
                 value_i = " "
 
             if int(enum_i) == 1:
@@ -313,6 +336,8 @@ class Xlsx2skt:
 
             new_entry += enum_i + ":  " + dtype_i + "    { "
 
+            # Remove any break line
+            value_i = value_i.replace("\n", " ")
             value_i = truncate_str(value_i,
                                    int(ROW_LENGTH_MAX / 3),
                                    gap=(" " * (len(new_entry) + 12)),
@@ -440,12 +465,19 @@ class Xlsx2skt:
                                     "of the variable %s !", vattr_name, zvar)
                         raise
 
-                    vattr_value = str(vattrs_sheet["Value"][j])
+                    if vattrs_sheet["Value"][j] is None:
+                        vattr_value = ""
+                    else:
+                        vattr_value = str(vattrs_sheet["Value"][j])
 
                     vattr_entry_j = "   " + vattr_name + "    " \
                         + vattr_dtype + "     { "
 
                     if vattr_dtype == "CDF_CHAR":
+                        if len(vattr_value) == 0:
+                            vattr_value = " "
+
+                        vattr_value = vattr_value.replace("\n", " ")
                         gap = " " * (2 * len(vattr_entry_j) - 1)
                         vattr_value = truncate_str(vattr_value,
                                                    int(ROW_LENGTH_MAX / 3),
@@ -512,8 +544,7 @@ def main():
         description='CDF converter main modulea Excel 2007 ' +
         'format file into a CDF skeleton table',
         add_help=True)
-    parser.add_argument('excel', nargs='?',
-                        default=None,
+    parser.add_argument('excel', nargs=1,
                         help='Excel 2007 format file (.xlsx)')
     parser.add_argument('-s', '--skeleton', nargs='?',
                         default=None,
@@ -527,6 +558,8 @@ def main():
                         help='Verbose mode')
     parser.add_argument('-D', '--Debug', action='store_true',
                         help='Debug mode')
+    parser.add_argument('-Q', '--Quiet', action='store_true',
+                        help='Quiet mode')
     parser.add_argument('-I', '--Ignore_none', action='store_true',
                         help='Ignore NoneType zVariables')
     parser.add_argument('-A', '--Auto_pad', action='store_true',
@@ -534,14 +567,15 @@ def main():
                         'is automatically assigned')
     args = parser.parse_args()
 
-    Xlsx2skt(args.excel,
+    Xlsx2skt(args.excel[0],
                   skt_file=args.skeleton,
                   output_dir=args.output_dir,
                   overwrite=args.Overwrite,
                   ignore_none=args.Ignore_none,
                   auto_pad=args.Auto_pad,
                   verbose=args.Verbose,
-                  debug=args.Debug).run()
+                  debug=args.Debug,
+                  quiet=args.Quiet).run()
 
 # _________________ Main ____________________________
 if __name__ == "__main__":

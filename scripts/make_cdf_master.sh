@@ -22,14 +22,23 @@ if [ $# != 3 ]; then
 fi
 
 
-for xlsx in `ls $1/*.xlsx`; do
+for excel in `ls $1/*.xlsx`; do
     echo "Running command:"
-    basename=$(basename "$xlsx")
+    basename=$(basename "$excel")
     filename=$(echo $basename | cut -f 1 -d '.')
-    skt=$2/$filename".skt"
-    cdf=$3/$filename".cdf"
+    skeleton=$2/$filename".skt"
+    master=$3/$filename".cdf"
 
-  echo "xlsx2skt -OVIA "$xlsx" -s "$skt" -c "$cdf
-  xlsx2skt -OVIA $xlsx -s $skt -c $cdf
+    #echo "Converting "$excel" into "$skeleton
+    echo "xlsx2skt -OVIA "$excel" -s "$skeleton
+    xlsx2skt -OVIA $excel -s $skeleton
+
+    if [ -e $skeleton ];then
+        #echo "Converting "$skeleton" into "$master
+        echo "skt2cdf -OV "$skeleton" -c "$output_master
+        skt2cdf -OV $skeleton -c $master
+    else
+        echo "WARNING: "$skeleton" does not exist!"
+    fi
 done
 
