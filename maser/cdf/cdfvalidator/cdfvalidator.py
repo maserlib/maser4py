@@ -143,6 +143,118 @@ class Validate():
         """Check the CDF content compared to
         the input mode file"""
 
+        def get_cdftype(dtype):
+            """Return id of the CDF data type"""
+            return pycdf.const.__dict__[dtype].value
+
+        def get_vattrs(cdf):
+
+            """
+            Retrieve the list of zVariables attributes
+            """
+
+            vattrs = {}
+
+            if len(cdf) == 0:
+                logger.warning("No Zvariable in the " + self.cdf_file)
+                return vattrs
+
+            for zvar in cdf:
+                zattrs = cdf[zvar].attrs
+                for vattr in zattrs:
+                    zattr = pycdf.zAttr(cdf, vattr)
+                    vattrs[vattr] = zattr
+
+            return vattrs
+
+        def check(cdf, items):
+
+            """
+            Check items of a given CDF
+            GLOBALattributes, VARIABLEattributes, zVariables
+            """
+            issues = []
+
+            for item in items:
+                name = item['name']
+                logger.info("--> " + name)
+                istype = ("type" in item)
+                isentry = ("entries" in item)
+                hasvalue = ("hasvalue" in item)
+
+                issize = ("size" in item)
+                isdims = ("dims" in item)
+                isattrs = ("attributes" in item)
+
+                if name in cdf:
+                    cdfitem = cdf[name]
+                    nentry = len(cdfitem)
+
+                    if hasvalue:
+                        logger.debug("Checking value existence")
+                        if nentry == 0 or len(cdfitem[0].strip()) == 0:
+                            msg = (name + " " +
+                                          " has no entry value!")
+                            logger.warning(msg)
+                            issues.append(msg)
+
+                    if isentry:
+                        logger.debug("Checking attribute entries")
+                        if nentry < len(item["entries"]):
+                            msg = (name + " "
+                                          + " has missing entries!")
+                            logger.warning(msg)
+                            issues.append(msg)
+                        else:
+                            for i in range(len(item["entries"])):
+                                if cdfitem[i] != item["entries"][i]:
+                                    msg = (quote(name) + " "
+                                            + " has a wrong entry value: "
+                                            + quote(item["entries"][i]) +
+                                            " (" + quote(cdfitem[i])
+                                            + " expected)!")
+                                    logging.warning(msg)
+                                    issues.append(msg)
+
+                    if istype:
+                        logger.debug("Checking data type")
+                        cdftype = get_cdftype(item["type"])
+                        for j in range(len(cdfitem)):
+                            if cdfitem.type(j) != cdftype:
+                                msg = (quote(name)
+                                            + " has the wrong data type:" +
+                                            quote(item["type"])
+                                            + " expected)!")
+                                logging.warning(msg)
+                                issues.append(msg)
+
+                    if issize:
+                        logger.debug("Checking data size")
+                        if cdfitem.shape != item["size"]:
+                            msg = (name + " " +
+                            " has the wrong size!")
+                            logging.warning(msg)
+                            issues.append(msg)
+
+                    if isdims:
+                        if len(cdfitem) != item["dims"]:
+                            logger.debug("Checking data dimension(s)")
+                            msg = (name + " " +
+                             " has the dims size!")
+                            logging.warning(msg)
+                            issues.append(msg)
+
+                    if isattrs:
+                        logger.info("Checking variable attributes of "
+                                    + quote(name) + ":")
+                        check(cdf[name].attrs, item["attributes"])
+                else:
+                    msg = (name + " required!")
+                    logging.warning(msg)
+                    issues.append(msg)
+
+            return issues
+
         issues = []
 
         # Retrieve CDF
@@ -153,70 +265,18 @@ class Validate():
         with open(model_file, 'r') as fbuff:
             mfile = json.load(fbuff)
 
-        for item in mfile["CDFItems"]:
-            name = item['name']
-            categ = item['category']
-            logger.info("Checking " + name + " [" + categ + "]")
-            istype = ("type" in item)
-            isvalue = ("value" in item)
-            issize = ("size" in item)
-            isdims = ('dims' in item)
-            if categ == "GLOBALattributes":
+        if "GLOBALattributes" in mfile:
+            logging.info("Checking GLOBALattributes:")
+            issues.extend(check(cdf.attrs, mfile["GLOBALattributes"]))
+        if "VARIABLEattributes" in mfile:
+            logging.info("Checking VARIABLEattributes:")
+            vattrs = get_vattrs(cdf)
+            issues.extend(check(vattrs, mfile["VARIABLEattributes"]))
+        if "zVariables" in mfile:
+            logging.info("Checking zVariables:")
+            issues.extend(check(cdf, mfile["zVariables"]))
 
-                if name in cdf.attrs:
-                    cdfitem = cdf.attrs[name]
-
-                    if isvalue:
-                        logger.debug("Checking value")
-                        if len(cdfitem) < len(item["value"]):
-                            issues.append(name + " " + categ
-                                          + " has missing entries!")
-                        else:
-                            for i in range(len(item["value"])):
-                                if cdfitem[i] != item["value"][i]:
-                                    issues.append(quote(name) + " " + categ
-                                                  + " has a wrong entry value: "
-                                                  + quote(item["value"][i]) +
-                                                  " (" + quote(cdfitem[i])
-                                                     + " expected)!")
-
-                    if istype:
-                        logger.debug("Checking data type")
-                        cdftype = pycdf.const.__dict__[item["type"]].value
-                        if cdfitem.type(0) != cdftype:
-                            issues.append(quote(name) + " " + categ
-                                          + " has the wrong data type:" +
-                                           quote(item["type"]) + " expected)!")
-
-                else:
-                    issues.append(name + " " + categ + " required!")
-            elif categ == "zVariables":
-
-                if name in cdf:
-                    cdfitem = cdf[name]
-
-                    logger.debug("Checking data size")
-                    if issize and cdfitem.shape != item["size"]:
-                        issues.append(name + " " +
-                                      categ + " has the wrong size!")
-
-                    logger.debug("Checking data dimension(s)")
-                    if isdims and len(cdfitem) != item["dims"]:
-                        issues.append(name + " " +
-                                      categ + " has the dims size!")
-
-                    logger.debug("Checking data type")
-                    if istype:
-                        cdftype = pycdf.const.__dict__[item["type"]].value
-                        if cdfitem.type() != cdftype:
-                            issues.append(name + " " + categ
-                                          + " has the wrong data type!")
-                else:
-                    issues.append(name + " " + categ + " required!")
-
-        # Display issues found
-        for issue in issues:
-            logger.warning(issue)
+        return issues
 
     def cdfvalidate(self, program=None):
 

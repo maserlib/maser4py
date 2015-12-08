@@ -5,27 +5,102 @@
         "institute": "LESIA, Observatoire de Paris, CNRS",
         "description": "cdfvalidator mode file for ISTP compliance"
     },
-    "Header":{
-        "CDF_NAME":"",
-        "DATA ENCODING":"",
-        "MAJORITY": "",
-        "FORMAT": "SINGLE"
-    },
-    "GlobalAttributes":{
-        "Data_type":[""],
-        "Data_version":[""],
-        "Descriptor":[""],
-        "Discipline":[""],
-        "Instrument_type":[""],
-        "Logical_file_id":[""],
-        "Logical_source":[""],
-        "Logical_source_description":[""],
-        "Mission_group":[""],
-        "PI_affiliation":[""],
-        "PI_name":[""],
-        "Project":[""],
-        "Source_name":[""],
-        "TEXT":[""]
+    "CDFItems":[
+      {
+            "name":"Data_type",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Data_version",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Descriptor",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Discipline",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Instrument_type",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Logical_file_id",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Logical_source",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Logical_source_description",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Mission_group",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"PI_affiliation",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"PI_name",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Project",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"Source_name",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"TEXT",
+            "category":"GLOBALattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+      {
+            "name":"CATDESC",
+            "category":"VARIABLEattributes",
+            "type":"CDF_CHAR",
+            "hasvalue":true
+        },
+
+
+    ]
+}
+
     },
     "VariableAttributes":{
         "CATDESC":[""],

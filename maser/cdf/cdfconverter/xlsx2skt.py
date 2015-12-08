@@ -265,7 +265,7 @@ class Xlsx2skt:
                 header_body.append(HEADER_SPACE + col + ": " + val[0])
             else:
                 logger.error(col +
-                             " column is missing in the sheet \"header\"!")
+                             " column is missing in the \"header\" sheet!")
                 raise
 
         header_body.append("")
