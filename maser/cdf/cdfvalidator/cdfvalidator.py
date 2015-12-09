@@ -16,6 +16,7 @@ import logging
 from spacepy import pycdf
 
 from ...tools import which, setup_logging, run_command, quote
+from ..tools import get_cdftype, get_vattrs, get_cdftypename
 from ...settings import SUPPORT_DIR
 
 # ________________ HEADER _________________________
@@ -80,92 +81,22 @@ class Validate():
         logger.info("Closing " + self.cdf_file)
         self.cdf.close()
 
-    def is_istp_compliant(self,
-                    zvars=None):
+    def is_istp_compliant(self):
 
         """Check that the input CDF is compliant with
             ISTP guidelines"""
 
         issues = []
 
-        cdf = self.cdf
+        issues.extend(self.is_model_compliant(ISTP_MOD_FILE))
+        issues.extend(self.is_istp_fillval())
 
-        logging.info("Importing %s", ISTP_MOD_FILE)
-        # Read JSON format model file for ISTP
-        with open(ISTP_MOD_FILE, 'r') as fbuff:
-            istpfile = json.load(fbuff)
-
-        # Check global attributes
-        gattrlist = cdf.attrs
-        for gattr_name in istpfile["GlobalAttributes"]:
-            if gattr_name not in gattrlist:
-                issues.append(gattr_name + " global attribute required!")
-            else:
-                gattr_istp = istpfile["GlobalAttributes"][gattr_name]
-                if len(gattr_istp[0]) > 0:
-                    gattr_cdf = cdf.attrs[gattr_name]
-                    if gattr_istp != gattr_cdf:
-                        issues.append(gattr_name +
-                                      " global attribute entry value(s)"
-                                      " mismatched!")
-
-        if zvars is None:
-            zvars = cdf.keys()
-
-        # Check that input CDF has the primary Epoch variable
-        if ("Epoch" not in zvars and
-        "EPOCH" not in zvars and
-        "epoch" not in zvars):
-            issues.append("No Epoch primary variable found!")
-
-        # Check the list of variable attributes
-        for zvar_name in zvars:
-            zvar = cdf[zvar_name]
-            vattrlist = zvar.attrs
-            if "VAR_TYPE" not in vattrlist:
-                issues.append(zvar_name +
-                              ": VAR_TYPE variable attribute required!")
-            else:
-                if vattrlist["VAR_TYPE"] != "data":
-                    continue
-                for vattr_istp in istpfile["VariableAttributes"]:
-                    if vattr_istp not in vattrlist:
-                        issues.append(zvar_name + ": " +
-                                      vattr_istp +
-                                      " variable attribute required!")
-
-        # Display issues found
-        for issue in issues:
-            logger.warning(issue)
+        return issues
 
     def is_model_compliant(self, model_file):
 
         """Check the CDF content compared to
         the input mode file"""
-
-        def get_cdftype(dtype):
-            """Return id of the CDF data type"""
-            return pycdf.const.__dict__[dtype].value
-
-        def get_vattrs(cdf):
-
-            """
-            Retrieve the list of zVariables attributes
-            """
-
-            vattrs = {}
-
-            if len(cdf) == 0:
-                logger.warning("No Zvariable in the " + self.cdf_file)
-                return vattrs
-
-            for zvar in cdf:
-                zattrs = cdf[zvar].attrs
-                for vattr in zattrs:
-                    zattr = pycdf.zAttr(cdf, vattr)
-                    vattrs[vattr] = zattr
-
-            return vattrs
 
         def check(cdf, items):
 
@@ -278,6 +209,48 @@ class Validate():
 
         return issues
 
+    def is_istp_fillval(self, zvarnames=None):
+
+        """Check if the FILLVAL variable attribute values
+        are ISTP compliant
+        """
+
+        issues = []
+
+        if zvarnames is None:
+            zvarnames = [key for key in self.cdf]
+
+        # Read JSON format model file
+        logger.info("Loading " + ISTP_MOD_FILE)
+        with open(ISTP_MOD_FILE, 'r') as fbuff:
+            mfile = json.load(fbuff)
+
+        istpfillval = mfile["ISTPMapping"]["FILLVAL"]
+
+        for zvname in zvarnames:
+            if zvname in self.cdf:
+                zvar = self.cdf[zvname]
+                if "FILLVAL" in zvar.attrs:
+                    fillval = zvar.attrs["FILLVAL"]
+                    zvtype = get_cdftypename(zvar.type())
+                    if str(istpfillval[zvtype]) != str(fillval):
+                        msg = ("%s has an invalid FILLVAL value: "
+                               % (quote(zvname)))
+                        msg += ("%s found, but %s expected!" %
+                                (quote(fillval), quote(istpfillval[zvtype])))
+                        logging.warning(msg)
+                        issues.append(msg)
+                else:
+                    msg = ("%s has no FILLVAL attribute!"
+                    % (quote(zvname)))
+                    logging.warning(msg)
+                    issues.append(msg)
+            else:
+                logger.warning("%s not found in %s!",
+                               quote(zvar), self.cdf_file)
+
+        return issues
+
     def cdfvalidate(self, program=None):
 
         """Run the cdfvalidate program in the GSFC CDF distribution"""
@@ -304,6 +277,52 @@ class Validate():
             logger.error("STDOUT - %s", str(output))
             logger.error("STDERR - %s", str(errors))
             return False
+
+    def is_zvar_valid(self, zvarname):
+
+        """ Ckech  the values of a zVariable
+        comparing to the its VALIMIN/VALIDMAX attributes
+        """
+
+        issues = []
+
+        cdf = self.cdf
+
+        if zvarname not in cdf:
+            logger.error("%s not in %s!", zvarname, cdf)
+            return False
+        else:
+            zvar = cdf[zvarname]
+
+        logger.info("Cheching %s", zvarname)
+
+        zattrs = zvar.attrs
+        if "VALIDMIN" in zattrs:
+            validmin = zattrs["VALIDMIN"]
+            logger.info("VALIDMIN=%s", str(validmin))
+        else:
+            logger.warning("No VALIDMIN attribute for %s", zvarname)
+            validmin = None
+
+        if "VALIDMAX" in zattrs:
+            validmax = zattrs["VALIDMAX"]
+            logger.info("VALIDMAX=%s", str(validmax))
+        else:
+            logger.warning("No VALIDMAX attribute for %s", zvarname)
+            validmax = None
+
+        for i, rec in enumerate(zvar):
+            if rec.min() < validmin:
+                msg = ("[%i]: Record value(s) lesser than VALIDMIN!") % (i)
+                logger.warning(msg)
+                issues.append(msg)
+
+            if rec.max() > validmax:
+                msg = ("[%i]: Record value(s) greater than VALIDMAX!") % (i)
+                logger.warning(msg)
+                issues.append(msg)
+
+        return issues
 
 
 # ________________ Global Functions __________

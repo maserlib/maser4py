@@ -136,6 +136,8 @@ def quote(string, unquote=False):
     """Double quote a given string"""
 
     if string is not None:
+        if not isinstance(string, str):
+            string = str(string)
         if string.startswith("\""):
             string = string[1:]
         if string.endswith("\""):
