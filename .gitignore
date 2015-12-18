@@ -1,6 +1,4 @@
 maser.egg-info
-doc/build
-doc/source
 build
 tmp
 __pycache__

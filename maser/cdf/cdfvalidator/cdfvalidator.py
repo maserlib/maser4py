@@ -33,7 +33,7 @@ __license__ = ""
 __credit__ = [""]
 __maintainer__ = "Xavier Bonnin"
 __email__ = "xavier.bonnin@obspm.fr"
-__change__ = {"version": "change"}
+__change__ = {"0.1.0": "First beta version"}
 
 # ________________ Global Variables _____________
 # (define here the global variables)
@@ -52,13 +52,18 @@ class Validate():
     def __init__(self, cdf_file,
                  log_file=None,
                  verbose=False,
-                 debug=False):
+                 debug=False,
+                 quiet=False):
 
         # Setup the logging
         setup_logging(
-            filename=log_file, quiet=False,
+            filename=log_file, quiet=quiet,
             verbose=verbose, debug=debug)
 
+        self._setcdf(cdf_file)
+
+    def _setcdf(self, cdf_file):
+        """Set the input cdf file"""
         self.cdf_file = cdf_file
         self.cdf = self.open_cdf()
 
@@ -351,14 +356,12 @@ def main():
     parser.add_argument('-C', '--CDFvalidate', action='store_true',
                         help='Check the CDF integrity'
                         'calling the CDFvalidate program')
-    parser.add_argument('-O', '--Overwrite', action='store_true',
-                        help='Overwrite existing output files')
     parser.add_argument('-V', '--Verbose', action='store_true',
                         help='Verbose mode')
+    parser.add_argument('-Q', '--Quiet', action='store_true',
+                        help='Quiet mode')
     parser.add_argument('-D', '--Debug', action='store_true',
                         help='Debug mode')
-    parser.add_argument('-A', '--All', action='store_true',
-                        help='Perform all of the validations')
     parser.add_argument('--version', action='store_true',
                         help='Show version')
     parser.add_argument('--change', action='store_true',
@@ -377,15 +380,11 @@ def main():
         parser.print_help()
         sys.exit(0)
 
-    if args.All:
-        args.ISTP = True
-        args.Consistency = True
-        args.CDFvalidate = True
-
     # Initialize a Validate object
     cdfvalid = Validate(args.cdf_file,
                           log_file=args.log_file,
                           verbose=args.Verbose,
+                          quiet=args.Quiet,
                           debug=args.Debug)
 
     if args.ISTP:

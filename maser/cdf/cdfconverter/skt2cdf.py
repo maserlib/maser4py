@@ -122,7 +122,7 @@ def main():
     parser.add_argument('-c', '--cdf', nargs='?',
                         default=None,
                         help='Output CDF master file (.cdf)')
-    parser.add_argument('-e', '--executable', nargs='?',
+    parser.add_argument('-s', '--skeletoncdf', nargs='?',
                         default=None,
                         help='Path of the skeletoncdf binary executable')
     parser.add_argument('-o', '--output_dir', nargs='?',
@@ -142,7 +142,7 @@ def main():
             output_dir=args.output_dir,
             overwrite=args.Overwrite, verbose=args.Verbose,
             debug=args.Debug,
-            quiet=args.Quiet).make_master(exe=args.executable)
+            quiet=args.Quiet).make_master(exe=args.skeletoncdf)
 
 
 # _________________ Main ____________________________

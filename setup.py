@@ -39,7 +39,7 @@ setup(
     packages=packages,
     cmdclass=cmdclass,
     entry_points={
-        "console_scripts": ["maser=maser.maser:main",
+        "console_scripts": ["maser-py=maser.maser:main",
             "xlsx2skt=maser.cdf.cdfconverter:xlsxskt",
             "skt2cdf=maser.cdf.cdfconverter:sktcdf",
             "cdfvalidator=maser.cdf.cdfvalidator:main"],
