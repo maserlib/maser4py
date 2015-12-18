@@ -25,7 +25,7 @@ To import the Xlsx2skt class from Python, enter:
 
 .. code-block:: python
 
-  from maser.cdf.cdfconverter import Xlsx2skt
+  from maser.utils.cdf.cdfconverter import Xlsx2skt
 
 Excel file format definition
 ''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -193,7 +193,7 @@ To import the Skt2cdf class from Python, enter:
 
 .. code-block:: python
 
-  from maser.cdf.cdfconverter import Skt2cdf
+  from maser.utils.cdf.cdfconverter import Skt2cdf
 
 Command line interface
 ''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -246,7 +246,7 @@ To import the *Validate* class from Python, enter:
 
 .. code-block:: python
 
-  from maser.cdf.cdfvalidator import Validate
+  from maser.utils.cdf.cdfvalidator import Validate
 
 The Model validation test
 ''''''''''''''''''''''''''''''''''''''''''''''''''''
