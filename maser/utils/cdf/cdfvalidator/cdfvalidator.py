@@ -15,9 +15,9 @@ import logging
 
 from spacepy import pycdf
 
-from ...tools import which, setup_logging, run_command, quote
+from ...toolbox import which, setup_logging, run_command, quote
 from ..tools import get_cdftype, get_vattrs, get_cdftypename
-from ...settings import SUPPORT_DIR
+from ....settings import SUPPORT_DIR
 
 # ________________ HEADER _________________________
 

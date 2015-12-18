@@ -1,2 +1,2 @@
 include README.rst
-include maser/data/support/cdf/*
+include maser/support/cdf/*

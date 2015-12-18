@@ -316,4 +316,26 @@ Example
 
 To test the cdfvalidator program, use the dedicated scripts/test_cdfvalidator.sh bash script.
 
+It should return something like:
+
+.. code-block:: python
+
+  INFO    : Opening /tmp/cdfconverter_example.cdf
+  INFO    : Loading /Users/xbonnin/Work/projects/MASER/Software/Tools/Git/maser-py/scripts/../maser/support/cdf/cdfvalidator_model_example.json
+  INFO    : Checking GLOBALattributes:
+  INFO    : --> Project
+  WARNING : "Project"  has a wrong entry value: "Python>Python 2" ("Python>Python 3" expected)!
+  INFO    : --> PI_name
+  INFO    : --> TEXT
+  INFO    : Checking VARIABLEattributes:
+  INFO    : --> FIELDNAM
+  INFO    : --> CATDESC
+  INFO    : --> VAR_TYPE
+  INFO    : Checking zVariables:
+  INFO    : --> Epoch
+  INFO    : --> Variable2
+  INFO    : Checking variable attributes of "Variable2":
+  INFO    : --> DEPEND_0
+  WARNING : DEPEND_0 required!
+  INFO    : Closing /tmp/cdfconverter_example.cdf
 

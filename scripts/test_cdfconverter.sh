@@ -17,7 +17,7 @@ pushd `dirname $0` > /dev/null
 scriptpath=`pwd`
 popd > /dev/null
 
-inputdir=$scriptpath/../maser/data/support/cdf
+inputdir=$scriptpath/../maser/support/cdf
 outputdir=/tmp
 
 # Input Excel 2007 format file to convert

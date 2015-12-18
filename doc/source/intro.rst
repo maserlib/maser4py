@@ -1,9 +1,9 @@
 Introduction
 ====================================
 
-The MASER python package contains modules to
+The MASER python package (MASER-PY) contains modules to
 deal with services and data provided in the framework
-of the MASER project (Mesures, Analyses et Simulations d’Emissions Radio).
+of the MASER portal.
 
 For more information about MASER, please visit: http://maser.lesia.obspm.fr/
 
@@ -79,20 +79,22 @@ For more details about the MASER-PY modules, please read the user manual.
 Overview
 ====================================
 
-The MASER-PY package contains the following modules:
+The MASER-PY package is organized as follows:
 
-cdf
-    Module to handle the NASA Common Data Format (CDF).
-helio
-    Module to get and plot the HELIO Virtual Observatory data.
-stereo
-    Module to handle the STEREO  NASA mission data.
-wind
-    Module to handle the Wind NASA mission data.
-tools
-    Module containing common tool methods for MASER-PY
+    maser/
+        services/
+            helio/
+                Module to get and plot the HELIO Virtual Observatory data.
+        data/
+            wind/
+                Module to handle the Wind NASA mission data.
+        utils/
+            cdf/
+                Module to handle the NASA Common Data Format (CDF).
+            toolbox/
+                Module containing common tool methods for MASER-PY
 
 In order to work, the MASER-PY package modules rely on additional files and directories:
 
-data
+maser/support
     Directory containing support data

@@ -22,7 +22,7 @@ popd > /dev/null
 cdffile=/tmp/cdfconverter_example.cdf
 
 # JSON Validator model example file
-jsonfile=$scriptpath/../maser/data/support/cdf/cdfvalidator_model_example.json
+jsonfile=$scriptpath/../maser/support/cdf/cdfvalidator_model_example.json
 
 if [ ! -f $cdffile ]; then
     echo $cdffile" does not exist, and will be created..."

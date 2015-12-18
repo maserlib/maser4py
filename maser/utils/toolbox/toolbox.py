@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Tools Python 3 module for maser-py package
+Toolbox module for maser-py package
 """
 
 # ________________ IMPORT _________________________

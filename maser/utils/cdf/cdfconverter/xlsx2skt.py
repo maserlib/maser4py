@@ -19,8 +19,8 @@ import argparse
 from openpyxl import load_workbook
 from collections import OrderedDict
 
-from ...tools import setup_logging, uniq, quote, truncate_str, insert_char
-from ..._version import __version__
+from ...toolbox import setup_logging, uniq, quote, truncate_str, insert_char
+from ...._version import __version__
 
 # ________________ HEADER _________________________
 
