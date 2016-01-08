@@ -401,7 +401,7 @@ class Xlsx2skt:
                     continue
                 else:
                     logger.error("ERROR: Current zVariable is NoneType!")
-                    raise
+                    raise TypeError
 
             zvar_body.append(VARIABLE_BOAD)
 
@@ -463,7 +463,7 @@ class Xlsx2skt:
                         logger.error("Wrong Data Type for the " +
                                     "attribute %s " +
                                     "of the variable %s !", vattr_name, zvar)
-                        raise
+                        raise TypeError
 
                     if vattrs_sheet["Value"][j] is None:
                         vattr_value = ""
@@ -498,9 +498,12 @@ class Xlsx2skt:
                     val_k = str(nrv_sheet["Value"][k])
                     if (idx_k == "") or (idx_k == "None"):
                         logger.error("Wrong NRV index for %s!", nrv_k)
-                        raise
-                    nrv_body += "    [" + idx_k + "] = { " + \
-                        quote(val_k) + " }\n"
+                        raise TypeError
+                    if (dtype_i == "CDF_CHAR" or
+                    dtype_i == "CDF_UCHAR"):
+                        val_k = "{ " + quote(val_k) + " }"
+                    nrv_body += "    [ " + idx_k + " ] = " + \
+                        val_k + "\n"
 
             if len(nrv_body) == 0:
                 nrv_body = "  ! RV values were not requested.\n"
@@ -528,7 +531,7 @@ def assign_pad(data_type):
         return "0000-01-01T00:00:00.000000000"
     elif ("INT" in dtype) or ("BYTE" in dtype):
         return "0"
-    elif ("FLOAT" in dtype) or ("REAL" in dtype):
+    elif ("FLOAT" in dtype) or ("REAL" in dtype) or ("DOUBLE" in dtype):
         return "0.0"
     elif "CHAR" in dtype:
         return "\" \""
