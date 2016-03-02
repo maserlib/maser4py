@@ -96,7 +96,7 @@ def run_command(cmd):
     return res
 
 
-def which(program):
+def which(program, path="PATH"):
 
     """which function"""
 
@@ -104,13 +104,13 @@ def which(program):
         """is_exe function"""
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-    fpath, fname = os.path.split(program)
+    fpath, __ = os.path.split(program)
 
     if fpath:
         if is_exe(program):
             return program
     else:
-        for path in os.environ["PATH"].split(os.pathsep):
+        for path in os.environ[path].split(os.pathsep):
             path = path.strip('"')
             exe_file = os.path.join(path, program)
             if is_exe(exe_file):

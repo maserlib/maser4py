@@ -145,6 +145,16 @@ class Xlsx2skt:
             else:
                 wksht = wkbk[shtn]
 
+                ncol = wksht.max_column
+                nrow = wksht.max_row
+                if ncol is None or nrow is None:
+                    wksht.calculate_dimension(force=True)
+                    ncol = wksht.max_column
+                    nrow = wksht.max_row
+
+                ncol += 1
+                nrow += 1
+
                 sheet_data = OrderedDict()
                 for i, row in enumerate(wksht.rows):
                     cells_i = []

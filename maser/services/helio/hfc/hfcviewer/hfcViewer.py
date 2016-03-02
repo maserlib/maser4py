@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 """
 This is a python viewer for the Heliophysics Feature Catalogue.
@@ -11,25 +11,20 @@ __author__ = "Xavier BONNIN"
 __credit__ = ["Xavier BONNIN"]
 __maintainer__ = "Xavier BONNIN"
 __email__ = "xavier.bonnin@obspm.fr"
-
-__project __ = "HELIO"
+__project__ = "HELIO"
 
 import re
-import csv
 import argparse
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
-from scipy.misc import fromimage, toimage, imresize
-from PIL import Image, ImageTk
+from scipy.misc import fromimage
 import numpy as np
-import threading, time
 try:
     from Tkinter import *
 except ImportError: # py3k
     from tkinter import *
-from tkinter import messagebox
 
 import hfc_client
 from improlib import auto_contrast, chain2image
@@ -37,12 +32,12 @@ from improlib import auto_contrast, chain2image
 ## Constant arguments
 
 # Background color
-BG_COLOR="#C7CBE4"
+BG_COLOR = "#C7CBE4"
 
-HQI_TFORMAT="%Y-%m-%dT%H:%M:%S"
-SQL_TFORMAT="%Y-%m-%d %H:%M:%S"
+HQI_TFORMAT = "%Y-%m-%dT%H:%M:%S"
+SQL_TFORMAT = "%Y-%m-%d %H:%M:%S"
 
-DATE_PATTERN="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
+DATE_PATTERN = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
 
 # List for observatory radio buttons
 MODES = [
@@ -59,30 +54,33 @@ MODES = [
 
 
 # Default input arguments
-DATE=datetime.now().strftime(HQI_TFORMAT)
-OBSERVATORY="Nancay"
-INSTRUMENT="Radioheliograph"
-TELESCOPE=""
-WAVENAME=""
+DATE = datetime.now().strftime(HQI_TFORMAT)
+OBSERVATORY = "Nancay"
+INSTRUMENT = "Radioheliograph"
+TELESCOPE = ""
+WAVENAME = ""
 
 
 # Helio Interface for HFC
-URL_WSDL="http://voparis-helio.obspm.fr/hfc-hqi/HelioTavernaService?wsdl"
-URL_WSDL_DEV="http://voparis-helio.obspm.fr/hfc-hqi-dev/HelioTavernaService?wsdl"
-SQL_METHOD="SQLSelect"
-OBS_HFC_TABLE="VIEW_OBS_HQI"
-PP_HFC_TABLE="VIEW_PP_HQI"
-FEATURE_TABLE={'ar':"VIEW_AR_HQI",'ch':"VIEW_CH_HQI",'sp':"VIEW_SP_HQI",
-               'rs':"VIEW_RS_HQI",'pr':"VIEW_PRO_HQI","fi":"VIEW_FIL_HQI"}
+URL_WSDL = "http://voparis-helio.obspm.fr/hfc-hqi/HelioTavernaService?wsdl"
+URL_WSDL_DEV = "http://voparis-helio.obspm.fr/hfc-hqi-dev/HelioTavernaService?wsdl"
+SQL_METHOD = "SQLSelect"
+OBS_HFC_TABLE = "VIEW_OBS_HQI"
+PP_HFC_TABLE = "VIEW_PP_HQI"
+FEATURE_TABLE = {'ar': "VIEW_AR_HQI", 'ch': "VIEW_CH_HQI", 'sp': "VIEW_SP_HQI",
+               'rs': "VIEW_RS_HQI", 'pr': "VIEW_PRO_HQI", "fi": "VIEW_FIL_HQI"}
 
 # Default colors for feature
-FEATURE_COLORS={'ar':'r','ch':'b','sp':'y','rs':'m','pr':'g','fi':'c'}
+FEATURE_COLORS = {'ar': 'r', 'ch': 'b', 'sp': 'y', 'rs' :'m' ,'pr' :'g' ,'fi' :'c'}
+
 
 def input_date(date):
     return date.strftime(HQI_TFORMAT)
 
+
 def sql_date(date):
     return date.strftime(SQL_TFORMAT)
+
 
 class Viewer(Frame):
 
@@ -212,13 +210,13 @@ class Viewer(Frame):
             b.pack(anchor=W)
 
         # Features buttons
-        flabel = Label(oframe,text="FEATURES", bg=BG_COLOR)
-        fframe = Frame(oframe,bg=BG_COLOR,relief=SUNKEN,bd=2)
+        flabel = Label(oframe, text="FEATURES", bg=BG_COLOR)
+        fframe = Frame(oframe, bg=BG_COLOR, relief=SUNKEN,bd=2)
         cb_ar = Checkbutton(fframe, text="Active regions",
                             variable=self._aron, bg=BG_COLOR,
                             command=self.__plot_qclk)
         cb_ch = Checkbutton(fframe, text="Coronal holes",
-                            variable=self._chon,bg=BG_COLOR,
+                            variable=self._chon, bg=BG_COLOR,
                             command=self.__plot_qclk)
         cb_sp = Checkbutton(fframe, text="Sunspots",
                             variable=self._spon, bg=BG_COLOR,
@@ -258,21 +256,23 @@ class Viewer(Frame):
         inst = instrument.lower()
         tele = telescope
         wave = wavename
-        if (tele is not None) : tele=tele.lower()
-        if (wave is not None) : wave=wave.lower()
+        if tele is not None:
+            tele = tele.lower()
+        if wave is not None:
+            wave = wave.lower()
 
         if (obs == "sdo") and (inst == "hmi"):
-            if (tele == ""):
+            if tele == "":
                 return 1
             else:
-                if (tele == "magnetogram"):
+                if tele == "magnetogram":
                     return 2
                 else:
                     return 1
         elif (obs == "sdo") and (inst == "aia"):
             return 3
         elif (obs == "soho") and (inst == "mdi"):
-            if (tele == ""):
+            if tele == "":
                 return 4
             else:
                 if (tele == "magnetogram"):
@@ -640,7 +640,7 @@ class Viewer(Frame):
 
         return tabledata
 
-    def __query_hfc(self,**kwargs):
+    def __query_hfc(self, **kwargs):
 
         votable = hfc_client.query(**kwargs)
         return votable
@@ -653,60 +653,61 @@ class Viewer(Frame):
 
     def __about(self):
         msg = "HFC Viewer %s \n" % (__version__)
-        msg+= "\n"
-        msg+= "HFC Viewer for Python is developped and \n"
-        msg+= "maintened by LESIA-Observatoire de Paris.\n"
-        msg+= "\n"
-        msg+= "More information about available data \n"
-        msg+= "can be found on the HFC web page: \n"
-        msg+= "http://voparis-helio.obspm.fr/hfc-gui/\n"
-        msg+= "\n"
-        msg+= "The Heliophysics Feature Catalogue (HFC)\n"
-        msg+= "is a service of the HELIO virtual observatory:\n"
-        msg+= "http://www.helio-vo.eu/ \n"
-        msg+= "\n"
-        msg+= "\n"
-        msg+="Any feedback is welcome, please send your "
-        msg+="comments to xavier dot bonnin at obspm dot fr."
+        msg += "\n"
+        msg += "HFC Viewer for Python is developped and \n"
+        msg += "maintened by LESIA-Observatoire de Paris.\n"
+        msg += "\n"
+        msg += "More information about available data \n"
+        msg += "can be found on the HFC web page: \n"
+        msg += "http://voparis-helio.obspm.fr/hfc-gui/\n"
+        msg += "\n"
+        msg += "The Heliophysics Feature Catalogue (HFC)\n"
+        msg += "is a service of the HELIO virtual observatory:\n"
+        msg += "http://www.helio-vo.eu/ \n"
+        msg += "\n"
+        msg += "\n"
+        msg += "Any feedback is welcome, please send your "
+        msg += "comments to xavier dot bonnin at obspm dot fr."
         tkMessageBox.showinfo("HFC Viewer",msg)
         return
+
 
 def main(**kwargs):
 
     root = Tk()
     root.title('HFC Viewer')
-    tkview = Viewer(master=root,**kwargs)
+    tkview = Viewer(master=root, **kwargs)
     tkview.pack(expand=1, fill='both')
 
     root.mainloop()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(add_help=True)
-    parser.add_argument('-d','--date',nargs='?',
+    parser.add_argument('-d', '--date', nargs='?',
                         default=DATE,
                         help="Date of observation")
-    parser.add_argument('-o','--observatory',nargs='?',
+    parser.add_argument('-o', '--observatory', nargs='?',
                         default=OBSERVATORY,
                         help="Name of the observatory")
-    parser.add_argument('-i','--instrument',nargs='?',
+    parser.add_argument('-i', '--instrument', nargs='?',
                         default=INSTRUMENT,
                         help="Name of the instrument")
-    parser.add_argument('-t','--telescope',nargs='?',
+    parser.add_argument('-t', '--telescope', nargs='?',
                         default=TELESCOPE,
                         help="Name of the telescope")
-    parser.add_argument('-w','--wavename',nargs='?',
+    parser.add_argument('-w', '--wavename', nargs='?',
                         default=WAVENAME,
                         help="Name of the wavename")
-    parser.add_argument('-u','--url_wsdl',nargs='?',
+    parser.add_argument('-u', '--url_wsdl', nargs='?',
                         default=URL_WSDL,
                         help="Url of the wsdl file to load")
-    parser.add_argument('-x','--xsize',nargs='?',
+    parser.add_argument('-x', '--xsize', nargs='?',
                         help="Window width on screen in pixels")
-    parser.add_argument('-y','--ysize',nargs='?',
+    parser.add_argument('-y', '--ysize', nargs='?',
                         help="Window heigth on screen in pixels")
-    parser.add_argument('-Q','--Quiet',action='store_true',
+    parser.add_argument('-Q', '--Quiet', action='store_true',
                         help="Quiet mode")
-    parser.add_argument('-D','--Dev',action='store_true',
+    parser.add_argument('-D', '--Dev', action='store_true',
                         help="Run the development version of the hfcViewer")
     args = parser.parse_args()
 

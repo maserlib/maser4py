@@ -39,12 +39,14 @@ setup(
     packages=packages,
     cmdclass=cmdclass,
     entry_points={
-        "console_scripts": ["maser-py=maser.maser:main",
+        "console_scripts": [
+            "maser=maser.maser:main",
+            "maser-py=maser.maser:main",
             "xlsx2skt=maser.utils.cdf.cdfconverter:xlsxskt",
             "skt2cdf=maser.utils.cdf.cdfconverter:sktcdf",
             "cdfvalidator=maser.utils.cdf.cdfvalidator:main"],
     },
     install_requires=['openpyxl', 'spacepy', 'simplejson'],
     include_package_data=True
-    #ext_modules=cythonize("maser/rpl/*.pyx"),
+    # ext_modules=cythonize("maser/rpl/*.pyx"),
 )
