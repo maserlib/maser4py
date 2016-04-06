@@ -123,11 +123,11 @@ class Xlsx2skt:
 
         if not os.path.isfile(xlsx):
             logger.error("Cannot find Excel file called %s!", xlsx)
-            raise
+            sys.exit(-1)
 
         if os.path.splitext(xlsx)[1] != ".xlsx":
             logger.error("Invalid input Excel format!")
-            raise
+            sys.exit(-1)
 
         logger.info("Parsing %s file...", xlsx)
         wkbk = load_workbook(xlsx, read_only=True)
@@ -141,7 +141,7 @@ class Xlsx2skt:
             logger.info("Loading %s sheet...", shtn)
             if shtn not in sheet_names:
                 logger.error("Missing %s sheet in the input Excel file!", shtn)
-                raise
+                sys.exit(-1)
             else:
                 wksht = wkbk[shtn]
 
@@ -276,7 +276,7 @@ class Xlsx2skt:
             else:
                 logger.error(col +
                              " column is missing in the \"header\" sheet!")
-                raise
+                sys.exit(-1)
 
         header_body.append("")
         header_body.append(HEADER_BOARD)
@@ -315,7 +315,7 @@ class Xlsx2skt:
 
         if global_sheet["Attribute Name"][0] is None:
             logger.error("First Global attribute name must not be null!")
-            raise
+            sys.exit(-1)
         else:
             last_valid_attr = global_sheet["Attribute Name"][0]
 
@@ -324,19 +324,32 @@ class Xlsx2skt:
         for i, attr in enumerate(global_sheet["Attribute Name"]):
 
             if attr is None:
+                logging.warning("Attribute #%i is null!", i)
                 continue
 
             if last_valid_attr != attr:
                 new_entry += " .\n"
             global_body.append(new_entry)
 
-            enum_i = str(global_sheet["Entry Number"][i])
-            dtype_i = str(global_sheet["Data Type"][i])
-            value_i = quote(str(global_sheet["Value"][i]), unquote=True)
+            enum_i = global_sheet["Entry Number"][i]
+            if enum_i is None:
+                logger.error("Attribute #%i Entry Number is empty!", i)
+                sys.exit(-1)
+            else:
+                enum_i = str(enum_i)
 
+            dtype_i = global_sheet["Data Type"][i]
+            if dtype_i is None:
+                logger.error("Attribute #%i Data Type is empty!", i)
+                sys.exit(-1)
+            else:
+                dtype_i = str(dtype_i)
+
+            value_i = quote(str(global_sheet["Value"][i]), unquote=True)
             if (value_i is None or
                value_i.lower() == "none" or
                value_i == ""):
+                logger.warning("Attribute #%i value is empty!", i)
                 value_i = " "
 
             if int(enum_i) == 1:
@@ -430,11 +443,14 @@ class Xlsx2skt:
                       sizes_i + "     " + recvar_i + "     " + dimvars_i)
 
             if dtype_i == "None":
-                sys.exit("ERROR: Wrong Data Type for %s!" % (zvar))
+                logger.error("Wrong Data Type for %s!", zvar)
+                sys.exit(-1)
             if nelem_i == "None":
-                sys.exit("ERROR: Wrong Number Elements for %s!" % (zvar))
+                logger.error("Wrong Number Elements for %s!", zvar)
+                sys.exit(-1)
             if dims_i == "None":
-                sys.exit("ERROR: Wrong Dims for %s!" % (zvar))
+                logger.error("Wrong Dims for %s!", zvar)
+                sys.exit(-1)
 
             if sizes_i == "None":
                 sizes_i = ""
