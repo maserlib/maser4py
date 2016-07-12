@@ -1,6 +1,10 @@
 MASER-PY CHANGE LOG
 ====================
 
+0.2.4
+-----
+* Fix error in maser.utils.cdf.tools.py
+
 0.2.3
 -----
 * Remove use of spacepy.pycdf module
