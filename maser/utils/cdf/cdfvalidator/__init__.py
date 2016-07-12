@@ -2,5 +2,3 @@
 # -*- coding: utf-8 -*-
 
 from .cdfvalidator import Validate, main
-
-#__all__ = []

@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -333,23 +333,31 @@ class Xlsx2skt:
 
             enum_i = global_sheet["Entry Number"][i]
             if enum_i is None:
-                logger.error("Attribute #%i Entry Number is empty!", i)
+                logger.error("Attribute \"%s\" Entry Number is empty!", attr)
                 sys.exit(-1)
             else:
                 enum_i = str(enum_i)
 
             dtype_i = global_sheet["Data Type"][i]
             if dtype_i is None:
-                logger.error("Attribute #%i Data Type is empty!", i)
+                logger.error("Attribute \"%s\" Data Type is empty!", attr)
                 sys.exit(-1)
             else:
                 dtype_i = str(dtype_i)
 
-            value_i = quote(str(global_sheet["Value"][i]), unquote=True)
+            if ("CDF_CHAR" in dtype_i or
+                    "CDF_UCHAR" in dtype_i):
+                ischar = True
+            else:
+                ischar = False
+
+            value_i = str(global_sheet["Value"][i])
+            value_i = quote(value_i, unquote=True)
+
             if (value_i is None or
                value_i.lower() == "none" or
                value_i == ""):
-                logger.warning("Attribute #%i value is empty!", i)
+                logger.warning("Attribute \"%s\" value is empty!", attr)
                 value_i = " "
 
             if int(enum_i) == 1:
@@ -361,12 +369,18 @@ class Xlsx2skt:
 
             # Remove any break line
             value_i = value_i.replace("\n", " ")
-            value_i = truncate_str(value_i,
-                                   int(ROW_LENGTH_MAX / 3),
-                                   gap=(" " * (len(new_entry) + 12)),
-                                   min_length=6)
 
-            new_entry += quote(value_i) + " }"
+            # If attribute is a string, then cut it if it
+            # has a too long length
+            if ischar:
+                value_i = truncate_str(value_i,
+                                    int(ROW_LENGTH_MAX / 3),
+                                    gap=(" " * (len(new_entry) + 12)),
+                                    min_length=6)
+
+                new_entry += quote(value_i) + " }"
+            else:
+                new_entry += value_i + " }"
 
             if len(new_entry) > ROW_LENGTH_MAX and int(enum_i) == 1:
                 nindent = len(attr)
