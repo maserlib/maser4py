@@ -24,7 +24,6 @@
   If they are not found, the following Python modules will
   be downloaded automatically during the installation:
     - openpyxl
-    - spacepy
     - simplejson
 
     In order to use the "cdf" submodule, the NASA CDF software
