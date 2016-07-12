@@ -46,7 +46,7 @@ setup(
             "skt2cdf=maser.utils.cdf.cdfconverter:sktcdf",
             "cdfvalidator=maser.utils.cdf.cdfvalidator:main"],
     },
-    install_requires=['openpyxl', 'spacepy', 'simplejson'],
+    install_requires=['openpyxl', 'simplejson'],
     include_package_data=True
     # ext_modules=cythonize("maser/rpl/*.pyx"),
 )

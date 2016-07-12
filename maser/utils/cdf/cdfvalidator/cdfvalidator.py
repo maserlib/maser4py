@@ -13,7 +13,7 @@ import json
 import argparse
 import logging
 
-from spacepy import pycdf
+from ..cdf import CDF, CDFError
 
 from ...toolbox import which, setup_logging, run_command, quote
 from ..tools import get_cdftype, get_vattrs, get_cdftypename
@@ -73,11 +73,11 @@ class Validate():
 
         logger.info("Opening " + self.cdf_file)
         try:
-            cdf = pycdf.CDF(self.cdf_file)
+            cdf = CDF(self.cdf_file)
             cdf.readonly(True)
-        except pycdf.CDFError as e:
+        except CDFError as e:
             logger.error(e)
-            raise pycdf.CDFError
+            raise CDFError
         else:
             return cdf
 

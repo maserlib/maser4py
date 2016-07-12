@@ -2,6 +2,7 @@ maser.egg-info
 build
 dist
 tmp
+*.log
 __pycache__
 *.pyc
 *.egg
