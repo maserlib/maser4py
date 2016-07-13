@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
+"""xlsx2skt module.
+
 Module to convert an Excel (.xlsx) file
 into a CDF skeleton table (.skt).
 """
@@ -33,19 +34,47 @@ ROW_LENGTH_MAX = 79
 DEF_INDENT = " " * 16
 
 # Sheets and columns to be found in the Excel file
-SHEET_NAMES = {"header": ["CDF NAME", "DATA ENCODING", "MAJORITY", "FORMAT"],
-    "GLOBALattributes": ["Attribute Name", "Entry Number",
-        "Data Type", "Value"],
-    "zVariables": ["Variable Name", "Data Type",
-        "Number Elements", "Dims", "Sizes",
-        "Record Variance", "Dimension Variances"],
-    "VARIABLEattributes": ["Variable Name",
-        "Attribute Name", "Data Type", "Value"],
-     "Options": ["CDF_COMPRESSION",
-        "CDF_CHECKSUM", "VAR_COMPRESSION",
+SHEET_NAMES = {
+    "header": [
+        "CDF NAME",
+        "DATA ENCODING",
+        "MAJORITY",
+        "FORMAT"
+    ],
+    "GLOBALattributes": [
+        "Attribute Name",
+        "Entry Number",
+        "Data Type",
+        "Value"
+    ],
+    "zVariables": [
+        "Variable Name",
+        "Data Type",
+        "Number Elements",
+        "Dims",
+        "Sizes",
+        "Record Variance",
+        "Dimension Variances"
+    ],
+    "VARIABLEattributes": [
+        "Variable Name",
+        "Attribute Name",
+        "Data Type",
+        "Value"
+    ],
+    "Options": [
+        "CDF_COMPRESSION",
+        "CDF_CHECKSUM",
+        "VAR_COMPRESSION",
         "VAR_SPARESERECORDS",
-        "VAR_PADVALUE"],
-     "NRV": ["Variable Name", "Index", "Value"]}
+        "VAR_PADVALUE"
+    ],
+    "NRV": [
+        "Variable Name",
+        "Index",
+        "Value"
+    ]
+}
 
 # Available options
 CDF_OPTION_NAMES = ["CDF_COMPRESSION", "CDF_CHECKSUM"]
@@ -56,31 +85,30 @@ VAR_OPTION_NAMES = ["VAR_COMPRESSION",
 # CDF skeleton headers format
 HEADER_BOARD = "! Variables     G.Attributes     " + \
     "V.Attributes     Records     Dims     Sizes\n"
-HEADER_BOARD += "! ---------           ------------     " + \
-    "      ------------          -------           ----          -----"
+HEADER_BOARD += "! ---------     ------------  " + \
+    "   ------------     -------     ----     -----"
 HEADER_SPACE = DEF_INDENT
 
 GLOBAL_BOARD = "! Attribute    Entry        Data\n"
-GLOBAL_BOARD += "! Name        Number   Type   Value\n"
-GLOBAL_BOARD += "! ---------       ------           ----       -----"
+GLOBAL_BOARD += "! Name         Number       Type   Value\n"
+GLOBAL_BOARD += "! ---------    ------       ----   -----"
 
-VARIABLE_BOAD = "! Variable      Data      Number " + \
-    "                                Record        Dimension\n"
-VARIABLE_BOAD += "! Name          Type      Elements" + \
+VARIABLE_BOARD = "! Variable    Data     Number " + \
+    "                     Record       Dimension\n"
+VARIABLE_BOARD += "! Name        Type     Elements" + \
     "   Dims    Sizes    Variance     Variances\n"
-VARIABLE_BOAD += "! --------           ----          --------   " + \
-    "       ----        -----        --------           ---------"
+VARIABLE_BOARD += "! --------    ----     -------- " + \
+    "  ----    -----    --------     ---------"
 
 VATTRS_BOARD = "  ! Attribute    Data\n"
-VATTRS_BOARD += "  ! Name        Type   Value\n"
-VATTRS_BOARD += "  ! --------         ----       -----"
+VATTRS_BOARD += "  ! Name         Type   Value\n"
+VATTRS_BOARD += "  ! --------     ----   -----"
 
 
 # ________________ Class Definition __________
 # (If required, define here classes)
 class Xlsx2skt:
-
-    """ Class to convert a formatted Excel file into a CDF skeleton table"""
+    """Class to convert a formatted Excel file into a CDF skeleton table."""
 
     def __init__(self, xlsx_file,
                  skt_file=None,
@@ -91,7 +119,7 @@ class Xlsx2skt:
                  verbose=True,
                  debug=False,
                  quiet=False):
-
+        """__init__ method."""
         self.xlsx_file = xlsx_file
         self.overwrite = overwrite
         self.ignore = ignore_none
@@ -115,10 +143,8 @@ class Xlsx2skt:
             verbose=verbose,
             debug=debug)
 
-    def parse_xlsx(self):
-
-        """Parse the Excel 2007 format file"""
-
+    def _parse_xlsx(self):
+        """Parse the Excel 2007 format file."""
         xlsx = self.xlsx_file
 
         if not os.path.isfile(xlsx):
@@ -187,10 +213,8 @@ class Xlsx2skt:
 
         return sheets
 
-    def build_skt(self, xlsx_sheets):
-
-        """Build the CDF skeleton table content using the Excel data"""
-
+    def _build_skt(self, xlsx_sheets):
+        """Build the CDF skeleton table content using the Excel data."""
         logger.info("Building CDF skeleton table body... ")
 
         skt_name = os.path.splitext(os.path.basename(self.skt_file))[0]
@@ -203,11 +227,11 @@ class Xlsx2skt:
             __version__ + "\n"
         file_header += "!Skeleton table created from " + xlsx_name + "\n"
 
-        skt_header = self.build_header(xlsx_sheets["header"],
+        skt_header = self._build_header(xlsx_sheets["header"],
                                        xlsx_sheets["Options"])
-        skt_global = self.build_global(xlsx_sheets["GLOBALattributes"])
-        skt_vattrs = self.build_vattributes()
-        skt_zvars = self.build_zvariables(xlsx_sheets["zVariables"],
+        skt_global = self._build_global(xlsx_sheets["GLOBALattributes"])
+        skt_vattrs = self._build_vattributes()
+        skt_zvars = self._build_zvariables(xlsx_sheets["zVariables"],
                                           xlsx_sheets["VARIABLEattributes"],
                                           xlsx_sheets["Options"],
                                           xlsx_sheets["NRV"],
@@ -220,10 +244,8 @@ class Xlsx2skt:
 
         return skt_body
 
-    def write_skt(self, skt_body):
-
-        """Write the CDF skeleton table file"""
-
+    def _write_skt(self, skt_body):
+        """Write the CDF skeleton table file."""
         skt = self.skt_file
 
         if os.path.splitext(skt)[1] != ".skt":
@@ -248,23 +270,22 @@ class Xlsx2skt:
             logger.error(skt + " has not been saved correctly!")
             return None
 
-    def run(self):
+    @classmethod
+    def convert(cls, *args, **kwargs):
+        """Run the complete xlsx to skt conversion process."""
+        xlsx2skt = cls(*args, **kwargs)
 
-        """Run the complete xlsx to skt conversion process"""
-
-        xlsx_sheets = self.parse_xlsx()
-        skt_body = self.build_skt(xlsx_sheets)
-        skt_path = self.write_skt(skt_body)
+        xlsx_sheets = xlsx2skt._parse_xlsx()
+        skt_body = xlsx2skt._build_skt(xlsx_sheets)
+        skt_path = xlsx2skt._write_skt(skt_body)
 
         if skt_path:
             return True
         else:
             return False
 
-    def build_header(self, header_sheet, options_sheet):
-
-        """Build the CDF skeleton table header part"""
-
+    def _build_header(self, header_sheet, options_sheet):
+        """Build the CDF skeleton table header part."""
         logger.info("Building skeleton table header...")
 
         header_body = ["#header", ""]
@@ -303,10 +324,8 @@ class Xlsx2skt:
 
         return header_body
 
-    def build_global(self, global_sheet):
-
-        """Build the CDF skeleton table GLOBALattributes part"""
-
+    def _build_global(self, global_sheet):
+        """Build the CDF skeleton table GLOBALattributes part."""
         logger.info("Building skeleton table global attributes section..")
 
         global_body = ["#GLOBALattributes", ""]
@@ -399,10 +418,8 @@ class Xlsx2skt:
 
         return global_body
 
-    def build_vattributes(self):
-
-        """Build the list of variable attributes"""
-
+    def _build_vattributes(self):
+        """Build the list of variable attributes."""
         logger.info("Building skeleton table variable attributes section...")
 
         vattrs_body = ["#VARIABLEattributes", ""]
@@ -416,14 +433,14 @@ class Xlsx2skt:
 
         return vattrs_body
 
-    def build_zvariables(self, zvars_sheet, vattrs_sheet,
+    def _build_zvariables(self, zvars_sheet, vattrs_sheet,
                          options_sheet, nrv_sheet,
                          ignore_none=False,
                          auto_pad=True):
+        """Build the CDF skeleton table.
 
-        """Build the CDF skeleton table VARIABLEattributes
-        and zVariables parts"""
-
+        VARIABLEattributes and zVariables parts.
+        """
         logger.info("Building skeleton table zvariable section...")
 
         zvar_body = ["#variables", ""]
@@ -440,7 +457,7 @@ class Xlsx2skt:
                     logger.error("ERROR: Current zVariable is NoneType!")
                     raise TypeError
 
-            zvar_body.append(VARIABLE_BOAD)
+            zvar_body.append(VARIABLE_BOARD)
 
             # New zVariable entry
             zvar_body.append("")
@@ -476,7 +493,7 @@ class Xlsx2skt:
                 sizes_i + "     " + recvar_i + "     " + dimvars_i
 
             if len(zvar_entry) > ROW_LENGTH_MAX:
-                zvar_entry = insert_char(zvar_entry, "\n", len(zvar) + 2)
+                zvar_entry = insert_char(zvar_entry, "\n    ", len(zvar) + 4)
 
             zvar_body.append(zvar_entry)
 
@@ -558,8 +575,8 @@ class Xlsx2skt:
 
 # ________________ Global Functions __________
 def assign_pad(data_type):
+    """VAR_PADVALUE auto assign.
 
-    """
     Automatically assigns VAR_PADVALUE
     depending to the input data_type
     """
@@ -580,9 +597,7 @@ def assign_pad(data_type):
 
 
 def main():
-
-    """xlsx2skt main program"""
-
+    """xlsx2skt main program."""
     parser = argparse.ArgumentParser(
         description='CDF converter main modulea Excel 2007 ' +
         'format file into a CDF skeleton table',
@@ -610,7 +625,7 @@ def main():
                         'is automatically assigned')
     args = parser.parse_args()
 
-    Xlsx2skt(args.excel[0],
+    Xlsx2skt.convert(args.excel[0],
                   skt_file=args.skeleton,
                   output_dir=args.output_dir,
                   overwrite=args.Overwrite,
@@ -618,7 +633,7 @@ def main():
                   auto_pad=args.Auto_pad,
                   verbose=args.Verbose,
                   debug=args.Debug,
-                  quiet=args.Quiet).run()
+                  quiet=args.Quiet)
 
 # _________________ Main ____________________________
 if __name__ == "__main__":
