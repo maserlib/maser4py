@@ -1,6 +1,11 @@
 MASER-PY CHANGE LOG
 ====================
 
+0.2.5
+-----
+* Add requirements.txt and INSTALL.rst
+* Update xlsx2skt.py to avoid zvar name cuts
+
 0.2.4
 -----
 * Fix error in maser.utils.cdf.tools.py
