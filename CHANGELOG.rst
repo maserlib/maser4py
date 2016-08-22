@@ -4,6 +4,7 @@ MASER4PY CHANGE LOG
 0.2.6
 -----
 * Rename maser-py to maser4py
+* Update doc. and src files.
 
 0.2.5
 -----
