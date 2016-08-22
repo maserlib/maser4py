@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Troubleshooting &mdash; maser4py 0.2.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="maser4py 0.2.6 documentation" href="index.html" />
+    <link rel="prev" title="The helio module" href="helio.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<p>Here a list of known issues.
+If the problem persists, you can contact the MASER developer team at: <a class="reference external" href="mailto:maser&#46;support&#37;&#52;&#48;groupes&#46;renater&#46;fr">maser<span>&#46;</span>support<span>&#64;</span>groupes<span>&#46;</span>renater<span>&#46;</span>fr</a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li>//I have an error message &#8220;[Errno 13] Permission denied:&#8221; during installation//:</li>
+</ul>
+</div></blockquote>
+<p>This means that you don&#8217;t have the right to install the package in your Python &#8220;site-packages&#8221; local directory.
+To solve this problem, install the package as a super user (e.g., using sudo command for instance), or modify the &#8220;site-packages&#8221; user access permissions.</p>
+<blockquote>
+<div><ul class="simple">
+<li>//I have an error message &#8220;Exception: Cannot find CDF C library. Try os.putenv(&#8220;CDF_LIB&#8221;, library_directory) before import.&#8221; during the installation&#8221;//:</li>
+</ul>
+</div></blockquote>
+<p>This means that the %%$CDF_LIB%% environmment variable is not set. This variable is required to run the CDF software distribution from Python. For more information about how to set up this software., visit the CDF home page at <a class="reference external" href="http://cdf.gsfc.nasa.gov/">http://cdf.gsfc.nasa.gov/</a>.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="helio.html" title="previous chapter">The <em>helio</em> module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/appendices.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, X.Bonnin, B.Cecconi, Q.N.Nguyen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/appendices.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

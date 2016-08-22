@@ -8,6 +8,6 @@ from ._version import __version__
 
 def main():
 
-    """ maser main method """
+    """maser main method"""
 
-    print("This is maser-py package V" + __version__)
+    print("This is maser4py package V" + __version__)

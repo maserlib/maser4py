@@ -1,0 +1,147 @@
+Features
+====================================
+
+
+The *cdf* module
+------------------------
+
+The *cdf* module is divided in two submodules:
+
+- *cdfconverter*, which allows users to convert CDF skeleton files into master CDF binary files
+- *cdfvalidator*, which allows users to perform some validations on CDF files.
+
+For more information about the CDF format, please visit http://cdf.gsfc.nasa.gov/.
+
+The *cdfconverter* submodule
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The *cdfconverter* program allows users to generate CDF master binary files
+from skeleton tables in ASCII format or in Excel 2007 format.
+
+The *xlsx2skt* class
+
+
+Excel file format definition
+"""""""""""""""""""""""""""""""
+
+xlsx2skt supports the Excel 2007 format only (i.e., .xlsx).
+
+Note: the xlsx2skt parser is case sensitive!
+
+The input Excel file shall contain the following sheets:
+
+- header
+- GLOBALattributes
+- zVariables
+- VARIABLEattributes
+- Options
+- NRV
+
+The first row of each sheet shall be used to provide the name of the columns.
+
+**header sheet**
+
+The "header" sheet shall contain the following columns:
+
+- CDF_NAME
+- DATA ENCODING
+- MAJORITY
+- FORMAT
+
+**GLOBALattributes sheet**
+
+The "GLOBALattributes" sheet shall contain the following columns:
+
+- Attribute Name
+- Entry Number
+- Data Type
+- Value
+
+**zVariables sheet**
+
+The "zVariables" sheet shall contain the following columns:
+
+- Variable Name
+- Data Type
+- Number Elements
+- Dims
+- Sizes
+- Record Variance
+- Dimension Variances
+
+**VARIABLEattributes sheet**
+
+The "VARIABLEattributes" sheet shall contain the following columns:
+
+- Variable Name
+- Attribute Name
+- Data Type
+- Value
+
+**Options sheet**
+
+The "Options" sheet shall contain the following columns:
+
+- CDF_COMPRESSION
+- CDF_CHECKSUM
+- VAR_COMPRESSION
+- VAR_SPARSERECORDS
+- VAR_PADVALUE
+
+**NRV sheet**
+
+The "NRV" sheet shall contain the following columns:
+
+- Variable Name
+- Index
+- Value
+
+Calling sequence
+"""""""""""""""""""""""""""""""
+
+To display the help of the module, enter:
+
+    xlsx2skt --help
+
+The full calling sequence is:
+
+    xlsx2skt [--help] [--0verwrite] [--Verbose] [--Quiet] [--Auto_pad] [--Ignore_none] [-s [skeleton]] xlsx_file
+
+Input keyword list:
+
+-h, -help                Display the module help
+-O, --Overwrite     Overwrite existing output ASCII skeleton table
+-V, --Verbose       Talkative mode
+-A, --Auto_pad      If provided, the module will automatically set the pad values (i.e, \!VAR_PADVALUE) for each CDF variable
+-I, --Ignore_none   If provided, the module will skip rows for which the Attribute/Variable name columns are empty. By default, the module returns an error if a empty Attribute/Variable name value is encountered.
+-c skeletoncdf      Path of the NASA GSFC CDF "skeletoncdf" executable. If provided, the module will also build the CDF binary file from skeleton table calling "skeletoncdf". (Visit http://cdf.gsfc.nasa.gov/. for more details about the,skeletoncdf program).
+
+Example
+"""""""""""""""""""""""""""""""
+
+To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.
+
+Limitations & Known Issues
+"""""""""""""""""""""""""""""""
+
+ Here are some identified limitations to the module uses:
+    - Values provided in the "Options" sheet is valid for all of CDF file and variables. The module does not allow to set (yet) the values for each variable individually. THUS, WE STRONGLY RECOMMEND TO USE THE AUTO_PAD KEYWORD (then edit the resulting skeleton table to modify the !VAR_PADVALUE if required).
+
+
+The wind module
+-------------------------
+
+The Wind module provides methods to deal with the Wind NASA mission data.
+
+
+The stereo module
+-------------------------
+
+The stereo module provides methods to deal with the STEREO NASA mission data.
+
+
+The helio module
+-------------------------
+
+The helio module provides methods to deal with the HELIO Virtual Observatory services and data.
+

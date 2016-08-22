@@ -1,0 +1,558 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The cdf module &mdash; maser4py 0.2.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="maser4py 0.2.6 documentation" href="index.html" />
+    <link rel="next" title="The wind module" href="wind.html" />
+    <link rel="prev" title="Introduction" href="intro.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-cdf-module">
+<h1>The <em>cdf</em> module<a class="headerlink" href="#the-cdf-module" title="Permalink to this headline">¶</a></h1>
+<p>The <em>cdf</em> module is divided in two submodules:</p>
+<ul class="simple">
+<li><em>cdfconverter</em>, which allows users to convert CDF skeleton files into master CDF binary files</li>
+<li><em>cdfvalidator</em>, which allows users to perform some validations on CDF files.</li>
+</ul>
+<p>For more information about the CDF format, please visit <a class="reference external" href="http://cdf.gsfc.nasa.gov/">http://cdf.gsfc.nasa.gov/</a>.</p>
+<div class="section" id="the-cdfconverter-submodule">
+<h2>The <em>cdfconverter</em> submodule<a class="headerlink" href="#the-cdfconverter-submodule" title="Permalink to this headline">¶</a></h2>
+<p><em>cdfconverter</em> contains the following classes:</p>
+<ul class="simple">
+<li><em>Xlsx2skt</em>, convert an Excel 2007 format file into a CDF skeleton table in the ASCII format. The organization of the Excel file shall follow some rules defined in the present document (see the section &#8220;Excel file format definition&#8221; below)</li>
+<li><em>Skt2cdf</em>, convert a CDF skeleton table in ASCII format into a CDF master binary file. This module calls the &#8220;skeletoncdf&#8221; program from the NASA CDF software distribution.</li>
+</ul>
+<p>Both classes can be imported from Python or called directly from a terminal using the dedicated command line interface.</p>
+<div class="section" id="the-xlsx2skt-class">
+<h3>The Xlsx2skt class<a class="headerlink" href="#the-xlsx2skt-class" title="Permalink to this headline">¶</a></h3>
+<p>To import the Xlsx2skt class from Python, enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">maser.utils.cdf.cdfconverter</span> <span class="kn">import</span> <span class="n">Xlsx2skt</span>
+</pre></div>
+</div>
+<div class="section" id="excel-file-format-definition">
+<h4>Excel file format definition<a class="headerlink" href="#excel-file-format-definition" title="Permalink to this headline">¶</a></h4>
+<p>This section describes the organization of the input skeleton file in Excel format.</p>
+<p>Note that:</p>
+<ul class="simple">
+<li>xlsx2skt supports the Excel 2007 format only (i.e., .xlsx).</li>
+<li>Only zVariables are supported</li>
+</ul>
+<p><strong>Make sure to respect the letter case, since the xlsx2skt parser is case sensitive!</strong></p>
+<p>The input Excel file shall contain the following sheets:</p>
+<ul class="simple">
+<li>header</li>
+<li>GLOBALattributes</li>
+<li>zVariables</li>
+<li>VARIABLEattributes</li>
+<li>Options</li>
+<li>NRV</li>
+</ul>
+<p>The first row of each sheet shall be used to provide the name of the columns.</p>
+<div class="section" id="header-sheet">
+<h5><em>header</em> sheet<a class="headerlink" href="#header-sheet" title="Permalink to this headline">¶</a></h5>
+<p>The &#8220;header&#8221; sheet shall contain the following columns:</p>
+<dl class="docutils">
+<dt>CDF_NAME</dt>
+<dd>Name of the CDF master file (without the extension)</dd>
+<dt>DATA ENCODING</dt>
+<dd>Type of data encoding</dd>
+<dt>MAJORITY</dt>
+<dd>Majority of the CDF data parsing (&#8220;COLUMN&#8221; or &#8220;ROW&#8221;)</dd>
+<dt>FORMAT</dt>
+<dd>Indicates if the data are saved in a single (&#8220;SINGLE&#8221;) or
+on multiple (&#8220;MULTIPLE&#8221;) CDF files</dd>
+</dl>
+</div>
+<div class="section" id="globalattributes-sheet">
+<h5><em>GLOBALattributes</em> sheet<a class="headerlink" href="#globalattributes-sheet" title="Permalink to this headline">¶</a></h5>
+<p>The &#8220;GLOBALattributes&#8221; sheet shall contain the following columns:</p>
+<dl class="docutils">
+<dt>Attribute Name</dt>
+<dd>Name of the global attribute</dd>
+<dt>Entry Number</dt>
+<dd>Index of the current entry starting at 1</dd>
+<dt>Data Type</dt>
+<dd>CDF data type of the global attribute (only the &#8220;CDF_CHAR&#8221; type is supported)</dd>
+<dt>Value</dt>
+<dd>Value of the current entry</dd>
+</dl>
+</div>
+<div class="section" id="zvariables-sheet">
+<h5><em>zVariables</em> sheet<a class="headerlink" href="#zvariables-sheet" title="Permalink to this headline">¶</a></h5>
+<p>The &#8220;zVariables&#8221; sheet shall contain the following columns:</p>
+<dl class="docutils">
+<dt>Variable Name</dt>
+<dd>Name of the zVariable</dd>
+<dt>Data Type</dt>
+<dd>CDF data type of the zVariable</dd>
+<dt>Number Elements</dt>
+<dd>Number of elements of the zVariable (shall be always 1, except for CDF_[U]CHAR&#8221; type)</dd>
+<dt>Dims</dt>
+<dd>Number of dimension of the zVariable (shall be 0 if the variable is a scalar)</dd>
+<dt>Sizes</dt>
+<dd>If the variable is not a scalar, provides its dimension sizes.</dd>
+<dt>Record Variance</dt>
+<dd>Indicates if the variable values can change (&#8220;T&#8221;) or not (&#8220;F&#8221;) from a record to another.</dd>
+<dt>Dimension Variances</dt>
+<dd>Indicates how the variable values vary over each dimension.</dd>
+</dl>
+</div>
+<div class="section" id="variableattributes-sheet">
+<h5><em>VARIABLEattributes</em> sheet<a class="headerlink" href="#variableattributes-sheet" title="Permalink to this headline">¶</a></h5>
+<p>The &#8220;VARIABLEattributes&#8221; sheet shall contain the following columns:</p>
+<dl class="docutils">
+<dt>Variable Name</dt>
+<dd>Name of the zVariable</dd>
+<dt>Attribute Name</dt>
+<dd>Name of the variable attribute</dd>
+<dt>Data Type</dt>
+<dd>CDF data type of the variable attribute</dd>
+<dt>Value</dt>
+<dd>Value of the variable attribute</dd>
+</dl>
+</div>
+<div class="section" id="options-sheet">
+<h5><em>Options</em> sheet<a class="headerlink" href="#options-sheet" title="Permalink to this headline">¶</a></h5>
+<p>The &#8220;Options&#8221; sheet shall contain the following columns:</p>
+<dl class="docutils">
+<dt>CDF_COMPRESSION</dt>
+<dd>Type of compression of the CDF file (&#8220;None&#8221; or empty field indicates no compression)</dd>
+<dt>CDF_CHECKSUM</dt>
+<dd>Checksum algorithm of the CDF file (&#8220;None&#8221; or empty field indicates no checksumming)</dd>
+<dt>VAR_COMPRESSION</dt>
+<dd>Type of compression of each CDF variable (&#8220;None&#8221; or empty field indicates no compression)</dd>
+<dt>VAR_SPARSERECORDS</dt>
+<dd>value of sparese records (&#8220;None&#8221; or empty field indicates no sparese value)</dd>
+<dt>VAR_PADVALUE</dt>
+<dd>padvalue to provide to each variable. This option only works in the
+case where all of the CDF variables has the same data type.
+In the other cases, users should use the &#8211;Auto_pad input keyword.</dd>
+</dl>
+</div>
+<div class="section" id="nrv-sheet">
+<h5><em>NRV</em> sheet<a class="headerlink" href="#nrv-sheet" title="Permalink to this headline">¶</a></h5>
+<p>The &#8220;NRV&#8221; sheet shall contain the following columns:</p>
+<dl class="docutils">
+<dt>Variable Name</dt>
+<dd>Name of the zVariable</dd>
+<dt>Index</dt>
+<dd>Index of the current NR row</dd>
+<dt>Value</dt>
+<dd>Value of the current NR row</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="command-line-interface">
+<h4>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h4>
+<p>To display the help of the module, enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">xlsx2skt</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>The full calling sequence is:</p>
+<div class="highlight-python"><div class="highlight"><pre>xlsx2skt [-h] [-O] [-V] [-Q] [-A] [-I] [-s [skeleton]] xlsx_file
+</pre></div>
+</div>
+<p>Input keyword list:</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">-h<var>elp</var></span></kbd></td>
+<td>Display the module help</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-s</span>, <span class="option">--skeleton</span></kbd></td>
+<td>skeleton
+Name of the output skeleton table in ASCII format.
+If not provided, use the name of the input file replacing the extension by &#8216;.skt&#8217;.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-o</span>, <span class="option">--output_dir</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Path of the output directory. If not provided, use the directory of the input file.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-A</span>, <span class="option">--Auto_pad</span></kbd></td>
+<td>If provided, the module will automatically set the pad values
+(i.e, !VAR_PADVALUE) for each CDF variable</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-I</span>, <span class="option">--Ignore_none</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>If provided, the module will skip rows
+for which the Attribute/Variable name columns are empty.
+By default, the module returns an error if a empty Attribute/Variable name value is encountered.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-O</span>, <span class="option">--Overwrite</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Overwrite existing output ASCII skeleton table</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-V</span>, <span class="option">--Verbose</span></kbd></td>
+<td>Talkative mode</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<p>To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.</p>
+</div>
+<div class="section" id="limitations-known-issues">
+<h4>Limitations &amp; Known Issues<a class="headerlink" href="#limitations-known-issues" title="Permalink to this headline">¶</a></h4>
+<p>Here are some identified limitations to the module uses:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Values provided in the &#8220;Options&#8221; sheet is valid for all of CDF file and variables. The module does not allow to set (yet) the values for each variable individually. <strong>THUS, WE STRONGLY RECOMMEND TO USE THE &#8211;Auto_pad INPUT KEYWORD (then edit the resulting skeleton table to modify the !VAR_PADVALUE if required).</strong></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="the-skt2cdf-class">
+<h3>The <em>Skt2cdf</em> class<a class="headerlink" href="#the-skt2cdf-class" title="Permalink to this headline">¶</a></h3>
+<p>To import the Skt2cdf class from Python, enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">maser.utils.cdf.cdfconverter</span> <span class="kn">import</span> <span class="n">Skt2cdf</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h4>Command line interface<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>To display the help of the module, enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">skt2cdf</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>The full calling sequence is:</p>
+<div class="highlight-python"><div class="highlight"><pre>skt2cdf [-h] [-O] [-V] [-Q] [-s [executable]] [-c [output_cdf]] skeleton
+</pre></div>
+</div>
+<p>Input keyword list:</p>
+<blockquote>
+<div><table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">-h<var>elp</var></span></kbd></td>
+<td>Display the module help</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-c</span>, <span class="option">--cdf</span></kbd></td>
+<td>output_cdf Name of the output CDF master binary file.
+If not provided, use the name of the input file replacing the extension by &#8216;.cdf&#8217;.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-o</span>, <span class="option">--output_dir</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Path of the output directory. If not provided, use the directory of the input file.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-s</span>, <span class="option">--skeletoncdf <var>executable</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Path of the NASA GSFC CDF &#8220;skeletoncdf&#8221; executable.
+If not provided, the program will search for the
+executable in the $PATH env. variable.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-O</span>, <span class="option">--Overwrite</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Overwrite existing output ASCII skeleton table</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-V</span>, <span class="option">--Verbose</span></kbd></td>
+<td>Talkative mode</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-Q</span>, <span class="option">--Quiet</span></kbd></td>
+<td>Quiet mode</td></tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="id2">
+<h4>Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.</p>
+</div>
+</div>
+</div>
+<div class="section" id="the-cdfvalidator-submodule">
+<h2>The <em>cdfvalidator</em> submodule<a class="headerlink" href="#the-cdfvalidator-submodule" title="Permalink to this headline">¶</a></h2>
+<p>The <em>cdfvalidator</em> submodule provides tools to validate a CDF format file.</p>
+<p>It contains only one <em>Validate</em> class that regroups all of the validation methods.</p>
+<div class="section" id="the-validate-class">
+<h3>The <em>Validate</em> class<a class="headerlink" href="#the-validate-class" title="Permalink to this headline">¶</a></h3>
+<p>To import the <em>Validate</em> class from Python, enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">maser.utils.cdf.cdfvalidator</span> <span class="kn">import</span> <span class="n">Validate</span>
+</pre></div>
+</div>
+<div class="section" id="the-model-validation-test">
+<h4>The Model validation test<a class="headerlink" href="#the-model-validation-test" title="Permalink to this headline">¶</a></h4>
+<p>The <em>Validate</em> class allows user to check if a given CDF format file contains specific attributes or variables, by providing a
+so-called &#8220;cdfvalidator model file&#8221;.</p>
+<p>This model file shall be in the JSON format. All items and values are case sensitive.
+It can include the following JSON objects:</p>
+<table border="1" class="docutils" id="id5">
+<caption><span class="caption-text">CDFValidator JSON objects</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="35%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">JSON object</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>GLOBALattributes</td>
+<td>Contains the list of global attributes to check</td>
+</tr>
+<tr class="row-odd"><td>VARIABLEattributes</td>
+<td>Contains the list of variable attributes to check</td>
+</tr>
+<tr class="row-even"><td>zVariables</td>
+<td>Contains the list of zvariables to check</td>
+</tr>
+</tbody>
+</table>
+<p>Note that any additional JSON object will be ignored.</p>
+<p>The table below lists the JSON items that are allowed to be found in the <em>GLOBALattributes</em>, <em>VARIABLEattributes</em> and <em>zVariables</em> JSON objects.</p>
+<table border="1" class="docutils" id="id6">
+<caption><span class="caption-text">CDFValidator JSON object items</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="41%" />
+<col width="14%" />
+<col width="14%" />
+<col width="32%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">JSON item</th>
+<th class="head">JSON type</th>
+<th class="head">Priority</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>attributes</td>
+<td>vector</td>
+<td>optional</td>
+<td>List of variable attributes. An element of the vector shall be a JSON object that can contain one or more of the other  JSON items listed in this table</td>
+</tr>
+<tr class="row-odd"><td>dims</td>
+<td>integer</td>
+<td>optional</td>
+<td>Number of dimensions of the CDF item</td>
+</tr>
+<tr class="row-even"><td>entries</td>
+<td>vector</td>
+<td>optional</td>
+<td>Entry value(s) of the CDF item to be found</td>
+</tr>
+<tr class="row-odd"><td>hasvalue</td>
+<td>boolean</td>
+<td>optional</td>
+<td>If it is set to true, then the current CDF item must have at least one nonzero entry value</td>
+</tr>
+<tr class="row-even"><td>name</td>
+<td>string</td>
+<td>mandatory</td>
+<td>Name of the CDF item (attribute or variable) to check</td>
+</tr>
+<tr class="row-odd"><td>sizes</td>
+<td>vector</td>
+<td>optional</td>
+<td>Dimension sizes of the CDF item</td>
+</tr>
+<tr class="row-even"><td>type</td>
+<td>attribute</td>
+<td>optional</td>
+<td>CDF data type of the CDF item</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id3">
+<h4>Command line interface<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>To display the help of the module, enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cdfvalidator</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>The full calling sequence is:</p>
+<div class="highlight-python"><div class="highlight"><pre>cdfvalidator [--help] [--Verbose] [--Quiet] [--log_file [log_file]] \
+[--ISTP] [--CDFValidate [executable]] [--model_file [model_file]] skeleton
+</pre></div>
+</div>
+<p>Input keyword list:</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">-h<var>elp</var></span></kbd></td>
+<td>Display the module help</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-l</span>, <span class="option">--log_file</span></kbd></td>
+<td>Path of the output log file.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-I</span>, <span class="option">--ISTP</span></kbd></td>
+<td>Perform the ISTP compliance validation test</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-m</span>, <span class="option">--model_file</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Path to the input model file in JSON format
+(see &#8220;Model validation test&#8221; section for more information).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-C</span>, <span class="option">--CDFValidate <var>executable</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Path of the NASA GSFC CDF &#8220;CDFValidate&#8221; executable.
+If it is not provided, the module will
+search in the directories defined in %%$PATH%%.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-Q</span>, <span class="option">--Quiet</span></kbd></td>
+<td>Quiet mode</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-V</span>, <span class="option">--Verbose</span></kbd></td>
+<td>Talkative mode</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id4">
+<h4>Example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>To test the cdfvalidator program, use the dedicated scripts/test_cdfvalidator.sh bash script.</p>
+<p>It should return something like:</p>
+<div class="highlight-python"><div class="highlight"><pre>INFO    : Opening /tmp/cdfconverter_example.cdf
+INFO    : Loading /Users/xbonnin/Work/projects/MASER/Software/Tools/Git/maser-py/scripts/../maser/support/cdf/cdfvalidator_model_example.json
+INFO    : Checking GLOBALattributes:
+INFO    : --&gt; Project
+WARNING : &quot;Project&quot;  has a wrong entry value: &quot;Python&gt;Python 2&quot; (&quot;Python&gt;Python 3&quot; expected)!
+INFO    : --&gt; PI_name
+INFO    : --&gt; TEXT
+INFO    : Checking VARIABLEattributes:
+INFO    : --&gt; FIELDNAM
+INFO    : --&gt; CATDESC
+INFO    : --&gt; VAR_TYPE
+INFO    : Checking zVariables:
+INFO    : --&gt; Epoch
+INFO    : --&gt; Variable2
+INFO    : Checking variable attributes of &quot;Variable2&quot;:
+INFO    : --&gt; DEPEND_0
+WARNING : DEPEND_0 required!
+INFO    : Closing /tmp/cdfconverter_example.cdf
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The <em>cdf</em> module</a><ul>
+<li><a class="reference internal" href="#the-cdfconverter-submodule">The <em>cdfconverter</em> submodule</a><ul>
+<li><a class="reference internal" href="#the-xlsx2skt-class">The Xlsx2skt class</a><ul>
+<li><a class="reference internal" href="#excel-file-format-definition">Excel file format definition</a><ul>
+<li><a class="reference internal" href="#header-sheet"><em>header</em> sheet</a></li>
+<li><a class="reference internal" href="#globalattributes-sheet"><em>GLOBALattributes</em> sheet</a></li>
+<li><a class="reference internal" href="#zvariables-sheet"><em>zVariables</em> sheet</a></li>
+<li><a class="reference internal" href="#variableattributes-sheet"><em>VARIABLEattributes</em> sheet</a></li>
+<li><a class="reference internal" href="#options-sheet"><em>Options</em> sheet</a></li>
+<li><a class="reference internal" href="#nrv-sheet"><em>NRV</em> sheet</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-line-interface">Command line interface</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#limitations-known-issues">Limitations &amp; Known Issues</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-skt2cdf-class">The <em>Skt2cdf</em> class</a><ul>
+<li><a class="reference internal" href="#id1">Command line interface</a></li>
+<li><a class="reference internal" href="#id2">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-cdfvalidator-submodule">The <em>cdfvalidator</em> submodule</a><ul>
+<li><a class="reference internal" href="#the-validate-class">The <em>Validate</em> class</a><ul>
+<li><a class="reference internal" href="#the-model-validation-test">The Model validation test</a></li>
+<li><a class="reference internal" href="#id3">Command line interface</a></li>
+<li><a class="reference internal" href="#id4">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="intro.html" title="previous chapter">Introduction</a></li>
+      <li>Next: <a href="wind.html" title="next chapter">The <em>wind</em> module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cdf.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, X.Bonnin, B.Cecconi, Q.N.Nguyen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/cdf.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

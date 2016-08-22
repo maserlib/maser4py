@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Features &mdash; maser-py 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="maser-py 0.1.0 documentation" href="index.html" />
+    <link rel="prev" title="Introduction" href="intro.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-cdf-module">
+<h2>The <em>cdf</em> module<a class="headerlink" href="#the-cdf-module" title="Permalink to this headline">¶</a></h2>
+<p>The <em>cdf</em> module is divided in two submodules:</p>
+<ul class="simple">
+<li><em>cdfconverter</em>, which allows users to convert CDF skeleton files into master CDF binary files</li>
+<li><em>cdfvalidator</em>, which allows users to perform some validations on CDF files.</li>
+</ul>
+<p>For more information about the CDF format, please visit <a class="reference external" href="http://cdf.gsfc.nasa.gov/">http://cdf.gsfc.nasa.gov/</a>.</p>
+<div class="section" id="the-cdfconverter-submodule">
+<h3>The <em>cdfconverter</em> submodule<a class="headerlink" href="#the-cdfconverter-submodule" title="Permalink to this headline">¶</a></h3>
+<p>The <em>cdfconverter</em> program allows users to generate CDF master binary files
+from skeleton tables in ASCII format or in Excel 2007 format.</p>
+<p>The <em>xlsx2skt</em> class</p>
+<div class="section" id="excel-file-format-definition">
+<h4>Excel file format definition<a class="headerlink" href="#excel-file-format-definition" title="Permalink to this headline">¶</a></h4>
+<p>xlsx2skt supports the Excel 2007 format only (i.e., .xlsx).</p>
+<p>Note: the xlsx2skt parser is case sensitive!</p>
+<p>The input Excel file shall contain the following sheets:</p>
+<ul class="simple">
+<li>header</li>
+<li>GLOBALattributes</li>
+<li>zVariables</li>
+<li>VARIABLEattributes</li>
+<li>Options</li>
+<li>NRV</li>
+</ul>
+<p>The first row of each sheet shall be used to provide the name of the columns.</p>
+<p><strong>header sheet</strong></p>
+<p>The &#8220;header&#8221; sheet shall contain the following columns:</p>
+<ul class="simple">
+<li>CDF_NAME</li>
+<li>DATA ENCODING</li>
+<li>MAJORITY</li>
+<li>FORMAT</li>
+</ul>
+<p><strong>GLOBALattributes sheet</strong></p>
+<p>The &#8220;GLOBALattributes&#8221; sheet shall contain the following columns:</p>
+<ul class="simple">
+<li>Attribute Name</li>
+<li>Entry Number</li>
+<li>Data Type</li>
+<li>Value</li>
+</ul>
+<p><strong>zVariables sheet</strong></p>
+<p>The &#8220;zVariables&#8221; sheet shall contain the following columns:</p>
+<ul class="simple">
+<li>Variable Name</li>
+<li>Data Type</li>
+<li>Number Elements</li>
+<li>Dims</li>
+<li>Sizes</li>
+<li>Record Variance</li>
+<li>Dimension Variances</li>
+</ul>
+<p><strong>VARIABLEattributes sheet</strong></p>
+<p>The &#8220;VARIABLEattributes&#8221; sheet shall contain the following columns:</p>
+<ul class="simple">
+<li>Variable Name</li>
+<li>Attribute Name</li>
+<li>Data Type</li>
+<li>Value</li>
+</ul>
+<p><strong>Options sheet</strong></p>
+<p>The &#8220;Options&#8221; sheet shall contain the following columns:</p>
+<ul class="simple">
+<li>CDF_COMPRESSION</li>
+<li>CDF_CHECKSUM</li>
+<li>VAR_COMPRESSION</li>
+<li>VAR_SPARSERECORDS</li>
+<li>VAR_PADVALUE</li>
+</ul>
+<p><strong>NRV sheet</strong></p>
+<p>The &#8220;NRV&#8221; sheet shall contain the following columns:</p>
+<ul class="simple">
+<li>Variable Name</li>
+<li>Index</li>
+<li>Value</li>
+</ul>
+</div>
+<div class="section" id="calling-sequence">
+<h4>Calling sequence<a class="headerlink" href="#calling-sequence" title="Permalink to this headline">¶</a></h4>
+<p>To display the help of the module, enter:</p>
+<blockquote>
+<div>xlsx2skt &#8211;help</div></blockquote>
+<p>The full calling sequence is:</p>
+<blockquote>
+<div>xlsx2skt [&#8211;help] [&#8211;0verwrite] [&#8211;Verbose] [&#8211;Quiet] [&#8211;Auto_pad] [&#8211;Ignore_none] [-s [skeleton]] xlsx_file</div></blockquote>
+<p>Input keyword list:</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">-h<var>elp</var></span></kbd></td>
+<td>Display the module help</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-O</span>, <span class="option">--Overwrite</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Overwrite existing output ASCII skeleton table</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-V</span>, <span class="option">--Verbose</span></kbd></td>
+<td>Talkative mode</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-A</span>, <span class="option">--Auto_pad</span></kbd></td>
+<td>If provided, the module will automatically set the pad values (i.e, !VAR_PADVALUE) for each CDF variable</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-I</span>, <span class="option">--Ignore_none</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>If provided, the module will skip rows for which the Attribute/Variable name columns are empty. By default, the module returns an error if a empty Attribute/Variable name value is encountered.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-c <var>skeletoncdf</var></span></kbd></td>
+<td>Path of the NASA GSFC CDF &#8220;skeletoncdf&#8221; executable. If provided, the module will also build the CDF binary file from skeleton table calling &#8220;skeletoncdf&#8221;. (Visit <a class="reference external" href="http://cdf.gsfc.nasa.gov/">http://cdf.gsfc.nasa.gov/</a>. for more details about the,skeletoncdf program).</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<p>To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.</p>
+</div>
+<div class="section" id="limitations-known-issues">
+<h4>Limitations &amp; Known Issues<a class="headerlink" href="#limitations-known-issues" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><dl class="docutils">
+<dt>Here are some identified limitations to the module uses:</dt>
+<dd><ul class="first last simple">
+<li>Values provided in the &#8220;Options&#8221; sheet is valid for all of CDF file and variables. The module does not allow to set (yet) the values for each variable individually. THUS, WE STRONGLY RECOMMEND TO USE THE AUTO_PAD KEYWORD (then edit the resulting skeleton table to modify the !VAR_PADVALUE if required).</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="the-wind-module">
+<h2>The wind module<a class="headerlink" href="#the-wind-module" title="Permalink to this headline">¶</a></h2>
+<p>The Wind module provides methods to deal with the Wind NASA mission data.</p>
+</div>
+<div class="section" id="the-stereo-module">
+<h2>The stereo module<a class="headerlink" href="#the-stereo-module" title="Permalink to this headline">¶</a></h2>
+<p>The stereo module provides methods to deal with the STEREO NASA mission data.</p>
+</div>
+<div class="section" id="the-helio-module">
+<h2>The helio module<a class="headerlink" href="#the-helio-module" title="Permalink to this headline">¶</a></h2>
+<p>The helio module provides methods to deal with the HELIO Virtual Observatory services and data.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Features</a><ul>
+<li><a class="reference internal" href="#the-cdf-module">The <em>cdf</em> module</a><ul>
+<li><a class="reference internal" href="#the-cdfconverter-submodule">The <em>cdfconverter</em> submodule</a><ul>
+<li><a class="reference internal" href="#excel-file-format-definition">Excel file format definition</a></li>
+<li><a class="reference internal" href="#calling-sequence">Calling sequence</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#limitations-known-issues">Limitations &amp; Known Issues</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-wind-module">The wind module</a></li>
+<li><a class="reference internal" href="#the-stereo-module">The stereo module</a></li>
+<li><a class="reference internal" href="#the-helio-module">The helio module</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="intro.html" title="previous chapter">Introduction</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/features.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, X.Bonnin, B.Cecconi, Q.N.Nguyen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/features.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

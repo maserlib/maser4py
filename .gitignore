@@ -6,5 +6,4 @@ tmp
 __pycache__
 *.pyc
 *.egg
-doc/build
-!doc/build/latex/maser-py.pdf
+!doc/build

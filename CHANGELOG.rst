@@ -1,5 +1,9 @@
-MASER-PY CHANGE LOG
+MASER4PY CHANGE LOG
 ====================
+
+0.2.6
+-----
+* Rename maser-py to maser4py
 
 0.2.5
 -----

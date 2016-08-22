@@ -1,0 +1,19 @@
+Installation
+====================================
+
+In order to install MASER, make sure to have Python 3.4 or higher
+available on your system.
+
+The package installation requires the following Python modules:
+- setuptools (12.0.5 or higher)
+
+If they are not found, the following Python modules will
+be downloaded automatically during the installation:
+- openpyxl
+- spacepy
+- simplejson
+
+In order to use the "cdf" submodule, the NASA CDF software
+distribution shall be installed and configured on your system.
+Especially, make sure that the directory containing the CDF binary
+executables is on your $PATH, and the $CDF_LIB env. var. is set.

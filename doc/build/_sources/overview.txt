@@ -1,0 +1,14 @@
+Overview
+====================================
+
+The MASER-PY package contains the following modules:
+
+- cdf            Module to handle the NASA Common Data Format (CDF).
+- helio         Module to get and plot the HELIO Virtual Observatory data.
+- stereo      Module to handle the STEREO  NASA mission data.
+- wind         Module to handle the Wind NASA mission data.
+- tools         Module containing common tool methods for MASER-PY
+
+In order to work, the MASER-PY package modules rely on additional files:
+
+- data      Directory containing support data
