@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Purpose:
-#   Bash script to test the maser.cdf.cdfconverter module
+#   Bash script to test the maser.cdf.converter module
 #
 # Usage:
 #   bash test_cdfconverter.sh
@@ -21,11 +21,11 @@ inputdir=$scriptpath/../maser/support/cdf
 outputdir=/tmp
 
 # Input Excel 2007 format file to convert
-excel=$inputdir/cdfconverter_example.xlsx
+excel=$inputdir/converter_example.xlsx
 # Output skeleton table to create
-skeleton=$outputdir/cdfconverter_example.skt
+skeleton=$outputdir/converter_example.skt
 # Output master cdf file to create
-master=$outputdir/cdfconverter_example.cdf
+master=$outputdir/converter_example.cdf
 
 echo "Converting "$excel" into "$skeleton
 echo "xlsx2skt -OVIA "$excel" -s "$skeleton

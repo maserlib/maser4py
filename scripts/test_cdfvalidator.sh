@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Purpose:
-#   Script to test the maser.cdf.cdfvalidator module.
+#   Script to test the maser.cdf.validator module.
 #   This script uses the output cdf of the test_xlsx2skt.sh as input.
 #
 # Usage:
@@ -19,10 +19,10 @@ scriptpath=`pwd`
 popd > /dev/null
 
 # CDF format file to validate
-cdffile=/tmp/cdfconverter_example.cdf
+cdffile=/tmp/converter_example.cdf
 
 # JSON Validator model example file
-jsonfile=$scriptpath/../maser/support/cdf/cdfvalidator_model_example.json
+jsonfile=$scriptpath/../maser/support/cdf/validator_model_example.json
 
 if [ ! -f $cdffile ]; then
     echo $cdffile" does not exist, and will be created..."
@@ -30,5 +30,5 @@ if [ ! -f $cdffile ]; then
 fi
 
 # Perform all of the validation tests available
-cdfvalidator -VC $cdffile -m $jsonfile
+cdfvalid -VC $cdffile -m $jsonfile
 
