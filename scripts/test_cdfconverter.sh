@@ -13,11 +13,23 @@
 #
 # X.Bonnin, 24-NOV-2015
 
-pushd `dirname $0` > /dev/null
-scriptpath=`pwd`
-popd > /dev/null
+pushd . > /dev/null
+workdir="${BASH_SOURCE[0]:-$0}";
+while([ -h "${workdir}" ]); do
+    cd "`dirname "${workdir}"`"
+    workdir="$(readlink "`basename "${workdir}"`")";
+done
+cd "`dirname "${workdir}"`" > /dev/null
+workdir="`pwd`";
+popd  > /dev/null
 
-inputdir=$scriptpath/../maser/support/cdf
+if [[ -n ${CDF_BIN} ]];then
+    echo "Warning: it seems that the NASA CDF lib. is not configured correctly!"
+    exit -1
+fi
+. ${CDF_BIN}/definitions.B
+
+inputdir=${workdir}/../maser/support/cdf
 outputdir=/tmp
 
 # Input Excel 2007 format file to convert

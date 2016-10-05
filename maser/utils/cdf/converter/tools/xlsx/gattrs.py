@@ -95,6 +95,25 @@ def check_args(func):
     return wrapper
 
 
+def get_attr(worksheet, attname):
+    """get_attr method.
+
+    Check if an attribute exists or not in
+    the input sheet.
+    If the attribute exists, then the method
+    returns a list of the indice(s) of
+    the attribute row(s).
+    It returns an empty list otherwise.
+    """
+    # Check if the gattr alreay exists
+    max_row = worksheet.max_row + 1
+    cells = [worksheet["A{0}".format(i)].value
+        for i in range(1, max_row)
+        if worksheet["A{0}".format(i)].value == attname]
+
+    return cells
+
+
 @check_args
 def add_gattr(xlsx, attname, cdftype, entries,
               output=None,
@@ -110,9 +129,7 @@ def add_gattr(xlsx, attname, cdftype, entries,
 
     # Check if the gattr alreay exists
     max_row = ws.max_row + 1
-    cells = [ws["A{0}".format(i)].value
-        for i in range(1, max_row)
-        if ws["A{0}".format(i)].value == attname]
+    cells = get_attr(ws, attname)
 
     if len(cells) > 0:
         logger.warning("{0} attribute already exists!".format(attname))
@@ -169,10 +186,7 @@ def set_gattr_entries(xlsx, attname, new_entries,
     ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
 
     # Get indices of row for the gattr
-    max_row = ws.max_row + 1
-    rows = [i
-        for i in range(1, max_row)
-        if ws["A{0}".format(i)].value == attname]
+    rows = get_attr(ws, attname)
 
     if len(rows) == 0:
         logger.warning("There is no {0} attribute in {1}!".format(
@@ -208,10 +222,7 @@ def set_gattr_dtype(xlsx, attname, new_dtype,
     ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
 
     # Get indices of row for the gattr
-    max_row = ws.max_row + 1
-    rows = [i
-        for i in range(1, max_row)
-        if ws["A{0}".format(i)].value == attname]
+    rows = get_attr(ws, attname)
 
     if len(rows) == 0:
         logger.warning("There is no {0} attribute in {1}!".format(
@@ -239,10 +250,7 @@ def add_gattr_entry(xlsx, attname, value,
     ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
 
     # Get indices of row for the gattr
-    max_row = ws.max_row + 1
-    rows = [i
-        for i in range(1, max_row)
-        if ws["A{0}".format(i)].value == attname]
+    rows = get_attr(ws, attname)
 
     if len(rows) == 0:
         logger.warning("There is no {0} attribute in {1}!".format(
@@ -252,6 +260,35 @@ def add_gattr_entry(xlsx, attname, value,
     entry_num = len(rows) + 1
     values = [attname, entry_num, ws["C{0}".format(rows[0])].value, value]
     wb = add_row(xlsx, GATT_SHEET_NAME, rows[-1] + 1, values=values)
+
+    return wb
+
+
+@check_args
+def rename_gattr(xlsx, old_attname, new_attname,
+                 output=None, overwrite=False):
+    """rename_gattr.
+
+    Rename a global attr. from the input CDF Excel skeleton file.
+    (By default a new file is created.)
+
+    """
+    wb = lwb(xlsx)
+
+    # Get sheet for global attributes
+    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+
+    # Get indices of row for the gattr
+    rows = get_attr(ws, old_attname)
+
+    if len(rows) == 0:
+        logger.warning("There is no {0} attribute in {1}!".format(
+                                        old_attname, xlsx))
+        return None
+
+    for row in rows:
+        # Change gatt name
+        ws.cell(row=row, column=1).value = new_attname
 
     return wb
 
@@ -271,10 +308,7 @@ def rm_gattr(xlsx, attname,
     ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
 
     # Get indices of row for the gattr
-    max_row = ws.max_row + 1
-    rows = [i
-        for i in range(1, max_row)
-        if ws["A{0}".format(i)].value == attname]
+    rows = get_attr(ws, attname)
 
     if len(rows) == 0:
         logger.warning("There is no {0} attribute in {1}!".format(

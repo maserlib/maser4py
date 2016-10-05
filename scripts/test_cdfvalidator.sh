@@ -14,19 +14,32 @@
 #
 # X.Bonnin, 24-NOV-2015
 
-pushd `dirname $0` > /dev/null
-scriptpath=`pwd`
-popd > /dev/null
+# get the script directory
+pushd . > /dev/null
+workdir="${BASH_SOURCE[0]:-$0}";
+while([ -h "${workdir}" ]); do
+    cd "`dirname "${workdir}"`"
+    workdir="$(readlink "`basename "${workdir}"`")";
+done
+cd "`dirname "${workdir}"`" > /dev/null
+workdir="`pwd`";
+popd  > /dev/null
+
+if [[ -n ${CDF_BIN} ]];then
+    echo "Warning: it seems that the NASA CDF lib. is not configured correctly!"
+    exit -1
+fi
+. ${CDF_BIN}/definitions.B
 
 # CDF format file to validate
 cdffile=/tmp/converter_example.cdf
 
 # JSON Validator model example file
-jsonfile=$scriptpath/../maser/support/cdf/validator_model_example.json
+jsonfile=${workdir}/../maser/support/cdf/validator_model_example.json
 
 if [ ! -f $cdffile ]; then
     echo $cdffile" does not exist, and will be created..."
-    bash $scriptpath/test_cdfconverter.sh
+    bash ${workdir}/test_cdfconverter.sh
 fi
 
 # Perform all of the validation tests available

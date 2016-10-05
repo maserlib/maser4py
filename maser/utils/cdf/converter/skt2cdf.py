@@ -79,6 +79,7 @@ class Skt2cdf:
             else:
                 exe = which('skeletoncdf')
 
+        print(exe)
         if exe is None:
             logger.error("skeletoncdf PROGRAM IS NOT"
                 " IN THE $PATH VARIABLE!")
