@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Purpose:
-#   Script to test the maser.cdf.cdfvalidator module.
+#   Script to test the maser.cdf.validator module.
 #   This script uses the output cdf of the test_xlsx2skt.sh as input.
 #
 # Usage:
@@ -14,21 +14,34 @@
 #
 # X.Bonnin, 24-NOV-2015
 
-pushd `dirname $0` > /dev/null
-scriptpath=`pwd`
-popd > /dev/null
+# get the script directory
+pushd . > /dev/null
+workdir="${BASH_SOURCE[0]:-$0}";
+while([ -h "${workdir}" ]); do
+    cd "`dirname "${workdir}"`"
+    workdir="$(readlink "`basename "${workdir}"`")";
+done
+cd "`dirname "${workdir}"`" > /dev/null
+workdir="`pwd`";
+popd  > /dev/null
+
+if [[ -n ${CDF_BIN} ]];then
+    echo "Warning: it seems that the NASA CDF lib. is not configured correctly!"
+    exit -1
+fi
+. ${CDF_BIN}/definitions.B
 
 # CDF format file to validate
-cdffile=/tmp/cdfconverter_example.cdf
+cdffile=/tmp/converter_example.cdf
 
 # JSON Validator model example file
-jsonfile=$scriptpath/../maser/support/cdf/cdfvalidator_model_example.json
+jsonfile=${workdir}/../maser/support/cdf/validator_model_example.json
 
 if [ ! -f $cdffile ]; then
     echo $cdffile" does not exist, and will be created..."
-    bash $scriptpath/test_cdfconverter.sh
+    bash ${workdir}/test_cdfconverter.sh
 fi
 
 # Perform all of the validation tests available
-cdfvalidator -VC $cdffile -m $jsonfile
+cdfvalid -VC $cdffile -m $jsonfile
 

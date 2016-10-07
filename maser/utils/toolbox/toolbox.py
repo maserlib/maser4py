@@ -75,7 +75,7 @@ def setup_logging(filename=None,
         logging.root.addHandler(fh)
 
 
-def run_command(cmd):
+def run_command(cmd, env=None, shell=False):
 
     """ run a command with subprocess"""
 
@@ -83,7 +83,7 @@ def run_command(cmd):
 
     try:
         logger.info(" ".join(cmd))
-        res = subprocess.Popen(cmd,
+        res = subprocess.Popen(cmd, env=env, shell=shell,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
     except TypeError as e:

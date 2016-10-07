@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Purpose:
-#   Bash script to test the maser.cdf.cdfconverter module
+#   Bash script to test the maser.cdf.converter module
 #
 # Usage:
 #   bash test_cdfconverter.sh
@@ -13,19 +13,31 @@
 #
 # X.Bonnin, 24-NOV-2015
 
-pushd `dirname $0` > /dev/null
-scriptpath=`pwd`
-popd > /dev/null
+pushd . > /dev/null
+workdir="${BASH_SOURCE[0]:-$0}";
+while([ -h "${workdir}" ]); do
+    cd "`dirname "${workdir}"`"
+    workdir="$(readlink "`basename "${workdir}"`")";
+done
+cd "`dirname "${workdir}"`" > /dev/null
+workdir="`pwd`";
+popd  > /dev/null
 
-inputdir=$scriptpath/../maser/support/cdf
+if [[ -n ${CDF_BIN} ]];then
+    echo "Warning: it seems that the NASA CDF lib. is not configured correctly!"
+    exit -1
+fi
+. ${CDF_BIN}/definitions.B
+
+inputdir=${workdir}/../maser/support/cdf
 outputdir=/tmp
 
 # Input Excel 2007 format file to convert
-excel=$inputdir/cdfconverter_example.xlsx
+excel=$inputdir/converter_example.xlsx
 # Output skeleton table to create
-skeleton=$outputdir/cdfconverter_example.skt
+skeleton=$outputdir/converter_example.skt
 # Output master cdf file to create
-master=$outputdir/cdfconverter_example.cdf
+master=$outputdir/converter_example.cdf
 
 echo "Converting "$excel" into "$skeleton
 echo "xlsx2skt -OVIA "$excel" -s "$skeleton

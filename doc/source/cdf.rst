@@ -1,20 +1,24 @@
 The *cdf* module
 ====================================
 
-The *cdf* module is divided in two submodules:
+The *cdf* module has two submodules:
 
-- *cdfconverter*, which allows users to convert CDF skeleton files into master CDF binary files
-- *cdfvalidator*, which allows users to perform some validations on CDF files.
+- *converter*, which allows users to convert CDF skeleton files into master CDF binary files
+- *validator*, which allows users to perform some validations on CDF files.
 
 For more information about the CDF format, please visit http://cdf.gsfc.nasa.gov/.
 
-The *cdfconverter* submodule
+The *cdf.converter* submodule
 -------------------------------------------
 
-*cdfconverter* contains the following classes:
+*converter* contains the following classes:
 
 - *Xlsx2skt*, convert an Excel 2007 format file into a CDF skeleton table in the ASCII format. The organization of the Excel file shall follow some rules defined in the present document (see the section "Excel file format definition" below)
 - *Skt2cdf*, convert a CDF skeleton table in ASCII format into a CDF master binary file. This module calls the "skeletoncdf" program from the NASA CDF software distribution.
+
+*converter* contains also the additional methods and classes:
+
+- *toos.xlsx, which provides methods to handle/modify the CDF skeletons in Excel format (e.g., add/rm/edit global attributes, etc.)
 
 Both classes can be imported from Python or called directly from a terminal using the dedicated command line interface.
 
@@ -25,7 +29,7 @@ To import the Xlsx2skt class from Python, enter:
 
 .. code-block:: python
 
-  from maser.utils.cdf.cdfconverter import Xlsx2skt
+  from maser.utils.cdf.converter import Xlsx2skt
 
 Excel file format definition
 ''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -231,10 +235,10 @@ Example
 To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.
 
 
-The *cdfvalidator* submodule
+The *cdf.validator* submodule
 -------------------------------------------
 
-The *cdfvalidator* submodule provides tools to validate a CDF format file.
+The *validator* submodule provides tools to validate a CDF format file.
 
 It contains only one *Validate* class that regroups all of the validation methods.
 
@@ -289,13 +293,13 @@ To display the help of the module, enter:
 
 ::
 
-  cdfvalidator --help
+  cdfvalid --help
 
 The full calling sequence is:
 
 ::
 
-  cdfvalidator [--help] [--Verbose] [--Quiet] [--log_file [log_file]] \
+  cdfvalid [--help] [--Verbose] [--Quiet] [--log_file [log_file]] \
   [--ISTP] [--CDFValidate [executable]] [--model_file [model_file]] skeleton
 
 Input keyword list:
@@ -314,7 +318,7 @@ Input keyword list:
 Example
 '''''''''''''''''''''''''''''''''''''''''''''''''
 
-To test the cdfvalidator program, use the dedicated scripts/test_cdfvalidator.sh bash script.
+To test the cdf.validator program, use the dedicated scripts/test_cdfvalidator.sh bash script.
 
 It should return something like:
 

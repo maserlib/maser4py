@@ -92,7 +92,9 @@ class Skt2cdf:
 
         cmd.append(self.skt_file)
         cmd.extend(["-cdf", self.cdf_file])
-        res = run_command(cmd)
+
+        myenv = os.environ.copy()
+        res = run_command(cmd, env=myenv, shell=True)
         output, errors = res.communicate()
         if res.wait() == 0:
             logger.debug(output)
