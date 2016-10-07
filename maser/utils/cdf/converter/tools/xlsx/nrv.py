@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Python module cdf.converter.tools.xlsx.gattr."""
+"""Python module cdf.converter.tools.xlsx.nrv."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
@@ -13,11 +13,11 @@ from openpyxl import load_workbook as lwb
 
 from .gen import add_row, get_row
 
-__all__ = ["add_gattr",
-            "set_gattr_entries",
-            "set_gattr_dtype",
-            "add_gattr_entry",
-            "rm_gattr"]
+__all__ = ["add_nrv",
+            "set_nrv_entries",
+            "set_nrv_dtype",
+            "add_nrv_entry",
+            "rm_nrv"]
 
 # ________________ HEADER _________________________
 
@@ -40,12 +40,12 @@ __changes__ = ""
 # (define here the global variables)
 logger = logging.getLogger(__name__)
 
-GATT_SHEET_NAME = "GLOBALattributes"
+NRV_SHEET_NAME = "NRV"
 
 
 # ________________ Class Definition __________
 # (If required, define here classes)
-class GattrException(Exception):
+class NrvException(Exception):
     pass
 
 # ________________ Global Functions __________
@@ -60,15 +60,15 @@ def check_args(func):
 
         if not asp.isfile(xlsx):
             logger.error("Input file not found [{0}]!".format(xlsx))
-            raise GattrException
+            raise NrvException
         else:
             wb = lwb(xlsx)
 
         shnames = wb.get_sheet_names()
-        if GATT_SHEET_NAME not in shnames:
+        if NRV_SHEET_NAME not in shnames:
             logger.error("Input file does not contain {0} sheet!".format(
-                                        GATT_SHEET_NAME))
-            raise GattrException
+                                        NRV_SHEET_NAME))
+            raise NrvException
 
         if "overwrite" not in kwargs:
             kwargs["overwrite"] = False
@@ -94,7 +94,7 @@ def check_args(func):
 
 
 @check_args
-def add_gattr(xlsx, attname, cdftype, entries,
+def add_nrv(xlsx, varname, entries,
               output=None,
               overwrite=False):
     """Add a global attribute into the input CDF Excel skeleton."""
@@ -104,47 +104,45 @@ def add_gattr(xlsx, attname, cdftype, entries,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
 
-    # Check if the gattr alreay exists
+    # Check if the NRV variable alreay exists
     max_row = ws.max_row + 1
-    cells = get_row(ws, attname)
+    cells = get_row(ws, varname)
 
     if len(cells) > 0:
-        logger.warning("{0} attribute already exists!".format(attname))
+        logger.warning("{0} NRV variable already exists!".format(varname))
         return None
 
-    # Add the new gattr entries at the bottom of the
+    # Add the new NRV variable entries at the bottom of the
     # sheet
     for i, entry in enumerate(entries):
         index = max_row + i
 
         # print(i, entry, index)
 
-        # Add gatt name
-        ws.cell(row=index, column=1).value = str(attname)
-        # Add entry number
+        # Add NRV var name
+        ws.cell(row=index, column=1).value = str(varname)
+        # Add index number
         ws.cell(row=index, column=2).value = i + 1
-        # Add cdf dtype
-        ws.cell(row=index, column=3).value = str(cdftype)
         # Add entry value
-        ws.cell(row=index, column=4).value = entry
+        ws.cell(row=index, column=3).value = entry
 
     return wb
 
 
 @check_args
-def set_gattr_entries(xlsx, attname, new_entries,
+def set_nrv_entries(xlsx, varname, new_entries,
                       output=None, overwrite=False):
-    """set_gattr_entries.
+    """set_nrv_entries.
 
     @author: X.Bonnin, LESIA, Obs. Paris, CNRS
 
-    Update global attribute entries into the input CDF Excel skeleton.
+    Update NRV entries into the input CDF Excel skeleton.
 
     Positional arguments:
         xlsx - CDF Excel skeleton file
-        attname - Name of the global attribute
+        varname - Name of the CDF variable to set in the NRV sheet
         new_entries - dictionary containing the
                       entry indexes as keys and
                       entry values as values
@@ -158,160 +156,131 @@ def set_gattr_entries(xlsx, attname, new_entries,
     wb = lwb(xlsx)
 
     if type(new_entries) is not dict:
-        logger.error("new_entries must a dictionary!")
-        raise GattrException
+        logger.error("NEW_ENTRIES input must a dictionary!")
+        raise NrvException
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
 
-    # Get indices of row for the gattr
-    rows = get_row(ws, attname)
+    # Get indices of row for the var
+    rows = get_row(ws, varname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        attname, xlsx))
+        logger.warning("There is no {0} NRV variable in {1}!".format(
+                                        varname, xlsx))
         return None
 
     ninserted = 0
     for i, row in enumerate(rows):
         entry_num = str(ws["B{0}".format(row)].value)
         if entry_num in new_entries:
-            ws["D{0}".format(row)].value = new_entries[entry_num]
+            ws["C{0}".format(row)].value = new_entries[entry_num]
             ninserted += 1
         #else:
         #    logger.warning("No change brung to entry #{0}".format(
         #                                            entry_num))
 
     if ninserted != len(new_entries):
-        logger.warning("attribute entries have not been updated!")
+        logger.warning("NRV variable entries have not been updated!")
 
     return wb
 
 
 @check_args
-def set_gattr_dtype(xlsx, attname, new_dtype,
-                    output=None, overwrite=False):
-    """set_gattr_dtype.
-
-    Update the CDF data type of a given global attribute
-    """
-    wb = lwb(xlsx)
-
-    # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
-
-    # Get indices of row for the gattr
-    rows = get_row(ws, attname)
-
-    if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        attname, xlsx))
-        return None
-
-    # Update CDF dtype
-    for row in rows:
-        ws["C{0}".format(row)].value = new_dtype
-
-    return wb
-
-
-@check_args
-def add_gattr_entry(xlsx, attname, value,
+def add_nrv_entry(xlsx, varname, value,
             output=None, overwrite=False):
-    """add_gattr_entry.
+    """add_nrv_entry.
 
-    Add an entry to an existing attribute "attname"
-    in the xlsx file.
+    Add an entry to an existing variable "attname"
+    in the NRV sheet of the input xlsx file.
     """
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
 
-    # Get indices of row for the gattr
-    rows = get_row(ws, attname)
+    # Get indices of row for the NRV variable
+    rows = get_row(ws, varname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        attname, xlsx))
+        logger.warning("There is no {0} NRV variable in {1}!".format(
+                                        varname, xlsx))
         return None
 
     entry_num = len(rows) + 1
-    # Values = [attribute name, entry index number, cdf data type, value]
-    values = [attname, entry_num, ws["C{0}".format(rows[0])].value, value]
-    wb = add_row(xlsx, GATT_SHEET_NAME, rows[-1] + 1, values=values)
+    values = [varname, entry_num, value]
+    wb = add_row(xlsx, NRV_SHEET_NAME, rows[-1] + 1, values=values)
 
     return wb
 
 
 @check_args
-def rename_gattr(xlsx, old_attname, new_attname,
+def rename_nrv(xlsx, old_varname, new_varname,
                  output=None, overwrite=False):
-    """rename_gattr.
+    """rename_nrv.
 
-    Rename a global attr. from the input CDF Excel skeleton file.
+    Rename a NRV variable from the input CDF Excel skeleton file.
     (By default a new file is created.)
 
     """
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
 
-    # Get indices of row for the gattr
-    rows = get_row(ws, old_attname)
+    # Get indices of row for the NRV variable
+    rows = get_row(ws, old_varname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        old_attname, xlsx))
+        logger.warning("There is no {0} NRV variable in {1}!".format(
+                                        old_varname, xlsx))
         return None
 
     for row in rows:
-        # Change gatt name
-        ws.cell(row=row, column=1).value = new_attname
+        # Change var name
+        ws.cell(row=row, column=1).value = new_varname
 
     return wb
 
 
 @check_args
-def rm_gattr(xlsx, attname,
+def rm_nrv(xlsx, varname,
              output=None, overwrite=False):
-    """rm_gattr.
+    """rm_nrv method.
 
-    Remove a global attr. from the input CDF Excel skeleton file.
+    Remove the entries of a given NRV variable
+    from the input CDF Excel skeleton file.
     (By default a new file is created.)
 
     """
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
 
-    # Get indices of row for the gattr
-    rows = get_row(ws, attname)
+    # Get indices of row for the NRV variable
+    rows = get_row(ws, varname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        attname, xlsx))
+        logger.warning("There is no {0} NRV variable in {1}!".format(
+                                        varname, xlsx))
         return None
 
-    # Update Cells
+    # Remove entries
     for row in rows:
-        # Remove gatt name
+        # Remove var name
         ws.cell(row=row, column=1).value = None
         # Remove entry number
         ws.cell(row=row, column=2).value = None
-        # Remove cdf dtype
-        ws.cell(row=row, column=3).value = None
         # Remove entry value
-        ws.cell(row=row, column=4).value = None
+        ws.cell(row=row, column=3).value = None
 
     return wb
 
 
 def main():
     """Main program."""
-    logger.info("This is the cdf.converter.tools.xlsx.gattrs module.")
+    logger.info("This is the cdf.converter.tools.xlsx.nrv module.")
 
 # _________________ Main ____________________________
 if (__name__ == "__main__"):

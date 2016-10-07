@@ -10,7 +10,7 @@ import logging
 
 from openpyxl import load_workbook as lwb
 
-__all__ = ["add_row"]
+__all__ = ["add_row", "get_row"]
 
 # ________________ HEADER _________________________
 
@@ -117,6 +117,25 @@ def add_row(file, sheet, row,
         else:
             wb.save(output)
     return wb
+
+
+def get_row(worksheet, name, column="A"):
+    """get_row method.
+
+    Check if an item exists or not in
+    the given column of the given worksheet.
+    If the item exists, then the method
+    returns a list of the indice(s) of
+    the item row(s).
+    It returns an empty list otherwise.
+    """
+    # Check if the item alreay exists
+    max_row = worksheet.max_row + 1
+    rows = [i
+        for i in range(1, max_row)
+        if worksheet["{0}{1}".format(column, i)].value == name]
+
+    return rows
 
 
 def main():
