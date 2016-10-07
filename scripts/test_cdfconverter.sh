@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 # Purpose:
 #   Bash script to test the maser.cdf.converter module

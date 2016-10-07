@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 # Purpose:
 #   Script to test the maser.cdf.validator module.

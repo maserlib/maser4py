@@ -80,8 +80,7 @@ class Skt2cdf:
                 exe = which('skeletoncdf')
 
         if exe is None:
-            logger.error("skeletoncdf PROGRAM IS NOT"
-                " IN THE $PATH VARIABLE!")
+            logger.error("skeletoncdf program is not callable!")
             return None
         cmd.append(exe)
 
@@ -94,7 +93,7 @@ class Skt2cdf:
         cmd.extend(["-cdf", self.cdf_file])
 
         myenv = os.environ.copy()
-        res = run_command(cmd, env=myenv, shell=True)
+        res = run_command(cmd, env=myenv)
         output, errors = res.communicate()
         if res.wait() == 0:
             logger.debug(output)

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Set READ/WRITE privileges to users for maser4py Git repos.
 # X.Bonnin (LESIA, Obs.Paris, CNRS), 13-JUL-2016

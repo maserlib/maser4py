@@ -166,8 +166,8 @@ def set_nrv_entries(xlsx, varname, new_entries,
     rows = get_row(ws, varname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} NRV variable in {1}!".format(
-                                        varname, xlsx))
+        logger.warning("There is no {0} NRV variable!".format(
+                                        varname))
         return None
 
     ninserted = 0
@@ -203,8 +203,8 @@ def add_nrv_entry(xlsx, varname, value,
     rows = get_row(ws, varname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} NRV variable in {1}!".format(
-                                        varname, xlsx))
+        logger.warning("There is no {0} NRV variable!".format(
+                                        varname))
         return None
 
     entry_num = len(rows) + 1
@@ -232,8 +232,8 @@ def rename_nrv(xlsx, old_varname, new_varname,
     rows = get_row(ws, old_varname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} NRV variable in {1}!".format(
-                                        old_varname, xlsx))
+        logger.warning("There is no {0} NRV variable!".format(
+                                        old_varname))
         return None
 
     for row in rows:
@@ -262,8 +262,8 @@ def rm_nrv(xlsx, varname,
     rows = get_row(ws, varname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} NRV variable in {1}!".format(
-                                        varname, xlsx))
+        logger.warning("There is no {0} NRV variable!".format(
+                                        varname))
         return None
 
     # Remove entries

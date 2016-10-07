@@ -168,8 +168,8 @@ def set_gattr_entries(xlsx, attname, new_entries,
     rows = get_row(ws, attname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        attname, xlsx))
+        logger.warning("There is no {0} attribute!".format(
+                                        attname))
         return None
 
     ninserted = 0
@@ -183,7 +183,7 @@ def set_gattr_entries(xlsx, attname, new_entries,
         #                                            entry_num))
 
     if ninserted != len(new_entries):
-        logger.warning("attribute entries have not been updated!")
+        logger.warning("Attribute entries have not been updated!")
 
     return wb
 
@@ -204,8 +204,8 @@ def set_gattr_dtype(xlsx, attname, new_dtype,
     rows = get_row(ws, attname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        attname, xlsx))
+        logger.warning("There is no {0} attribute!".format(
+                                        attname))
         return None
 
     # Update CDF dtype
@@ -232,8 +232,8 @@ def add_gattr_entry(xlsx, attname, value,
     rows = get_row(ws, attname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        attname, xlsx))
+        logger.warning("There is no {0} attribute!".format(
+                                        attname))
         return None
 
     entry_num = len(rows) + 1
@@ -262,8 +262,8 @@ def rename_gattr(xlsx, old_attname, new_attname,
     rows = get_row(ws, old_attname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        old_attname, xlsx))
+        logger.warning("There is no {0} attribute!".format(
+                                        old_attname))
         return None
 
     for row in rows:
@@ -291,8 +291,8 @@ def rm_gattr(xlsx, attname,
     rows = get_row(ws, attname)
 
     if len(rows) == 0:
-        logger.warning("There is no {0} attribute in {1}!".format(
-                                        attname, xlsx))
+        logger.warning("There is no {0} attribute!".format(
+                                        attname))
         return None
 
     # Update Cells
