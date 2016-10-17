@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 #
 # PURPOSE:
@@ -6,7 +6,7 @@
 #   Excel skeleton files in directory.
 #
 # USAGE:
-#   bash make_cdf_master.bash xlsxdir sktdir cdfdir
+#   bash make_cdf_master.bash xlsxpath sktdir cdfdir
 #
 # , where xlsxpath is the directory, a file or a file pattern (i.e., *.xlsx) of the input Excel
 # skeleton file(s) to convert,
@@ -18,7 +18,7 @@
 
 if [ $# != 3 ]; then
     echo "Usage:"
-    echo "bash make_cdf_master.bash xlsxpath sktdir cdfdir"
+    echo "bash make_cdf_master.sh xlsxpath sktdir cdfdir"
     exit 0
 fi
 
@@ -26,6 +26,13 @@ if [[ -d $1 ]];then
     xlsxpath=$1/*.xlsx
 else
     xlsxpath=$1
+fi
+
+if [[ -n $CDF_BIN ]];then
+    . $CDF_BIN/definitions.B
+else
+    echo "NASA CDF dist. environment is not loaded!"
+    exit 1
 fi
 
 for excel in `ls $xlsxpath`; do

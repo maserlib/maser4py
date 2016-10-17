@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 # PURPOSE:
 # Bash script to build the MASER-PY documentation.

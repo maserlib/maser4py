@@ -40,7 +40,7 @@ __change__ = {"0.1.0": "First beta version"}
 logger = logging.getLogger(__name__)
 
 ISTP_MOD_FILE = os.path.join(SUPPORT_DIR, "cdf",
-                             "cdfvalidator_model_istp.json")
+                             "validator_model_istp.json")
 
 
 # ________________ Class Definition __________

@@ -1,4 +1,3 @@
-maser.egg-info
 build
 dist
 tmp
@@ -6,4 +5,5 @@ tmp
 __pycache__
 *.pyc
 *.egg
+maser.egg-info
 !doc/build

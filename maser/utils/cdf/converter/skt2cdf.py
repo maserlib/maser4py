@@ -11,6 +11,7 @@ into a CDF master binary file (.cdf).
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
 import os
+import os.path as osp
 from datetime import datetime
 import logging
 import argparse
@@ -46,12 +47,12 @@ class Skt2cdf:
         self.cdf_items = {}
 
         if cdf_file is None:
-            cdf_file = os.path.splitext(self.skt_file)[0] + ".cdf"
+            cdf_file = osp.splitext(self.skt_file)[0] + ".cdf"
 
         if output_dir is None:
-            output_dir = os.path.basename(skt_file)
+            output_dir = osp.basename(skt_file)
         else:
-            cdf_file = os.path.join(output_dir, os.path.basename(cdf_file))
+            cdf_file = osp.join(output_dir, os.path.basename(cdf_file))
 
         self.skt_file = skt_file
         self.cdf_file = cdf_file
@@ -63,20 +64,23 @@ class Skt2cdf:
             debug=debug)
 
     def make_master(self, exe=None):
+        """make_master.
 
-        """ Make a CDF Master binary file from a ASCII
-        skeleton table using the skeletoncdf program """
-
+        Make a CDF Master binary file from a ASCII
+        skeleton table using the skeletoncdf program.
+        """
         cmd = []
 
         # If skeletoncdf program path is not provided
         # then search it on the $PATH
         if exe is None:
-            exe = which('skeletoncdf')
+            if "CDF_BIN" in os.environ:
+                exe = osp.join(os.environ["CDF_BIN"], "skeletoncdf")
+            else:
+                exe = which('skeletoncdf')
 
         if exe is None:
-            logger.error("skeletoncdf PROGRAM IS NOT"
-                " IN THE $PATH VARIABLE!")
+            logger.error("skeletoncdf program is not callable!")
             return None
         cmd.append(exe)
 
@@ -87,7 +91,9 @@ class Skt2cdf:
 
         cmd.append(self.skt_file)
         cmd.extend(["-cdf", self.cdf_file])
-        res = run_command(cmd)
+
+        myenv = os.environ.copy()
+        res = run_command(cmd, env=myenv)
         output, errors = res.communicate()
         if res.wait() == 0:
             logger.debug(output)

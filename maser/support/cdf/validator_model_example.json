@@ -1,8 +1,8 @@
 {
     "Freezone":{
         "author":"Toto",
-        "purpose":"The cdfvalidator model is a json format file that can be used to check the content of a given CDF format file. See howto.txt file for more details.",
-        "about-this-model":"The current model example is based on the cdfconverter_example.model.cdf CDF format file. It can be used to test the cdfvalidator module."
+        "purpose":"The validator model is a json format file that can be used to check the content of a given CDF format file. See howto.txt file for more details.",
+        "about-this-model":"The current model example is based on the converter_example.model.cdf CDF format file. It can be used to test the validator module."
     },
     "GLOBALattributes":[
         {
