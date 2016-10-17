@@ -1,6 +1,10 @@
 MASER4PY CHANGE LOG
 ====================
 
+0.3.0
+-----
+* Add utils.cdf.converter.tools
+
 0.2.6
 -----
 * Rename maser-py to maser4py
