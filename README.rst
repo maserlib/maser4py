@@ -1,32 +1,41 @@
---------------------------------------------------------
- MASER-PY:
- The MASER project package for Python
- --------------------------------------------------------
- X.Bonnin (LESIA, CNRS), 10-NOV-2015
+MASER4PY: The MASER Python 3 package
+=====================================
+X.Bonnin (LESIA, Obs. Paris, CNRS), 20-OCT-2016
 
- MASER-PY python package contains modules to
- deal with services and data provided in the framework
- on the MASER project (Mesures, Analyses et Simulations d’Emissions Radio).
+About MASER
+-----------
 
- For more information about MASER, please visit:
- http://maser.lesia.obspm.fr/
+The MASER portal (Mesures, Analyses et Simulations d’Emissions Radio) gives an access to tools and database related to low frequency radioastronomy (from few kilohertz up to several tens of megahertz). The radio measurements in the spectral range are realized with ground observatories (for the frequencies above the 10 MHz Earth ionospheric cut-off) or from spacecraft (at lower frequencies).
+
+In this frequency range, the main radio sources are the Sun and the magnetized planets. The low frequency fluctuations measurement of the electric and magnetic fields can also provide a diagnosis on the local plasma conditions, and in-situ observations of plasma waves phenomena in the Solar Wind and the planetary environements.
+
+For more information about MASER:
+http://maser.lesia.obspm.fr/ (in french)
+
+About MASER4PY
+--------------
+
+MASER4PY python package contains modules to
+deal with services, data and tools provided in the framework
+on the MASER portal.
+
+MASER4PY content
+----------------
+
+The maser4py directory contains the following items:
+
+- doc/  stores the maser4py documentation (source and build)
+- maser/ stores the maser4py source files
+- scripts/ store scripts to run/test/manage maser4py
+- __main__.py python script to run maser.main program
+- CHANGELOG.rst software change history log
+- INSTALL.rst instructions to install maser4py
+- MANIFEST.in files to be included to the package installation (used by setup.py)
+- README.rst current file
+- requirements.txt list of python package dependencies and versions
+- setup.cfg file used by sphinx to build the maser4py doc.
+- setup.py maser4py package setup file
 
 
- INSTALLATION
- -----------------------
 
- In order to install MASER-PY, make sure to have Python 3.4 or higher
- available on your system.
 
- The package installation requires the following Python modules:
-    - setuptools (12.0.5 or higher)
-
-  If they are not found, the following Python modules will
-  be downloaded automatically during the installation:
-    - openpyxl
-    - simplejson
-
-    In order to use the "cdf" submodule, the NASA CDF software
-    distribution shall be installed and configured on your system.
-    Especially, make sure that the directory containing the CDF binary
-    executables is on your $PATH, and the $CDF_LIB env. var. is set.
