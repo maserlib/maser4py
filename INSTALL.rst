@@ -3,13 +3,9 @@ INSTALL MASER4PY
 
 In order to install the maser4py python module:
 
-1 - Make sure that Python 3.X and pip tool are installed.
+1. Make sure that Python 3.4 or higher is already installed on your system.
 
-2 - Install the required Python modules by entering:
-    pip install -r requirements.txt
+2. Install and configure the NASA CDF software (visit http://cdf.gsfc.nasa.gov/ for more details).
 
-3 - Install the maser4py module by entering:
+3. From the maser4py directory, install the module by entering:
     python setup.py install
-
-IMPORTANT:
-    - Make sure that run these commands from the maser4py root directory
