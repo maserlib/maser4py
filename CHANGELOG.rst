@@ -1,5 +1,11 @@
-MASER4PY CHANGE LOG
+CHANGELOG
 ====================
+
+0.4.0
+-----
+* Add solo/rpw modules
+* Update cdf/converter/tools/xlsx methods
+* Update README.rst
 
 0.3.0
 -----

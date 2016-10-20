@@ -1,6 +1,9 @@
 #! /usr/bin/env python3
 # -*- coding:Utf8 -*-
 
+"""setup.py file for maser4py."""
+
+
 # --------------------------------------------------------------------------------------------------------------
 # All necessary import:
 # --------------------------------------------------------------------------------------------------------------
@@ -40,13 +43,12 @@ setup(
     cmdclass=cmdclass,
     entry_points={
         "console_scripts": [
-            "maser=maser.maser:main",
             "maser4py=maser.maser:main",
             "xlsx2skt=maser.utils.cdf.converter:xlsxskt",
             "skt2cdf=maser.utils.cdf.converter:sktcdf",
             "cdfvalid=maser.utils.cdf.validator:main"],
     },
-    install_requires=['openpyxl', 'simplejson', 'numpy'],
+    install_requires=['openpyxl==2.3.5', 'simplejson==3.8.2', 'numpy==1.11.0'],
     include_package_data=True
     # ext_modules=cythonize("maser/rpl/*.pyx"),
 )
