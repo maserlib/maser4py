@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Introduction &mdash; maser4py 0.2.6 documentation</title>
+    <title>Introduction &mdash; maser4py 0.4.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.6',
+        VERSION:     '0.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="maser4py 0.2.6 documentation" href="index.html" />
+    <link rel="top" title="maser4py 0.4.1 documentation" href="index.html" />
     <link rel="next" title="The cdf module" href="cdf.html" />
     <link rel="prev" title="Welcome to maser4py’s documentation!" href="index.html" />
    
@@ -40,8 +40,8 @@
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>The MASER python package (MASER4PY) contains modules to
-deal with services and data provided in the framework
+<p>The MASER4PY python package contains modules to
+deal with services, data and tools provided in the framework
 of the MASER portal.</p>
 <p>For more information about MASER, please visit: <a class="reference external" href="http://maser.lesia.obspm.fr/">http://maser.lesia.obspm.fr/</a></p>
 </div>
@@ -49,7 +49,7 @@ of the MASER portal.</p>
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="system-requirements">
 <h2>System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline">¶</a></h2>
-<p>In order to install MASER, make sure to have Python 3.4 or higher
+<p>In order to install MASER4PY, make sure to have Python 3.4 or higher
 available on your system.</p>
 <p>The package installation requires the following Python modules:
 - setuptools (12.0.5 or higher)
@@ -57,7 +57,7 @@ available on your system.</p>
 - numpy (1.11.0 or higher)
 - simplejson</p>
 <p>MASER4PY has been tested on the following Operating Systems:
-- Mac OS X 10.10, 10.11
+- Mac OS X 10.10
 - Debian Jessie 8.2</p>
 <p>In order to use the &#8220;cdf&#8221; submodule, the NASA CDF software
 distribution shall be installed and configured on your system.
@@ -65,15 +65,18 @@ Especially, make sure that the directory containing the CDF binary
 executables is on your $PATH, and the $CDF_LIB env. var. is set.</p>
 </div>
 <div class="section" id="how-to-get-maser4py">
-<h2>How to get MASER4PY<a class="headerlink" href="#how-to-get-maser4py" title="Permalink to this headline">¶</a></h2>
-<p>To download MASER-PY, enter the following command from a terminal:</p>
+<h2>How to get MASER4PY?<a class="headerlink" href="#how-to-get-maser4py" title="Permalink to this headline">¶</a></h2>
+<p>The MASER4PY package is available on Github:</p>
 <blockquote>
-<div>git clone <a class="reference external" href="https://git.obspm.fr/gitanonymous/projets/Plasma/maser4py">https://git.obspm.fr/gitanonymous/projets/Plasma/maser4py</a></div></blockquote>
+<div><a class="reference external" href="https://github.com/maserlib/maser4py">https://github.com/maserlib/maser4py</a></div></blockquote>
+<p>To download MASER4PY, enter the following command from a terminal:</p>
+<blockquote>
+<div>git clone <a class="reference external" href="https://github.com/maserlib/maser4py.git">https://github.com/maserlib/maser4py.git</a></div></blockquote>
 <p>Make sure to have Git (<a class="reference external" href="https://git-scm.com/">https://git-scm.com/</a>) installed on your system.</p>
 <p>If everything goes right, you should have a new local &#8220;maser4py&#8221; directory created on your disk.</p>
 </div>
-<div class="section" id="how-to-set-up-maser4py">
-<h2>How to set up MASER4PY<a class="headerlink" href="#how-to-set-up-maser4py" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="how-to-install-maser4py">
+<h2>How to install MASER4PY?<a class="headerlink" href="#how-to-install-maser4py" title="Permalink to this headline">¶</a></h2>
 <p>To set up the package on your system, enter the following
 command from the &#8220;maser4py&#8221; directory:</p>
 <blockquote>
@@ -86,10 +89,10 @@ system.</p>
 <p>, which should return something like:</p>
 <blockquote>
 <div>&#8220;This is maser4py package VX.Y.Z&#8221;</div></blockquote>
-<p>If you have an issue durint installation, please read the &#8220;Troubleshooting&#8221; section for help.</p>
+<p>If you have an issue during installation, please read the &#8220;Troubleshooting&#8221; section for help.</p>
 </div>
 <div class="section" id="how-to-run-maser4py">
-<h2>How to run MASER4PY<a class="headerlink" href="#how-to-run-maser4py" title="Permalink to this headline">¶</a></h2>
+<h2>How to run MASER4PY?<a class="headerlink" href="#how-to-run-maser4py" title="Permalink to this headline">¶</a></h2>
 <p>If the installation has ended correctly, you can run MASER4PY:</p>
 <blockquote>
 <div><ul class="simple">
@@ -116,7 +119,9 @@ system.</p>
 <dt>data/</dt>
 <dd><dl class="first last docutils">
 <dt>wind/</dt>
-<dd>Module to handle the Wind NASA mission data.</dd>
+<dd>Module related to the Wind NASA mission data.</dd>
+<dt>solo/</dt>
+<dd>Module related to the Solar Orbiter mission data.</dd>
 </dl>
 </dd>
 <dt>utils/</dt>
@@ -131,7 +136,7 @@ system.</p>
 </dd>
 </dl>
 </div></blockquote>
-<p>In order to work, the MASER4PY package modules rely on additional files and directories:</p>
+<p>In order to work, the MASER4PY package modules also rely on additional files and directories:</p>
 <dl class="docutils">
 <dt>maser/support</dt>
 <dd>Directory containing support data</dd>
@@ -149,9 +154,9 @@ system.</p>
 <li><a class="reference internal" href="#">Introduction</a></li>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
 <li><a class="reference internal" href="#system-requirements">System Requirements</a></li>
-<li><a class="reference internal" href="#how-to-get-maser4py">How to get MASER4PY</a></li>
-<li><a class="reference internal" href="#how-to-set-up-maser4py">How to set up MASER4PY</a></li>
-<li><a class="reference internal" href="#how-to-run-maser4py">How to run MASER4PY</a></li>
+<li><a class="reference internal" href="#how-to-get-maser4py">How to get MASER4PY?</a></li>
+<li><a class="reference internal" href="#how-to-install-maser4py">How to install MASER4PY?</a></li>
+<li><a class="reference internal" href="#how-to-run-maser4py">How to run MASER4PY?</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#overview">Overview</a></li>

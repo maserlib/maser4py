@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>The cdf module &mdash; maser4py 0.2.6 documentation</title>
+    <title>The cdf module &mdash; maser4py 0.4.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.6',
+        VERSION:     '0.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="maser4py 0.2.6 documentation" href="index.html" />
+    <link rel="top" title="maser4py 0.4.1 documentation" href="index.html" />
     <link rel="next" title="The wind module" href="wind.html" />
     <link rel="prev" title="Introduction" href="intro.html" />
    
@@ -40,24 +40,28 @@
             
   <div class="section" id="the-cdf-module">
 <h1>The <em>cdf</em> module<a class="headerlink" href="#the-cdf-module" title="Permalink to this headline">¶</a></h1>
-<p>The <em>cdf</em> module is divided in two submodules:</p>
+<p>The <em>cdf</em> module has two submodules:</p>
 <ul class="simple">
-<li><em>cdfconverter</em>, which allows users to convert CDF skeleton files into master CDF binary files</li>
-<li><em>cdfvalidator</em>, which allows users to perform some validations on CDF files.</li>
+<li><em>converter</em>, which allows users to convert CDF skeleton files into master CDF binary files</li>
+<li><em>validator</em>, which allows users to perform some validations on CDF files.</li>
 </ul>
 <p>For more information about the CDF format, please visit <a class="reference external" href="http://cdf.gsfc.nasa.gov/">http://cdf.gsfc.nasa.gov/</a>.</p>
-<div class="section" id="the-cdfconverter-submodule">
-<h2>The <em>cdfconverter</em> submodule<a class="headerlink" href="#the-cdfconverter-submodule" title="Permalink to this headline">¶</a></h2>
-<p><em>cdfconverter</em> contains the following classes:</p>
+<div class="section" id="the-cdf-converter-submodule">
+<h2>The <em>cdf.converter</em> submodule<a class="headerlink" href="#the-cdf-converter-submodule" title="Permalink to this headline">¶</a></h2>
+<p><em>converter</em> contains the following classes:</p>
 <ul class="simple">
 <li><em>Xlsx2skt</em>, convert an Excel 2007 format file into a CDF skeleton table in the ASCII format. The organization of the Excel file shall follow some rules defined in the present document (see the section &#8220;Excel file format definition&#8221; below)</li>
 <li><em>Skt2cdf</em>, convert a CDF skeleton table in ASCII format into a CDF master binary file. This module calls the &#8220;skeletoncdf&#8221; program from the NASA CDF software distribution.</li>
+</ul>
+<p><em>converter</em> contains also the additional methods and classes:</p>
+<ul class="simple">
+<li><a href="#id1"><span class="problematic" id="id2">*</span></a>toos.xlsx, which provides methods to handle/modify the CDF skeletons in Excel 2007 format (e.g., add/rm/edit global attributes, etc.)</li>
 </ul>
 <p>Both classes can be imported from Python or called directly from a terminal using the dedicated command line interface.</p>
 <div class="section" id="the-xlsx2skt-class">
 <h3>The Xlsx2skt class<a class="headerlink" href="#the-xlsx2skt-class" title="Permalink to this headline">¶</a></h3>
 <p>To import the Xlsx2skt class from Python, enter:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">maser.utils.cdf.cdfconverter</span> <span class="kn">import</span> <span class="n">Xlsx2skt</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">maser.utils.cdf.converter</span> <span class="kn">import</span> <span class="n">Xlsx2skt</span>
 </pre></div>
 </div>
 <div class="section" id="excel-file-format-definition">
@@ -240,8 +244,8 @@ By default, the module returns an error if a empty Attribute/Variable name value
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">maser.utils.cdf.cdfconverter</span> <span class="kn">import</span> <span class="n">Skt2cdf</span>
 </pre></div>
 </div>
-<div class="section" id="id1">
-<h4>Command line interface<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id3">
+<h4>Command line interface<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>To display the help of the module, enter:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">skt2cdf</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
@@ -287,15 +291,15 @@ executable in the $PATH env. variable.</td></tr>
 </table>
 </div></blockquote>
 </div>
-<div class="section" id="id2">
-<h4>Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id4">
+<h4>Example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.</p>
 </div>
 </div>
 </div>
-<div class="section" id="the-cdfvalidator-submodule">
-<h2>The <em>cdfvalidator</em> submodule<a class="headerlink" href="#the-cdfvalidator-submodule" title="Permalink to this headline">¶</a></h2>
-<p>The <em>cdfvalidator</em> submodule provides tools to validate a CDF format file.</p>
+<div class="section" id="the-cdf-validator-submodule">
+<h2>The <em>cdf.validator</em> submodule<a class="headerlink" href="#the-cdf-validator-submodule" title="Permalink to this headline">¶</a></h2>
+<p>The <em>validator</em> submodule provides tools to validate a CDF format file.</p>
 <p>It contains only one <em>Validate</em> class that regroups all of the validation methods.</p>
 <div class="section" id="the-validate-class">
 <h3>The <em>Validate</em> class<a class="headerlink" href="#the-validate-class" title="Permalink to this headline">¶</a></h3>
@@ -309,8 +313,8 @@ executable in the $PATH env. variable.</td></tr>
 so-called &#8220;cdfvalidator model file&#8221;.</p>
 <p>This model file shall be in the JSON format. All items and values are case sensitive.
 It can include the following JSON objects:</p>
-<table border="1" class="docutils" id="id5">
-<caption><span class="caption-text">CDFValidator JSON objects</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<table border="1" class="docutils" id="id7">
+<caption><span class="caption-text">CDFValidator JSON objects</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="35%" />
 <col width="65%" />
@@ -334,8 +338,8 @@ It can include the following JSON objects:</p>
 </table>
 <p>Note that any additional JSON object will be ignored.</p>
 <p>The table below lists the JSON items that are allowed to be found in the <em>GLOBALattributes</em>, <em>VARIABLEattributes</em> and <em>zVariables</em> JSON objects.</p>
-<table border="1" class="docutils" id="id6">
-<caption><span class="caption-text">CDFValidator JSON object items</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<table border="1" class="docutils" id="id8">
+<caption><span class="caption-text">CDFValidator JSON object items</span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="41%" />
 <col width="14%" />
@@ -388,14 +392,14 @@ It can include the following JSON objects:</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="id3">
-<h4>Command line interface<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id5">
+<h4>Command line interface<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <p>To display the help of the module, enter:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">cdfvalidator</span> <span class="o">--</span><span class="n">help</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cdfvalid</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
 <p>The full calling sequence is:</p>
-<div class="highlight-python"><div class="highlight"><pre>cdfvalidator [--help] [--Verbose] [--Quiet] [--log_file [log_file]] \
+<div class="highlight-python"><div class="highlight"><pre>cdfvalid [--help] [--Verbose] [--Quiet] [--log_file [log_file]] \
 [--ISTP] [--CDFValidate [executable]] [--model_file [model_file]] skeleton
 </pre></div>
 </div>
@@ -433,9 +437,9 @@ search in the directories defined in %%$PATH%%.</td></tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="id4">
-<h4>Example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
-<p>To test the cdfvalidator program, use the dedicated scripts/test_cdfvalidator.sh bash script.</p>
+<div class="section" id="id6">
+<h4>Example<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>To test the cdf.validator program, use the dedicated scripts/test_cdfvalidator.sh bash script.</p>
 <p>It should return something like:</p>
 <div class="highlight-python"><div class="highlight"><pre>INFO    : Opening /tmp/cdfconverter_example.cdf
 INFO    : Loading /Users/xbonnin/Work/projects/MASER/Software/Tools/Git/maser-py/scripts/../maser/support/cdf/cdfvalidator_model_example.json
@@ -471,7 +475,7 @@ INFO    : Closing /tmp/cdfconverter_example.cdf
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">The <em>cdf</em> module</a><ul>
-<li><a class="reference internal" href="#the-cdfconverter-submodule">The <em>cdfconverter</em> submodule</a><ul>
+<li><a class="reference internal" href="#the-cdf-converter-submodule">The <em>cdf.converter</em> submodule</a><ul>
 <li><a class="reference internal" href="#the-xlsx2skt-class">The Xlsx2skt class</a><ul>
 <li><a class="reference internal" href="#excel-file-format-definition">Excel file format definition</a><ul>
 <li><a class="reference internal" href="#header-sheet"><em>header</em> sheet</a></li>
@@ -488,17 +492,17 @@ INFO    : Closing /tmp/cdfconverter_example.cdf
 </ul>
 </li>
 <li><a class="reference internal" href="#the-skt2cdf-class">The <em>Skt2cdf</em> class</a><ul>
-<li><a class="reference internal" href="#id1">Command line interface</a></li>
-<li><a class="reference internal" href="#id2">Example</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#the-cdfvalidator-submodule">The <em>cdfvalidator</em> submodule</a><ul>
-<li><a class="reference internal" href="#the-validate-class">The <em>Validate</em> class</a><ul>
-<li><a class="reference internal" href="#the-model-validation-test">The Model validation test</a></li>
 <li><a class="reference internal" href="#id3">Command line interface</a></li>
 <li><a class="reference internal" href="#id4">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-cdf-validator-submodule">The <em>cdf.validator</em> submodule</a><ul>
+<li><a class="reference internal" href="#the-validate-class">The <em>Validate</em> class</a><ul>
+<li><a class="reference internal" href="#the-model-validation-test">The Model validation test</a></li>
+<li><a class="reference internal" href="#id5">Command line interface</a></li>
+<li><a class="reference internal" href="#id6">Example</a></li>
 </ul>
 </li>
 </ul>

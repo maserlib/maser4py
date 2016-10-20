@@ -18,7 +18,7 @@ The *cdf.converter* submodule
 
 *converter* contains also the additional methods and classes:
 
-- *toos.xlsx, which provides methods to handle/modify the CDF skeletons in Excel format (e.g., add/rm/edit global attributes, etc.)
+- *toos.xlsx, which provides methods to handle/modify the CDF skeletons in Excel 2007 format (e.g., add/rm/edit global attributes, etc.)
 
 Both classes can be imported from Python or called directly from a terminal using the dedicated command line interface.
 

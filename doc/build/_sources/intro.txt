@@ -1,8 +1,8 @@
 Introduction
 ====================================
 
-The MASER python package (MASER4PY) contains modules to
-deal with services and data provided in the framework
+The MASER4PY python package contains modules to
+deal with services, data and tools provided in the framework
 of the MASER portal.
 
 For more information about MASER, please visit: http://maser.lesia.obspm.fr/
@@ -13,7 +13,7 @@ Installation
 System Requirements
 --------------------------------
 
-In order to install MASER, make sure to have Python 3.4 or higher
+In order to install MASER4PY, make sure to have Python 3.4 or higher
 available on your system.
 
 The package installation requires the following Python modules:
@@ -23,7 +23,7 @@ The package installation requires the following Python modules:
 - simplejson
 
 MASER4PY has been tested on the following Operating Systems:
-- Mac OS X 10.10, 10.11
+- Mac OS X 10.10
 - Debian Jessie 8.2
 
 In order to use the "cdf" submodule, the NASA CDF software
@@ -31,18 +31,22 @@ distribution shall be installed and configured on your system.
 Especially, make sure that the directory containing the CDF binary
 executables is on your $PATH, and the $CDF_LIB env. var. is set.
 
-How to get MASER4PY
+How to get MASER4PY?
 ---------------------------------
 
-To download MASER-PY, enter the following command from a terminal:
+The MASER4PY package is available on Github:
 
-    git clone https://git.obspm.fr/gitanonymous/projets/Plasma/maser4py
+    https://github.com/maserlib/maser4py
+
+To download MASER4PY, enter the following command from a terminal:
+
+    git clone https://github.com/maserlib/maser4py.git
 
 Make sure to have Git (https://git-scm.com/) installed on your system.
 
 If everything goes right, you should have a new local "maser4py" directory created on your disk.
 
-How to set up MASER4PY
+How to install MASER4PY?
 -------------------------------------
 
 To set up the package on your system, enter the following
@@ -61,9 +65,9 @@ To check that the installation ends correctly, you can enter:
 
     "This is maser4py package VX.Y.Z"
 
-If you have an issue durint installation, please read the "Troubleshooting" section for help.
+If you have an issue during installation, please read the "Troubleshooting" section for help.
 
-How to run MASER4PY
+How to run MASER4PY?
 -------------------------------------
 
 If the installation has ended correctly, you can run MASER4PY:
@@ -84,14 +88,16 @@ The MASER4PY package is organized as follows:
                 Module to get and plot the HELIO Virtual Observatory data.
         data/
             wind/
-                Module to handle the Wind NASA mission data.
+                Module related to the Wind NASA mission data.
+            solo/
+                Module related to the Solar Orbiter mission data.
         utils/
             cdf/
                 Module to handle the NASA Common Data Format (CDF).
             toolbox/
                 Module containing common tool methods for MASER-PY
 
-In order to work, the MASER4PY package modules rely on additional files and directories:
+In order to work, the MASER4PY package modules also rely on additional files and directories:
 
 maser/support
     Directory containing support data
