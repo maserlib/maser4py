@@ -20,8 +20,8 @@
 
 
 \title{maser4py Documentation}
-\date{August 22, 2016}
-\release{0.2.6}
+\date{October 20, 2016}
+\release{0.4.1}
 \author{X.Bonnin, B.Cecconi, Q.N.Nguyen}
 \newcommand{\sphinxlogo}{}
 \renewcommand{\releasename}{Release}
@@ -39,69 +39,69 @@
     \PYG@it{\PYG@bf{\PYG@ff{#1}}}}}}}
 \def\PYG#1#2{\PYG@reset\PYG@toks#1+\relax+\PYG@do{#2}}
 
-\expandafter\def\csname PYG@tok@na\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
-\expandafter\def\csname PYG@tok@ne\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@ow\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@mo\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
-\expandafter\def\csname PYG@tok@bp\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@nn\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.05,0.52,0.71}{##1}}}
+\expandafter\def\csname PYG@tok@nb\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@go\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.20,0.20,0.20}{##1}}}
+\expandafter\def\csname PYG@tok@vi\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
+\expandafter\def\csname PYG@tok@cpf\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
+\expandafter\def\csname PYG@tok@o\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
 \expandafter\def\csname PYG@tok@sc\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\expandafter\def\csname PYG@tok@ne\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@sb\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
 \expandafter\def\csname PYG@tok@no\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.38,0.68,0.84}{##1}}}
-\expandafter\def\csname PYG@tok@nl\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.13,0.44}{##1}}}
-\expandafter\def\csname PYG@tok@s1\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\expandafter\def\csname PYG@tok@mi\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
+\expandafter\def\csname PYG@tok@ch\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
+\expandafter\def\csname PYG@tok@gt\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PYG@tok@kd\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@kr\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@vg\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
+\expandafter\def\csname PYG@tok@ss\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.32,0.47,0.09}{##1}}}
+\expandafter\def\csname PYG@tok@ni\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.84,0.33,0.22}{##1}}}
+\expandafter\def\csname PYG@tok@s2\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\expandafter\def\csname PYG@tok@nt\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.02,0.16,0.45}{##1}}}
+\expandafter\def\csname PYG@tok@ow\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@kt\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.56,0.13,0.00}{##1}}}
+\expandafter\def\csname PYG@tok@c\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
+\expandafter\def\csname PYG@tok@sx\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.78,0.36,0.04}{##1}}}
+\expandafter\def\csname PYG@tok@kn\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@mb\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
+\expandafter\def\csname PYG@tok@gu\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PYG@tok@sh\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
 \expandafter\def\csname PYG@tok@mh\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
 \expandafter\def\csname PYG@tok@nf\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.02,0.16,0.49}{##1}}}
-\expandafter\def\csname PYG@tok@mf\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
-\expandafter\def\csname PYG@tok@gh\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
-\expandafter\def\csname PYG@tok@kt\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.56,0.13,0.00}{##1}}}
-\expandafter\def\csname PYG@tok@err\endcsname{\def\PYG@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
-\expandafter\def\csname PYG@tok@ni\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.84,0.33,0.22}{##1}}}
-\expandafter\def\csname PYG@tok@cpf\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
-\expandafter\def\csname PYG@tok@vg\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
-\expandafter\def\csname PYG@tok@gd\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
-\expandafter\def\csname PYG@tok@gs\endcsname{\let\PYG@bf=\textbf}
-\expandafter\def\csname PYG@tok@nv\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
-\expandafter\def\csname PYG@tok@mb\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
-\expandafter\def\csname PYG@tok@ss\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.32,0.47,0.09}{##1}}}
-\expandafter\def\csname PYG@tok@c1\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
-\expandafter\def\csname PYG@tok@ge\endcsname{\let\PYG@it=\textit}
-\expandafter\def\csname PYG@tok@cp\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@gr\endcsname{\def\PYG@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PYG@tok@nn\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.05,0.52,0.71}{##1}}}
 \expandafter\def\csname PYG@tok@m\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
-\expandafter\def\csname PYG@tok@kd\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@vi\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
-\expandafter\def\csname PYG@tok@sx\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.78,0.36,0.04}{##1}}}
-\expandafter\def\csname PYG@tok@sh\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
-\expandafter\def\csname PYG@tok@gp\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.78,0.36,0.04}{##1}}}
+\expandafter\def\csname PYG@tok@err\endcsname{\def\PYG@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PYG@tok@nl\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.13,0.44}{##1}}}
+\expandafter\def\csname PYG@tok@c1\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
 \expandafter\def\csname PYG@tok@il\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
-\expandafter\def\csname PYG@tok@nb\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@cm\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
-\expandafter\def\csname PYG@tok@mi\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
-\expandafter\def\csname PYG@tok@sr\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.14,0.33,0.53}{##1}}}
-\expandafter\def\csname PYG@tok@cs\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}\def\PYG@bc##1{\setlength{\fboxsep}{0pt}\colorbox[rgb]{1.00,0.94,0.94}{\strut ##1}}}
-\expandafter\def\csname PYG@tok@vc\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
-\expandafter\def\csname PYG@tok@kp\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@o\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
-\expandafter\def\csname PYG@tok@gi\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
-\expandafter\def\csname PYG@tok@nd\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.33,0.33,0.33}{##1}}}
-\expandafter\def\csname PYG@tok@ch\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
-\expandafter\def\csname PYG@tok@kc\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@gu\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
-\expandafter\def\csname PYG@tok@sd\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
-\expandafter\def\csname PYG@tok@kn\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@w\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
-\expandafter\def\csname PYG@tok@nc\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.05,0.52,0.71}{##1}}}
-\expandafter\def\csname PYG@tok@s\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
-\expandafter\def\csname PYG@tok@nt\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.02,0.16,0.45}{##1}}}
-\expandafter\def\csname PYG@tok@kr\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
 \expandafter\def\csname PYG@tok@si\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.44,0.63,0.82}{##1}}}
-\expandafter\def\csname PYG@tok@s2\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
-\expandafter\def\csname PYG@tok@gt\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
-\expandafter\def\csname PYG@tok@go\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.20,0.20,0.20}{##1}}}
-\expandafter\def\csname PYG@tok@k\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
-\expandafter\def\csname PYG@tok@sb\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\expandafter\def\csname PYG@tok@na\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\expandafter\def\csname PYG@tok@nd\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.33,0.33,0.33}{##1}}}
+\expandafter\def\csname PYG@tok@nc\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.05,0.52,0.71}{##1}}}
+\expandafter\def\csname PYG@tok@sr\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.14,0.33,0.53}{##1}}}
+\expandafter\def\csname PYG@tok@gd\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PYG@tok@gr\endcsname{\def\PYG@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PYG@tok@gi\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PYG@tok@s\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\expandafter\def\csname PYG@tok@mf\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
+\expandafter\def\csname PYG@tok@sd\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
 \expandafter\def\csname PYG@tok@se\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
-\expandafter\def\csname PYG@tok@c\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
+\expandafter\def\csname PYG@tok@cs\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}\def\PYG@bc##1{\setlength{\fboxsep}{0pt}\colorbox[rgb]{1.00,0.94,0.94}{\strut ##1}}}
+\expandafter\def\csname PYG@tok@gh\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PYG@tok@cp\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@ge\endcsname{\let\PYG@it=\textit}
+\expandafter\def\csname PYG@tok@w\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PYG@tok@gs\endcsname{\let\PYG@bf=\textbf}
+\expandafter\def\csname PYG@tok@kp\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@kc\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@bp\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@nv\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
+\expandafter\def\csname PYG@tok@s1\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\expandafter\def\csname PYG@tok@gp\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.78,0.36,0.04}{##1}}}
+\expandafter\def\csname PYG@tok@k\endcsname{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\expandafter\def\csname PYG@tok@cm\endcsname{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
+\expandafter\def\csname PYG@tok@vc\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
+\expandafter\def\csname PYG@tok@mo\endcsname{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
 
 \def\PYGZbs{\char`\\}
 \def\PYGZus{\char`\_}
@@ -135,9 +135,9 @@
 
 
 \chapter{Introduction}
-\label{intro:welcome-to-maser4py-s-documentation}\label{intro::doc}\label{intro:introduction}
-The MASER python package (MASER4PY) contains modules to
-deal with services and data provided in the framework
+\label{intro:welcome-to-maser4py-s-documentation}\label{intro:introduction}\label{intro::doc}
+The MASER4PY python package contains modules to
+deal with services, data and tools provided in the framework
 of the MASER portal.
 
 For more information about MASER, please visit: \href{http://maser.lesia.obspm.fr/}{http://maser.lesia.obspm.fr/}
@@ -148,7 +148,7 @@ For more information about MASER, please visit: \href{http://maser.lesia.obspm.f
 
 \section{System Requirements}
 \label{intro:system-requirements}
-In order to install MASER, make sure to have Python 3.4 or higher
+In order to install MASER4PY, make sure to have Python 3.4 or higher
 available on your system.
 
 The package installation requires the following Python modules:
@@ -158,7 +158,7 @@ The package installation requires the following Python modules:
 - simplejson
 
 MASER4PY has been tested on the following Operating Systems:
-- Mac OS X 10.10, 10.11
+- Mac OS X 10.10
 - Debian Jessie 8.2
 
 In order to use the ``cdf'' submodule, the NASA CDF software
@@ -167,12 +167,18 @@ Especially, make sure that the directory containing the CDF binary
 executables is on your \$PATH, and the \$CDF\_LIB env. var. is set.
 
 
-\section{How to get MASER4PY}
+\section{How to get MASER4PY?}
 \label{intro:how-to-get-maser4py}
-To download MASER-PY, enter the following command from a terminal:
+The MASER4PY package is available on Github:
 \begin{quote}
 
-git clone \href{https://git.obspm.fr/gitanonymous/projets/Plasma/maser4py}{https://git.obspm.fr/gitanonymous/projets/Plasma/maser4py}
+\href{https://github.com/maserlib/maser4py}{https://github.com/maserlib/maser4py}
+\end{quote}
+
+To download MASER4PY, enter the following command from a terminal:
+\begin{quote}
+
+git clone \href{https://github.com/maserlib/maser4py.git}{https://github.com/maserlib/maser4py.git}
 \end{quote}
 
 Make sure to have Git (\href{https://git-scm.com/}{https://git-scm.com/}) installed on your system.
@@ -180,8 +186,8 @@ Make sure to have Git (\href{https://git-scm.com/}{https://git-scm.com/}) instal
 If everything goes right, you should have a new local ``maser4py'' directory created on your disk.
 
 
-\section{How to set up MASER4PY}
-\label{intro:how-to-set-up-maser4py}
+\section{How to install MASER4PY?}
+\label{intro:how-to-install-maser4py}
 To set up the package on your system, enter the following
 command from the ``maser4py'' directory:
 \begin{quote}
@@ -204,10 +210,10 @@ maser4py
 ``This is maser4py package VX.Y.Z''
 \end{quote}
 
-If you have an issue durint installation, please read the ``Troubleshooting'' section for help.
+If you have an issue during installation, please read the ``Troubleshooting'' section for help.
 
 
-\section{How to run MASER4PY}
+\section{How to run MASER4PY?}
 \label{intro:how-to-run-maser4py}
 If the installation has ended correctly, you can run MASER4PY:
 \begin{itemize}
@@ -236,7 +242,10 @@ Module to get and plot the HELIO Virtual Observatory data.
 
 \item[{data/}] \leavevmode\begin{description}
 \item[{wind/}] \leavevmode
-Module to handle the Wind NASA mission data.
+Module related to the Wind NASA mission data.
+
+\item[{solo/}] \leavevmode
+Module related to the Solar Orbiter mission data.
 
 \end{description}
 
@@ -254,7 +263,7 @@ Module containing common tool methods for MASER-PY
 \end{description}
 \end{quote}
 
-In order to work, the MASER4PY package modules rely on additional files and directories:
+In order to work, the MASER4PY package modules also rely on additional files and directories:
 \begin{description}
 \item[{maser/support}] \leavevmode
 Directory containing support data
@@ -263,29 +272,36 @@ Directory containing support data
 
 
 \chapter{The \emph{cdf} module}
-\label{cdf::doc}\label{cdf:the-cdf-module}
-The \emph{cdf} module is divided in two submodules:
+\label{cdf:the-cdf-module}\label{cdf::doc}
+The \emph{cdf} module has two submodules:
 \begin{itemize}
 \item {} 
-\emph{cdfconverter}, which allows users to convert CDF skeleton files into master CDF binary files
+\emph{converter}, which allows users to convert CDF skeleton files into master CDF binary files
 
 \item {} 
-\emph{cdfvalidator}, which allows users to perform some validations on CDF files.
+\emph{validator}, which allows users to perform some validations on CDF files.
 
 \end{itemize}
 
 For more information about the CDF format, please visit \href{http://cdf.gsfc.nasa.gov/}{http://cdf.gsfc.nasa.gov/}.
 
 
-\section{The \emph{cdfconverter} submodule}
-\label{cdf:the-cdfconverter-submodule}
-\emph{cdfconverter} contains the following classes:
+\section{The \emph{cdf.converter} submodule}
+\label{cdf:the-cdf-converter-submodule}
+\emph{converter} contains the following classes:
 \begin{itemize}
 \item {} 
 \emph{Xlsx2skt}, convert an Excel 2007 format file into a CDF skeleton table in the ASCII format. The organization of the Excel file shall follow some rules defined in the present document (see the section ``Excel file format definition'' below)
 
 \item {} 
 \emph{Skt2cdf}, convert a CDF skeleton table in ASCII format into a CDF master binary file. This module calls the ``skeletoncdf'' program from the NASA CDF software distribution.
+
+\end{itemize}
+
+\emph{converter} contains also the additional methods and classes:
+\begin{itemize}
+\item {} 
+{\color{red}\bfseries{}*}toos.xlsx, which provides methods to handle/modify the CDF skeletons in Excel 2007 format (e.g., add/rm/edit global attributes, etc.)
 
 \end{itemize}
 
@@ -297,7 +313,7 @@ Both classes can be imported from Python or called directly from a terminal usin
 To import the Xlsx2skt class from Python, enter:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{from} \PYG{n+nn}{maser.utils.cdf.cdfconverter} \PYG{k+kn}{import} \PYG{n}{Xlsx2skt}
+\PYG{k+kn}{from} \PYG{n+nn}{maser.utils.cdf.converter} \PYG{k+kn}{import} \PYG{n}{Xlsx2skt}
 \end{Verbatim}
 
 
@@ -531,7 +547,7 @@ To import the Skt2cdf class from Python, enter:
 
 
 \subsubsection{Command line interface}
-\label{cdf:id1}
+\label{cdf:id3}
 To display the help of the module, enter:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -569,13 +585,13 @@ Quiet mode
 
 
 \subsubsection{Example}
-\label{cdf:id2}
+\label{cdf:id4}
 To test the cdfconverter program, use the dedicated scripts/test\_cdfconverter.sh bash script.
 
 
-\section{The \emph{cdfvalidator} submodule}
-\label{cdf:the-cdfvalidator-submodule}
-The \emph{cdfvalidator} submodule provides tools to validate a CDF format file.
+\section{The \emph{cdf.validator} submodule}
+\label{cdf:the-cdf-validator-submodule}
+The \emph{validator} submodule provides tools to validate a CDF format file.
 
 It contains only one \emph{Validate} class that regroups all of the validation methods.
 
@@ -599,7 +615,7 @@ It can include the following JSON objects:
 
 
 \begin{threeparttable}
-\capstart\caption{CDFValidator JSON objects}\label{cdf:id5}
+\capstart\caption{CDFValidator JSON objects}\label{cdf:id7}
 \begin{tabulary}{\linewidth}{|L|L|}
 \hline
 \textsf{\relax 
@@ -633,7 +649,7 @@ The table below lists the JSON items that are allowed to be found in the \emph{G
 
 
 \begin{threeparttable}
-\capstart\caption{CDFValidator JSON object items}\label{cdf:id6}
+\capstart\caption{CDFValidator JSON object items}\label{cdf:id8}
 \begin{tabulary}{\linewidth}{|L|L|L|L|}
 \hline
 \textsf{\relax 
@@ -715,17 +731,17 @@ CDF data type of the CDF item
 
 
 \subsubsection{Command line interface}
-\label{cdf:id3}
+\label{cdf:id5}
 To display the help of the module, enter:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{cdfvalidator} \PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{n}{help}
+\PYG{n}{cdfvalid} \PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{n}{help}
 \end{Verbatim}
 
 The full calling sequence is:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-cdfvalidator [\PYGZhy{}\PYGZhy{}help] [\PYGZhy{}\PYGZhy{}Verbose] [\PYGZhy{}\PYGZhy{}Quiet] [\PYGZhy{}\PYGZhy{}log\PYGZus{}file [log\PYGZus{}file]] \PYGZbs{}
+cdfvalid [\PYGZhy{}\PYGZhy{}help] [\PYGZhy{}\PYGZhy{}Verbose] [\PYGZhy{}\PYGZhy{}Quiet] [\PYGZhy{}\PYGZhy{}log\PYGZus{}file [log\PYGZus{}file]] \PYGZbs{}
 [\PYGZhy{}\PYGZhy{}ISTP] [\PYGZhy{}\PYGZhy{}CDFValidate [executable]] [\PYGZhy{}\PYGZhy{}model\PYGZus{}file [model\PYGZus{}file]] skeleton
 \end{Verbatim}
 
@@ -752,8 +768,8 @@ Talkative mode
 
 
 \subsubsection{Example}
-\label{cdf:id4}
-To test the cdfvalidator program, use the dedicated scripts/test\_cdfvalidator.sh bash script.
+\label{cdf:id6}
+To test the cdf.validator program, use the dedicated scripts/test\_cdfvalidator.sh bash script.
 
 It should return something like:
 
@@ -804,7 +820,7 @@ The helio module provides methods to deal with the HELIO Virtual Observatory ser
 \label{helio:the-hfc-submodule}
 
 \chapter{Troubleshooting}
-\label{appendices:troubleshooting}\label{appendices::doc}
+\label{appendices::doc}\label{appendices:troubleshooting}
 Here a list of known issues.
 If the problem persists, you can contact the MASER developer team at: \href{mailto:maser.support@groupes.renater.fr}{maser.support@groupes.renater.fr}.
 \begin{itemize}

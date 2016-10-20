@@ -1,6 +1,12 @@
 CHANGELOG
 ====================
 
+0.4.1
+-----
+* Update doc
+* Remove INSTALL.rst
+* Update README.rst
+
 0.4.0
 -----
 * Add solo/rpw modules
