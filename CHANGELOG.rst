@@ -1,6 +1,10 @@
 CHANGELOG
 ====================
 
+0.4.3
+-----
+* Update setup.py and requirements.txt
+
 0.4.2
 -----
 * Fix a bug in utils.cdf
