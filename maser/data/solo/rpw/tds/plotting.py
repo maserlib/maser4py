@@ -48,7 +48,9 @@ logger = logging.getLogger(__name__)
 
 # ________________ Global Functions __________
 # (If required, define here gobal functions)
-def plot_swf(cdf, snapshot_nr=0, channel=[1, 2, 3, 4],
+# ________________ Global Functions __________
+# (If required, define here gobal functions)
+def plot_cwf(cdf, channel=[1, 2, 3, 4],
              xrange=None, yrange=None, no_fillval=False,
              no_time=False):
     """Plot TDS RSWF data."""
@@ -84,6 +86,69 @@ def plot_swf(cdf, snapshot_nr=0, channel=[1, 2, 3, 4],
         else:
             y = swf[ch - 1, :]
             x = time
+        plt.plot(x, y, 'k')
+
+    plt.show()
+
+
+
+def plot_swf(cdf, snapshot_nr=0, channel=[1, 2, 3, 4],
+             xmin=None, xmax=None,
+             ymin=None, ymax=None,
+             no_fillval=False,
+             no_time=False):
+    """Plot TDS RSWF data."""
+    if type(cdf) == pycdf.CDF:
+        cdf_data = cdf
+    else:
+        cdf_data = pycdf.CDF(cdf)
+
+    swf = cdf_data["WAVEFORM_DATA"][snapshot_nr, :, :]
+    epoch = cdf_data["Epoch"][snapshot_nr]
+    dtime = cdf_data["SAMP_DTIME"][snapshot_nr, :]
+
+    nrec = cdf_data["Epoch"].shape[0]
+    nsamp = swf.shape[1]
+    logger.debug("{0} record(s)/snapshot(s)".format(nrec))
+
+    if no_time:
+        time = np.arange(nsamp)
+        plt.xlabel("Count")
+    else:
+        time = dtime
+        plt.xlabel("{0} {1}".format(
+                    cdf_data["SAMP_DTIME"].attrs("LABLAXIS")
+                    cdf_data["SAMP_DTIME"].attrs("UNITS"))
+
+    if xmin is None:
+        xmin = np.min(time)
+    if xmax is None:
+        xmax = np.max(time)
+    if ymin is None:
+        ymin = cdf_data["WAVEFORM_DATA"].attrs["SCALEMIN"]
+    if ymax is None:
+        ymax = cdf_data["WAVEFORM_DATA"].attrs["SCALEMAX"]
+
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+
+    fillval = cdf_data["WAVEFORM_DATA"].attrs["FILLVAL"]
+
+    plt.figure(1)
+    subid = 100 * len(channel) + 11
+    for i, ch in enumerate(channel):
+        #print(subid + i)
+        plt.subplot(subid + i)
+        if no_fillval:
+            w = np.where(swf[ch - 1, :] != fillval)
+            y = swf[ch - 1, :][w]
+            x = time[w]
+        else:
+            y = swf[ch - 1, :]
+            x = time
+
+        plt.ylabel("Amplitude (channel #{0})".format(
+                            ch))
         plt.plot(x, y, 'k')
 
     plt.show()
