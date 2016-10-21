@@ -1,6 +1,10 @@
 CHANGELOG
 ====================
 
+0.4.2
+-----
+* Fix a bug in utils.cdf
+
 0.4.1
 -----
 * Update doc
