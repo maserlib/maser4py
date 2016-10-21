@@ -7,10 +7,12 @@
 # (Include here the modules to import, e.g. import sys)
 import os.path as osp
 import logging
+from glob import glob
 
 from openpyxl import load_workbook as lwb
 
-__all__ = ["add_row", "get_row"]
+__all__ = ["add_row", "get_row",
+            "check_args", "get_item_list"]
 
 # ________________ HEADER _________________________
 
@@ -42,6 +44,51 @@ class XlsxException(Exception):
 
 # ________________ Global Functions __________
 # (If required, define here gobal functions)
+
+def check_args(sheet_name):
+    """Decorator for arg checking and output file saving."""
+    def decorated(func):
+        def wrapper(*args, **kwargs):
+
+            xlsx = args[0]
+
+            if not osp.isfile(xlsx):
+                msg = "Input file not found [{0}]!".format(xlsx)
+                logger.error(msg)
+                raise XlsxException(msg)
+            else:
+                wb = lwb(xlsx)
+
+            shnames = wb.get_sheet_names()
+            if sheet_name not in shnames:
+                msg = "Input file does not contain {0} sheet!".format(
+                                            sheet_name)
+                logger.error(msg)
+                raise XlsxException(msg)
+
+            if "overwrite" not in kwargs:
+                kwargs["overwrite"] = False
+            overwrite = kwargs["overwrite"]
+
+            if "output" not in kwargs or kwargs["output"] is None:
+                kwargs["output"] = xlsx
+            output = kwargs["output"]
+
+            wb = func(*args, **kwargs)
+            if wb is None:
+                return False
+
+            if overwrite is False:
+                nfile = len(glob(output + "*"))
+                if nfile > 0:
+                    output = output + "." + str(nfile)
+            wb.save(output)
+
+            return True
+        return wrapper
+    return decorated
+
+
 def add_row(file, sheet, row,
             values=None,
             output=None,
@@ -136,6 +183,19 @@ def get_row(worksheet, name, column="A"):
         if worksheet["{0}{1}".format(column, i)].value == name]
 
     return rows
+
+
+def get_item_list(worksheet, column="A"):
+    """Get the unique list of items for a given column."""
+    items = list()
+    max_row = worksheet.max_row + 1
+    for i in range(1, max_row):
+        val = worksheet["{0}{1}".format(column, i)].value
+        if val not in items:
+            items.append(worksheet["{0}{1}".format(column, i)].value)
+
+    # Return item names (wihtout first header row)
+    return items[1:]
 
 
 def main():

@@ -5,13 +5,11 @@
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
-import os.path as asp
 import logging
-from glob import glob
 
 from openpyxl import load_workbook as lwb
 
-from .gen import add_row, get_row
+from .gen import add_row, get_row, check_args
 
 __all__ = ["add_gattr",
             "set_gattr_entries",
@@ -52,48 +50,7 @@ class GattrException(Exception):
 # (If required, define here gobal functions)
 
 
-def check_args(func):
-    """Decorator for arg checking."""
-    def wrapper(*args, **kwargs):
-
-        xlsx = args[0]
-
-        if not asp.isfile(xlsx):
-            logger.error("Input file not found [{0}]!".format(xlsx))
-            raise GattrException
-        else:
-            wb = lwb(xlsx)
-
-        shnames = wb.get_sheet_names()
-        if GATT_SHEET_NAME not in shnames:
-            logger.error("Input file does not contain {0} sheet!".format(
-                                        GATT_SHEET_NAME))
-            raise GattrException
-
-        if "overwrite" not in kwargs:
-            kwargs["overwrite"] = False
-        overwrite = kwargs["overwrite"]
-
-        if "output" not in kwargs or kwargs["output"] is None:
-            kwargs["output"] = xlsx
-        output = kwargs["output"]
-
-        wb = func(*args, **kwargs)
-        if wb is None:
-            return False
-
-        if overwrite is False:
-            nfile = len(glob(output + "*"))
-            if nfile > 0:
-                output = output + "." + str(nfile)
-        wb.save(output)
-
-        return True
-
-    return wrapper
-
-
-@check_args
+@check_args(GATT_SHEET_NAME)
 def add_gattr(xlsx, attname, cdftype, entries,
               output=None,
               overwrite=False):
@@ -112,7 +69,7 @@ def add_gattr(xlsx, attname, cdftype, entries,
 
     if len(cells) > 0:
         logger.warning("{0} attribute already exists!".format(attname))
-        return None
+        return wb
 
     # Add the new gattr entries at the bottom of the
     # sheet
@@ -133,7 +90,7 @@ def add_gattr(xlsx, attname, cdftype, entries,
     return wb
 
 
-@check_args
+@check_args(GATT_SHEET_NAME)
 def set_gattr_entries(xlsx, attname, new_entries,
                       output=None, overwrite=False):
     """set_gattr_entries.
@@ -178,7 +135,7 @@ def set_gattr_entries(xlsx, attname, new_entries,
         if entry_num in new_entries:
             ws["D{0}".format(row)].value = new_entries[entry_num]
             ninserted += 1
-        #else:
+        # else:
         #    logger.warning("No change brung to entry #{0}".format(
         #                                            entry_num))
 
@@ -188,7 +145,7 @@ def set_gattr_entries(xlsx, attname, new_entries,
     return wb
 
 
-@check_args
+@check_args(GATT_SHEET_NAME)
 def set_gattr_dtype(xlsx, attname, new_dtype,
                     output=None, overwrite=False):
     """set_gattr_dtype.
@@ -215,7 +172,7 @@ def set_gattr_dtype(xlsx, attname, new_dtype,
     return wb
 
 
-@check_args
+@check_args(GATT_SHEET_NAME)
 def add_gattr_entry(xlsx, attname, value,
             output=None, overwrite=False):
     """add_gattr_entry.
@@ -244,7 +201,7 @@ def add_gattr_entry(xlsx, attname, value,
     return wb
 
 
-@check_args
+@check_args(GATT_SHEET_NAME)
 def rename_gattr(xlsx, old_attname, new_attname,
                  output=None, overwrite=False):
     """rename_gattr.
@@ -273,7 +230,7 @@ def rename_gattr(xlsx, old_attname, new_attname,
     return wb
 
 
-@check_args
+@check_args(GATT_SHEET_NAME)
 def rm_gattr(xlsx, attname,
              output=None, overwrite=False):
     """rm_gattr.
