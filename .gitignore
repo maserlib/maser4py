@@ -6,4 +6,5 @@ __pycache__
 *.pyc
 *.egg
 maser.egg-info
+doc/source/api
 !doc/build

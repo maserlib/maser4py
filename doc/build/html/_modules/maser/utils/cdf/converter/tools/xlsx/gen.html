@@ -1,0 +1,433 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>maser.utils.cdf.converter.tools.xlsx.gen &mdash; maser4py 0.4.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../../../search.html"/>
+    <link rel="top" title="maser4py 0.4.3 documentation" href="../../../../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../../../../index.html"/> 
+
+  
+  <script src="../../../../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../../../../index.html" class="icon icon-home"> maser4py
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../data.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../services.html">Services</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../appendices.html">Troubleshooting</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../../index.html">maser4py</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>maser.utils.cdf.converter.tools.xlsx.gen</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for maser.utils.cdf.converter.tools.xlsx.gen</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;Python module cdf.converter.tools.xlsx.gen.&quot;&quot;&quot;</span>
+
+<span class="c1"># ________________ IMPORT _________________________</span>
+<span class="c1"># (Include here the modules to import, e.g. import sys)</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+
+<span class="kn">from</span> <span class="nn">openpyxl</span> <span class="k">import</span> <span class="n">load_workbook</span> <span class="k">as</span> <span class="n">lwb</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;add_row&quot;</span><span class="p">,</span> <span class="s2">&quot;get_row&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;check_args&quot;</span><span class="p">,</span> <span class="s2">&quot;get_item_list&quot;</span><span class="p">]</span>
+
+<span class="c1"># ________________ HEADER _________________________</span>
+
+<span class="c1"># Mandatory</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Xavier Bonnin&quot;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;2016-09-30&quot;</span>
+
+<span class="c1"># Optional</span>
+<span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">__credit__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">__project__</span> <span class="o">=</span> <span class="s2">&quot;MASER&quot;</span>
+<span class="n">__institute__</span> <span class="o">=</span> <span class="s2">&quot;LESIA, Observatoire de Paris, CNRS&quot;</span>
+<span class="n">__changes__</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="c1"># ________________ Global Variables _____________</span>
+<span class="c1"># (define here the global variables)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1"># ________________ Class Definition __________</span>
+<span class="c1"># (If required, define here classes)</span>
+<span class="k">class</span> <span class="nc">XlsxException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="c1"># ________________ Global Functions __________</span>
+<span class="c1"># (If required, define here gobal functions)</span>
+
+<div class="viewcode-block" id="check_args"><a class="viewcode-back" href="../../../../../../../api/maser4py/maser.utils.cdf.converter.tools.xlsx.gen.html#maser.utils.cdf.converter.tools.xlsx.gattrs.check_args">[docs]</a><span class="k">def</span> <span class="nf">check_args</span><span class="p">(</span><span class="n">sheet_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decorator for arg checking and output file saving.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">decorated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+            <span class="n">xlsx</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xlsx</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Input file not found [</span><span class="si">{0}</span><span class="s2">]!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xlsx</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">XlsxException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">wb</span> <span class="o">=</span> <span class="n">lwb</span><span class="p">(</span><span class="n">xlsx</span><span class="p">)</span>
+
+            <span class="n">shnames</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">get_sheet_names</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">sheet_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shnames</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Input file does not contain </span><span class="si">{0}</span><span class="s2"> sheet!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                            <span class="n">sheet_name</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">XlsxException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s2">&quot;overwrite&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;overwrite&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">overwrite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;overwrite&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s2">&quot;output&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xlsx</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span>
+
+            <span class="n">wb</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">wb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">nfile</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="n">output</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">nfile</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">output</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nfile</span><span class="p">)</span>
+            <span class="n">wb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">wrapper</span>
+    <span class="k">return</span> <span class="n">decorated</span></div>
+
+
+<div class="viewcode-block" id="add_row"><a class="viewcode-back" href="../../../../../../../api/maser4py/maser.utils.cdf.converter.tools.xlsx.gen.html#maser.utils.cdf.converter.tools.xlsx.gattrs.add_row">[docs]</a><span class="k">def</span> <span class="nf">add_row</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">sheet</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+            <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Insert a new row in the input Excel file.</span>
+
+<span class="sd">    Positional arguments:</span>
+<span class="sd">        file - Excel format file where the new row</span>
+<span class="sd">               must be inserted</span>
+<span class="sd">        sheet - Name of the sheet where the new row</span>
+<span class="sd">                must be inserted</span>
+<span class="sd">        row - rank of the row to insert (starting at 1)</span>
+
+<span class="sd">    Optional keywords:</span>
+<span class="sd">        values - List containing the Field values to be</span>
+<span class="sd">                 inserted into the new</span>
+<span class="sd">                 row (empty per default)</span>
+<span class="sd">        output - Path of the output file where</span>
+<span class="sd">                 the modified spreadsheet must</span>
+<span class="sd">                 be saved. By default output is the</span>
+<span class="sd">                 input file.</span>
+<span class="sd">        overwrite - Overwrite existing output file</span>
+
+<span class="sd">    Outputs:</span>
+<span class="sd">        wb - Return the modifier workbook</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Input Excel file not found [</span><span class="si">{0}</span><span class="s2">]!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="n">XlsxException</span>
+
+    <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Row index must be greater or equal to 1!&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">XlsxException</span>
+
+    <span class="n">wb</span> <span class="o">=</span> <span class="n">lwb</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">sh</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">get_sheet_by_name</span><span class="p">(</span><span class="n">sheet</span><span class="p">)</span>
+
+    <span class="n">max_row</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">max_row</span>
+    <span class="n">max_col</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">max_column</span>
+
+    <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">max_col</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">max_col</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="n">max_row</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">col_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_col</span><span class="p">):</span>
+            <span class="n">sh</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">max_row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">column</span><span class="o">=</span><span class="n">col_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">col_num</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Save the old row in a first buffer and insert the new one</span>
+        <span class="c1"># Save also the row just below in a second buffer</span>
+        <span class="n">row_buff1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">max_col</span>
+        <span class="n">row_buff2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">max_col</span>
+        <span class="k">for</span> <span class="n">col_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_col</span><span class="p">):</span>
+            <span class="n">row_buff1</span><span class="p">[</span><span class="n">col_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">col_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">row_buff2</span><span class="p">[</span><span class="n">col_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">col_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">sh</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">col_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">col_num</span><span class="p">]</span>
+
+        <span class="c1"># Shift rows by 1 in the bottom, starting from the</span>
+        <span class="c1"># row to insert + 1, then copy row in buff1</span>
+        <span class="k">for</span> <span class="n">row_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_row</span> <span class="o">+</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_col</span><span class="p">):</span>
+                <span class="n">sh</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row_num</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">col_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> \
+                    <span class="n">row_buff1</span><span class="p">[</span><span class="n">col_num</span><span class="p">]</span>
+                <span class="n">row_buff1</span><span class="p">[</span><span class="n">col_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_buff2</span><span class="p">[</span><span class="n">col_num</span><span class="p">]</span>
+                <span class="n">row_buff2</span><span class="p">[</span><span class="n">col_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                                            <span class="n">column</span><span class="o">=</span><span class="n">col_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">osp</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Output file already exists [</span><span class="si">{0}</span><span class="s2">]!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">wb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wb</span></div>
+
+
+<div class="viewcode-block" id="get_row"><a class="viewcode-back" href="../../../../../../../api/maser4py/maser.utils.cdf.converter.tools.xlsx.gen.html#maser.utils.cdf.converter.tools.xlsx.gattrs.get_row">[docs]</a><span class="k">def</span> <span class="nf">get_row</span><span class="p">(</span><span class="n">worksheet</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;get_row method.</span>
+
+<span class="sd">    Check if an item exists or not in</span>
+<span class="sd">    the given column of the given worksheet.</span>
+<span class="sd">    If the item exists, then the method</span>
+<span class="sd">    returns a list of the indice(s) of</span>
+<span class="sd">    the item row(s).</span>
+<span class="sd">    It returns an empty list otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if the item alreay exists</span>
+    <span class="n">max_row</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">max_row</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_row</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">worksheet</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{0}{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">name</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">rows</span></div>
+
+
+<div class="viewcode-block" id="get_item_list"><a class="viewcode-back" href="../../../../../../../api/maser4py/maser.utils.cdf.converter.tools.xlsx.gen.html#maser.utils.cdf.converter.tools.xlsx.gattrs.get_item_list">[docs]</a><span class="k">def</span> <span class="nf">get_item_list</span><span class="p">(</span><span class="n">worksheet</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the unique list of items for a given column.&quot;&quot;&quot;</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">max_row</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">max_row</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_row</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">worksheet</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{0}{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">worksheet</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{0}{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c1"># Return item names (wihtout first header row)</span>
+    <span class="k">return</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Main program.&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This is the cdf.converter.tools.xlsx.gen module.&quot;</span><span class="p">)</span>
+
+<span class="c1"># _________________ Main ____________________________</span>
+<span class="k">if</span> <span class="p">(</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">):</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, X.Bonnin, B.Cecconi, Q.N.Nguyen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../../../../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

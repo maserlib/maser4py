@@ -11,6 +11,8 @@ import os
 import logging
 import subprocess
 
+# __all__ = []
+
 # ________________ HEADER _________________________
 
 # Mandatory

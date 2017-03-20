@@ -1,0 +1,866 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>maser.utils.cdf.converter.xlsx2skt &mdash; maser4py 0.4.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../search.html"/>
+    <link rel="top" title="maser4py 0.4.3 documentation" href="../../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../../index.html"/> 
+
+  
+  <script src="../../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> maser4py
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../services.html">Services</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../appendices.html">Troubleshooting</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">maser4py</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>maser.utils.cdf.converter.xlsx2skt</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for maser.utils.cdf.converter.xlsx2skt</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;xlsx2skt module.</span>
+
+<span class="sd">Module to convert an Excel (.xlsx) file</span>
+<span class="sd">into a CDF skeleton table (.skt).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ________________ HEADER _________________________</span>
+
+<span class="c1"># ________________ IMPORT _________________________</span>
+<span class="c1"># (Include here the modules to import, e.g. import sys)</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="kn">from</span> <span class="nn">openpyxl</span> <span class="k">import</span> <span class="n">load_workbook</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">...toolbox</span> <span class="k">import</span> <span class="n">setup_logging</span><span class="p">,</span> <span class="n">uniq</span><span class="p">,</span> <span class="n">quote</span><span class="p">,</span> <span class="n">truncate_str</span><span class="p">,</span> <span class="n">insert_char</span>
+<span class="kn">from</span> <span class="nn">...._version</span> <span class="k">import</span> <span class="n">__version__</span>
+
+<span class="c1"># ________________ HEADER _________________________</span>
+
+<span class="c1"># ________________ Global Variables _____________</span>
+<span class="c1"># (define here the global variables)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">CURRENT_DATETIME</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="n">ROW_LENGTH_MAX</span> <span class="o">=</span> <span class="mi">79</span>
+<span class="n">DEF_INDENT</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">16</span>
+
+<span class="c1"># Sheets and columns to be found in the Excel file</span>
+<span class="n">SHEET_NAMES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;header&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;CDF NAME&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DATA ENCODING&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MAJORITY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;FORMAT&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;GLOBALattributes&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Attribute Name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Entry Number&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Data Type&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Value&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;zVariables&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Variable Name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Data Type&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Number Elements&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Dims&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Sizes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Record Variance&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Dimension Variances&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;VARIABLEattributes&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Variable Name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Attribute Name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Data Type&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Value&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;Options&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;CDF_COMPRESSION&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CDF_CHECKSUM&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;VAR_COMPRESSION&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;VAR_SPARESERECORDS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;VAR_PADVALUE&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;NRV&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Variable Name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Index&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Value&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Available options</span>
+<span class="n">CDF_OPTION_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CDF_COMPRESSION&quot;</span><span class="p">,</span> <span class="s2">&quot;CDF_CHECKSUM&quot;</span><span class="p">]</span>
+<span class="n">VAR_OPTION_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;VAR_COMPRESSION&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;VAR_SPARSERECORDS&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;VAR_PADVALUE&quot;</span><span class="p">]</span>
+
+<span class="c1"># CDF skeleton headers format</span>
+<span class="n">HEADER_BOARD</span> <span class="o">=</span> <span class="s2">&quot;! Variables     G.Attributes     &quot;</span> <span class="o">+</span> \
+    <span class="s2">&quot;V.Attributes     Records     Dims     Sizes</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">HEADER_BOARD</span> <span class="o">+=</span> <span class="s2">&quot;! ---------     ------------  &quot;</span> <span class="o">+</span> \
+    <span class="s2">&quot;   ------------     -------     ----     -----&quot;</span>
+<span class="n">HEADER_SPACE</span> <span class="o">=</span> <span class="n">DEF_INDENT</span>
+
+<span class="n">GLOBAL_BOARD</span> <span class="o">=</span> <span class="s2">&quot;! Attribute    Entry        Data</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">GLOBAL_BOARD</span> <span class="o">+=</span> <span class="s2">&quot;! Name         Number       Type   Value</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">GLOBAL_BOARD</span> <span class="o">+=</span> <span class="s2">&quot;! ---------    ------       ----   -----&quot;</span>
+
+<span class="n">VARIABLE_BOARD</span> <span class="o">=</span> <span class="s2">&quot;! Variable    Data     Number &quot;</span> <span class="o">+</span> \
+    <span class="s2">&quot;                     Record       Dimension</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">VARIABLE_BOARD</span> <span class="o">+=</span> <span class="s2">&quot;! Name        Type     Elements&quot;</span> <span class="o">+</span> \
+    <span class="s2">&quot;   Dims    Sizes    Variance     Variances</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">VARIABLE_BOARD</span> <span class="o">+=</span> <span class="s2">&quot;! --------    ----     -------- &quot;</span> <span class="o">+</span> \
+    <span class="s2">&quot;  ----    -----    --------     ---------&quot;</span>
+
+<span class="n">VATTRS_BOARD</span> <span class="o">=</span> <span class="s2">&quot;  ! Attribute    Data</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">VATTRS_BOARD</span> <span class="o">+=</span> <span class="s2">&quot;  ! Name         Type   Value</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">VATTRS_BOARD</span> <span class="o">+=</span> <span class="s2">&quot;  ! --------     ----   -----&quot;</span>
+
+
+<span class="c1"># ________________ Class Definition __________</span>
+<span class="c1"># (If required, define here classes)</span>
+<div class="viewcode-block" id="Xlsx2skt"><a class="viewcode-back" href="../../../../../api/maser4py/maser.utils.cdf.converter.xlsx2skt.html#maser.utils.cdf.converter.xlsx2skt.Xlsx2skt">[docs]</a><span class="k">class</span> <span class="nc">Xlsx2skt</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class to convert a formatted Excel file into a CDF skeleton table.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlsx_file</span><span class="p">,</span>
+                 <span class="n">skt_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">ignore_none</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">auto_pad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;__init__ method.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xlsx_file</span> <span class="o">=</span> <span class="n">xlsx_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignore</span> <span class="o">=</span> <span class="n">ignore_none</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_pad</span> <span class="o">=</span> <span class="n">auto_pad</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">skt_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">skt_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xlsx_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.skt&quot;</span>
+
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">xlsx_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">skt_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">skt_file</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">skt_file</span> <span class="o">=</span> <span class="n">skt_file</span>
+
+    <span class="c1"># Setup the logging</span>
+        <span class="n">setup_logging</span><span class="p">(</span>
+            <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_xlsx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parse the Excel 2007 format file.&quot;&quot;&quot;</span>
+        <span class="n">xlsx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xlsx_file</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xlsx</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot find Excel file called </span><span class="si">%s</span><span class="s2">!&quot;</span><span class="p">,</span> <span class="n">xlsx</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">xlsx</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.xlsx&quot;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Invalid input Excel format!&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Parsing </span><span class="si">%s</span><span class="s2"> file...&quot;</span><span class="p">,</span> <span class="n">xlsx</span><span class="p">)</span>
+        <span class="n">wkbk</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span><span class="n">xlsx</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sheet_names</span> <span class="o">=</span> <span class="n">wkbk</span><span class="o">.</span><span class="n">get_sheet_names</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;rVariables&quot;</span> <span class="ow">in</span> <span class="n">sheet_names</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;variables&quot;</span> <span class="ow">in</span> <span class="n">sheet_names</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;rVariable type is not supported!&quot;</span><span class="p">)</span>
+
+        <span class="n">sheets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">shtn</span> <span class="ow">in</span> <span class="n">SHEET_NAMES</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">%s</span><span class="s2"> sheet...&quot;</span><span class="p">,</span> <span class="n">shtn</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">shtn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sheet_names</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing </span><span class="si">%s</span><span class="s2"> sheet in the input Excel file!&quot;</span><span class="p">,</span> <span class="n">shtn</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">wksht</span> <span class="o">=</span> <span class="n">wkbk</span><span class="p">[</span><span class="n">shtn</span><span class="p">]</span>
+
+                <span class="n">ncol</span> <span class="o">=</span> <span class="n">wksht</span><span class="o">.</span><span class="n">max_column</span>
+                <span class="n">nrow</span> <span class="o">=</span> <span class="n">wksht</span><span class="o">.</span><span class="n">max_row</span>
+                <span class="k">if</span> <span class="n">ncol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">nrow</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">wksht</span><span class="o">.</span><span class="n">calculate_dimension</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">ncol</span> <span class="o">=</span> <span class="n">wksht</span><span class="o">.</span><span class="n">max_column</span>
+                    <span class="n">nrow</span> <span class="o">=</span> <span class="n">wksht</span><span class="o">.</span><span class="n">max_row</span>
+
+                <span class="n">ncol</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">nrow</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="n">sheet_data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wksht</span><span class="o">.</span><span class="n">rows</span><span class="p">):</span>
+                    <span class="n">cells_i</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">sheet_data</span><span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">cells_i</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sheet_data</span><span class="p">):</span>
+                            <span class="n">sheet_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cells_i</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+                <span class="n">sheets</span><span class="p">[</span><span class="n">shtn</span><span class="p">]</span> <span class="o">=</span> <span class="n">sheet_data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;GLOBALattributes&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="n">uniq</span><span class="p">(</span><span class="n">sheets</span><span class="p">[</span><span class="s2">&quot;GLOBALattributes&quot;</span><span class="p">][</span><span class="s2">&quot;Attribute Name&quot;</span><span class="p">],</span>
+                 <span class="n">not_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;VARIABLEattributes&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="n">uniq</span><span class="p">(</span><span class="n">sheets</span><span class="p">[</span><span class="s2">&quot;VARIABLEattributes&quot;</span><span class="p">][</span><span class="s2">&quot;Attribute Name&quot;</span><span class="p">],</span>
+                 <span class="n">not_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;zVariables&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="n">uniq</span><span class="p">(</span><span class="n">sheets</span><span class="p">[</span><span class="s2">&quot;zVariables&quot;</span><span class="p">][</span><span class="s2">&quot;Variable Name&quot;</span><span class="p">],</span>
+                 <span class="n">not_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> GLOBAL attributes returned&quot;</span><span class="p">,</span>
+                  <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;GLOBALattributes&quot;</span><span class="p">]))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> Variable attributes returned&quot;</span><span class="p">,</span>
+                  <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;VARIABLEattributes&quot;</span><span class="p">]))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> zVariables returned&quot;</span><span class="p">,</span>
+                  <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;zVariables&quot;</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">sheets</span>
+
+    <span class="k">def</span> <span class="nf">_build_skt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlsx_sheets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build the CDF skeleton table content using the Excel data.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building CDF skeleton table body... &quot;</span><span class="p">)</span>
+
+        <span class="n">skt_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">skt_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">xlsx_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xlsx_file</span><span class="p">)</span>
+
+        <span class="n">file_header</span> <span class="o">=</span> <span class="s2">&quot;!Skeleton table for the </span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">skt_name</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2"> CDF.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">file_header</span> <span class="o">+=</span> <span class="s2">&quot;!Generated: &quot;</span> <span class="o">+</span> \
+            <span class="n">CURRENT_DATETIME</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">file_header</span> <span class="o">+=</span> <span class="s2">&quot;!Skeleton table created by xlsx2skt.py V&quot;</span> <span class="o">+</span> \
+            <span class="n">__version__</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">file_header</span> <span class="o">+=</span> <span class="s2">&quot;!Skeleton table created from &quot;</span> <span class="o">+</span> <span class="n">xlsx_name</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">skt_header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_header</span><span class="p">(</span><span class="n">xlsx_sheets</span><span class="p">[</span><span class="s2">&quot;header&quot;</span><span class="p">],</span>
+                                       <span class="n">xlsx_sheets</span><span class="p">[</span><span class="s2">&quot;Options&quot;</span><span class="p">])</span>
+        <span class="n">skt_global</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_global</span><span class="p">(</span><span class="n">xlsx_sheets</span><span class="p">[</span><span class="s2">&quot;GLOBALattributes&quot;</span><span class="p">])</span>
+        <span class="n">skt_vattrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_vattributes</span><span class="p">()</span>
+        <span class="n">skt_zvars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_zvariables</span><span class="p">(</span><span class="n">xlsx_sheets</span><span class="p">[</span><span class="s2">&quot;zVariables&quot;</span><span class="p">],</span>
+                                          <span class="n">xlsx_sheets</span><span class="p">[</span><span class="s2">&quot;VARIABLEattributes&quot;</span><span class="p">],</span>
+                                          <span class="n">xlsx_sheets</span><span class="p">[</span><span class="s2">&quot;Options&quot;</span><span class="p">],</span>
+                                          <span class="n">xlsx_sheets</span><span class="p">[</span><span class="s2">&quot;NRV&quot;</span><span class="p">],</span>
+                                          <span class="n">ignore_none</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ignore</span><span class="p">,</span>
+                                          <span class="n">auto_pad</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_pad</span><span class="p">)</span>
+
+        <span class="n">skt_body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">file_header</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">skt_header</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                              <span class="n">skt_global</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">skt_vattrs</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                              <span class="n">skt_zvars</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;#end&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">skt_body</span>
+
+    <span class="k">def</span> <span class="nf">_write_skt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skt_body</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write the CDF skeleton table file.&quot;&quot;&quot;</span>
+        <span class="n">skt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">skt_file</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">skt</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.skt&quot;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;.skt extension will be automatically appended to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">skt</span><span class="p">)</span>
+            <span class="n">skt</span> <span class="o">=</span> <span class="n">skt</span> <span class="o">+</span> <span class="s2">&quot;.skt&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">overwrite</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">skt</span><span class="p">)):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> already exits!&quot;</span><span class="p">,</span> <span class="n">skt</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">skt</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing </span><span class="si">%s</span><span class="s2">...&quot;</span><span class="p">,</span> <span class="n">skt</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">skt</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">filew</span><span class="p">:</span>
+            <span class="n">filew</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">skt_body</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">skt</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">skt</span> <span class="o">+</span> <span class="s2">&quot; has been saved correctly&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">skt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">skt</span> <span class="o">+</span> <span class="s2">&quot; has not been saved correctly!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Xlsx2skt.convert"><a class="viewcode-back" href="../../../../../api/maser4py/maser.utils.cdf.converter.xlsx2skt.html#maser.utils.cdf.converter.xlsx2skt.Xlsx2skt.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run the complete xlsx to skt conversion process.&quot;&quot;&quot;</span>
+        <span class="n">xlsx2skt</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">xlsx_sheets</span> <span class="o">=</span> <span class="n">xlsx2skt</span><span class="o">.</span><span class="n">_parse_xlsx</span><span class="p">()</span>
+        <span class="n">skt_body</span> <span class="o">=</span> <span class="n">xlsx2skt</span><span class="o">.</span><span class="n">_build_skt</span><span class="p">(</span><span class="n">xlsx_sheets</span><span class="p">)</span>
+        <span class="n">skt_path</span> <span class="o">=</span> <span class="n">xlsx2skt</span><span class="o">.</span><span class="n">_write_skt</span><span class="p">(</span><span class="n">skt_body</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">skt_path</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="nf">_build_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header_sheet</span><span class="p">,</span> <span class="n">options_sheet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build the CDF skeleton table header part.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building skeleton table header...&quot;</span><span class="p">)</span>
+
+        <span class="n">header_body</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">SHEET_NAMES</span><span class="p">[</span><span class="s2">&quot;header&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">header_sheet</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">header_sheet</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+                <span class="n">header_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">HEADER_SPACE</span> <span class="o">+</span> <span class="n">col</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">col</span> <span class="o">+</span>
+                             <span class="s2">&quot; column is missing in the </span><span class="se">\&quot;</span><span class="s2">header</span><span class="se">\&quot;</span><span class="s2"> sheet!&quot;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">header_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">header_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">HEADER_BOARD</span><span class="p">)</span>
+
+        <span class="n">nglobal</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;GLOBALattributes&quot;</span><span class="p">])</span>
+        <span class="n">nvattr</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;VARIABLEattributes&quot;</span><span class="p">])</span>
+        <span class="n">nvar</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;zVariables&quot;</span><span class="p">])</span>
+
+        <span class="n">header_board_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;    0/&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nvar</span><span class="p">),</span>
+                             <span class="nb">str</span><span class="p">(</span><span class="n">nglobal</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">nvattr</span><span class="p">),</span> <span class="s2">&quot;0/z&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">]</span>
+        <span class="n">header_board_info</span> <span class="o">=</span> <span class="s2">&quot;            &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header_board_info</span><span class="p">)</span>
+        <span class="n">header_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header_board_info</span><span class="p">)</span>
+
+        <span class="n">header_opt_info</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">CDF_OPTION_NAMES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">options_sheet</span><span class="p">:</span>
+                <span class="n">header_opt_info</span> <span class="o">+=</span> <span class="s2">&quot;!&quot;</span> <span class="o">+</span> <span class="n">opt</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> \
+                    <span class="n">options_sheet</span><span class="p">[</span><span class="n">opt</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">header_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header_opt_info</span><span class="p">)</span>
+
+        <span class="n">header_body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header_body</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">header_body</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">header_body</span>
+
+    <span class="k">def</span> <span class="nf">_build_global</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_sheet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build the CDF skeleton table GLOBALattributes part.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building skeleton table global attributes section..&quot;</span><span class="p">)</span>
+
+        <span class="n">global_body</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#GLOBALattributes&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+
+        <span class="n">global_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">GLOBAL_BOARD</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">global_sheet</span><span class="p">[</span><span class="s2">&quot;Attribute Name&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;First Global attribute name must not be null!&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">last_valid_attr</span> <span class="o">=</span> <span class="n">global_sheet</span><span class="p">[</span><span class="s2">&quot;Attribute Name&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">nindent</span> <span class="o">=</span> <span class="n">DEF_INDENT</span>
+        <span class="n">new_entry</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">global_sheet</span><span class="p">[</span><span class="s2">&quot;Attribute Name&quot;</span><span class="p">]):</span>
+
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Attribute #</span><span class="si">%i</span><span class="s2"> is null!&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">last_valid_attr</span> <span class="o">!=</span> <span class="n">attr</span><span class="p">:</span>
+                <span class="n">new_entry</span> <span class="o">+=</span> <span class="s2">&quot; .</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">global_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_entry</span><span class="p">)</span>
+
+            <span class="n">enum_i</span> <span class="o">=</span> <span class="n">global_sheet</span><span class="p">[</span><span class="s2">&quot;Entry Number&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">enum_i</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Attribute </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> Entry Number is empty!&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">enum_i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">enum_i</span><span class="p">)</span>
+
+            <span class="n">dtype_i</span> <span class="o">=</span> <span class="n">global_sheet</span><span class="p">[</span><span class="s2">&quot;Data Type&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">dtype_i</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Attribute </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> Data Type is empty!&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dtype_i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dtype_i</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;CDF_CHAR&quot;</span> <span class="ow">in</span> <span class="n">dtype_i</span> <span class="ow">or</span>
+                    <span class="s2">&quot;CDF_UCHAR&quot;</span> <span class="ow">in</span> <span class="n">dtype_i</span><span class="p">):</span>
+                <span class="n">ischar</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ischar</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">value_i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">global_sheet</span><span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">value_i</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">value_i</span><span class="p">,</span> <span class="n">unquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">value_i</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
+               <span class="n">value_i</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span> <span class="ow">or</span>
+               <span class="n">value_i</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Attribute </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> value is empty!&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="n">value_i</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
+
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">enum_i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">new_entry</span> <span class="o">=</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;        &quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_entry</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">nindent</span> <span class="o">+</span> <span class="mi">8</span><span class="p">)</span>
+
+            <span class="n">new_entry</span> <span class="o">+=</span> <span class="n">enum_i</span> <span class="o">+</span> <span class="s2">&quot;:  &quot;</span> <span class="o">+</span> <span class="n">dtype_i</span> <span class="o">+</span> <span class="s2">&quot;    { &quot;</span>
+
+            <span class="c1"># Remove any break line</span>
+            <span class="n">value_i</span> <span class="o">=</span> <span class="n">value_i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+            <span class="c1"># If attribute is a string, then cut it if it</span>
+            <span class="c1"># has a too long length</span>
+            <span class="k">if</span> <span class="n">ischar</span><span class="p">:</span>
+                <span class="n">value_i</span> <span class="o">=</span> <span class="n">truncate_str</span><span class="p">(</span><span class="n">value_i</span><span class="p">,</span>
+                                    <span class="nb">int</span><span class="p">(</span><span class="n">ROW_LENGTH_MAX</span> <span class="o">/</span> <span class="mi">3</span><span class="p">),</span>
+                                    <span class="n">gap</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_entry</span><span class="p">)</span> <span class="o">+</span> <span class="mi">12</span><span class="p">)),</span>
+                                    <span class="n">min_length</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+                <span class="n">new_entry</span> <span class="o">+=</span> <span class="n">quote</span><span class="p">(</span><span class="n">value_i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; }&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_entry</span> <span class="o">+=</span> <span class="n">value_i</span> <span class="o">+</span> <span class="s2">&quot; }&quot;</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_entry</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ROW_LENGTH_MAX</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">enum_i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">nindent</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+                <span class="n">new_entry</span> <span class="o">=</span> <span class="n">insert_char</span><span class="p">(</span><span class="n">new_entry</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">nindent</span><span class="p">,</span>
+                                        <span class="n">nindent</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">enum_i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">nindent</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">+</span> <span class="mi">14</span>
+
+            <span class="n">last_valid_attr</span> <span class="o">=</span> <span class="n">attr</span>
+
+        <span class="n">new_entry</span> <span class="o">+=</span> <span class="s2">&quot; .</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">global_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_entry</span><span class="p">)</span>
+        <span class="n">global_body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">global_body</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">global_body</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">global_body</span>
+
+    <span class="k">def</span> <span class="nf">_build_vattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build the list of variable attributes.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building skeleton table variable attributes section...&quot;</span><span class="p">)</span>
+
+        <span class="n">vattrs_body</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#VARIABLEattributes&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">vattr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdf_items</span><span class="p">[</span><span class="s2">&quot;VARIABLEattributes&quot;</span><span class="p">]:</span>
+            <span class="n">vattrs_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">vattr</span><span class="p">))</span>
+
+        <span class="n">vattrs_body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vattrs_body</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">vattrs_body</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">vattrs_body</span>
+
+    <span class="k">def</span> <span class="nf">_build_zvariables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zvars_sheet</span><span class="p">,</span> <span class="n">vattrs_sheet</span><span class="p">,</span>
+                         <span class="n">options_sheet</span><span class="p">,</span> <span class="n">nrv_sheet</span><span class="p">,</span>
+                         <span class="n">ignore_none</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                         <span class="n">auto_pad</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build the CDF skeleton table.</span>
+
+<span class="sd">        VARIABLEattributes and zVariables parts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building skeleton table zvariable section...&quot;</span><span class="p">)</span>
+
+        <span class="n">zvar_body</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#variables&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="n">zvar_body</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;!No rVariables.&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">])</span>
+        <span class="n">zvar_body</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;#zVariables&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">zvar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">zvars_sheet</span><span class="p">[</span><span class="s2">&quot;Variable Name&quot;</span><span class="p">]):</span>
+
+            <span class="k">if</span> <span class="n">zvar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ignore_none</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Current zVariable is NoneType, skipping!&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: Current zVariable is NoneType!&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span>
+
+            <span class="n">zvar_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VARIABLE_BOARD</span><span class="p">)</span>
+
+            <span class="c1"># New zVariable entry</span>
+            <span class="n">zvar_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="n">dtype_i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">zvars_sheet</span><span class="p">[</span><span class="s2">&quot;Data Type&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">nelem_i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">zvars_sheet</span><span class="p">[</span><span class="s2">&quot;Number Elements&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">dims_i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">zvars_sheet</span><span class="p">[</span><span class="s2">&quot;Dims&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">sizes_i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">zvars_sheet</span><span class="p">[</span><span class="s2">&quot;Sizes&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">recvar_i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">zvars_sheet</span><span class="p">[</span><span class="s2">&quot;Record Variance&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">dimvars_i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">zvars_sheet</span><span class="p">[</span><span class="s2">&quot;Dimension Variances&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">zvar</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;    &quot;</span> <span class="o">+</span> <span class="n">dtype_i</span> <span class="o">+</span>
+                      <span class="s2">&quot;     &quot;</span> <span class="o">+</span> <span class="n">nelem_i</span> <span class="o">+</span> <span class="s2">&quot;     &quot;</span> <span class="o">+</span> <span class="n">dims_i</span> <span class="o">+</span> <span class="s2">&quot;     &quot;</span> <span class="o">+</span>
+                      <span class="n">sizes_i</span> <span class="o">+</span> <span class="s2">&quot;     &quot;</span> <span class="o">+</span> <span class="n">recvar_i</span> <span class="o">+</span> <span class="s2">&quot;     &quot;</span> <span class="o">+</span> <span class="n">dimvars_i</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">dtype_i</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Wrong Data Type for </span><span class="si">%s</span><span class="s2">!&quot;</span><span class="p">,</span> <span class="n">zvar</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nelem_i</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Wrong Number Elements for </span><span class="si">%s</span><span class="s2">!&quot;</span><span class="p">,</span> <span class="n">zvar</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dims_i</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Wrong Dims for </span><span class="si">%s</span><span class="s2">!&quot;</span><span class="p">,</span> <span class="n">zvar</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">sizes_i</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                <span class="n">sizes_i</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">dimvars_i</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                <span class="n">dimvars_i</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="n">zvar_entry</span> <span class="o">=</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">zvar</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;    &quot;</span> <span class="o">+</span> <span class="n">dtype_i</span> <span class="o">+</span> \
+                <span class="s2">&quot;     &quot;</span> <span class="o">+</span> <span class="n">nelem_i</span> <span class="o">+</span> <span class="s2">&quot;     &quot;</span> <span class="o">+</span> <span class="n">dims_i</span> <span class="o">+</span> <span class="s2">&quot;     &quot;</span> <span class="o">+</span> \
+                <span class="n">sizes_i</span> <span class="o">+</span> <span class="s2">&quot;     &quot;</span> <span class="o">+</span> <span class="n">recvar_i</span> <span class="o">+</span> <span class="s2">&quot;     &quot;</span> <span class="o">+</span> <span class="n">dimvars_i</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zvar_entry</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ROW_LENGTH_MAX</span><span class="p">:</span>
+                <span class="n">zvar_entry</span> <span class="o">=</span> <span class="n">insert_char</span><span class="p">(</span><span class="n">zvar_entry</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zvar</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+
+            <span class="n">zvar_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zvar_entry</span><span class="p">)</span>
+
+            <span class="n">var_opt_info</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">VAR_OPTION_NAMES</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">options_sheet</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s2">&quot;VAR_PADVALUE&quot;</span> <span class="ow">and</span> <span class="n">auto_pad</span><span class="p">:</span>
+                        <span class="n">options_sheet</span><span class="p">[</span><span class="n">opt</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">assign_pad</span><span class="p">(</span><span class="n">dtype_i</span><span class="p">)</span>
+                    <span class="n">var_opt_info</span> <span class="o">+=</span> <span class="s2">&quot;! &quot;</span> <span class="o">+</span> <span class="n">opt</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> \
+                        <span class="n">options_sheet</span><span class="p">[</span><span class="n">opt</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">zvar_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_opt_info</span><span class="p">)</span>
+
+            <span class="c1"># Add variable attributes info</span>
+            <span class="n">zvar_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VATTRS_BOARD</span><span class="p">)</span>
+
+            <span class="n">vattr_entry</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">vattr_var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vattrs_sheet</span><span class="p">[</span><span class="s2">&quot;Variable Name&quot;</span><span class="p">]):</span>
+
+                <span class="k">if</span> <span class="n">vattr_var</span> <span class="o">==</span> <span class="n">zvar</span><span class="p">:</span>
+                    <span class="n">vattr_entry</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">vattr_name</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">vattrs_sheet</span><span class="p">[</span><span class="s2">&quot;Attribute Name&quot;</span><span class="p">][</span><span class="n">j</span><span class="p">]))</span>
+                    <span class="n">vattr_dtype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">vattrs_sheet</span><span class="p">[</span><span class="s2">&quot;Data Type&quot;</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">vattr_dtype</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Wrong Data Type for the &quot;</span> <span class="o">+</span>
+                                    <span class="s2">&quot;attribute </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">+</span>
+                                    <span class="s2">&quot;of the variable </span><span class="si">%s</span><span class="s2"> !&quot;</span><span class="p">,</span> <span class="n">vattr_name</span><span class="p">,</span> <span class="n">zvar</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span>
+
+                    <span class="k">if</span> <span class="n">vattrs_sheet</span><span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">vattr_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">vattr_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">vattrs_sheet</span><span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+
+                    <span class="n">vattr_entry_j</span> <span class="o">=</span> <span class="s2">&quot;   &quot;</span> <span class="o">+</span> <span class="n">vattr_name</span> <span class="o">+</span> <span class="s2">&quot;    &quot;</span> \
+                        <span class="o">+</span> <span class="n">vattr_dtype</span> <span class="o">+</span> <span class="s2">&quot;     { &quot;</span>
+
+                    <span class="k">if</span> <span class="n">vattr_dtype</span> <span class="o">==</span> <span class="s2">&quot;CDF_CHAR&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vattr_value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">vattr_value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
+
+                        <span class="n">vattr_value</span> <span class="o">=</span> <span class="n">vattr_value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+                        <span class="n">gap</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">vattr_entry_j</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="n">vattr_value</span> <span class="o">=</span> <span class="n">truncate_str</span><span class="p">(</span><span class="n">vattr_value</span><span class="p">,</span>
+                                                   <span class="nb">int</span><span class="p">(</span><span class="n">ROW_LENGTH_MAX</span> <span class="o">/</span> <span class="mi">3</span><span class="p">),</span>
+                                                   <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span>
+                                                   <span class="n">min_length</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+                        <span class="n">vattr_value</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">vattr_value</span><span class="p">)</span>
+
+                    <span class="n">vattr_entry</span> <span class="o">+=</span> <span class="n">vattr_entry_j</span> <span class="o">+</span> <span class="n">vattr_value</span> <span class="o">+</span> <span class="s2">&quot; }&quot;</span>
+
+            <span class="n">vattr_entry</span> <span class="o">+=</span> <span class="s2">&quot; .</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">zvar_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vattr_entry</span><span class="p">)</span>
+
+            <span class="c1"># Add NRV</span>
+            <span class="n">nrv_body</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">nrv_k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nrv_sheet</span><span class="p">[</span><span class="s2">&quot;Variable Name&quot;</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">zvar</span> <span class="o">==</span> <span class="n">nrv_k</span><span class="p">:</span>
+                    <span class="n">idx_k</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">nrv_sheet</span><span class="p">[</span><span class="s2">&quot;Index&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+                    <span class="n">val_k</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">nrv_sheet</span><span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">idx_k</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">idx_k</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">):</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Wrong NRV index for </span><span class="si">%s</span><span class="s2">!&quot;</span><span class="p">,</span> <span class="n">nrv_k</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">dtype_i</span> <span class="o">==</span> <span class="s2">&quot;CDF_CHAR&quot;</span> <span class="ow">or</span>
+                    <span class="n">dtype_i</span> <span class="o">==</span> <span class="s2">&quot;CDF_UCHAR&quot;</span><span class="p">):</span>
+                        <span class="n">val_k</span> <span class="o">=</span> <span class="s2">&quot;{ &quot;</span> <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">val_k</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; }&quot;</span>
+                    <span class="n">nrv_body</span> <span class="o">+=</span> <span class="s2">&quot;    [ &quot;</span> <span class="o">+</span> <span class="n">idx_k</span> <span class="o">+</span> <span class="s2">&quot; ] = &quot;</span> <span class="o">+</span> \
+                        <span class="n">val_k</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrv_body</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nrv_body</span> <span class="o">=</span> <span class="s2">&quot;  ! RV values were not requested.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nrv_body</span> <span class="o">=</span> <span class="s2">&quot;  ! NRV values follow...</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">nrv_body</span>
+
+            <span class="n">zvar_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nrv_body</span><span class="p">)</span>
+
+        <span class="n">zvar_body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">zvar_body</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">zvar_body</span></div>
+
+
+<span class="c1"># ________________ Global Functions __________</span>
+<div class="viewcode-block" id="assign_pad"><a class="viewcode-back" href="../../../../../api/maser4py/maser.utils.cdf.converter.xlsx2skt.html#maser.utils.cdf.converter.xlsx2skt.assign_pad">[docs]</a><span class="k">def</span> <span class="nf">assign_pad</span><span class="p">(</span><span class="n">data_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;VAR_PADVALUE auto assign.</span>
+
+<span class="sd">    Automatically assigns VAR_PADVALUE</span>
+<span class="sd">    depending to the input data_type</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">data_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="s2">&quot;EPOCH&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;01-Jan-0000 00:00:00.000&quot;</span>
+    <span class="k">elif</span> <span class="s2">&quot;TT2000&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;0000-01-01T00:00:00.000000000&quot;</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;INT&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;BYTE&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;0&quot;</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;FLOAT&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;REAL&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;DOUBLE&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;0.0&quot;</span>
+    <span class="k">elif</span> <span class="s2">&quot;CHAR&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2"> </span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;None&quot;</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../../api/maser4py/maser.utils.cdf.converter.xlsx2skt.html#maser.utils.cdf.converter.xlsx2skt.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;xlsx2skt main program.&quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;CDF converter main modulea Excel 2007 &#39;</span> <span class="o">+</span>
+        <span class="s1">&#39;format file into a CDF skeleton table&#39;</span><span class="p">,</span>
+        <span class="n">add_help</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;excel&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Excel 2007 format file (.xlsx)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--skeleton&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Output CDF skeleton table (.skt)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--output_dir&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path of the output directory&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-O&#39;</span><span class="p">,</span> <span class="s1">&#39;--Overwrite&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Overwrite existing output files&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-V&#39;</span><span class="p">,</span> <span class="s1">&#39;--Verbose&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Verbose mode&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-D&#39;</span><span class="p">,</span> <span class="s1">&#39;--Debug&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Debug mode&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-Q&#39;</span><span class="p">,</span> <span class="s1">&#39;--Quiet&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Quiet mode&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-I&#39;</span><span class="p">,</span> <span class="s1">&#39;--Ignore_none&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Ignore NoneType zVariables&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-A&#39;</span><span class="p">,</span> <span class="s1">&#39;--Auto_pad&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Value of !VAR_PADVALUE &#39;</span> <span class="o">+</span>
+                        <span class="s1">&#39;is automatically assigned&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">Xlsx2skt</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">excel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                  <span class="n">skt_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">skeleton</span><span class="p">,</span>
+                  <span class="n">output_dir</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+                  <span class="n">overwrite</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">Overwrite</span><span class="p">,</span>
+                  <span class="n">ignore_none</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">Ignore_none</span><span class="p">,</span>
+                  <span class="n">auto_pad</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">Auto_pad</span><span class="p">,</span>
+                  <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">Verbose</span><span class="p">,</span>
+                  <span class="n">debug</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">Debug</span><span class="p">,</span>
+                  <span class="n">quiet</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">Quiet</span><span class="p">)</span></div>
+
+<span class="c1"># _________________ Main ____________________________</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, X.Bonnin, B.Cecconi, Q.N.Nguyen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

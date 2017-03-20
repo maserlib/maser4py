@@ -8,10 +8,13 @@ MASER: SolO RPW tools module.
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
 import logging
+import os
 
-from .rpw import RpwException
+from ....utils.cdf.cdf import CDF
 
-__all__ = ["get_dataset_id"]
+from .exception import RpwException
+
+__all__ = ["get_dataset_id", "cdf_info", "file2cdf"]
 
 # ________________ HEADER _________________________
 
@@ -35,11 +38,24 @@ __changes__ = ""
 
 logger = logging.getLogger(__name__)
 
+
 # ________________ Class Definition __________
 # (If required, define here classes)
 
 # ________________ Global Functions __________
 # (If required, define here gobal functions)
+def file2cdf(cdf):
+    """Convert input CDF filepath string into CDF.CDF instance."""
+    if type(cdf) == CDF.CDF:
+        return cdf
+    elif os.path.isfile(str(cdf)):
+        return CDF.CDF(cdf)
+    else:
+        msg = "Unknonw input cdf!"
+        logger.error(msg)
+        raise RpwException(msg)
+
+
 def get_dataset_id(cdf_data):
     """Get RPW dataset id from the cdf data."""
     if "DATASET_ID" in cdf_data.attrs:
@@ -48,6 +64,11 @@ def get_dataset_id(cdf_data):
         msg = "Input CDF has no DATASET_ID attribute!"
         logger.error(msg)
         raise RpwException(msg)
+
+
+def cdf_info(cdf):
+    """Return cdf info."""
+    return CDF.CDF(cdf)
 
 
 def main():

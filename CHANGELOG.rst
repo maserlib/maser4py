@@ -1,6 +1,12 @@
 CHANGELOG
 ====================
 
+0.4.4
+-----
+* Update doc
+* Update setup.py
+* Add leapsec.py
+
 0.4.3
 -----
 * Update setup.py and requirements.txt

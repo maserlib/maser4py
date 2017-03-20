@@ -30,7 +30,10 @@ In order to install the maser4py python module:
 Usage
 -------
 
-See doc/build/latex/maser4py.pdf file or doc/build/index.html (HTML version)
+From Python, enter "import maser".
+The module also offers specific command line interfaces.
+
+For more details, see the user manual in pdf format (doc/build/latex/maser4py.pdf) or html format (doc/build/index.html).
 
 MASER4PY content
 ----------------
@@ -42,7 +45,6 @@ The maser4py directory contains the following items:
 - scripts/ store scripts to run/test/manage maser4py
 - __main__.py python script to run maser.main program
 - CHANGELOG.rst software change history log
-- INSTALL.rst instructions to install maser4py
 - MANIFEST.in files to be included to the package installation (used by setup.py)
 - README.rst current file
 - requirements.txt list of python package dependencies and versions
@@ -56,8 +58,8 @@ The MASER portal (Mesures, Analyses et Simulations d’Emissions Radio) gives an
 
 In this frequency range, the main radio sources are the Sun and the magnetized planets. The low frequency fluctuations measurement of the electric and magnetic fields can also provide a diagnosis on the local plasma conditions, and in-situ observations of plasma waves phenomena in the Solar Wind and the planetary environements.
 
-For more information about MASER:
-http://maser.lesia.obspm.fr/ (in french)
+* For more information about the MASER project: http://maser.lesia.obspm.fr/ (in french)
+* For more information about MASER4PY: https://github.com/maserlib/maser4py
 
 
 

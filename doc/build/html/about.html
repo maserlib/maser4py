@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; maser4py 0.4.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="#"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="maser4py 0.4.3 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> maser4py
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="services.html">Services</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendices.html">Troubleshooting</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">maser4py</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/about.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="about">
+<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
+<p>MASER4PY is a Python 3 package to deal with data from the MASER portal.
+The MASER portal provides access to services, data and tools in the framework of the radio astronomy.</p>
+<p>For more information about MASER, please visit: <a class="reference external" href="http://maser.lesia.obspm.fr/">http://maser.lesia.obspm.fr/</a></p>
+</div>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>MASER4PY modules are divided in three categories:</p>
+<ul class="simple">
+<li><strong>services</strong>, Web service access</li>
+<li><strong>data</strong>, radio astronomy data handling</li>
+<li><strong>utils</strong>, generic utilities</li>
+</ul>
+<div class="section" id="content">
+<h3>Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h3>
+<p>The MASER4PY package is organized as follows:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>maser/</dt>
+<dd><dl class="first last docutils">
+<dt>services/</dt>
+<dd><dl class="first last docutils">
+<dt>helio/</dt>
+<dd>Module to use data from the HELIO Virtual Observatory.</dd>
+</dl>
+</dd>
+<dt>data/</dt>
+<dd><dl class="first last docutils">
+<dt>wind/</dt>
+<dd>Module related to the Wind NASA mission data.</dd>
+<dt>solo/</dt>
+<dd>Module related to the Solar Orbiter mission data.</dd>
+</dl>
+</dd>
+<dt>utils/</dt>
+<dd><dl class="first last docutils">
+<dt>cdf/</dt>
+<dd>Module to handle the NASA Common Data Format (CDF).</dd>
+<dt>toolbox/</dt>
+<dd>Module containing common tool methods for MASER-PY</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>In order to work, the MASER4PY package modules also rely on additional files and directories:</p>
+<dl class="docutils">
+<dt>maser/support</dt>
+<dd>Directory containing support data</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="system-requirements">
+<h3>System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline">¶</a></h3>
+<p>In order to install MASER4PY, make sure to have Python 3.4 or higher
+available on your system.</p>
+<p>The package installation requires the following Python modules:</p>
+<ul class="simple">
+<li>setuptools</li>
+<li>openpyxl</li>
+<li>numpy</li>
+<li>matplolib</li>
+<li>sphinx</li>
+</ul>
+<p>MASER4PY has been tested on the following Operating Systems:</p>
+<ul class="simple">
+<li>Mac OS X 10.10 or higher</li>
+<li>Debian Jessie 8.2 or higher</li>
+</ul>
+<p>In order to use the &#8220;cdf&#8221; submodule, the NASA CDF software
+distribution (<a class="reference external" href="https://cdf.gsfc.nasa.gov/">https://cdf.gsfc.nasa.gov/</a>) shall be installed and configured on your system.
+Especially, make sure that the directory containing the CDF binary
+executables is on your $PATH, and the $CDF_LIB env. var. is set.</p>
+</div>
+<div class="section" id="how-to-get-maser4py">
+<h3>How to get MASER4PY?<a class="headerlink" href="#how-to-get-maser4py" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="from-pip">
+<h4>From pip<a class="headerlink" href="#from-pip" title="Permalink to this headline">¶</a></h4>
+<p>If the pip tool is installed on your system, just enter:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install maser4py
+</pre></div>
+</div>
+</div>
+<div class="section" id="from-github">
+<h4>From Github<a class="headerlink" href="#from-github" title="Permalink to this headline">¶</a></h4>
+<p>To get MASER4PY from Github, enter:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/maserlib/maser4py.git
+</pre></div>
+</div>
+<p>Make sure to have Git (<a class="reference external" href="https://git-scm.com/">https://git-scm.com/</a>) installed on your system.</p>
+<p>If everything goes right, you should have a new local &#8220;maser4py&#8221; directory created on your disk.</p>
+</div>
+</div>
+<div class="section" id="how-to-install-maser4py">
+<h3>How to install MASER4PY?<a class="headerlink" href="#how-to-install-maser4py" title="Permalink to this headline">¶</a></h3>
+<p>From the &#8220;maser4py&#8221; main directory, install program dependencies:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip3 install -r requirements.txt
+</pre></div>
+</div>
+<p>To install the package on your system, enter the following
+command :</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 setup.py install
+</pre></div>
+</div>
+<p>This should install the maser4py package on your
+system.</p>
+<p>To check that the installation ends correctly, you can enter:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>maser4py
+</pre></div>
+</div>
+<p>, which should return something like:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="s2">&quot;This is maser4py package VX.Y.Z&quot;</span>
+</pre></div>
+</div>
+<p>If you have an issue during installation, please read the &#8220;Troubleshooting&#8221; section for help.</p>
+</div>
+<div class="section" id="how-to-run-maser4py">
+<h3>How to run MASER4PY?<a class="headerlink" href="#how-to-run-maser4py" title="Permalink to this headline">¶</a></h3>
+<p>If the installation has ended correctly, you can run MASER4PY:</p>
+<blockquote>
+<div><ul class="simple">
+<li>From a Python interpreter session, by entering &#8220;import maser&#8221;.</li>
+<li>Using the command line interface available for some MASER4PY modules.</li>
+</ul>
+</div></blockquote>
+<p>For more details about the MASER4PY modules, please read the user manual.</p>
+</div>
+</div>
+<div class="section" id="contacts">
+<h2>Contacts<a class="headerlink" href="#contacts" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Xavier Bonnin - <a class="reference external" href="mailto:xavier&#46;bonnin&#37;&#52;&#48;obspm&#46;fr">xavier<span>&#46;</span>bonnin<span>&#64;</span>obspm<span>&#46;</span>fr</a></li>
+<li>Quynh Nhu Nguyen - <a class="reference external" href="mailto:quynh-nhu&#46;nguyen&#37;&#52;&#48;obspm&#46;fr">quynh-nhu<span>&#46;</span>nguyen<span>&#64;</span>obspm<span>&#46;</span>fr</a></li>
+<li>Baptiste Cecconi - <a class="reference external" href="mailto:baptiste&#46;cecconi&#37;&#52;&#48;obspm&#46;fr">baptiste<span>&#46;</span>cecconi<span>&#64;</span>obspm<span>&#46;</span>fr</a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, X.Bonnin, B.Cecconi, Q.N.Nguyen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

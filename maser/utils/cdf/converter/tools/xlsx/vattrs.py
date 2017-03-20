@@ -17,6 +17,7 @@ __all__ = ["add_vattr",
             "set_vattr_dtype",
             "set_vattr_var",
             "rm_vattr",
+            "rm_var",
             "set_vattr_var"]
 
 # ________________ HEADER _________________________
@@ -238,13 +239,13 @@ def rename_vattr(xlsx, old_attname, new_attname,
     if len(rows) == 0:
         logger.warning("There is no {0} attribute!".format(
                                         old_attname))
-        return None
+        return wb
 
     for row in rows:
         zvar = ws["A{0}".format(row)].value
         if varname is not None and varname != zvar:
             continue
-        # Change gatt name
+        # Change vatt name
         ws.cell(row=row, column=2).value = new_attname
 
     return wb
@@ -271,16 +272,53 @@ def rm_vattr(xlsx, attname,
     if len(rows) == 0:
         logger.warning("There is no {0} attribute!".format(
                                         attname))
-        return None
+        return wb
 
     # Update Cells to put tuple of None for the given vattr
     for row in rows:
         zvar = ws["A{0}".format(row)].value
         if varname is not None and varname != zvar:
             continue
-        # Remove gatt name
+        # Remove var name
         ws.cell(row=row, column=1).value = None
-        # Remove entry number
+        # Remove attribute name
+        ws.cell(row=row, column=2).value = None
+        # Remove cdf dtype
+        ws.cell(row=row, column=3).value = None
+        # Remove entry value
+        ws.cell(row=row, column=4).value = None
+
+    return wb
+
+
+@check_args(VATT_SHEET_NAME)
+def rm_var(xlsx, varname,
+             output=None, overwrite=False):
+    """rm_var.
+
+    Remove a variable in the vattrs sheet
+    from the input CDF Excel skeleton file.
+    (By default a new file is created.)
+
+    """
+    wb = lwb(xlsx)
+
+    # Get sheet for variable attributes
+    ws = wb.get_sheet_by_name(VATT_SHEET_NAME)
+
+    # Get indices of row for the vattr
+    rows = get_row(ws, varname, column="A")
+
+    if len(rows) == 0:
+        logger.warning("There is no {0} variable!".format(
+                                        varname))
+        return wb
+
+    # Update Cells to put tuple of None for the given variable
+    for row in rows:
+        # Remove var name
+        ws.cell(row=row, column=1).value = None
+        # Remove attribute name
         ws.cell(row=row, column=2).value = None
         # Remove cdf dtype
         ws.cell(row=row, column=3).value = None
@@ -306,7 +344,7 @@ def set_vattr_var(xlsx, old_varname, new_varname,
         logger.warning(
                        "{0} variable does not exist!".format(
                                                     old_varname))
-        return None
+        return wb
 
     for row in rows:
         ws.cell(row=row, column=1).value = new_varname
