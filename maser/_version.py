@@ -17,4 +17,5 @@ __change__ = {"0.1.0": "First beta release",
 "0.4.0": "Add solo.rpw module, update cdf.converter.tools.xlsx",
 "0.4.1": "Update README.rst, remove INSTALL.rst, update doc",
 "0.4.2": "Fix a bug in utils.cdf",
-"0.4.3": "Update setup.py and requirements.txt"}
+"0.4.3": "Update setup.py and requirements.txt",
+"0.4.4": "Update doc and setup.py"}
