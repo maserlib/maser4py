@@ -11,6 +11,7 @@ import logging
 
 from .cdf import const, zAttr
 import numpy
+import csv
 
 # ________________ HEADER _________________________
 
@@ -92,6 +93,7 @@ def get_numpttype(dtype=None):
         return numpytypedict
     else:
         return numpytypedict[dtype]
+
 
 def get_vattrs(cdf):
 

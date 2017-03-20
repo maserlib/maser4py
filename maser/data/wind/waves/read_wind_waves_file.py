@@ -6,16 +6,20 @@ Python module to read a Wind/Waves data file.
 @author: X.Bonnin (LESIA)
 """
 
-__author__="Xavier Bonnin"
-__date__="03-MAR-2013"
-__version__="1.00"
-
-import sys, os
+import sys
+import os
 import re
 from datetime import datetime
 import struct
 
-class waves_data:
+__author__ = "Xavier Bonnin"
+__date__ = "03-MAR-2013"
+__version__ = "1.00"
+
+__all__ = ["Waves_data"]
+
+
+class Waves_data:
     def __init__(self,header,data):
         self.header = header
         self.data = data
@@ -31,7 +35,7 @@ def read_l2_hres(filepath):
                      "HOUR","MINUTE","SECOND","JULIAN_SEC_FRAC",
                      "ISWEEP","IUNIT","NPBS","SUN_ANGLE","SPIN_RATE","KSPIN","MODE","LISTFR","NFREQ",
                      "ICAL","IANTEN","IPOLA","IDIPXY","SDURCY","SDURPA",
-        "NPALCY","NFRPAL","NPALIF","NSPALF","NZPALF") 
+        "NPALCY","NFRPAL","NPALIF","NSPALF","NZPALF")
     header_dtype = '>bbbbihLhhhhhhfihhffhhhhhhhhffhhhhh'
 
     header = [] ; data = [] ; nsweep=1
@@ -57,7 +61,7 @@ def read_l2_hres(filepath):
                 Tspal = struct.unpack('>'+'f'*npalf*nspal,block)
                 # Reading intensity and time values for Z in the current sweep
                 block = frb.read(4*npalf*nzpal)
-                Vzpal = struct.unpack('>'+'f'*npalf*nzpal,block)    
+                Vzpal = struct.unpack('>'+'f'*npalf*nzpal,block)
                 block = frb.read(4*npalf*nzpal)
                 Tzpal = struct.unpack('>'+'f'*npalf*nzpal,block)
                 # Reading number of octets in the current sweep
@@ -75,7 +79,7 @@ def read_l2_hres(filepath):
                 nsweep+=1
 
     return waves_data(header, data)
- 
+
 if (__name__=="__main__"):
     print "Python module to read Wind/Waves data file."
 

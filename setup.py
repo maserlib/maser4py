@@ -38,7 +38,9 @@ setup(
     name='maser',
     version=_version.__version__,
     description="Python 3 module for MASER",
+    long_description=open("README.rst").read(),
     author="X.Bonnin",
+    license="BSD",
     packages=packages,
     cmdclass=cmdclass,
     entry_points={
@@ -46,9 +48,13 @@ setup(
             "maser4py=maser.maser:main",
             "xlsx2skt=maser.utils.cdf.converter:xlsxskt",
             "skt2cdf=maser.utils.cdf.converter:sktcdf",
-            "cdfvalid=maser.utils.cdf.validator:main"],
+            "cdfvalid=maser.utils.cdf.validator:main",
+            "leapsec=maser.utils.cdf.leapsec:main",
+            "maser-rpw=maser.data.solo.rpw:main"],
     },
-    install_requires=['openpyxl>=2.3.5', 'simplejson>=3.8.2', 'numpy>=1.11.0'],
-    include_package_data=True
+    setup_requires=['numpy>=1.11.0'],
+    install_requires=['openpyxl>=2.3.5', 'numpy>=1.11.0'],
+    include_package_data=True,
+    url="https://github.com/maserlib/maser4py"
     # ext_modules=cythonize("maser/rpl/*.pyx"),
 )
