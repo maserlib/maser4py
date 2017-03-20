@@ -27,7 +27,10 @@ In order to install the maser4py python module:
 Usage
 -------
 
-See doc/build/latex/maser4py.pdf file or doc/build/index.html (HTML version)
+From Python, enter "import maser".
+The module also offers specific command line interfaces.
+
+For more details, see the user manual in pdf format (doc/build/latex/maser4py.pdf) or html format (doc/build/index.html).
 
 MASER4PY content
 ----------------
@@ -39,7 +42,6 @@ The maser4py directory contains the following items:
 - scripts/ store scripts to run/test/manage maser4py
 - __main__.py python script to run maser.main program
 - CHANGELOG.rst software change history log
-- INSTALL.rst instructions to install maser4py
 - MANIFEST.in files to be included to the package installation (used by setup.py)
 - README.rst current file
 - requirements.txt list of python package dependencies and versions

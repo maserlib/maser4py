@@ -1,2 +1,5 @@
 numpy>=1.11.0
 openpyxl>=2.3.5
+Sphinx>=1.4.1
+matplotlib
+sphinx_rtd_theme

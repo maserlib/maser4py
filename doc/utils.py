@@ -53,10 +53,10 @@ class APIDoc(Command):
         # same here, and add path
         main([
             'sphinx-apidoc', '-f', '-o',
-            osp.join(apidir, "maser-py"),
+            osp.join(apidir, "maser4py"),
             osp.join(rootdir, "maser"),
             "--separate",
         ])
 
         # build the documentation as provided by sphinx
-        self.run_command("sphinx-build")
+        self.run_command("build_sphinx")

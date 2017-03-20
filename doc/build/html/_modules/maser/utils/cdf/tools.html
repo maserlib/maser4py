@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>maser.utils.cdf.tools &mdash; maser4py 0.4.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="../../../../about.html"/>
+        <link rel="index" title="Index"
+              href="../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../search.html"/>
+    <link rel="top" title="maser4py 0.4.3 documentation" href="../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../index.html"/> 
+
+  
+  <script src="../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> maser4py
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../services.html">Services</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../appendices.html">Troubleshooting</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">maser4py</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>maser.utils.cdf.tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for maser.utils.cdf.tools</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module providing additional tools for the CDF format handling</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ________________ IMPORT _________________________</span>
+<span class="c1"># (Include here the modules to import, e.g. import sys)</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">.cdf</span> <span class="k">import</span> <span class="n">const</span><span class="p">,</span> <span class="n">zAttr</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="c1"># ________________ HEADER _________________________</span>
+
+<span class="c1"># ________________ Global Variables _____________</span>
+<span class="c1"># (define here the global variables)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># ________________ Global Functions __________</span>
+<span class="c1"># (If required, define here gobal functions)</span>
+
+
+<div class="viewcode-block" id="get_cdftype"><a class="viewcode-back" href="../../../../api/maser4py/maser.utils.cdf.tools.html#maser.utils.cdf.tools.get_cdftype">[docs]</a><span class="k">def</span> <span class="nf">get_cdftype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the id of a pycdf data type,</span>
+<span class="sd">        prividing the CDF data type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">const</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span><span class="o">.</span><span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="get_cdftypename"><a class="viewcode-back" href="../../../../api/maser4py/maser.utils.cdf.tools.html#maser.utils.cdf.tools.get_cdftypename">[docs]</a><span class="k">def</span> <span class="nf">get_cdftypename</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the CDF type name of a given pycdf cdf type</span>
+<span class="sd">        Return the full CDF data type dictionnary if no input</span>
+<span class="sd">        argument is provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cdftypenames</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_BYTE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_BYTE&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_CHAR</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_CHAR&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_INT1</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_INT1&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_UCHAR</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_UCHAR&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_UINT1</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_UINT1&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_INT2</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_INT2&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_UINT2</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_UINT2&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_INT4</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_INT4&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_UINT4</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_UINT4&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_INT8</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_INT8&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_FLOAT</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_FLOAT&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_REAL4</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_REAL4&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_DOUBLE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_DOUBLE&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_REAL8</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_REAL8&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_EPOCH</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_EPOCH&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_EPOCH16</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_EPOCH16&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_TIME_TT2000</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="s1">&#39;CDF_TIME_TT2000&#39;</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cdftypenames</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cdftypenames</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_numpttype"><a class="viewcode-back" href="../../../../api/maser4py/maser.utils.cdf.tools.html#maser.utils.cdf.tools.get_numpttype">[docs]</a><span class="k">def</span> <span class="nf">get_numpttype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the numpy data type from a given pycdf data type.</span>
+<span class="sd">        Return the full numpy data type dictionnary if no input</span>
+<span class="sd">        argument is provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">numpytypedict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_BYTE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_CHAR</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_INT1</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_UCHAR</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_UINT1</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_INT2</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_UINT2</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_INT4</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_UINT4</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_INT8</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_FLOAT</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_REAL4</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_DOUBLE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_REAL8</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_EPOCH</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_EPOCH16</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">((</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">CDF_TIME_TT2000</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">numpytypedict</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">numpytypedict</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_vattrs"><a class="viewcode-back" href="../../../../api/maser4py/maser.utils.cdf.tools.html#maser.utils.cdf.tools.get_vattrs">[docs]</a><span class="k">def</span> <span class="nf">get_vattrs</span><span class="p">(</span><span class="n">cdf</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the list of zVariables attributes</span>
+<span class="sd">    from a given pycdf object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">vattrs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cdf</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No Zvariable found!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vattrs</span>
+
+    <span class="k">for</span> <span class="n">zvar</span> <span class="ow">in</span> <span class="n">cdf</span><span class="p">:</span>
+        <span class="n">zattrs</span> <span class="o">=</span> <span class="n">cdf</span><span class="p">[</span><span class="n">zvar</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+        <span class="k">for</span> <span class="n">vattr</span> <span class="ow">in</span> <span class="n">zattrs</span><span class="p">:</span>
+            <span class="n">zattr</span> <span class="o">=</span> <span class="n">zAttr</span><span class="p">(</span><span class="n">cdf</span><span class="p">,</span> <span class="n">vattr</span><span class="p">)</span>
+            <span class="n">vattrs</span><span class="p">[</span><span class="n">vattr</span><span class="p">]</span> <span class="o">=</span> <span class="n">zattr</span>
+
+    <span class="k">return</span> <span class="n">vattrs</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, X.Bonnin, B.Cecconi, Q.N.Nguyen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

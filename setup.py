@@ -52,8 +52,8 @@ setup(
             "leapsec=maser.utils.cdf.leapsec:main",
             "maser-rpw=maser.data.solo.rpw:main"],
     },
-    setup_requires=['numpy>=1.11.0'],
-    install_requires=['openpyxl>=2.3.5', 'numpy>=1.11.0'],
+    setup_requires=['numpy>=1.11.0', 'sphinx>=1.4.1', 'sphinx_rtd_theme'],
+    install_requires=['openpyxl>=2.3.5', 'numpy>=1.11.0', 'matplotlib'],
     include_package_data=True,
     url="https://github.com/maserlib/maser4py"
     # ext_modules=cythonize("maser/rpl/*.pyx"),

@@ -9,10 +9,9 @@ import logging
 import os
 
 import numpy as np
-from spacepy import pycdf
+from .....utils.cdf.cdf import CDF
 import matplotlib.pyplot as plt
 
-from .lfr import LfrException
 from ..tools import file2cdf
 
 __all__ = ["plot_swf", "plot_cwf"]
@@ -137,10 +136,10 @@ def plot_swf(cdf, snapshot_nr=0, channel=[1, 2, 3, 4],
              no_fillval=False,
              no_time=False):
     """Plot LFR SWF data."""
-    if type(cdf) == pycdf.CDF:
+    if type(cdf) == CDF.CDF:
         cdf_data = cdf
     else:
-        cdf_data = pycdf.CDF(cdf)
+        cdf_data = CDF.CDF(cdf)
 
     swf = cdf_data["WAVEFORM_DATA"][snapshot_nr, :, :]
     # epoch = cdf_data["Epoch"][snapshot_nr]

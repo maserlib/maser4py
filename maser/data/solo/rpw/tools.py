@@ -10,7 +10,7 @@ MASER: SolO RPW tools module.
 import logging
 import os
 
-from spacepy import pycdf
+from ....utils.cdf.cdf import CDF
 
 from .exception import RpwException
 
@@ -45,11 +45,11 @@ logger = logging.getLogger(__name__)
 # ________________ Global Functions __________
 # (If required, define here gobal functions)
 def file2cdf(cdf):
-    """Convert input CDF filepath string into pycdf.CDF instance."""
-    if type(cdf) == pycdf.CDF:
+    """Convert input CDF filepath string into CDF.CDF instance."""
+    if type(cdf) == CDF.CDF:
         return cdf
     elif os.path.isfile(str(cdf)):
-        return pycdf.CDF(cdf)
+        return CDF.CDF(cdf)
     else:
         msg = "Unknonw input cdf!"
         logger.error(msg)
@@ -68,7 +68,7 @@ def get_dataset_id(cdf_data):
 
 def cdf_info(cdf):
     """Return cdf info."""
-    return pycdf.CDF(cdf)
+    return CDF.CDF(cdf)
 
 
 def main():
