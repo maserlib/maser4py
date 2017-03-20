@@ -21,12 +21,12 @@ maser4py has been tested on the following Operating Systems:
 
 .. warning::
 
-    In order to use the "cdf" submodule, the NASA CDF software
-    distribution must be installed and configured on your system.
+    Make sure that the NASA CDF software
+    distribution is installed and configured on your system.
     Visit https://cdf.gsfc.nasa.gov/ for more details.
 
-How to get MASER4PY?
-====================
+How to install maser4py?
+========================
 
 From pip
 --------
@@ -36,10 +36,6 @@ If the pip tool is installed on your system, just enter:
 .. code-block:: bash
 
     pip install maser4py
-
-
-How to install MASER4PY?
-========================
 
 From Github
 -----------
@@ -85,12 +81,12 @@ To check that the installation ends correctly, you can enter:
 If you have an issue during installation, please read the "Troubleshooting" section for help.
 
 
-How to run MASER4PY?
+How to run maser4py?
 ====================
 
-If the installation has ended correctly, you can run MASER4PY:
+If the installation has ended correctly, you can run maser4py:
 
   - From a Python interpreter session, by entering "import maser".
-  - Using the command line interface available for some MASER4PY modules.
+  - Using the command line interface available for some maser4py modules.
 
 For more details about the MASER4PY modules, please read the user manual.
