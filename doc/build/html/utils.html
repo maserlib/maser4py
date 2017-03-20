@@ -32,8 +32,6 @@
   
 
   
-        <link rel="author" title="About these documents"
-              href="about.html"/>
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
@@ -101,14 +99,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#the-cdf-converter-tool">The <em>cdf.converter</em> tool</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#the-xlsx2skt-class">The Xlsx2skt class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#the-skt2cdf-class">The <em>Skt2cdf</em> class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Command line interface</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#the-cdf-validator-tool">The <em>cdf.validator</em> tool</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#the-validate-class">The <em>Validate</em> class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Command line interface</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#the-leapsec-tool">The <em>leapsec</em> tool</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#the-lstable-class">The <em>Lstable</em> class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Command line interface</a></li>
 </ul>
 </li>
 </ul>
@@ -216,7 +217,10 @@
 <li>xlsx2skt supports the Excel 2007 format only (i.e., .xlsx).</li>
 <li>Only zVariables are supported</li>
 </ul>
-<p><strong>Make sure to respect the letter case, since the xlsx2skt parser is case sensitive!</strong></p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Make sure to respect the letter case, since the xlsx2skt parser is case sensitive!</p>
+</div>
 <p>The input Excel file shall contain the following sheets:</p>
 <ul class="simple">
 <li>header</li>
@@ -388,8 +392,9 @@ By default, the module returns an error if a empty Attribute/Variable name value
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">maser.utils.cdf.cdfconverter</span> <span class="kn">import</span> <span class="n">Skt2cdf</span>
 </pre></div>
 </div>
+</div>
 <div class="section" id="id3">
-<h5>Command line interface<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h5>
+<h4>Command line interface<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>To display the help of the module, enter:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">skt2cdf</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
@@ -434,7 +439,6 @@ executable in the $PATH env. variable.</td></tr>
 </tbody>
 </table>
 </div></blockquote>
-</div>
 <div class="section" id="id4">
 <h5>Example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h5>
 <p>To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.</p>
@@ -536,8 +540,9 @@ It can include the following JSON objects:</p>
 </tbody>
 </table>
 </div>
+</div>
 <div class="section" id="id5">
-<h5>Command line interface<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h5>
+<h4>Command line interface<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <p>To display the help of the module, enter:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cdfvalid</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
@@ -580,7 +585,6 @@ search in the directories defined in %%$PATH%%.</td></tr>
 <td>Talkative mode</td></tr>
 </tbody>
 </table>
-</div>
 <div class="section" id="id6">
 <h5>Example<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h5>
 <p>To test the cdf.validator program, use the dedicated scripts/test_cdfvalidator.sh bash script.</p>
@@ -622,8 +626,9 @@ CDFLeapSeconds.txt table file.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">maser</span> <span class="kn">import</span> <span class="n">Lstable</span>
 </pre></div>
 </div>
+</div>
 <div class="section" id="id7">
-<h5>Command line interface<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h5>
+<h4>Command line interface<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
 <p>To display the help of the module, enter:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">leapsec</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
@@ -661,7 +666,6 @@ time.(Expected format is &#8220;YYYY-MM-DDThh:mm:ss&#8221;)</td></tr>
 </table>
 </dd>
 </dl>
-</div>
 </div>
 </div>
 </div>

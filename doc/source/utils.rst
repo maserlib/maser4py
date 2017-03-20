@@ -1,9 +1,8 @@
 Utilities
-====================================
-
+#########
 
 The *cdf* module
----------------------------
+*****************
 
 The *cdf* module contains the following tools:
 
@@ -14,7 +13,7 @@ The *cdf* module contains the following tools:
 For more information about the CDF format, please visit http://cdf.gsfc.nasa.gov/.
 
 The *cdf.converter* tool
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+========================
 
 *converter* contains the following classes:
 
@@ -28,7 +27,7 @@ The *cdf.converter* tool
 Both classes can be imported from Python or called directly from a terminal using the dedicated command line interface.
 
 The Xlsx2skt class
-````````````````````````````
+------------------
 
 To import the Xlsx2skt class from Python, enter:
 
@@ -37,7 +36,7 @@ To import the Xlsx2skt class from Python, enter:
   from maser.utils.cdf.converter import Xlsx2skt
 
 Excel file format definition
-''''''''''''''''''''''''''''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This section describes the organization of the input skeleton file in Excel format.
 
@@ -46,7 +45,9 @@ Note that:
 * xlsx2skt supports the Excel 2007 format only (i.e., .xlsx).
 * Only zVariables are supported
 
-**Make sure to respect the letter case, since the xlsx2skt parser is case sensitive!**
+.. warning::
+
+  Make sure to respect the letter case, since the xlsx2skt parser is case sensitive!
 
 The input Excel file shall contain the following sheets:
 
@@ -60,7 +61,7 @@ The input Excel file shall contain the following sheets:
 The first row of each sheet shall be used to provide the name of the columns.
 
 *header* sheet
-............................
+""""""""""""""
 
 The "header" sheet shall contain the following columns:
 
@@ -75,7 +76,7 @@ FORMAT
   on multiple ("MULTIPLE") CDF files
 
 *GLOBALattributes* sheet
-.................................................
+""""""""""""""""""""""""
 
 The "GLOBALattributes" sheet shall contain the following columns:
 
@@ -89,7 +90,7 @@ Value
   Value of the current entry
 
 *zVariables* sheet
-.................................................
+""""""""""""""""""
 
 The "zVariables" sheet shall contain the following columns:
 
@@ -109,7 +110,7 @@ Dimension Variances
   Indicates how the variable values vary over each dimension.
 
 *VARIABLEattributes* sheet
-.....................................................
+""""""""""""""""""""""""""
 
 The "VARIABLEattributes" sheet shall contain the following columns:
 
@@ -123,7 +124,7 @@ Value
   Value of the variable attribute
 
 *Options* sheet
-..............................................
+"""""""""""""""
 
 The "Options" sheet shall contain the following columns:
 
@@ -141,7 +142,7 @@ VAR_PADVALUE
   In the other cases, users should use the --Auto_pad input keyword.
 
 *NRV* sheet
-.................................................
+"""""""""""
 
 The "NRV" sheet shall contain the following columns:
 
@@ -153,7 +154,7 @@ Value
   Value of the current NR row
 
 Command line interface
-''''''''''''''''''''''''''''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^
 
 To display the help of the module, enter:
 
@@ -183,12 +184,12 @@ Input keyword list:
 -V, --Verbose         Talkative mode
 
 Example
-''''''''''''''''''''''''''''''''''''''''''''''''''''
+^^^^^^^
 
 To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.
 
 Limitations & Known Issues
-''''''''''''''''''''''''''''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Here are some identified limitations to the module uses:
 
@@ -196,7 +197,7 @@ Here are some identified limitations to the module uses:
 
 
 The *Skt2cdf* class
-````````````````````````````
+-------------------
 
 To import the Skt2cdf class from Python, enter:
 
@@ -205,7 +206,7 @@ To import the Skt2cdf class from Python, enter:
   from maser.utils.cdf.cdfconverter import Skt2cdf
 
 Command line interface
-''''''''''''''''''''''''''''''''''''''''''''''''''''
+----------------------
 
 To display the help of the module, enter:
 
@@ -235,13 +236,13 @@ Input keyword list:
 
 
 Example
-'''''''''''''''''''''''''''''''''''''''''''''''''
+^^^^^^^
 
 To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.
 
 
 The *cdf.validator* tool
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+========================
 
 *validator* provides methods to validate a CDF format file.
 
@@ -249,7 +250,7 @@ It contains only one *Validate* class that regroups all of the validation method
 
 
 The *Validate* class
-```````````````````````````````
+--------------------
 
 To import the *Validate* class from Python, enter:
 
@@ -258,7 +259,7 @@ To import the *Validate* class from Python, enter:
   from maser.utils.cdf.cdfvalidator import Validate
 
 The Model validation test
-''''''''''''''''''''''''''''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The *Validate* class allows user to check if a given CDF format file contains specific attributes or variables, by providing a
 so-called "cdfvalidator model file".
@@ -292,7 +293,7 @@ The table below lists the JSON items that are allowed to be found in the *GLOBAL
 
 
 Command line interface
-''''''''''''''''''''''''''''''''''''''''''''''''''''
+----------------------
 
 To display the help of the module, enter:
 
@@ -321,7 +322,7 @@ Input keyword list:
 -V, --Verbose     Talkative mode
 
 Example
-'''''''''''''''''''''''''''''''''''''''''''''''''
+^^^^^^^
 
 To test the cdf.validator program, use the dedicated scripts/test_cdfvalidator.sh bash script.
 
@@ -350,7 +351,7 @@ It should return something like:
 
 
 The *leapsec* tool
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+==================
 
 The *leapsec* tool allows users to load the data
 of the CDFLeapSeconds.txt table file.
@@ -360,7 +361,7 @@ CDF NASA site (https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt).
 
 
 The *Lstable* class
-```````````````````````````````
+-------------------
 The Lstable class provides the methods to deal with the
 CDFLeapSeconds.txt table file.
 
@@ -371,7 +372,7 @@ To import the *Lstable* class from Python, enter:
   from maser import Lstable
 
 Command line interface
-''''''''''''''''''''''''''''''''''''''''''''''''''''
+----------------------
 
 To display the help of the module, enter:
 
