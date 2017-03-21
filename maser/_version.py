@@ -3,8 +3,8 @@
 
 """maser._version."""
 
-__version__ = "0.4.3"
-__date__ = "21-OCT-2016"
+__version__ = "0.4.4.2"
+__date__ = "19-MAR-2017"
 __change__ = {"0.1.0": "First beta release",
 "0.2.0": "Modify the source code tree",
 "0.2.1": "Add DOUBLE in cdfconverter PADVALUE",
