@@ -35,11 +35,12 @@ cmdclass = {
 # cmdclass.update(versioneer.get_cmdclass())
 
 setup(
-    name='maser',
+    name='maser4py',
     version=_version.__version__,
-    description="Python 3 module for MASER",
+    description="Python 3 module for the MASER portal",
     long_description=open("README.rst").read(),
     author="X.Bonnin",
+    author_email="xavier.bonnin@obspm.fr",
     license="BSD",
     packages=packages,
     cmdclass=cmdclass,
@@ -52,8 +53,8 @@ setup(
             "leapsec=maser.utils.cdf.leapsec:main",
             "maser-rpw=maser.data.solo.rpw:main"],
     },
-    setup_requires=['numpy>=1.11.0', 'sphinx>=1.4.1', 'sphinx_rtd_theme'],
-    install_requires=['openpyxl>=2.3.5', 'numpy>=1.11.0', 'matplotlib'],
+    install_requires=['openpyxl>=2.3.5', 'numpy>=1.11.0',
+        'matplotlib', 'sphinx>=1.4.1', 'sphinx_rtd_theme'],
     include_package_data=True,
     url="https://github.com/maserlib/maser4py"
     # ext_modules=cythonize("maser/rpl/*.pyx"),

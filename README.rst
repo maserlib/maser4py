@@ -1,42 +1,55 @@
-MASER4PY: The Python 3 package for MASER
-=====================================
-X.Bonnin (LESIA, Obs. Paris, CNRS), 20-OCT-2016
+maser4py: The Python 3 package for the MASER portal
+###################################################
+X.Bonnin (LESIA, Obs. Paris, CNRS), 20-MAR-2017
 
-About MASER4PY
---------------
+About maser4py
+==============
 
-MASER4PY python package contains modules to
+maser4py python package contains modules to
 deal with services, data and tools provided in the framework
-on the MASER portal.
+of the MASER portal.
 
 
 Installation
----------------
+============
 
-In order to install the maser4py python module:
+Make sure that Python 3.4 (or higher) as well as pip and setuptools are already installed on your system.
 
-1. Make sure that Python 3.4 or higher is already installed on your system.
+Install and configure the NASA CDF software (visit http://cdf.gsfc.nasa.gov/ for more details).
 
-2. Install and configure the NASA CDF software (visit http://cdf.gsfc.nasa.gov/ for more details).
+From pip
+--------
 
-3. Install numpy 1.11.0 or higher by entering:
+From a terminal, enter:
 
-    pip install numpy>=1.11.0
+   pip install maser4py
 
-4. From the maser4py directory, install the module by entering:
+From Github
+-----------
 
-    python setup.py install
+From a terminal, enter:
+
+    git clone https://github.com/maserlib/maser4py
+
+Then, from the maser4py directory, enter:
+
+    pip install -r requirements.txt
+
+Then,
+
+    python3 setup.py install
+
 
 Usage
--------
+=====
 
-From Python, enter "import maser".
+From Python, enter "import maser4py".
 The module also offers specific command line interfaces.
 
 For more details, see the user manual in pdf format (doc/build/latex/maser4py.pdf) or html format (doc/build/index.html).
 
-MASER4PY content
-----------------
+Tree
+====
 
 The maser4py directory contains the following items:
 
@@ -52,7 +65,7 @@ The maser4py directory contains the following items:
 - setup.py maser4py package setup file
 
 About MASER
------------
+===========
 
 The MASER portal (Mesures, Analyses et Simulations d’Emissions Radio) gives an access to tools and database related to low frequency radioastronomy (from few kilohertz up to several tens of megahertz). The radio measurements in the spectral range are realized with ground observatories (for the frequencies above the 10 MHz Earth ionospheric cut-off) or from spacecraft (at lower frequencies).
 
