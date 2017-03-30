@@ -1,6 +1,11 @@
 CHANGELOG
 ====================
 
+0.5.0
+-----
+* Update leapsec.py to allow usage of the $CDF_LEAPSECONDSTABLE env. variable as a default path for the CDFLeapSeconds.txt file
+* Update leapsec section in the doc.
+
 0.4.4
 -----
 * Update doc

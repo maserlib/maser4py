@@ -3,8 +3,8 @@
 
 """maser._version."""
 
-__version__ = "0.4.4.2"
-__date__ = "19-MAR-2017"
+__version__ = "0.5.0"
+__date__ = "30-MAR-2017"
 __change__ = {"0.1.0": "First beta release",
 "0.2.0": "Modify the source code tree",
 "0.2.1": "Add DOUBLE in cdfconverter PADVALUE",
@@ -18,4 +18,5 @@ __change__ = {"0.1.0": "First beta release",
 "0.4.1": "Update README.rst, remove INSTALL.rst, update doc",
 "0.4.2": "Fix a bug in utils.cdf",
 "0.4.3": "Update setup.py and requirements.txt",
-"0.4.4": "Update doc and setup.py"}
+"0.4.4": "Update doc and setup.py",
+"0.5.0": "Update leapsec & doc"}

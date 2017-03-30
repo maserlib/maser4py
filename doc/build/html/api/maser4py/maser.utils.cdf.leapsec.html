@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>maser.utils.cdf.leapsec module &mdash; maser4py 0.4.3 documentation</title>
+  <title>maser.utils.cdf.leapsec module &mdash; maser4py 0.4.4.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="maser4py 0.4.3 documentation" href="../../index.html"/> 
+    <link rel="top" title="maser4py 0.4.4.2 documentation" href="../../index.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.4.3
+                0.4.4.2
               </div>
             
           
@@ -163,19 +163,25 @@
 <p>Python module to load and handle a NAIF SPICE LeapSecond Kernels (lsk) file.</p>
 <dl class="class">
 <dt id="maser.utils.cdf.leapsec.Lstable">
-<em class="property">class </em><code class="descclassname">maser.utils.cdf.leapsec.</code><code class="descname">Lstable</code><span class="sig-paren">(</span><em>file='https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/maser/utils/cdf/leapsec.html#Lstable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#maser.utils.cdf.leapsec.Lstable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">maser.utils.cdf.leapsec.</code><code class="descname">Lstable</code><span class="sig-paren">(</span><em>file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/maser/utils/cdf/leapsec.html#Lstable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#maser.utils.cdf.leapsec.Lstable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <p>Class for the leapsec table.</p>
 <dl class="method">
 <dt id="maser.utils.cdf.leapsec.Lstable.get_leapsec">
-<code class="descname">get_leapsec</code><span class="sig-paren">(</span><em>date=datetime.datetime(2017</em>, <em>3</em>, <em>20</em>, <em>16</em>, <em>16</em>, <em>0</em>, <em>541800)</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/maser/utils/cdf/leapsec.html#Lstable.get_leapsec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#maser.utils.cdf.leapsec.Lstable.get_leapsec" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_leapsec</code><span class="sig-paren">(</span><em>date=datetime.datetime(2017</em>, <em>3</em>, <em>30</em>, <em>17</em>, <em>24</em>, <em>53</em>, <em>620878)</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/maser/utils/cdf/leapsec.html#Lstable.get_leapsec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#maser.utils.cdf.leapsec.Lstable.get_leapsec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the leapseconds for a given datetime.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="maser.utils.cdf.leapsec.Lstable.get_lstable">
-<code class="descname">get_lstable</code><span class="sig-paren">(</span><em>target_dir='.'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/maser/utils/cdf/leapsec.html#Lstable.get_lstable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#maser.utils.cdf.leapsec.Lstable.get_lstable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download the Leapsec table file in the target_dir.</p>
+<code class="descname">get_lstable</code><span class="sig-paren">(</span><em>target_dir=None</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/maser/utils/cdf/leapsec.html#Lstable.get_lstable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#maser.utils.cdf.leapsec.Lstable.get_lstable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the Leapsec table file into the target_dir.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="maser.utils.cdf.leapsec.Lstable.set_file">
+<code class="descname">set_file</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/maser/utils/cdf/leapsec.html#Lstable.set_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#maser.utils.cdf.leapsec.Lstable.set_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use a new CDF leapsec file.</p>
 </dd></dl>
 
 </dd></dl>
@@ -217,7 +223,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.4.3',
+            VERSION:'0.4.4.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

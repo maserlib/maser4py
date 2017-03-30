@@ -9,6 +9,7 @@ Python module to load and handle a NAIF SPICE LeapSecond Kernels (lsk) file.
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
+import sys
 import os
 import logging
 import urllib.request
@@ -20,16 +21,16 @@ __all__ = ["Lstable"]
 # ________________ HEADER _________________________
 
 # Mandatory
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "X.Bonnin"
-__date__ = "2017-03-17"
+__date__ = "2017-03-30"
 
 # Optional
 __license__ = ""
 __credit__ = [""]
 __maintainer__ = ""
 __email__ = ""
-__project__ = "RPW Operation Centre (ROC)"
+__project__ = "MASER"
 __institute__ = "LESIA"
 __changes__ = ""
 
@@ -39,6 +40,9 @@ __changes__ = ""
 logger = logging.getLogger(__name__)
 
 URL = "https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt"
+ENVAR = "CDF_LEAPSECONDSTABLE"
+
+LS_FILENAME = "CDFLeapSeconds.txt"
 
 INPUT_DATE = "%Y-%m-%dT%H:%M:%S"
 
@@ -48,7 +52,7 @@ INPUT_DATE = "%Y-%m-%dT%H:%M:%S"
 class Lstable:
     """Class for the leapsec table."""
 
-    def __init__(self, file=URL):
+    def __init__(self, file=None):
         """Leapsec __init__ method."""
         self.file = file
         self.date = []
@@ -74,7 +78,7 @@ class Lstable:
     def get_leapsec(self, date=datetime.now()):
         """Return the leapseconds for a given datetime."""
         if self.lstable is None:
-            self._parse_lstable(file=file)
+            self._parse_lstable()
 
         if date < self.date[0]:
             return 0.0
@@ -87,28 +91,53 @@ class Lstable:
 
         return None
 
-    def get_lstable(self, target_dir=os.curdir):
-        """Download the Leapsec table file in the target_dir."""
+    def get_lstable(self, target_dir=None, overwrite=False):
+        """Download the Leapsec table file into the target_dir."""
+        if target_dir is None and ENVAR in os.environ:
+            target_dir = os.path.dirname(os.environ[ENVAR])
+        elif target_dir is None and ENVAR not in os.environ:
+            target_dir = os.curdir
+
         if os.path.isdir(target_dir):
-            filename = os.path.basename(self.file)
-            target_file = os.path.join(target_dir, filename)
-            with open(target_file, 'rw') as fw:
+            target_file = os.path.join(target_dir, LS_FILENAME)
+
+            if os.path.isfile(target_file) and not overwrite:
+                logger.warning("{0} already exists!".format(
+                                            target_file))
+                return False
+            elif os.path.isfile(target_file) and overwrite:
+                logger.warning("{0} will be replaced!".format(
+                                            target_file))
+                os.remove(target_file)
+
+            with open(target_file, 'w') as fw:
                 fw.write(self.lstable)
+
             if os.path.isfile(target_file):
                 logger.info("{0} saved".format(target_file))
+                return True
             else:
                 logger.error("{0} has been saved correctly!".format(
                                                             target_file))
+        else:
+            logger.error("{0} directory does not exist!".format(
+                                                target_dir))
+
+        return False
 
     def _load_lstable(self):
         """Load NASA CDF leapsec table CDFLeapSeconds.txt."""
-        file = self.file
-        if (file.startswith("http") or
-                file.startswith("ftp")):
-            buff = urllib.request.urlopen(file)
+        if self.file is None and ENVAR in os.environ:
+            self.file = os.environ[ENVAR]
+        else:
+            self.file = URL
+
+        if (self.file.startswith("http") or
+                self.file.startswith("ftp")):
+            buff = urllib.request.urlopen(self.file)
             data = buff.read().decode("utf-8")
         else:
-            buff = open(file, 'rt')
+            buff = open(self.file, 'rt')
             data = buff.read()
 
         return data
@@ -127,6 +156,11 @@ class Lstable:
                 self._add(row)
 
         self.lstable = data
+
+    def set_file(self, file):
+        """Use a new CDF leapsec file."""
+        self.file = file
+        self._parse_lstable()
 
     def __str__(self):
         """__str__ method."""
@@ -149,24 +183,30 @@ def main():
     parser.add_argument("-f", "--filepath",
                         nargs=1, default=[URL],
                         help="CDFLeapSeconds.txt filepath.\n "
-                        "Default is [{0}]".format(URL))
+                        "Default is [${0}]".format(ENVAR))
     parser.add_argument("-d", "--date", nargs=1,
                         default=[None],
                         help="Return the leap seconds for "
                             "a given date and time."
                             "(Expected format is \"YYYY-MM-DDThh:mm:ss\")")
-    parser.add_argument("-t", "--target-dir", nargs=1,
-                        default=[None],
+    parser.add_argument("-g", "--get-file", nargs='?',
                         help="Download the CDFLeapSeconds.txt"
-                        " in the target-dir")
+                        "from the NASA CDF site. "
+                        "If the [GET_FILE] optional argument"
+                        " is provided, then it must be a valid"
+                        " directory where the file will be saved.")
     parser.add_argument("-S", "--SHOW-TABLE", action='store_true',
                         help="Show the leap sec. table")
+    parser.add_argument("-O", "--Overwrite", action='store_true',
+                        help="Overwrite existing file")
 
     args = parser.parse_args()
     lst = Lstable(file=args.filepath[0])
 
-    if args.target_dir[0] is not None:
-        lst.get_lstable(target_dir=args.target_dir[0])
+    if hasattr(args, 'get_file'):
+        lst.get_lstable(target_dir=args.get_file,
+                        overwrite=args.Overwrite)
+        sys.exit(0)
 
     if args.date[0] is not None:
         date = datetime.strptime(args.date[0], INPUT_DATE)
