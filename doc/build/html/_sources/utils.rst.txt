@@ -6,9 +6,9 @@ The *cdf* module
 
 The *cdf* module contains the following tools:
 
-- *converter*, which allows users to convert CDF skeleton files into master CDF binary files
-- *validator*, which allows users to perform some validations on CDF files.
-- *leapsec*,
+- *converter*, to convert CDF skeleton files (in Excel or ASCII format) into master CDF binary files
+- *validator*, to validate the content of CDF files from a given model.
+- *leapsec*, to deal with leap seconds using the CDFLeapSeconds.txt of the NASA CDF software.
 
 For more information about the CDF format, please visit http://cdf.gsfc.nasa.gov/.
 
@@ -191,9 +191,9 @@ To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh
 Limitations & Known Issues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Here are some identified limitations to the module uses:
+.. warning::
 
-  - Values provided in the "Options" sheet is valid for all of CDF file and variables. The module does not allow to set (yet) the values for each variable individually. **THUS, WE STRONGLY RECOMMEND TO USE THE --Auto_pad INPUT KEYWORD (then edit the resulting skeleton table to modify the !VAR_PADVALUE if required).**
+  Values provided in the "Options" sheet is valid for all of CDF file and variables. The module does not allow to set (yet) the values for each variable individually. **THUS, WE STRONGLY RECOMMEND TO USE THE --Auto_pad INPUT KEYWORD (then edit the resulting skeleton table to modify the !VAR_PADVALUE if required).**
 
 
 The *Skt2cdf* class
@@ -220,7 +220,7 @@ The full calling sequence is:
 
   skt2cdf [-h] [-O] [-V] [-Q] [-s [executable]] [-c [output_cdf]] skeleton
 
-Input keyword list:
+Input keywords:
 
   -h, -help             Display the module help
   -c, --cdf  output_cdf Name of the output CDF master binary file.
@@ -244,7 +244,7 @@ To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh
 The *cdf.validator* tool
 ========================
 
-*validator* provides methods to validate a CDF format file.
+*validator* provides methods to validate a CDF format file from a given model.
 
 It contains only one *Validate* class that regroups all of the validation methods.
 
@@ -308,7 +308,7 @@ The full calling sequence is:
   cdfvalid [--help] [--Verbose] [--Quiet] [--log_file [log_file]] \
   [--ISTP] [--CDFValidate [executable]] [--model_file [model_file]] skeleton
 
-Input keyword list:
+Input keywords:
 
 -h, -help       Display the module help
 -l, --log_file      Path of the output log file.
@@ -356,7 +356,7 @@ The *leapsec* tool
 The *leapsec* tool allows users to load the data
 of the CDFLeapSeconds.txt table file.
 
-The file can be loaded locally or from the
+The file can be loaded from a local path or by the program it-self from the
 CDF NASA site (https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt).
 
 
@@ -371,6 +371,45 @@ To import the *Lstable* class from Python, enter:
 
   from maser import Lstable
 
+Then, to load the CDFLeapSeconds.txt table, just enter:
+
+.. code-block:: python
+
+  lstable = Lstable(file=path_to_the_file)
+
+.. note::
+  Note that if the optional input keyword *file=* is not set, the tool will
+  first check if the path is given in the $CDF_LEAPSECONDSTABLE environment variable. If not, then the file will attempt to retrieve the file from the
+  NASA CDF site (https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt)
+
+To print the leap seconds table, enter:
+
+.. code-block:: python
+
+  print(lstable)
+
+
+To get the total elapsed leap seconds for a given date, enter:
+
+.. code-block:: python
+
+  lstable.get_leapsec(date=date_time)
+
+Where date_time is a datetime object of the datetime module.
+
+
+To download the CDFLeapSeconds.txt file:
+
+.. code-block:: python
+
+  lstable.get_lstable(target_dir=target_dir, overwrite=overwrite)
+
+Where *target_dir* is the local directory where the CDFLeapSeconds.txt file will be saved. *overwrite* keyword can be used to replace existing file (default is *overwrite=False*)
+
+.. note::
+  If the method is called without the *target_dir=* input keyword (i.e., *get_lstable()*), then it will first check if the $CDF_LEAPSECONDSTABLE env. variable is defined, if yes the *target_dir* will be set with the $CDF_LEAPSECONDSTABLE value. If not, the current directory will be used.
+
+
 Command line interface
 ----------------------
 
@@ -384,15 +423,19 @@ The full calling sequence is:
 
 ::
 
-usage: leapsec [-h] [-f FILEPATH] [-d DATE] [-t TARGET_DIR] [-S]
+  leapsec [-h] [-f FILEPATH] [-d DATE] [-t TARGET_DIR] [-S]
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -f FILEPATH, --filepath FILEPATH
-                        CDFLeapSeconds.txt filepath. Default is
-                        [https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt]
-  -d DATE, --date DATE  Return the leap seconds for a given date and
-                        time.(Expected format is "YYYY-MM-DDThh:mm:ss")
-  -t TARGET_DIR, --target-dir TARGET_DIR
-                        Download the CDFLeapSeconds.txt in the target-dir
-  -S, --SHOW-TABLE      Show the leap sec. table
+Input keywords:
+
+-h, --help            show this help message and exit
+-f FILEPATH, --filepath FILEPATH
+                      CDFLeapSeconds.txt filepath. Default is
+                      [$CDF_LEAPSECONDSTABLE]
+-d DATE, --date DATE  Return the leap seconds for a given date and
+                      time. (Expected format is "YYYY-MM-DDThh:mm:ss")
+-S, --SHOW-TABLE      Show the leap sec. table
+-O, --Overwrite       Overwrite existing file
+-g GET_FILE, --get-file GET_FILE
+                      Download the CDFLeapSeconds.txt from
+                      the NASA CDF site. If the [GET_FILE] optional argument is defined, then it must be a valid directory where the
+                      file will be saved.

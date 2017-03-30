@@ -63,9 +63,11 @@ Details
 Support
 =======
 
-* Xavier Bonnin - xavier.bonnin@obspm.fr
-* Quynh Nhu Nguyen - quynh-nhu.nguyen@obspm.fr
-* Baptiste Cecconi - baptiste.cecconi@obspm.fr
+The maser4py is developed at the LESIA (http://www.lesia.obspm.fr/) by:
+
+* Xavier Bonnin - xavier dot bonnin at obspm dot fr
+* Quynh Nhu Nguyen - quynh-nhu dot nguyen at obspm dot fr
+* Baptiste Cecconi - baptiste dot cecconi at obspm dot fr
 
 Indices and tables
 ==================

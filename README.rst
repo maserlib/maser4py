@@ -17,15 +17,15 @@ Make sure that Python 3.4 (or higher) as well as pip and setuptools are already 
 
 Install and configure the NASA CDF software (visit http://cdf.gsfc.nasa.gov/ for more details).
 
-From pip
---------
+Using pip
+---------
 
 From a terminal, enter:
 
    pip install maser4py
 
-From Github
------------
+Using Source
+------------
 
 From a terminal, enter:
 
@@ -43,7 +43,7 @@ Then,
 Usage
 =====
 
-From Python, enter "import maser4py".
+From Python, enter "import maser".
 The module also offers specific command line interfaces.
 
 For more details, see the user manual in pdf format (doc/build/latex/maser4py.pdf) or html format (doc/build/index.html).
@@ -53,16 +53,27 @@ Tree
 
 The maser4py directory contains the following items:
 
-- doc/  stores the maser4py documentation (source and build)
-- maser/ stores the maser4py source files
-- scripts/ store scripts to run/test/manage maser4py
-- __main__.py python script to run maser.main program
-- CHANGELOG.rst software change history log
-- MANIFEST.in files to be included to the package installation (used by setup.py)
-- README.rst current file
-- requirements.txt list of python package dependencies and versions
-- setup.cfg file used by sphinx to build the maser4py doc.
-- setup.py maser4py package setup file
+::
+
+    doc/  stores the maser4py documentation (source and build)
+
+    maser/ stores the maser4py source files
+
+    scripts/ store scripts to run/test/manage maser4py
+
+    __main__.py python script to run maser.main program
+
+    CHANGELOG.rst software change history log
+
+    MANIFEST.in files to be included to the package installation (used by   tup.py)
+
+    README.rst current file
+
+    requirements.txt list of python package dependencies and versions
+
+    setup.cfg file used by sphinx to build the maser4py doc.
+
+    setup.py maser4py package setup file
 
 About MASER
 ===========

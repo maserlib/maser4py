@@ -35,7 +35,7 @@ If the pip tool is installed on your system, just enter:
 
 .. code-block:: bash
 
-    pip install maser4py
+    pip install maser
 
 From Github
 -----------

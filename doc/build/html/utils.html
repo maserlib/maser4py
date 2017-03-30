@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utilities &mdash; maser4py 0.4.3 documentation</title>
+  <title>Utilities &mdash; maser4py 0.4.4.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="maser4py 0.4.3 documentation" href="index.html"/>
+    <link rel="top" title="maser4py 0.4.4.2 documentation" href="index.html"/>
         <link rel="next" title="Troubleshooting" href="appendices.html"/>
         <link rel="prev" title="Services" href="services.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.4.3
+                0.4.4.2
               </div>
             
           
@@ -186,9 +186,9 @@
 <h2>The <em>cdf</em> module<a class="headerlink" href="#the-cdf-module" title="Permalink to this headline">¶</a></h2>
 <p>The <em>cdf</em> module contains the following tools:</p>
 <ul class="simple">
-<li><em>converter</em>, which allows users to convert CDF skeleton files into master CDF binary files</li>
-<li><em>validator</em>, which allows users to perform some validations on CDF files.</li>
-<li><em>leapsec</em>,</li>
+<li><em>converter</em>, to convert CDF skeleton files (in Excel or ASCII format) into master CDF binary files</li>
+<li><em>validator</em>, to validate the content of CDF files from a given model.</li>
+<li><em>leapsec</em>, to deal with leap seconds using the CDFLeapSeconds.txt of the NASA CDF software.</li>
 </ul>
 <p>For more information about the CDF format, please visit <a class="reference external" href="http://cdf.gsfc.nasa.gov/">http://cdf.gsfc.nasa.gov/</a>.</p>
 <div class="section" id="the-cdf-converter-tool">
@@ -378,12 +378,10 @@ By default, the module returns an error if a empty Attribute/Variable name value
 </div>
 <div class="section" id="limitations-known-issues">
 <h5>Limitations &amp; Known Issues<a class="headerlink" href="#limitations-known-issues" title="Permalink to this headline">¶</a></h5>
-<p>Here are some identified limitations to the module uses:</p>
-<blockquote>
-<div><ul class="simple">
-<li>Values provided in the &#8220;Options&#8221; sheet is valid for all of CDF file and variables. The module does not allow to set (yet) the values for each variable individually. <strong>THUS, WE STRONGLY RECOMMEND TO USE THE &#8211;Auto_pad INPUT KEYWORD (then edit the resulting skeleton table to modify the !VAR_PADVALUE if required).</strong></li>
-</ul>
-</div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Values provided in the &#8220;Options&#8221; sheet is valid for all of CDF file and variables. The module does not allow to set (yet) the values for each variable individually. <strong>THUS, WE STRONGLY RECOMMEND TO USE THE &#8211;Auto_pad INPUT KEYWORD (then edit the resulting skeleton table to modify the !VAR_PADVALUE if required).</strong></p>
+</div>
 </div>
 </div>
 <div class="section" id="the-skt2cdf-class">
@@ -403,7 +401,7 @@ By default, the module returns an error if a empty Attribute/Variable name value
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">skt2cdf</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">O</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">Q</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="p">[</span><span class="n">executable</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="p">[</span><span class="n">output_cdf</span><span class="p">]]</span> <span class="n">skeleton</span>
 </pre></div>
 </div>
-<p>Input keyword list:</p>
+<p>Input keywords:</p>
 <blockquote>
 <div><table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
@@ -447,7 +445,7 @@ executable in the $PATH env. variable.</td></tr>
 </div>
 <div class="section" id="the-cdf-validator-tool">
 <h3>The <em>cdf.validator</em> tool<a class="headerlink" href="#the-cdf-validator-tool" title="Permalink to this headline">¶</a></h3>
-<p><em>validator</em> provides methods to validate a CDF format file.</p>
+<p><em>validator</em> provides methods to validate a CDF format file from a given model.</p>
 <p>It contains only one <em>Validate</em> class that regroups all of the validation methods.</p>
 <div class="section" id="the-validate-class">
 <h4>The <em>Validate</em> class<a class="headerlink" href="#the-validate-class" title="Permalink to this headline">¶</a></h4>
@@ -552,7 +550,7 @@ It can include the following JSON objects:</p>
 <span class="p">[</span><span class="o">--</span><span class="n">ISTP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">CDFValidate</span> <span class="p">[</span><span class="n">executable</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">model_file</span> <span class="p">[</span><span class="n">model_file</span><span class="p">]]</span> <span class="n">skeleton</span>
 </pre></div>
 </div>
-<p>Input keyword list:</p>
+<p>Input keywords:</p>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -616,7 +614,7 @@ INFO    : Closing /tmp/cdfconverter_example.cdf
 <h3>The <em>leapsec</em> tool<a class="headerlink" href="#the-leapsec-tool" title="Permalink to this headline">¶</a></h3>
 <p>The <em>leapsec</em> tool allows users to load the data
 of the CDFLeapSeconds.txt table file.</p>
-<p>The file can be loaded locally or from the
+<p>The file can be loaded from a local path or by the program it-self from the
 CDF NASA site (<a class="reference external" href="https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt">https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt</a>).</p>
 <div class="section" id="the-lstable-class">
 <h4>The <em>Lstable</em> class<a class="headerlink" href="#the-lstable-class" title="Permalink to this headline">¶</a></h4>
@@ -626,6 +624,34 @@ CDFLeapSeconds.txt table file.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">maser</span> <span class="kn">import</span> <span class="n">Lstable</span>
 </pre></div>
 </div>
+<p>Then, to load the CDFLeapSeconds.txt table, just enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">lstable</span> <span class="o">=</span> <span class="n">Lstable</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="n">path_to_the_file</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Note that if the optional input keyword <em>file=</em> is not set, the tool will
+first check if the path is given in the $CDF_LEAPSECONDSTABLE environment variable. If not, then the file will attempt to retrieve the file from the
+NASA CDF site (<a class="reference external" href="https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt">https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt</a>)</p>
+</div>
+<p>To print the leap seconds table, enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">lstable</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To get the total elapsed leap seconds for a given date, enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">lstable</span><span class="o">.</span><span class="n">get_leapsec</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">date_time</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where date_time is a datetime object of the datetime module.</p>
+<p>To download the CDFLeapSeconds.txt file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">lstable</span><span class="o">.</span><span class="n">get_lstable</span><span class="p">(</span><span class="n">target_dir</span><span class="o">=</span><span class="n">target_dir</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <em>target_dir</em> is the local directory where the CDFLeapSeconds.txt file will be saved. <em>overwrite</em> keyword can be used to replace existing file (default is <em>overwrite=False</em>)</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the method is called without the <em>target_dir=</em> input keyword (i.e., <em>get_lstable()</em>), then it will first check if the $CDF_LEAPSECONDSTABLE env. variable is defined, if yes the <em>target_dir</em> will be set with the $CDF_LEAPSECONDSTABLE value. If not, the current directory will be used.</p>
+</div>
 </div>
 <div class="section" id="id7">
 <h4>Command line interface<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
@@ -634,10 +660,11 @@ CDFLeapSeconds.txt table file.</p>
 </pre></div>
 </div>
 <p>The full calling sequence is:</p>
-<p>usage: leapsec [-h] [-f FILEPATH] [-d DATE] [-t TARGET_DIR] [-S]</p>
-<dl class="docutils">
-<dt>optional arguments:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">leapsec</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">FILEPATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DATE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TARGET_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Input keywords:</p>
+<table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
@@ -648,24 +675,28 @@ CDFLeapSeconds.txt table file.</p>
 <kbd><span class="option">-f <var>FILEPATH</var></span>, <span class="option">--filepath <var>FILEPATH</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>CDFLeapSeconds.txt filepath. Default is
-[<a class="reference external" href="https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt">https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt</a>]</td></tr>
+[$CDF_LEAPSECONDSTABLE]</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-d <var>DATE</var></span>, <span class="option">--date <var>DATE</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Return the leap seconds for a given date and
-time.(Expected format is &#8220;YYYY-MM-DDThh:mm:ss&#8221;)</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-t <var>TARGET_DIR</var></span>, <span class="option">--target-dir <var>TARGET_DIR</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Download the CDFLeapSeconds.txt in the target-dir</td></tr>
+time. (Expected format is &#8220;YYYY-MM-DDThh:mm:ss&#8221;)</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-S</span>, <span class="option">--SHOW-TABLE</span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Show the leap sec. table</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-O</span>, <span class="option">--Overwrite</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Overwrite existing file</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-g <var>GET_FILE</var></span>, <span class="option">--get-file <var>GET_FILE</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Download the CDFLeapSeconds.txt from
+the NASA CDF site. If the [GET_FILE] optional argument is defined, then it must be a valid directory where the
+file will be saved.</td></tr>
 </tbody>
 </table>
-</dd>
-</dl>
 </div>
 </div>
 </div>
@@ -715,7 +746,7 @@ time.(Expected format is &#8220;YYYY-MM-DDThh:mm:ss&#8221;)</td></tr>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.4.3',
+            VERSION:'0.4.4.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

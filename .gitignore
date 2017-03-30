@@ -2,9 +2,10 @@ build
 dist
 tmp
 *.log
+*.zip
 __pycache__
 *.pyc
-*.egg
-maser.egg-info
+*.egg*
+*.egg-info
 doc/source/api
-!doc/build
+doc/build
