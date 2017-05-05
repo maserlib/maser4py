@@ -1,6 +1,12 @@
 CHANGELOG
 ====================
 
+0.6.0
+-----
+* Simplify the CDFLeapSeconds.txt file handling.
+* Add the utils/time/time.py submodule to deal with time conversion
+
+
 0.5.0
 -----
 * Update leapsec.py to allow usage of the $CDF_LEAPSECONDSTABLE env. variable as a default path for the CDFLeapSeconds.txt file
