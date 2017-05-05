@@ -6,8 +6,8 @@
 maser4py |release|
 ##################
 
-maser4py is a Python 3 package to deal with data from the MASER portal.
-The MASER portal provides access to services, data and tools relative to the low frequency radio astronomy.
+maser4py is a Python 3 package to deal with the MASER portal.
+The MASER portal provides a centralized access to services, data and tools relative to the low frequency radio astronomy.
 
 For more information about MASER, please visit: http://maser.lesia.obspm.fr/
 
