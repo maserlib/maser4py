@@ -369,9 +369,9 @@ To import the *Lstable* class from Python, enter:
 
 .. code-block:: python
 
-  from maser import Lstable
+  from maser.utils.time import Lstable
 
-Then, to load the CDFLeapSeconds.txt table, just enter:
+Then, to load the CDFLeapSeconds.txt table, first enter:
 
 .. code-block:: python
 
@@ -379,10 +379,10 @@ Then, to load the CDFLeapSeconds.txt table, just enter:
 
 .. note::
   Note that if the optional input keyword *file=* is not set, the tool will
-  first check if the path is given in the $CDF_LEAPSECONDSTABLE environment variable. If not, then the file will attempt to retrieve the file from the
-  NASA CDF site (https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt)
+  first check if the path is given in the $CDF_LEAPSECONDSTABLE environment variable. If not, then the program will look into the maser/support/data sub-folder of the package root directory. Finally, if it is still not found, it will attempt to retrieve the table data from the file on the
+  NASA CDF Web site (https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt)
 
-To print the leap seconds table, enter:
+Once the table is loaded, then to print the leap seconds table, enter:
 
 .. code-block:: python
 
@@ -398,20 +398,26 @@ To get the total elapsed leap seconds for a given date, enter:
 Where date_time is a datetime object of the datetime module.
 
 
-To download the CDFLeapSeconds.txt file:
+Downloading the CDFLeapSeconds.txt file from the NASA Web site can be done
+by entering:
 
 .. code-block:: python
 
-  lstable.get_lstable(target_dir=target_dir, overwrite=overwrite)
+  Lstable.get_lstable_file(target_dir=target_dir, overwrite=overwrite)
 
 Where *target_dir* is the local directory where the CDFLeapSeconds.txt file will be saved. *overwrite* keyword can be used to replace existing file (default is *overwrite=False*)
 
 .. note::
-  If the method is called without the *target_dir=* input keyword (i.e., *get_lstable()*), then it will first check if the $CDF_LEAPSECONDSTABLE env. variable is defined, if yes the *target_dir* will be set with the $CDF_LEAPSECONDSTABLE value. If not, the current directory will be used.
+  get_lstable_file is a staticmethod, which does not require to instanciate the
+  Lstable class.
+
+.. note::
+  If the method is called without the *target_dir=* input keyword (i.e., *get_lstable()*), then it will first check if the $CDF_LEAPSECONDSTABLE env. variable is defined, if yes the *target_dir* will be set with the $CDF_LEAPSECONDSTABLE value, otherwise the file is saved in the
+  maser/support/data folder of the module.
 
 
 Command line interface
-----------------------
+-----------------------
 
 To display the help of the module, enter:
 
@@ -423,19 +429,20 @@ The full calling sequence is:
 
 ::
 
-  leapsec [-h] [-f FILEPATH] [-d DATE] [-t TARGET_DIR] [-S]
+  leapsec [-h] [-D] [-O] [-S] [-f FILEPATH] [-d DATE]
 
 Input keywords:
 
 -h, --help            show this help message and exit
 -f FILEPATH, --filepath FILEPATH
                       CDFLeapSeconds.txt filepath. Default is
-                      [$CDF_LEAPSECONDSTABLE]
+                      [maser4py_rootdir]/support/data/CDFLeapSeconds.txt,
+                      where [maser4py_rootdir] is the maser4py root directory.
 -d DATE, --date DATE  Return the leap seconds for a given date and
                       time. (Expected format is "YYYY-MM-DDThh:mm:ss")
 -S, --SHOW-TABLE      Show the leap sec. table
--O, --Overwrite       Overwrite existing file
--g GET_FILE, --get-file GET_FILE
+-O, --OVERWRITE       Overwrite existing file
+-D, --DOWNLOAD-FILE
                       Download the CDFLeapSeconds.txt from
-                      the NASA CDF site. If the [GET_FILE] optional argument is defined, then it must be a valid directory where the
-                      file will be saved.
+                      the NASA CDF site. The file will be saved in the path
+                      defined in the --filepath argument..

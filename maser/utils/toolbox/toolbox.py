@@ -1,15 +1,14 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Toolbox module for maser-py package
-"""
+"""Toolbox module for maser-py package."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
 import os
 import logging
 import subprocess
+import urllib.request
 
 # __all__ = []
 
@@ -36,15 +35,62 @@ DEF_INDENT = " " * 16
 # ________________ Class Definition __________
 # (If required, define here classes)
 
+
+class Singleton(type):
+    """
+    Singleton class.
+
+    A metaclass to create singletons, i.e classes that can have at most only
+    one instance created at a given time.
+    """
+
+    def __call__(cls, *args, **kwargs):
+        """
+        Singleton.__call__.
+
+        Check that an instance is already
+        stored before creating a new one.
+        """
+        if hasattr(cls, "instance"):
+            return cls.instance
+
+        cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
+
+        return cls.instance
+
+
 # ________________ Global Functions __________
 # (If required, define here gobal functions)
 
 
+def download_data(url,
+                  encoding="utf-8",
+                  target_file=None,
+                  binary=False):
+    """Download the data from the given url.
+
+    If target_file input keyword is not None, then
+    save data into the target_file path.
+    """
+    try:
+        buff = urllib.request.urlopen(url)
+        data = buff.read().decode(encoding)
+    except:
+        return None
+    else:
+        if target_file is not None:
+            if binary:
+                wm = 'wb'
+            else:
+                wm = 'w'
+            with open(target_file, wm) as fw:
+                fw.write(data)
+    return data
+
+
 def setup_logging(filename=None,
                   quiet=False, verbose=False, debug=False):
-
-    """Method to set up logging"""
-
+    """Method to set up logging."""
     if debug:
         logging.basicConfig(level=logging.DEBUG,
                             format='%(levelname)-8s: %(message)s')
@@ -68,7 +114,7 @@ def setup_logging(filename=None,
         fh = logging.FileHandler(filename, delay=True)
         fh.setFormatter(logging.Formatter('%(asctime)s %(name)-\
                         12s %(levelname)-8s %(funcName)-12s %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S'))
+                                          datefmt='%Y-%m-%d %H:%M:%S'))
         if debug:
             fh.setLevel(logging.DEBUG)
         else:
@@ -77,10 +123,21 @@ def setup_logging(filename=None,
         logging.root.addHandler(fh)
 
 
+def raise_exception(cls, msg, logger=None):
+    """Raise exception with log.
+
+    cls is the Exception class.
+    msg is the Exception message.
+    logger can be passed as an optional input
+    """
+    if logger is None:
+        logger = logging.getLogger(__name__)
+    logger.error(msg)
+    raise cls(msg)
+
+
 def run_command(cmd, env=None, shell=False):
-
-    """ run a command with subprocess"""
-
+    """Run a command with subprocess."""
     logger = logging.getLogger(__name__)
 
     try:
@@ -99,11 +156,9 @@ def run_command(cmd, env=None, shell=False):
 
 
 def which(program, path="PATH"):
-
-    """which function"""
-
+    """Run which function."""
     def is_exe(fpath):
-        """is_exe function"""
+        """Run is_exe function."""
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
     fpath, __ = os.path.split(program)
@@ -122,9 +177,7 @@ def which(program, path="PATH"):
 
 
 def uniq(seq, not_none=False):
-
-    """Get list of unique elements from an input sequence of list type"""
-
+    """Get list of unique elements from an input sequence of list type."""
     seen = set()
     seen_add = seen.add
     if not_none:
@@ -134,9 +187,7 @@ def uniq(seq, not_none=False):
 
 
 def quote(string, unquote=False):
-
-    """Double quote a given string"""
-
+    """Double quote a given string."""
     if string is not None:
         if not isinstance(string, str):
             string = str(string)
@@ -152,9 +203,7 @@ def quote(string, unquote=False):
 def truncate_str(string, max_length,
                  gap=DEF_INDENT,
                  min_length=3):
-
-    """ truncate a too long CDF_CHAR value"""
-
+    """Truncate a too long CDF_CHAR value."""
     nstr = len(string)
     new_string = ""
     for i, val_c in enumerate(string):
@@ -169,12 +218,10 @@ def truncate_str(string, max_length,
 
 
 def insert_char(string, char, pos):
-
-    """ Insert substring in a string """
-
+    """Insert substring in a string."""
     return string[:pos] + char + string[pos:]
 
 
 # _________________ Main ____________________________
 if __name__ == "__main__":
-    print("tools for maser package")
+    print("toolbox for maser package")
