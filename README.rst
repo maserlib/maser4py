@@ -15,7 +15,9 @@ Installation
 
 Make sure that Python 3.4 (or higher) as well as pip and setuptools are already installed on your system.
 
-Install and configure the NASA CDF software (visit http://cdf.gsfc.nasa.gov/ for more details).
+The maser4py also requires the NASA CDF software to be run (visit http://cdf.gsfc.nasa.gov/ for more details). Especially the CDFLeapSeconds.txt file
+should be on the local disk and reachable from the $CDF_LEAPSECONDSTABLE env. variable. If it is not the case, maser4py offers tools to read and/or download
+this file from the NASA Web site (see user manual for more details).
 
 Using pip
 ---------
@@ -46,7 +48,7 @@ Usage
 From Python, enter "import maser".
 The module also offers specific command line interfaces.
 
-For more details, see the user manual in pdf format (doc/build/latex/maser4py.pdf) or html format (doc/build/index.html).
+For more details, see the maser4py user manual available in the pdf format (in doc/build/latex/maser4py.pdf) or from https://pypi.python.org/pypi/maser4py (see in "Package Documentation").
 
 Tree
 ====

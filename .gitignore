@@ -7,6 +7,6 @@ __pycache__
 *.pyc
 *.egg*
 *.egg-info
-doc/source/api
 doc/build
+!doc/build/latex/maser4py.pdf
 tests
