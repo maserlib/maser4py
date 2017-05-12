@@ -18,7 +18,7 @@ import logging
 import argparse
 from datetime import datetime
 
-from ..toolbox.toolbox import setup_logging, download_data, raise_exception
+from ..toolbox.toolbox import setup_logging, download_data, print_exception
 
 __all__ = ["Lstable"]
 
@@ -141,14 +141,16 @@ class Lstable:
             else:
                 return False
 
-        if download_data(url, target_file=target_filepath) is not None:
-            logger.info("{0} saved".format(target_filepath))
-            return True
+        try:
+            if download_data(url, target_file=target_filepath) is not None:
+                logger.info("{0} saved".format(target_filepath))
+            else:
+                raise LstableException(
+                    "Downloading {0} has failed!".format(url))
+        except:
+            print_exception()
         else:
-            raise_exception(
-                LstableException,
-                "Downloading {0} has failed!".format(url),
-                logger=logger)
+            return True
 
     def set_file(self, file=None, reload=True):
         """Check if the leapsec table file exists on the local disk."""
