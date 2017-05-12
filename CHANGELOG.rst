@@ -1,6 +1,10 @@
 CHANGELOG
 ====================
 
+0.6.1
+-----
+* Fix a bug in toolbox.py
+
 0.6.0
 -----
 * Simplify the CDFLeapSeconds.txt file handling.
