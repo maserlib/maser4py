@@ -7,7 +7,7 @@ About maser4py
 
 maser4py python package contains modules to
 deal with services, data and tools provided in the framework
-of the MASER portal.
+of the MASER portal (see section below).
 
 
 Installation
@@ -80,11 +80,11 @@ The maser4py directory contains the following items:
 About MASER
 ===========
 
-The MASER portal (Mesures, Analyses et Simulations d’Emissions Radio) gives an access to tools and database related to low frequency radioastronomy (from few kilohertz up to several tens of megahertz). The radio measurements in the spectral range are realized with ground observatories (for the frequencies above the 10 MHz Earth ionospheric cut-off) or from spacecraft (at lower frequencies).
+The MASER (Measuring, Analyzing & Simulating Emissions in the Radio range) portal is offering access to a series of tools and databases linked to low frequency radioastronomy (a few kilohertz to a few tens of megahertz). Radio measurements in this spectral range are done with ground based observatories (for frequencies above the terrestrial ionosphere cutoff at 10 MHz) or from space based platforms (at low frequencies).
 
-In this frequency range, the main radio sources are the Sun and the magnetized planets. The low frequency fluctuations measurement of the electric and magnetic fields can also provide a diagnosis on the local plasma conditions, and in-situ observations of plasma waves phenomena in the Solar Wind and the planetary environements.
+In this frequency range, the main radio sources are the Sun and the magnetized planets. Measurements of the low frequency electric and magnetic field fluctuations can also provide local plasma diagnostics and in-situ observations of plasma waves phenomena in the Solar Wind or in planetary environments.
 
-* For more information about the MASER project: http://maser.lesia.obspm.fr/ (in french)
+* For more information about the MASER project: http://maser.lesia.obspm.fr/
 * For more information about MASER4PY: https://github.com/maserlib/maser4py
 
 

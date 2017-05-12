@@ -11,7 +11,7 @@ from numpy import datetime64, timedelta64
 from datetime import datetime, timedelta
 import logging
 
-from ..toolbox import raise_exception
+from ..toolbox import print_exception
 
 from .leapsec import Lstable
 
@@ -106,29 +106,32 @@ def cast_timedelta(fr=None, to=None):
             args = list(args)
             """Decorator wrapper."""
             type_in = type(args[0])
-            if type_in is not timedelta and type_in is not timedelta64:
-                # Only timedelta and timedelta64 objects are allowed as input.
-                msg = "Input argument format is not valid [{0}]!".format(
-                    type_in)
-                raise_exception(TypeError, msg, logger=logger)
+            try:
+                if type_in is not timedelta and type_in is not timedelta64:
+                    # Only timedelta and timedelta64 objects are allowed as
+                    # input.
+                    raise TypeError(
+                        "Input argument format is not valid [{0}]!".format(
+                            type_in))
 
-            if type_in is timedelta64 and fr is timedelta:
-                td_in = td64_to_td(args[0])
-            elif type_in is timedelta and fr is timedelta64:
-                td_in = td_to_td64(args[0])
-            elif type_in is timedelta64 and fr is timedelta64:
-                td_in = args[0]
-            elif type_in is timedelta and fr is timedelta:
-                td_in = args[0]
-            elif fr is None:
-                td_in = args[0]
+                if type_in is timedelta64 and fr is timedelta:
+                    td_in = td64_to_td(args[0])
+                elif type_in is timedelta and fr is timedelta64:
+                    td_in = td_to_td64(args[0])
+                elif type_in is timedelta64 and fr is timedelta64:
+                    td_in = args[0]
+                elif type_in is timedelta and fr is timedelta:
+                    td_in = args[0]
+                elif fr is None:
+                    td_in = args[0]
+                else:
+                    raise TypeError("Input argument is not valid!")
+            except:
+                print_exception()
             else:
-                msg = "Input argument is not valid!"
-                raise_exception(TimeException, msg, logger=logger)
-
-            # Execute the function with the right input time type
-            args[0] = td_in
-            td_out = func(*args, **kwargs)
+                # Execute the function with the right input time type
+                args[0] = td_in
+                td_out = func(*args, **kwargs)
 
             # Depending of the decorator input and function I/O
             # return the output timedelta with the right time type
@@ -201,27 +204,32 @@ def cast_datetime(fr=None, to=None):
             """Decorator wrapper."""
             args = list(args)
             type_in = type(args[0])
-            if type_in is not datetime and type_in is not datetime64:
-                # Only datetime and datetime64 objects are allowed as input.
-                raise TypeError
+            try:
+                if type_in is not datetime and type_in is not datetime64:
+                    # Only datetime and datetime64 objects are allowed as
+                    # input.
+                    raise TypeError(
+                        "Input argument format is not valid [{0}]!".format(
+                            type_in))
 
-            if type_in is datetime64 and fr is datetime:
-                dt_in = dt64_to_dt(args[0])
-            elif type_in is datetime and fr is datetime64:
-                dt_in = dt_to_dt64(args[0])
-            elif type_in is datetime64 and fr is datetime64:
-                dt_in = args[0]
-            elif type_in is datetime and fr is datetime:
-                dt_in = args[0]
-            elif fr is None:
-                dt_in = args[0]
+                if type_in is datetime64 and fr is datetime:
+                    dt_in = dt64_to_dt(args[0])
+                elif type_in is datetime and fr is datetime64:
+                    dt_in = dt_to_dt64(args[0])
+                elif type_in is datetime64 and fr is datetime64:
+                    dt_in = args[0]
+                elif type_in is datetime and fr is datetime:
+                    dt_in = args[0]
+                elif fr is None:
+                    dt_in = args[0]
+                else:
+                    raise TypeError("Input argument is not valid!")
+            except:
+                print_exception()
             else:
-                msg = "Input argument is not valid!"
-                raise TimeException(msg)
-
-            # Execute the function with the right input time type
-            args[0] = dt_in
-            dt_out = func(*args, **kwargs)
+                # Execute the function with the right input time type
+                args[0] = dt_in
+                dt_out = func(*args, **kwargs)
 
             # Depending of the decorator input and function I/O
             # return the output datetime with the right time type
@@ -538,6 +546,8 @@ def jd_to_tt2000(jd,
     # Convert to MJD, if from_mjd keyword is not set
     utc = jd_to_utc(jd, from_mjd=from_mjd)
     return utc_to_tt2000(utc)
+
+
 # _________________ Main ____________________________
 # if (__name__ == "__main__"):
     # print ""

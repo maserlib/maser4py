@@ -349,16 +349,18 @@ It should return something like:
   WARNING : DEPEND_0 required!
   INFO    : Closing /tmp/cdfconverter_example.cdf
 
+The *time* module
+*****************
 
 The *leapsec* tool
 ==================
 
-The *leapsec* tool allows users to load the data
-of the CDFLeapSeconds.txt table file.
+The *leapsec* tool allows users to handle the leap seconds.
 
-The file can be loaded from a local path or by the program it-self from the
-CDF NASA site (https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt).
+Using the leapsec tool requires to read the CDFLeapSeconds.txt file. This file is available on the NASA CDF Web site (https://cdf.gsfc.nasa.gov).
 
+.. warning::
+  Before using the leapsec tool, it is highly recommended to have the CDFLeapSeconds.txt file saved on the localdisk, and reachable from the $CDF_LEAPSECONDSTABLE env. variable. If the file is not on the disk, the tool will attempt to read the file directly from the NASA CDF Web site.
 
 The *Lstable* class
 -------------------
@@ -379,7 +381,7 @@ Then, to load the CDFLeapSeconds.txt table, first enter:
 
 .. note::
   Note that if the optional input keyword *file=* is not set, the tool will
-  first check if the path is given in the $CDF_LEAPSECONDSTABLE environment variable. If not, then the program will look into the maser/support/data sub-folder of the package root directory. Finally, if it is still not found, it will attempt to retrieve the table data from the file on the
+  first check if the path is given in the $CDF_LEAPSECONDSTABLE environment variable. If not, then the program will look into the maser/support/data sub-folder of the package directory. Finally, if it is still not found, it will attempt to retrieve the table data from the file on the
   NASA CDF Web site (https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt)
 
 Once the table is loaded, then to print the leap seconds table, enter:
@@ -446,3 +448,21 @@ Input keywords:
                       Download the CDFLeapSeconds.txt from
                       the NASA CDF site. The file will be saved in the path
                       defined in the --filepath argument..
+
+The *time* tool
+==================
+
+The *time* tool offers time conversion methods between the following time systems:
+
+- UTC: Coordinated Universal Time
+- JD: Julian Days
+- MJD: Modified Julian Days
+- TT: Terrestrial Time
+- TAI: International Atomic Time
+- TT2000: Terrestrial Time since J2000 (2000-01-01T12:00:00)
+
+.. note::
+  The time conversion inside the methods is performed using numpy.timedelta64 and numpy.datetime64 objects for better time resolution.
+
+.. warning::
+  The highest time resolution of JD and MJD systems are fixed to microsecond. The TT2000 system can reach the nanosecond resolution.

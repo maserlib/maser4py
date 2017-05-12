@@ -5,12 +5,22 @@
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
+import sys
 import os
 import logging
 import subprocess
 import urllib.request
+import traceback
 
-# __all__ = []
+__all__ = ["print_exception",
+           "which",
+           "truncate_str",
+           "Singleton",
+           "download_data",
+           "setup_logging",
+           "quote", "uniq",
+           "insert_char",
+           "run_command"]
 
 # ________________ HEADER _________________________
 
@@ -30,6 +40,8 @@ __change__ = {"version": "change"}
 
 # ________________ Global Variables _____________
 # (define here the global variables)
+logger = logging.getLogger(__name__)
+
 DEF_INDENT = " " * 16
 
 # ________________ Class Definition __________
@@ -123,17 +135,31 @@ def setup_logging(filename=None,
         logging.root.addHandler(fh)
 
 
-def raise_exception(cls, msg, logger=None):
-    """Raise exception with log.
-
-    cls is the Exception class.
-    msg is the Exception message.
-    logger can be passed as an optional input
+def print_exception(message=None, exit=True):
     """
-    if logger is None:
-        logger = logging.getLogger(__name__)
-    logger.error(msg)
-    raise cls(msg)
+    To handle the printing of the error message when one occurred. Particularly
+    useful when catching errors and want to add debug informations on the same
+    time.
+    """
+    # get the traceback
+    trace = traceback.format_exc()
+
+    # if not message provided, get the traceback of errors to be a little more
+    # useful for the developer
+    if message is not None:
+        mess = "\n".join([trace, message])
+    else:
+        # else use message provided by developer
+        mess = trace
+
+    # show error in the logger
+    logger.error(mess)
+
+    if exit:
+        sys.exit(1)
+
+    # return the message
+    return mess
 
 
 def run_command(cmd, env=None, shell=False):

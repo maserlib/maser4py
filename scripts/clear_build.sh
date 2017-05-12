@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Clear the package build
+# Clear the Python package build items
+# X.Bonnin (LESIA, CNRS)
 
-# get the script directory
+# get this script directory
 pushd . > /dev/null
 workdir="${BASH_SOURCE[0]:-$0}";
 while([ -h "${workdir}" ]); do
