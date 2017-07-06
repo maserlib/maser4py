@@ -8,7 +8,7 @@ Python module to read a Viking/V4n/E5 data file from CDPP deep archive (http://c
 
 import os
 import struct
-from ..cdpp import *
+from maser.data.cdpp.cdpp import *
 
 __author__ = "Baptiste Cecconi"
 __date__ = "30-JUN-2017"

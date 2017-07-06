@@ -1,1 +1,1 @@
-from .v4n import *
+from maser.data.cdpp.viking.v4n import *

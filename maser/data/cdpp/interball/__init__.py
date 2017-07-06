@@ -1,1 +1,1 @@
-from .interball import *
+from maser.data.cdpp.interball.polrad import *

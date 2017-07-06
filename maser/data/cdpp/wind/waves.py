@@ -6,16 +6,15 @@ Python module to read a Wind/Waves data file from CDPP deep archive (http://cdpp
 @author: B.Cecconi(LESIA)
 """
 
-import datetime
 import struct
 import os
-from ..cdpp import *
+from maser.data.cdpp.cdpp import *
 
 __author__ = "Baptiste Cecconi"
 __date__ = "30-JUN-2017"
 __version__ = "0.10"
 
-__all__ = ["WindWavesData"]
+__all__ = ["WindWavesData", "read_wind_waves"]
 
 
 class WindWavesData(CDPPData):
@@ -103,7 +102,7 @@ def read_wind_waves_nn(file_path, verbose=False):
                 data.append({"PLASMA_FREQ": plasma_f, "ELEC_DENSITY": e_density})
                 nsweep += 1
 
-    name = 'WAVES_TNR_L3_NN'
+    name = 'WIND_WAVES_TNR_L3_NN'
     meta = {"PLASMA_FREQ": {"unit": "kHz", "description": "Plasma Frequency from Neural Network"},
             "ELEC_DENSITY": {"unit": "cm-3", "description": "Electronic Density from Neural Network"}}
 
@@ -207,7 +206,7 @@ def read_wind_waves_bqt(file_path, verbose=False):
                              "FIT_ACCUR_RMS": accur_rms})
                 nsweep += 1
 
-    name = 'WAVES_TNR_L3_BQT'
+    name = 'WIND_WAVES_TNR_L3_BQT'
 
     meta = {"PLASMA_FREQUENCY_NN":
             {"unit": "kHz", "description": "Plasma Frequency from Neural Network"},
