@@ -10,8 +10,10 @@ For more info on CCSDS time formats, refer to "TIME CODE FORMATS" CCSDS 301.0-B-
 import datetime
 
 __author__ = "Baptiste Cecconi"
+__institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
 __date__ = "30-JUN-2017"
 __version__ = "0.10"
+__project__ = "CDPP"
 
 __all__ = ["CDPPData"]
 
