@@ -6,16 +6,14 @@ Python module to read a INTERBALL Auroral S/C data from CDPP deep archive (http:
 @author: B.Cecconi(LESIA)
 """
 
-import datetime
 import struct
-import os
 from maser.data.cdpp.cdpp import *
 
 __author__ = "Baptiste Cecconi"
-__date__ = "30-JUN-2017"
-__version__ = "0.10"
+__date__ = "10-JUL-2017"
+__version__ = "0.11"
 
-__all__ = ["InterballAuroralData"]
+__all__ = ["InterballAuroralData", "read_int_aur_polrad"]
 
 
 class InterballAuroralData(CDPPData):
@@ -79,6 +77,7 @@ def read_int_aur_polrad(file_path, verbose=False):
     """
     Method to read Interball Auroral POLRAD data from CDPP 
     :param file_path: input file name
+    :param verbose: flag to activate verbose mode (default = False)
     :return: 
     """
 
@@ -100,7 +99,7 @@ def read_int_aur_polrad(file_path, verbose=False):
         while True:
             try:
                 if verbose:
-                    print "Reading sweep #{}".format(nsweep)
+                    print("Reading sweep #{}".format(nsweep))
 
                 # Reading number of octets in the current sweep
                 block = frb.read(4)
@@ -129,7 +128,7 @@ def read_int_aur_polrad(file_path, verbose=False):
                     data_i["EX"] = list()
                     data_i["EZ"] = list()
                     block = frb.read(4 * header_i["STEPS"])
-                    data_i["EY"] = struct.unpack('>' + 'f'* header_i["STEPS"], block)
+                    data_i["EY"] = struct.unpack('>' + 'f' * header_i["STEPS"], block)
                 elif header_i["CHANNELS"] == 3:
                     block = frb.read(4 * header_i["STEPS"])
                     data_i["EX"] = struct.unpack('>' + 'f' * header_i["STEPS"], block)
@@ -142,11 +141,11 @@ def read_int_aur_polrad(file_path, verbose=False):
                 block = frb.read(4)
                 loctets2 = struct.unpack('>i', block)[0]
                 if loctets2 != loctets1:
-                    print "Error reading file!"
+                    print("Error reading file!")
                     return None
 
             except EOFError:
-                print "End of file reached"
+                print("End of file reached")
                 break
 
             else:
