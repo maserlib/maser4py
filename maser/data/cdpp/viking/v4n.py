@@ -11,10 +11,10 @@ import struct
 from maser.data.cdpp.cdpp import *
 
 __author__ = "Baptiste Cecconi"
-__date__ = "30-JUN-2017"
-__version__ = "0.10"
+__date__ = "10-JUL-2017"
+__version__ = "0.11"
 
-__all__ = ["VikingV4nData"]
+__all__ = ["VikingV4nData", "read_viking"]
 
 
 class VikingV4nData(CDPPData):
@@ -28,8 +28,17 @@ class VikingV4nData(CDPPData):
         self.name = name
         self.meta = meta
 
-    def get_datetime(self):
-        return self.get_datetime_ccsds_cds()
+    def __getitem__(self, item):
+        if item == "DATETIME_UTC":
+            return self.get_datetime(is_utc=True)
+        else:
+            return CDPPData.__getitem__(self, item)
+
+    def get_datetime(self, is_utc=False):
+        if is_utc:
+            return self.get_datetime_ccsds_ccs("UTC_")
+        else:
+            return self.get_datetime_ccsds_ccs()
 
     def getvar(self, var_name):
         """
@@ -142,18 +151,18 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                      "VIKING_V4_V2", "VIKING_V4L_Ni", "VIKING_V4L_DFT", "VIKING_V4L_WF"]
 
     if dataset not in dataset_names:
-        print "Wrong dataset name."
-        print "Allowed values = {}".format(', '.join(dataset_names))
+        print("Wrong dataset name.")
+        print("Allowed values = {}".format(', '.join(dataset_names)))
         return None
     else:
-        print "Loading {} dataset.".format(dataset)
+        print("Loading {} dataset.".format(dataset))
 
     header1_fields = ["RECORD_NUMBER"]
     header1_dtype = ">h"
 
     # WARNING: CNES/CDPP SCRIBE DESCRIPTOR IS WRONG -- CCSDS DAY_IN_YEAR_02 is not present
     header1_fields += ["CCSDS_PREAMBLE", "CCSDS_YEAR", "CCSDS_MONTH",
-                       "CCSDS_DAY_IN_MONTH", "CCSDS_HOUR", "CCSDS_MINUTE", "CCSDS_SECOND", "CCSDS_SECOND_E_2",
+                       "CCSDS_DAY", "CCSDS_HOUR", "CCSDS_MINUTE", "CCSDS_SECOND", "CCSDS_SECOND_E_2",
                        "CCSDS_SECOND_E_4"]
     header1_dtype += 'bhbbbbbbb'
 
@@ -182,7 +191,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
     header1_dtype += 'hhh'
 
     header1_fields += ["UTC_CCSDS_PREAMBLE", "UTC_CCSDS_YEAR", "UTC_CCSDS_MONTH",
-                       "UTC_CCSDS_DAY_IN_MONTH", "UTC_CCSDS_HOUR", "UTC_CCSDS_MINUTE", "UTC_CCSDS_SECOND",
+                       "UTC_CCSDS_DAY", "UTC_CCSDS_HOUR", "UTC_CCSDS_MINUTE", "UTC_CCSDS_SECOND",
                        "UTC_CCSDS_SECOND_E_2", "UTC_CCSDS_SECOND_E_4"]
     header1_dtype += 'bhbbbbbbb'
 
@@ -244,7 +253,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
             read_index_start = frb.tell()
             try:
                 if verbose:
-                    print "Reading sweep #{}".format(nsweep)
+                    print("Reading sweep #{}".format(nsweep))
 
                 # Reading header1 parameters in the current record
                 block = frb.read(header1_length)
@@ -420,7 +429,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
 
                 # Reading Viking V4L DFT/WF data in the current record
                 data_v4l_dft_wh_bytes = 16384
-                data_v4l_dft_wh_floats = data_v4l_dft_wh_bytes / 4
+                data_v4l_dft_wh_floats = data_v4l_dft_wh_bytes // 4
 
                 block = frb.read(data_v4l_dft_wh_bytes)
                 data_v4l_dft_wf = struct.unpack('>' + 'f' * data_v4l_dft_wh_floats, block)
@@ -435,13 +444,13 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                         data_v4l_wf = dict()
 
                         if header3_i["V4L_NUMBER_OF_DFT_SPECTRA"] != 0:
-                            print "Erroneous V4L_TM_MODE..."
+                            print("Erroneous V4L_TM_MODE...")
 
                         data_v4l_wf["WF1"] = list()
                         data_v4l_wf["WF2"] = list()
 
                         n_wf = header3_i["V4L_NUMBER_OF_SERIES_PER_WF_CHANNEL"]
-                        l_wf = header3_i["V4L_NUMBER_OF_SAMPLES_PER_WF_CHANNEL"] / n_wf
+                        l_wf = int(header3_i["V4L_NUMBER_OF_SAMPLES_PER_WF_CHANNEL"] / n_wf)
 
                         for i in range(n_wf):
                             data_v4l_wf["WF1"].append(data_v4l_dft_wf[cur_index:cur_index+l_wf])
@@ -462,10 +471,10 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                         data_v4l_wf["WF2"] = list()
 
                         n_dft = header3_i["V4L_NUMBER_OF_DFT_SPECTRA"]
-                        l_dft = header3_i["V4L_NUMBER_OF_DFT_SAMPLES"] / n_dft
+                        l_dft = int(header3_i["V4L_NUMBER_OF_DFT_SAMPLES"] / n_dft)
 
                         n_wf = header3_i["V4L_NUMBER_OF_SERIES_PER_WF_CHANNEL"]
-                        l_wf = header3_i["V4L_NUMBER_OF_SAMPLES_PER_WF_CHANNEL"] / n_wf
+                        l_wf = int(header3_i["V4L_NUMBER_OF_SAMPLES_PER_WF_CHANNEL"] / n_wf)
 
                         for i in range(n_dft):
                             data_v4l_dft["DFT"].append(data_v4l_dft_wf[cur_index:cur_index+l_dft])
@@ -488,7 +497,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                         data_v4l_dft["DFT"] = list()
 
                         n_dft = header3_i["V4L_NUMBER_OF_DFT_SPECTRA"]
-                        l_dft = header3_i["V4L_NUMBER_OF_DFT_SAMPLES"] / n_dft
+                        l_dft = int(header3_i["V4L_NUMBER_OF_DFT_SAMPLES"] / n_dft)
 
                         for i in range(n_dft):
                             data_v4l_dft["DFT"].append(data_v4l_dft_wf[cur_index:cur_index+l_dft])
@@ -497,23 +506,23 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                         data_i["VIKING_V4L_DFT"] = data_v4l_dft
 
                     else:
-                        print "Erroneous V4L_TM_MODE selector..."
+                        print("Erroneous V4L_TM_MODE selector...")
 
                 read_index_stop = frb.tell()
                 if read_index_stop - read_index_start != 28672:
-                    print "First byte of current record: {}".format(read_index_start)
-                    print "Last byte of current record: {}".format(read_index_stop)
-                    print "Number of bytes read for current record: {}".format(read_index_stop - read_index_start)
+                    print("First byte of current record: {}".format(read_index_start))
+                    print("Last byte of current record: {}".format(read_index_stop))
+                    print("Number of bytes read for current record: {}".format(read_index_stop - read_index_start))
                     raise Exception('Wrong record length.')
                 if read_index_stop == os.stat(file_path).st_size:
                     raise EOFError
 
             except EOFError:
-                print "End of file reached"
+                print("End of file reached")
                 break
 
             except Exception as inst:
-                print inst
+                print(inst)
                 import pdb
                 pdb.set_trace()
 
