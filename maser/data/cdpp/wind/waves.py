@@ -11,8 +11,8 @@ import os
 from maser.data.cdpp.cdpp import *
 
 __author__ = "Baptiste Cecconi"
-__date__ = "30-JUN-2017"
-__version__ = "0.10"
+__date__ = "10-JUL-2017"
+__version__ = "0.11"
 
 __all__ = ["WindWavesData", "read_wind_waves"]
 
@@ -30,7 +30,15 @@ class WindWavesData(CDPPData):
             self.orbit = orbit
 
     def get_datetime(self):
-        return self.get_datetime_ur8()
+        if self.name == "WIND_WAVES_TNR_L3_NN":
+            return self.get_datetime_ur8()
+        elif self.name == "WIND_WAVES_TNR_L3_BQT":
+            return self.get_datetime_ur8()
+        elif self.name == "WIND_WAVES_RADIO_60S":
+            return self.get_datetime_ccsds_cds()
+        else:
+            print("Unknown dataset name...")
+            return None
 
     def getvar_meta(self, var_name):
         """
@@ -68,7 +76,7 @@ def read_wind_waves_nn(file_path, verbose=False):
         while True:
             try:
                 if verbose:
-                    print "Reading sweep #{}".format(nsweep)
+                    print("Reading sweep #{}".format(nsweep))
 
                 # Reading number of octets in the current sweep
                 block = frb.read(4)
@@ -90,11 +98,11 @@ def read_wind_waves_nn(file_path, verbose=False):
                 block = frb.read(4)
                 loctets2 = struct.unpack('>i', block)[0]
                 if loctets2 != loctets1:
-                    print "Error reading file!"
+                    print("Error reading file!")
                     return None
 
             except EOFError:
-                print "End of file reached"
+                print("End of file reached")
                 break
 
             else:
@@ -135,7 +143,7 @@ def read_wind_waves_bqt(file_path, verbose=False):
         while True:
             try:
                 if verbose:
-                    print "Reading sweep #{}".format(nsweep)
+                    print("Reading sweep #{}".format(nsweep))
 
                 # Reading number of octets in the current sweep
                 block = frb.read(4)
@@ -181,11 +189,11 @@ def read_wind_waves_bqt(file_path, verbose=False):
                 block = frb.read(4)
                 loctets2 = struct.unpack('>i', block)[0]
                 if loctets2 != loctets1:
-                    print "Error reading file!"
+                    print("Error reading file!")
                     return None
 
             except EOFError:
-                print "End of file reached"
+                print("End of file reached")
                 break
 
             else:
@@ -281,7 +289,7 @@ def read_wind_waves_radio_60s(file_path, verbose=False):
         while True:
             try:
                 if verbose:
-                    print "Reading sweep #{}".format(nsweep)
+                    print("Reading sweep #{}".format(nsweep))
 
                 # Reading number of octets in the current sweep
                 block = frb.read(4)
@@ -310,11 +318,11 @@ def read_wind_waves_radio_60s(file_path, verbose=False):
                 block = frb.read(4)
                 loctets2 = struct.unpack('>i', block)[0]
                 if loctets2 != loctets1:
-                    print "Error reading file!"
+                    print("Error reading file!")
                     return None
 
             except EOFError:
-                print "End of file reached"
+                print("End of file reached")
                 break
 
             else:
@@ -344,7 +352,7 @@ def read_wind_waves(file_path):
     file_name_elements = file_name.split('_')
     file_name_check = False
     result = None
-    print "Processing file: {}".format(file_name)
+    print("Processing file: {}".format(file_name))
 
     file_name_mis = "Unk"
     file_name_exp = "Unk"
@@ -358,7 +366,7 @@ def read_wind_waves(file_path):
     elif file_name_elements[0] == 'WIN':
         file_name_mis = 'Wind'
     else:
-        print "Unknown mission: '{}'".format(file_name_elements[0])
+        print("Unknown mission: '{}'".format(file_name_elements[0]))
 
     if file_name_elements[1] == 'WA':
         file_name_exp = 'Waves'
@@ -369,27 +377,27 @@ def read_wind_waves(file_path):
                 if file_name_elements[4] == 'BQT':
                     file_name_dat = 'BQT'
                     if file_extension != 'DAT':
-                        print "Wrong extension: '.{}' (expected '.DAT')".format(file_extension)
+                        print("Wrong extension: '.{}' (expected '.DAT')".format(file_extension))
                     else:
                         file_name_check = True
-                        print "Detected Wind/Waves/TNR/L3/BQT data."
+                        print("Detected Wind/Waves/TNR/L3/BQT data.")
                         result = read_wind_waves_bqt(file_path)
 
                 elif file_name_elements[4] == 'NN':
                     file_name_dat = 'NN'
                     if file_extension != 'DAT':
-                        print "Wrong extension: '.{}' (expected '.DAT')".format(file_extension)
+                        print("Wrong extension: '.{}' (expected '.DAT')".format(file_extension))
                     else:
                         file_name_check = True
-                        print "Detected Wind/Waves/TNR/L3/NN data."
+                        print("Detected Wind/Waves/TNR/L3/NN data.")
                         result = read_wind_waves_nn(file_path)
 
                 else:
-                    print "Unknown dataset: '{}'".format(file_name_elements[4])
+                    print("Unknown dataset: '{}'".format(file_name_elements[4]))
             else:
-                print "Unknown level: '{}'".format(file_name_elements[3])
+                print("Unknown level: '{}'".format(file_name_elements[3]))
         else:
-            print "Unknown receiver: '{}'".format(file_name_elements[2])
+            print("Unknown receiver: '{}'".format(file_name_elements[2]))
 
     elif file_name_elements[1] == 'TNR':
         if file_name_elements[2] == '60S':
@@ -398,13 +406,13 @@ def read_wind_waves(file_path):
             file_name_lev = 'Average'
             file_name_dat = '60S'
             if file_extension != 'B3E':
-                print "Wrong extension: '.{}' (expected '.B3E')".format(file_extension)
+                print("Wrong extension: '.{}' (expected '.B3E')".format(file_extension))
             else:
                 file_name_check = True
-                print "Detected Wind/Waves/TNR/60s data."
+                print("Detected Wind/Waves/TNR/60s data.")
                 result = read_wind_waves_radio_60s(file_path)
         else:
-            print "Unknown dataset: '{}'".format(file_name_elements[4])
+            print("Unknown dataset: '{}'".format(file_name_elements[4]))
 
     elif file_name_elements[1] == 'RAD1':
         if file_name_elements[2] == '60S':
@@ -413,13 +421,13 @@ def read_wind_waves(file_path):
             file_name_lev = 'Average'
             file_name_dat = '60S'
             if file_extension != 'B3E':
-                print "Wrong extension: '.{}' (expected '.B3E')".format(file_extension)
+                print("Wrong extension: '.{}' (expected '.B3E')".format(file_extension))
             else:
                 file_name_check = True
-                print "Detected Wind/Waves/RAD1/60s data."
+                print("Detected Wind/Waves/RAD1/60s data.")
                 result = read_wind_waves_radio_60s(file_path)
         else:
-            print "Unknown dataset: '{}'".format(file_name_elements[4])
+            print("Unknown dataset: '{}'".format(file_name_elements[4]))
 
     elif file_name_elements[1] == 'RAD2':
         if file_name_elements[2] == '60S':
@@ -428,22 +436,22 @@ def read_wind_waves(file_path):
             file_name_lev = 'Average'
             file_name_dat = '60S'
             if file_extension != 'B3E':
-                print "Wrong extension: '.{}' (expected '.B3E')".format(file_extension)
+                print("Wrong extension: '.{}' (expected '.B3E')".format(file_extension))
             else:
                 file_name_check = True
-                print "Detected Wind/Waves/RAD2/60s data."
+                print("Detected Wind/Waves/RAD2/60s data.")
                 result = read_wind_waves_radio_60s(file_path)
         else:
-            print "Unknown dataset: '{}'".format(file_name_elements[4])
+            print("Unknown dataset: '{}'".format(file_name_elements[4]))
 
     else:
-        print "Unknown receiver: '{}'".format(file_name_elements[2])
+        print("Unknown receiver: '{}'".format(file_name_elements[2]))
 
     if file_name_check:
-        print "Import result: {} {}/{}/{}/{} {} data records loaded (from {} file format)".\
-            format(len(result), file_name_mis, file_name_exp, file_name_rec, file_name_dat, file_name_lev,
-                   file_extension)
+        print("Import result: {} {}/{}/{}/{} {} data records loaded (from {} file format)".
+              format(len(result), file_name_mis, file_name_exp, file_name_rec, file_name_dat, file_name_lev,
+                     file_extension))
     else:
-        print "Import result: No data loaded."
+        print("Import result: No data loaded.")
 
     return result
