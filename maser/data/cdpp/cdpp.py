@@ -11,9 +11,9 @@ import datetime
 
 __author__ = "Baptiste Cecconi"
 __institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
-__date__ = "30-JUN-2017"
-__version__ = "0.10"
-__project__ = "CDPP"
+__date__ = "10-JUL-2017"
+__version__ = "0.11"
+__project__ = "MASER/CDPP"
 
 __all__ = ["CDPPData"]
 
@@ -27,7 +27,7 @@ class CCSDSDate:
         try:
             # decoding P_FIELD
             self.EXTENSION_FLAG = self.P_field & 1
-            self.TIME_CODE_ID = (self.P_field & 14)/2
+            self.TIME_CODE_ID = int((self.P_field & 14)/2)
 
             # EXTENSION_FLAG = 0: 1 byte P_field
             # EXTENSION_FLAG = 1: 2 bytes P_field [NB: not sure it is used yet...]
@@ -40,8 +40,8 @@ class CCSDSDate:
 
             if self.TIME_CODE_NAME == "CUC_LEVEL_1" or self.TIME_CODE_NAME == "CUC_LEVEL_2":
 
-                self.N_BYTES_COARSE_TIME = ((self.P_field & 48) / 16) + 1
-                self.N_BYTES_FINE_TIME = (self.P_field & 192) / 64
+                self.N_BYTES_COARSE_TIME = int(((self.P_field & 48) / 16) + 1)
+                self.N_BYTES_FINE_TIME = int((self.P_field & 192) / 64)
                 self.N_BYTES_T_FIELD = self.N_BYTES_COARSE_TIME + self.N_BYTES_FINE_TIME
                 self.TIME_SCALE = "TAI"
 
@@ -51,8 +51,8 @@ class CCSDSDate:
                     self.datetime = self.decode_cuc_t()
 
             if self.TIME_CODE_NAME == "CUC_LEVEL_2":
-                   self.EPOCH_TYPE = "AGENCY_DEFINED"
-                   raise Exception('AGENCY_DEFINED epoch not implemented')
+                self.EPOCH_TYPE = "AGENCY_DEFINED"
+                raise Exception('AGENCY_DEFINED epoch not implemented')
 
             if self.TIME_CODE_NAME == "CDS":
 
@@ -62,9 +62,9 @@ class CCSDSDate:
                     self.EPOCH_TYPE = "AGENCY_DEFINED"
                     raise Exception('AGENCY_DEFINED epoch not implemented')
 
-                self.N_BYTES_DAY = ((self.P_field & 32) / 32) + 2
+                self.N_BYTES_DAY = int(((self.P_field & 32) / 32) + 2)
                 self.N_BYTES_MILLISECOND = 4
-                self.N_BYTES_SUB_MILLISECOND = (self.P_field & 192) / 32
+                self.N_BYTES_SUB_MILLISECOND = int((self.P_field & 192) / 32)
                 self.N_BYTES_T_FIELD = self.N_BYTES_DAY + self.N_BYTES_MILLISECOND + self.N_BYTES_SUB_MILLISECOND
                 self.TIME_SCALE = "UTC"
 
@@ -74,7 +74,7 @@ class CCSDSDate:
 
                 self.EPOCH_TYPE = "N/A"
                 self.CALENDAR_VARIATION_FLAG = (self.P_field & 16) / 16
-                self.RESOLUTION = (self.P_field & 224) / 32
+                self.RESOLUTION = int((self.P_field & 224) / 32)
                 self.N_BYTES_T_FIELD = 7 + self.RESOLUTION
                 self.TIME_SCALE = "UTC"
 
@@ -88,11 +88,11 @@ class CCSDSDate:
 
         except Exception as e:
             e_message = e.args
-            print "Error: {}".format(e_message)
+            print("Error: {}".format(e_message))
 
     def decode_cuc_t(self):
 
-        print "INFO: decoding CUC formatted date."
+        print("INFO: decoding CUC formatted date.")
         days = 0
         day_fraction_num = 0
         day_fraction_den = 2**(8*self.N_BYTES_FINE_TIME)
@@ -105,13 +105,13 @@ class CCSDSDate:
         micro = int((day_fraction_num * 1e6) / day_fraction_den)
 
         if self.N_BYTES_FINE_TIME == 3:
-            print "{}: {}".format("Warning", "Python datetime module doesn't handle sub-microsecond accuracy.")
+            print("{}: {}".format("Warning", "Python datetime module doesn't handle sub-microsecond accuracy."))
 
         return self.TIME_EPOCH + datetime.timedelta(days=days) + datetime.timedelta(microseconds=micro)
 
     def decode_cds_t(self):
 
-        print "INFO: decoding CDS formatted date."
+        print("INFO: decoding CDS formatted date.")
         days = 0
         for i in range(self.N_BYTES_DAY):
             days = days + self.T_field[i]*2**(8*i)
@@ -128,13 +128,13 @@ class CCSDSDate:
             micro = sub_milli
         else:
             micro = int(sub_milli / 1e6)
-            print "{}: {}".format("Warning", "Python datetime module doesn't handle sub-microsecond accuracy.")
+            print("{}: {}".format("Warning", "Python datetime module doesn't handle sub-microsecond accuracy."))
 
         return self.TIME_EPOCH + datetime.timedelta(days=days) + datetime.timedelta(microseconds=micro)
 
     def decode_ccs_t(self):
 
-        print "INFO: decoding CCS formatted date."
+        print("INFO: decoding CCS formatted date.")
         year = self.T_field[0] + self.T_field[1]*256
         if self.CALENDAR_VARIATION_FLAG:
             month = self.T_field[2]
@@ -152,10 +152,10 @@ class CCSDSDate:
 
         micro = int(sub_second * 1e6)
         if self.RESOLUTION > 4:
-            print "{}: {}".format("Warning", "Python datetime module doesn't handle sub-microsecond accuracy.")
+            print("{}: {}".format("Warning", "Python datetime module doesn't handle sub-microsecond accuracy."))
 
-        return datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute, second=second) + \
-               datetime.timedelta(microseconds=micro)
+        return datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute, second=second) \
+            + datetime.timedelta(microseconds=micro)
 
 
 class CDPPData:
@@ -165,7 +165,7 @@ class CDPPData:
         self.data = data
 
     def __len__(self):
-       return len(self.data)
+        return len(self.data)
 
     def __getitem__(self, item):
         var_names = self.getvar_names()
@@ -177,7 +177,7 @@ class CDPPData:
         elif item == "DATETIME":
             return self.get_datetime()
         else:
-            print "Key {} not found.".format(item)
+            print("Key {} not found.".format(item))
             return None
 
     def gethdr(self, hdr_name):
@@ -220,7 +220,7 @@ class CDPPData:
         return cur_data.keys()
 
     def keys(self):
-        return self.gethdr_names() + ["DATETIME"] + self.getvar_names()
+        return list(self.gethdr_names()) + ["DATETIME"] + list(self.getvar_names())
 
     def get_datetime(self):
         pass
@@ -252,7 +252,27 @@ class CDPPData:
                    cur_header["CCSDS_JULIAN_DAY_B3"]
             milli = cur_header["CCSDS_MILLISECONDS_OF_DAY"]
 
-            dt.append(datetime.datetime(1950,1,1) + datetime.timedelta(days=days) +
+            dt.append(datetime.datetime(1950, 1, 1) + datetime.timedelta(days=days) +
                       datetime.timedelta(milliseconds=milli))
 
+        return dt
+
+    def get_datetime_ccsds_ccs(self, prefix=None):
+        """Method to retrieve the list of datetime par sweep (from CCSDS-CCS format)
+        :param prefix: CCSDS_CCS key string prefix (default = None)
+        :return dt: list of datetime
+        """
+
+        dt = list()
+        if prefix is None:
+            prefix_str = ""
+        else:
+            prefix_str = prefix
+
+        for cur_header in self.header:
+            dt.append(datetime.datetime(cur_header[prefix_str+"CCSDS_YEAR"], cur_header[prefix_str+"CCSDS_MONTH"],
+                                        cur_header[prefix_str+"CCSDS_DAY"], cur_header[prefix_str+"CCSDS_HOUR"],
+                                        cur_header[prefix_str+"CCSDS_MINUTE"], cur_header[prefix_str+"CCSDS_SECOND"],
+                                        int(cur_header[prefix_str+"CCSDS_SECOND_E_2"] * 1e4) +
+                                        int(cur_header[prefix_str+"CCSDS_SECOND_E_4"] * 1e2)))
         return dt
