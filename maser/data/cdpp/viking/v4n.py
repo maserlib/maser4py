@@ -450,7 +450,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                         data_v4l_wf["WF2"] = list()
 
                         n_wf = header3_i["V4L_NUMBER_OF_SERIES_PER_WF_CHANNEL"]
-                        l_wf = int(header3_i["V4L_NUMBER_OF_SAMPLES_PER_WF_CHANNEL"] / n_wf)
+                        l_wf = header3_i["V4L_NUMBER_OF_SAMPLES_PER_WF_CHANNEL"] // n_wf
 
                         for i in range(n_wf):
                             data_v4l_wf["WF1"].append(data_v4l_dft_wf[cur_index:cur_index+l_wf])
@@ -461,6 +461,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                             cur_index = cur_index + l_wf
 
                         data_i["VIKING_V4L_WF"] = data_v4l_wf
+                        data_i["VIKING_V4L_DFT"] = None
 
                     elif header3_i["V4L_TM_MODE"] == 1 or header3_i["V4L_TM_MODE"] == 3:
 
@@ -504,6 +505,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                             cur_index = cur_index + l_dft
 
                         data_i["VIKING_V4L_DFT"] = data_v4l_dft
+                        data_i["VIKING_V4L_WF"] = None
 
                     else:
                         print("Erroneous V4L_TM_MODE selector...")
@@ -521,10 +523,10 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                 print("End of file reached")
                 break
 
-            except Exception as inst:
-                print(inst)
-                import pdb
-                pdb.set_trace()
+#            except Exception as inst:
+#                print(inst)
+#                import pdb
+#                pdb.set_trace()
 
             else:
 
