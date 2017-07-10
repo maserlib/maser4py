@@ -18,9 +18,8 @@ __all__ = ["InterballAuroralData", "read_int_aur_polrad"]
 
 class InterballAuroralData(CDPPData):
 
-    def __init__(self, header, data, name, meta):
-        CDPPData.__init__(self, header, data)
-        self.name = name
+    def __init__(self, file, header, data, name, meta):
+        CDPPData.__init__(self, file, header, data, name)
         self.meta = meta
 
     def decode_session_name(self):
@@ -160,4 +159,4 @@ def read_int_aur_polrad(file_path, verbose=False):
             "EY": {"unit": "W/m^2/Hz", "description": "Flux Density on Antenna EY"},
             "EZ": {"unit": "W/m^2/Hz", "description": "Flux Density on Antenna EZ"}}
 
-    return InterballAuroralData(header, data, name, meta)
+    return InterballAuroralData(os.path.basename(file_path), header, data, name, meta)

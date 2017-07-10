@@ -160,9 +160,11 @@ class CCSDSDate:
 
 class CDPPData:
 
-    def __init__(self, header, data):
+    def __init__(self, file, header, data, name):
         self.header = header
         self.data = data
+        self.file = file
+        self.name = name
 
     def __len__(self):
         return len(self.data)
@@ -275,4 +277,69 @@ class CDPPData:
                                         cur_header[prefix_str+"CCSDS_MINUTE"], cur_header[prefix_str+"CCSDS_SECOND"],
                                         int(cur_header[prefix_str+"CCSDS_SECOND_E_2"] * 1e4) +
                                         int(cur_header[prefix_str+"CCSDS_SECOND_E_4"] * 1e2)))
+
         return dt
+
+    def get_epncore(self):
+
+        md = dict()
+
+        md["granule_uid"] = "{}_{}".format(self.name.lower(),self.file.lower())
+        md["granule_gid"] = self.name.lower()
+        md["obs_id"] = self.file.lower()
+        md["dataproduct_type"] = "ds"
+        md["target_name"] = "Sun#Earth#Jupiter"
+        md["target_class"] = "star#planet"
+        md["time_min"] = self["DATETIME"][0]
+        md["time_min"] = self["DATETIME"][-1]
+        md["time_smapling_step_min"] = None
+        md["time_smapling_step_max"] = None
+        md["time_exp_min"] = None
+        md["time_exp_max"] = None
+        md["spectral_range_min"] = None
+        md["spectral_range_max"] = None
+        md["spectral_sampling_step_min"] = None
+        md["spectral_sampling_step_max"] = None
+        md["spectral_resolution_min"] = None
+        md["spectral_resolution_max"] = None
+        md["c1min"] = None
+        md["c1max"] = None
+        md["c2min"] = None
+        md["c2max"] = None
+        md["c3min"] = None
+        md["c3max"] = None
+        md["s_region"] = None
+        md["c1_resol_min"] = None
+        md["c1_resol_max"] = None
+        md["c2_resol_min"] = None
+        md["c2_resol_max"] = None
+        md["c3_resol_min"] = None
+        md["c3_resol_max"] = None
+        md["spatial_frame_type"] = None
+        md["incidence_min"] = None
+        md["incidence_max"] = None
+        md["emergence_min"] = None
+        md["emergence_max"] = None
+        md["phase_min"] = None
+        md["phase_max"] = None
+        md["instrument_host_name"] = self.name.split('_')[0]
+        md["instrument_name"] = self.name.split('_')[1]
+        md["measurement_type"] = "phys.flux.density;em.radio"
+        md["processing_level"] = None
+        md["creation_date"] = None
+        md["modification_date"] = None
+        md["release_date"] = datetime.datetime.now()
+        md["service_title"] = "maser-cdpp"
+        md["access_url"] = None
+        md["access_format"] = None
+        md["access_estsize"] = None
+        md["access_md5"] = None
+        md["thumbnail_url"] = None
+        md["file_name"] = self.file
+        md["species"] = None
+        md["target_region"] = None
+        md["feature_name"] = None
+        md["bib_reference"] = None
+
+        return md
+    

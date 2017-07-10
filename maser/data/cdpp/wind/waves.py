@@ -22,9 +22,8 @@ class WindWavesData(CDPPData):
     Class for Wind/Waves data
     """
 
-    def __init__(self, header, data, name, meta, orbit=None):
-        CDPPData.__init__(self, header, data)
-        self.name = name
+    def __init__(self, file, header, data, name, meta, orbit=None):
+        CDPPData.__init__(self, file, header, data, name)
         self.meta = meta
         if orbit:
             self.orbit = orbit
@@ -114,7 +113,7 @@ def read_wind_waves_nn(file_path, verbose=False):
     meta = {"PLASMA_FREQ": {"unit": "kHz", "description": "Plasma Frequency from Neural Network"},
             "ELEC_DENSITY": {"unit": "cm-3", "description": "Electronic Density from Neural Network"}}
 
-    return WindWavesData(header, data, name, meta)
+    return WindWavesData(os.path.basename(file_path), header, data, name, meta)
 
 
 def read_wind_waves_bqt(file_path, verbose=False):
@@ -245,7 +244,7 @@ def read_wind_waves_bqt(file_path, verbose=False):
             "FIT_ACCUR_RMS":
             {"unit": "%", "description": "Root mean square between measured and fitted spectra"}}
 
-    return WindWavesData(header, data, name, meta)
+    return WindWavesData(os.path.basename(file_path), header, data, name, meta)
 
 
 def read_wind_waves_radio_60s(file_path, verbose=False):
@@ -337,7 +336,7 @@ def read_wind_waves_radio_60s(file_path, verbose=False):
     meta = {"FREQ": {"unit": "kHz", "description": "Frequency"},
             "INTENSITY": {"unit": "uV^2/Hz", "description": "Intensity"}}
 
-    return WindWavesData(header, data, name, meta)
+    return WindWavesData(os.path.basename(file_path), header, data, name, meta)
 
 
 def read_wind_waves(file_path):

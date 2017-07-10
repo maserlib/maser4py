@@ -19,13 +19,12 @@ __all__ = ["VikingV4nData", "read_viking"]
 
 class VikingV4nData(CDPPData):
 
-    def __init__(self, header1, header2, header3, status, data, name, meta, orbit):
-        CDPPData.__init__(self, header1, data)
+    def __init__(self, file, header1, header2, header3, status, data, name, meta, orbit):
+        CDPPData.__init__(self, file, header1, data, name)
         self.header_v4l = header2
         self.header_v4h = header3
         self.status = status
         self.orbit = orbit
-        self.name = name
         self.meta = meta
 
     def __getitem__(self, item):
@@ -239,6 +238,43 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
     data_v2_dtype = '>ffff'
     data_v2_length = 16
 
+    # Defining empty data dict templates
+
+    data_v4_v1_empty = {"V1_RELATIVE_TIME": None,
+                        "V1_EPAR": None,
+                        "V1_EC": None,
+                        "V1_ED": None,
+                        "V1_VFG": None,
+                        "V1_EPDIFF": None,
+                        "V1_USER_BIAS": None,
+                        "V1_VGUARD": None,
+                        "V1_IFILL": None,
+                        "V1_ID": None}
+
+    data_v4_v2_empty = {"V2_AMPLITUDE": None,
+                        "V2_PSI": None,
+                        "V2_PHI": None,
+                        "V2_THETA": None}
+
+    data_v4h_sfa_empty = {"FREQUENCY_SFA": None,
+                          "ELECTRIC_SFA": None,
+                          "MAGNETIC_SFA": None}
+
+    data_v4h_fb_empty = {"FREQUENCY_FB": None,
+                         "MAGNETIC_FB": None,
+                         "ELECTRIC_FB": None}
+
+    data_v4l_fbl_empty = {"FREQUENCY_FBL": None,
+                          "ELECTRIC_FBL": None}
+
+    data_v4l_ni_empty = {"N1_PROBE": None,
+                         "N2_PROBE": None}
+
+    data_v4l_dft_empty = {"DFT": None}
+
+    data_v4l_wf_empty = {"WF1": None,
+                         "WF2": None}
+
     header = []
     header_v4l = []
     header_v4h = []
@@ -285,14 +321,24 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                     status_i.append(cur_stat)
 
                 data_i = dict()
+
                 # Reading Viking V1 data in the current record
-                data_v1 = list()
+
+                data_v1 = data_v4_v1_empty
+
                 block = frb.read(data_v1_length)
-                data_v1.append(dict(zip(data_v1_fields, struct.unpack(data_v1_dtype, block))))
+                data_v1_tmp1 = dict(zip(data_v1_fields, struct.unpack(data_v1_dtype, block)))
                 block = frb.read(data_v1_length)
-                data_v1_tmp = dict(zip(data_v1_fields, struct.unpack(data_v1_dtype, block)))
-                if not all([v == 0 for v in data_v1_tmp.values()]):
-                    data_v1.append(data_v1_tmp)
+                data_v1_tmp2 = dict(zip(data_v1_fields, struct.unpack(data_v1_dtype, block)))
+
+                if not is_empty(data_v1_tmp1) or not is_empty(data_v1_tmp2):
+                    for k in data_v1_fields:
+                        data_v1[k] = list()
+                        if not is_empty(data_v1_tmp1):
+                            data_v1[k].append(data_v1_tmp1[k])
+                        if not is_empty(data_v1_tmp2):
+                            data_v1[k].append(data_v1_tmp2[k])
+
                 frb.read(data_v1_spare_len)
                 data_i["VIKING_V4_V1"] = data_v1
 
@@ -302,9 +348,10 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                 frb.read(orbit_spare_len)
 
                 # Reading Viking V4H SFA data in the current record
+
                 if is_empty(header2_i):
                     frb.read(3072)
-                    data_i["VIKING_V4H_SFA"] = None
+                    data_i["VIKING_V4H_SFA"] = data_v4h_sfa_empty
                 else:
                     block = frb.read(1024)
                     data_tmp = struct.unpack('>' + 'f' * 256, block)
@@ -328,16 +375,17 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                         data_v4h_sfa_mag = data_tmp
 
                     if is_empty(data_v4h_sfa_elec) and is_empty(data_v4h_sfa_mag):
-                        data_i["VIKING_V4H_SFA"] = None
+                        data_i["VIKING_V4H_SFA"] = data_v4h_sfa_empty
                     else:
                         data_i["VIKING_V4H_SFA"] = {"FREQUENCY_SFA": data_v4h_sfa_freq,
                                                     "ELECTRIC_SFA": data_v4h_sfa_elec,
                                                     "MAGNETIC_SFA": data_v4h_sfa_mag}
 
                 # Reading Viking V4H Filter Bank in the current record
+
                 if is_empty(header2_i):
                     frb.read(4096)
-                    data_i["VIKING_V4H_FB"] = None
+                    data_i["VIKING_V4H_FB"] = data_v4h_fb_empty
                 else:
                     data_v4h_fbb = list()
                     data_v4h_fbe = list()
@@ -358,15 +406,16 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                             data_v4h_fbe.append(data_tmp)
 
                     if is_empty(data_v4h_fbb) and is_empty(data_v4h_fbe):
-                        data_i["VIKING_V4H_FB"] = None
+                        data_i["VIKING_V4H_FB"] = data_v4h_fb_empty
                     else:
                         data_i["VIKING_V4H_FB"] = {"FREQUENCY_FB": data_v4h_fbf, "MAGNETIC_FB": data_v4h_fbb,
                                                    "ELECTRIC_FB": data_v4h_fbe}
 
                 # Reading Viking V4L Filter Bank in the current record
+
                 if is_empty(header3_i):
                     frb.read(768)
-                    data_i["VIKING_V4L_FBL"] = None
+                    data_i["VIKING_V4L_FBL"] = data_v4l_fbl_empty
                 else:
                     data_v4l_fbl = list()
                     data_v4l_fbl_fmin = [200, 520, 1350]
@@ -381,13 +430,13 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                             data_v4l_fbl.append(data_tmp)
 
                     if is_empty(data_v4l_fbl):
-                        data_i["VIKING_V4L_FBL"] = None
+                        data_i["VIKING_V4L_FBL"] = data_v4l_fbl_empty
                     else:
                         data_i["VIKING_V4L_FBL"] = {"FREQUENCY_FBL": data_v4l_fbl_freq,
                                                     "ELECTRIC_FBL": data_v4l_fbl}
 
                 # Reading Viking V2 data in the current record
-                data_i["VIKING_V4_V2"] = None
+                data_i["VIKING_V4_V2"] = data_v4_v2_empty
 
                 data_v2 = list()
                 for i in range(16):
@@ -404,9 +453,10 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                 data_i["VIKING_V4_V2"] = data_v2
 
                 # Reading Viking V4L LP data in the current record
+
                 if is_empty(header3_i):
                     frb.read(2048)
-                    data_i["VIKING_V4L_Ni"] = None
+                    data_i["VIKING_V4L_Ni"] = data_v4l_ni_empty
                 else:
                     block = frb.read(1024)
                     data_tmp = struct.unpack('>' + 'f' * 256, block)
@@ -423,7 +473,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                         data_v4l_n2 = None
 
                     if is_empty(data_v4l_n1) and is_empty(data_v4l_n2):
-                        data_i["VIKING_V4L_Ni"] = None
+                        data_i["VIKING_V4L_Ni"] = data_v4l_ni_empty
                     else:
                         data_i["VIKING_V4L_Ni"] = {"N1_PROBE": data_v4l_n1, "N2_PROBE": data_v4l_n2}
 
@@ -435,13 +485,17 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                 data_v4l_dft_wf = struct.unpack('>' + 'f' * data_v4l_dft_wh_floats, block)
 
                 if is_empty(header3_i):
-                    data_i["VIKING_V4L_DFT"] = None
-                    data_i["VIKING_V4L_WF"] = None
+
+                    data_i["VIKING_V4L_DFT"] = data_v4l_dft_empty
+                    data_i["VIKING_V4L_WF"] = data_v4l_wf_empty
+
                 else:
+
                     cur_index = 0
+
                     if header3_i["V4L_TM_MODE"] == 0:
 
-                        data_v4l_wf = dict()
+                        data_v4l_wf = data_v4l_wf_empty
 
                         if header3_i["V4L_NUMBER_OF_DFT_SPECTRA"] != 0:
                             print("Erroneous V4L_TM_MODE...")
@@ -461,21 +515,21 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                             cur_index = cur_index + l_wf
 
                         data_i["VIKING_V4L_WF"] = data_v4l_wf
-                        data_i["VIKING_V4L_DFT"] = None
+                        data_i["VIKING_V4L_DFT"] = data_v4l_dft_empty
 
                     elif header3_i["V4L_TM_MODE"] == 1 or header3_i["V4L_TM_MODE"] == 3:
 
-                        data_v4l_dft = dict()
+                        data_v4l_dft = data_v4l_dft_empty
                         data_v4l_dft["DFT"] = list()
-                        data_v4l_wf = dict()
+                        data_v4l_wf = data_v4l_wf_empty
                         data_v4l_wf["WF1"] = list()
                         data_v4l_wf["WF2"] = list()
 
                         n_dft = header3_i["V4L_NUMBER_OF_DFT_SPECTRA"]
-                        l_dft = int(header3_i["V4L_NUMBER_OF_DFT_SAMPLES"] / n_dft)
+                        l_dft = header3_i["V4L_NUMBER_OF_DFT_SAMPLES"] // n_dft
 
                         n_wf = header3_i["V4L_NUMBER_OF_SERIES_PER_WF_CHANNEL"]
-                        l_wf = int(header3_i["V4L_NUMBER_OF_SAMPLES_PER_WF_CHANNEL"] / n_wf)
+                        l_wf = header3_i["V4L_NUMBER_OF_SAMPLES_PER_WF_CHANNEL"] // n_wf
 
                         for i in range(n_dft):
                             data_v4l_dft["DFT"].append(data_v4l_dft_wf[cur_index:cur_index+l_dft])
@@ -494,7 +548,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
 
                     elif header3_i["V4L_TM_MODE"] == 2:
 
-                        data_v4l_dft = dict()
+                        data_v4l_dft = data_v4l_dft_empty
                         data_v4l_dft["DFT"] = list()
 
                         n_dft = header3_i["V4L_NUMBER_OF_DFT_SPECTRA"]
@@ -505,7 +559,7 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                             cur_index = cur_index + l_dft
 
                         data_i["VIKING_V4L_DFT"] = data_v4l_dft
-                        data_i["VIKING_V4L_WF"] = None
+                        data_i["VIKING_V4L_WF"] = data_v4l_wf_empty
 
                     else:
                         print("Erroneous V4L_TM_MODE selector...")
@@ -594,4 +648,4 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
     if dataset != "VIKING_V4":
         meta = meta[dataset]
 
-    return VikingV4nData(header, header_v4l, header_v4h, status, data, name, meta, orbit)
+    return VikingV4nData(os.path.basename(file_path), header, header_v4l, header_v4h, status, data, name, meta, orbit)

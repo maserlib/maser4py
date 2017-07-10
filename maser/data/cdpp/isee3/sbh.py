@@ -19,9 +19,8 @@ __all__ = ["ISEE3SBHData", "read_isee3_sbh_3d_radio_source"]
 
 class ISEE3SBHData(CDPPData):
 
-    def __init__(self, header, data, name, meta, orbit):
-        CDPPData.__init__(self, header, data)
-        self.name = name
+    def __init__(self, file, header, data, name, meta, orbit):
+        CDPPData.__init__(self, file, header, data, name)
         self.meta = meta
         self.orbit = orbit
 
@@ -162,4 +161,4 @@ def read_isee3_sbh_3d_radio_source(file_path, verbose=False):
             "Z_DATA": {"unit": "uV^2/Hz", "description": "Z receiver measurements "},
             "PHI_DATA": {"unit": "0.02 V", "description": "Dephasing between S and Z signals, in TM unit ( = 0.02 V)"}}
 
-    return ISEE3SBHData(header, data, name, meta, orbit)
+    return ISEE3SBHData(os.path.basename(file_path), header, data, name, meta, orbit)
