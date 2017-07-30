@@ -7,6 +7,7 @@ Python module to read a INTERBALL Auroral S/C data from CDPP deep archive (http:
 """
 
 import struct
+import os
 from maser.data.cdpp.cdpp import *
 
 __author__ = "Baptiste Cecconi"
@@ -70,6 +71,14 @@ class InterballAuroralData(CDPPData):
         :return: 
         """
         return self.meta[var_name]
+
+    def get_epncore(self):
+        md = CDPPData.get_epncore(self)
+        md["target_class"] = "planet"
+        md["target_name"] = "Earth"
+        md["target_region"] = "Magnetosphere"
+        md["feature_name"] = "Auroral Kilometric Radiation#AKR"
+        return md
 
 
 def read_int_aur_polrad(file_path, verbose=False):
