@@ -8,6 +8,7 @@ For more info on CCSDS time formats, refer to "TIME CODE FORMATS" CCSDS 301.0-B-
 """
 
 import datetime
+from maser.data.data import *
 
 __author__ = "Baptiste Cecconi"
 __institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
@@ -158,12 +159,12 @@ class CCSDSDate:
             + datetime.timedelta(microseconds=micro)
 
 
-class CDPPData:
+class CDPPData(MaserData):
 
     def __init__(self, file, header, data, name):
+        MaserData.__init__(self, file)
         self.header = header
         self.data = data
-        self.file = file
         self.name = name
 
     def __len__(self):
@@ -292,8 +293,8 @@ class CDPPData:
         md["target_class"] = "star#planet"
         md["time_min"] = self["DATETIME"][0]
         md["time_min"] = self["DATETIME"][-1]
-        md["time_smapling_step_min"] = None
-        md["time_smapling_step_max"] = None
+        md["time_sampling_step_min"] = None
+        md["time_sampling_step_max"] = None
         md["time_exp_min"] = None
         md["time_exp_max"] = None
         md["spectral_range_min"] = None
@@ -340,6 +341,7 @@ class CDPPData:
         md["target_region"] = None
         md["feature_name"] = None
         md["bib_reference"] = None
+        md["time_scale"] = "SCET"
+        md["time_origin"] = md["instrument_host_name"]
 
         return md
-    
