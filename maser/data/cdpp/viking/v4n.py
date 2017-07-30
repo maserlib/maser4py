@@ -87,6 +87,17 @@ class VikingV4nData(CDPPData):
             meta = self.meta[var_name]
         return meta
 
+    def get_epncore(self):
+        md = CDPPData.get_epncore(self)
+        md["time_min"] = self["DATETIME_UTC"][0]
+        md["time_max"] = self["DATETIME_UTC"][-1]
+        md["time_scale"] = "UTC"
+        md["target_class"] = "planet"
+        md["target_name"] = "Earth"
+        md["target_region"] = "Magnetosphere"
+        md["feature_name"] = "Auroral Kilometric Radiation#AKR"
+        return md
+
 
 def is_empty(data):
     if type(data) is dict:
