@@ -6,6 +6,7 @@ Python module to create a generic Class for Data and data files handling
 """
 
 import os
+import math
 
 __author__ = "Baptiste Cecconi"
 __institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
@@ -83,10 +84,13 @@ class MaserCDFData(MaserData):
         if self.verbose:
             print("### [Fix CDF --- cdfconvert to self]")
 
-        shell_command = "{0}cdfconvert {1} /tmp/cdfconvert_tmp.cdf; mv /tmp/cdfconvert_tmp.cdf {1}".format(cdf_bin,
-                                                                                                           self.file)
+        shell_command = "{0}cdfconvert {1} /tmp/cdfconvert_tmp.cdf; " \
+                        "mv /tmp/cdfconvert_tmp.cdf {1}".format(cdf_bin, self.file)
 
         if self.verbose:
             print(shell_command)
 
         os.system(shell_command)
+
+    def file_mime_type(self):
+        return 'application/x-cdf'

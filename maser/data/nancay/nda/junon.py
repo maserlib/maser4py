@@ -24,11 +24,12 @@ class NDAJunonData(NDAData):
         header = {}
         data = []
         name = "SRN/NDA JunoN Dataset"
-        meta = {}
+        #meta = {}
         NDAData.__init__(self, file, header, data, name)
         self.debug = debug
         self.header = self.header_from_file()
-        self.meta = meta
+        self.header['ncube'] = (os.path.getsize(self.file) - self.header['size']) / self.header['cube_size']
+        #self.meta = meta
         self.cur_ptr_in_file = 0
 
     def header_from_file(self):
@@ -125,7 +126,7 @@ class NDAJunonData(NDAData):
         print('')
         print('File Description:')
         print('-- File:          {}'.format(self.file))
-        print('-- Path:          {}'.format(self.path))
+        print('-- Path:          {}'.format(self.file_path()))
         print('-- File size:     {}'.format(self.str_file_size()))
         print('-- Header size:   {}'.format(self.header['size']))
         str_data = ['Nothing', 'Spectrum', 'Waveform']
@@ -137,7 +138,7 @@ class NDAJunonData(NDAData):
         :return:
         """
 
-        with open(self.absolute_path(), 'rb') as f:
+        with open(self.file, 'rb') as f:
             f.seek(self.header['size'], 0)
             word = 0x00000000
             fpos = f.tell()
@@ -159,10 +160,14 @@ class NDAJunonData(NDAData):
 
     def get_single_ecube(self, index_input=0, debug=False):
 
+        # LH = ecube['corr'][0]
+        # RH = ecube['corr'][3]
+        # cross = ecube['corr'][1:2]
+
         #cpos0 = self.first_ecube_position_in_file()  # position of 1st cube
         cpos0 = self.header['size'] # position of 1st cube (= after end of header)
         csize = self.header['cube_size']  # size of a cube
-        fsize = os.path.getsize(self.absolute_path())  # size of file
+        fsize = os.path.getsize(self.file)  # size of file
         ncube = int((fsize - cpos0) / csize)  # nb of cubes in file
         if self.debug:
             print("{} eCubes in current file".format(ncube))
@@ -190,7 +195,7 @@ class NDAJunonData(NDAData):
         corr_hdr_dtype = '<LL'
         corr_hdr_length = 8
 
-        with open(self.absolute_path(), 'rb') as f:
+        with open(self.file, 'rb') as f:
 
             f.seek(ecube_positions_in_file[index], 0)
 

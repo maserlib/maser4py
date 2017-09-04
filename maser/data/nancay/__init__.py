@@ -1,1 +1,1 @@
-from maser.data.nda import *
+from maser.data.nancay import *
