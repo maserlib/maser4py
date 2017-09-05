@@ -29,19 +29,19 @@ class MaserData:
         self.format = ''
         self.dataset = ''
 
-    def file_name(self):
+    def get_file_name(self):
         return os.path.basename(self.file)
 
-    def file_path(self):
+    def get_file_path(self):
         return os.path.dirname(self.file)
 
-    def file_size(self):
+    def get_file_size(self):
         return os.path.getsize(self.file)
 
-    def file_mime_type(self):
+    def get_mime_type(self):
         return 'application/binary'
 
-    def str_file_size(self):
+    def get_str_file_size(self):
         """
         Returns the file size in a nice human format.
         :return:
@@ -92,5 +92,5 @@ class MaserCDFData(MaserData):
 
         os.system(shell_command)
 
-    def file_mime_type(self):
+    def get_mime_type(self):
         return 'application/x-cdf'

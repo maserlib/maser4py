@@ -206,7 +206,7 @@ class CassiniKronosFile(MaserData):
         print(self)
 
     def extract_level_from_file_name(self):
-        file_name = self.file_name()
+        file_name = self.get_file_name()
         if file_name.startswith('K'):
             level = CassiniKronosLevel('k')
         elif file_name.startswith('R'):
@@ -265,31 +265,31 @@ class CassiniKronosFile(MaserData):
     def extract_interval_from_file_name(self):
 
         if self.level.name in ['k', 'n1', 'n2', 'n3g']:
-            start_time = datetime.datetime.strptime(self.file_name()[1:], '%Y%j.%H')
+            start_time = datetime.datetime.strptime(self.get_file_name()[1:], '%Y%j.%H')
             end_time = start_time + datetime.timedelta(hours=1)
         elif self.level.name in ['n3b', 'n3c', 'n3d', 'n3e']:
-            start_time = datetime.datetime.strptime(self.file_name()[7:], '%Y%j.%H')
+            start_time = datetime.datetime.strptime(self.get_file_name()[7:], '%Y%j.%H')
             end_time = start_time + datetime.timedelta(hours=1)
         elif self.level.name in ['skr', 'pdf', 'lis', 'ephem']:
-            start_time = datetime.datetime.strptime(self.file_name()[0:7], '%Y%j')
+            start_time = datetime.datetime.strptime(self.get_file_name()[0:7], '%Y%j')
             end_time = start_time + datetime.timedelta(days=1)
         elif self.level.name in ['bg']:
-            start_time = datetime.datetime.strptime(self.file_name()[3:11], '%Y_%j')
-            if self.file_name()[8:11] == '271':
-                end_time = datetime.datetime.strptime("{}1231".format(self.file_name()[3:7]), '%Y%m%d') + \
+            start_time = datetime.datetime.strptime(self.get_file_name()[3:11], '%Y_%j')
+            if self.get_file_name()[8:11] == '271':
+                end_time = datetime.datetime.strptime("{}1231".format(self.get_file_name()[3:7]), '%Y%m%d') + \
                            datetime.timedelta(days=1)
         elif self.level.name == 'index':
             if self.level.sublevel == '2A':
-                start_time = datetime.datetime.strptime(self.file_name()[6:], '%Y%j.%H')
+                start_time = datetime.datetime.strptime(self.get_file_name()[6:], '%Y%j.%H')
                 end_time = start_time + datetime.timedelta(hours=1)
             else:
-                start_time = datetime.datetime.strptime(self.file_name()[9:], '%Y%j.%H')
+                start_time = datetime.datetime.strptime(self.get_file_name()[9:], '%Y%j.%H')
                 end_time = start_time + datetime.timedelta(hours=1)
         elif self.level.name == 'loc':
             index_ydh = len(self.level.sublevel)+5
             if self.level.sublevel.startswith('2A'):
                 index_ydh -= 3
-            start_time = datetime.datetime.strptime(self.file_name()[index_ydh:], '%Y%j.%H')
+            start_time = datetime.datetime.strptime(self.get_file_name()[index_ydh:], '%Y%j.%H')
             end_time = start_time + datetime.timedelta(hours=1)
         else:
             raise KronosError('Unknown level')
@@ -300,7 +300,7 @@ class CassiniKronosFile(MaserData):
 
         data = list()
         with open(self.file, 'rb') as fh:
-            file_size = self.file_size()
+            file_size = self.get_file_size()
             rec_size = self.level.record_def['length']
             if file_size % rec_size != 0:
                 raise KronosError("Wrong record size")

@@ -38,7 +38,7 @@ class RadioJoveData(MaserData):
 
     def __init__(self, file, verbose=True, debug=False):
         MaserData.__init__(self, file, verbose, debug)
-        self.file_info = {'name': self.file, 'size': self.file_size(), 'file_data_offset': 0}
+        self.file_info = {'name': self.file, 'size': self.get_file_size(), 'file_data_offset': 0}
         self.header, self.notes, self.time, self.frequency = self.open_radiojove_spx()
         self.data = self.extract_radiojove_spx_data()
         self.dataset = "_".join(["radiojove", self.header['obsty_id'].lower(), self.header['instr_id'].lower(),

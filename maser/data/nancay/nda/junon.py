@@ -137,8 +137,8 @@ class NDAJunonData(NDAData):
         print('')
         print('File Description:')
         print('-- File:          {}'.format(self.file))
-        print('-- Path:          {}'.format(self.file_path()))
-        print('-- File size:     {}'.format(self.str_file_size()))
+        print('-- Path:          {}'.format(self.get_file_path()))
+        print('-- File size:     {}'.format(self.get_str_file_size()))
         print('-- Header size:   {}'.format(self.header['size']))
         str_data = ['Nothing', 'Spectrum', 'Waveform']
         print('-- Data content:  {}'.format(str_data[self.header['stream_10G']]))
@@ -227,7 +227,7 @@ class NDAJunonData(NDAData):
 
 class NDAJunonECube:
 
-    def __init__(self, junon_data, index_input, debug=False):
+    def __init__(self, junon_data, index_input, load_data=True, debug=False):
         self.junon_data = junon_data
         self.debug = debug
         self.ecube = dict()
@@ -266,7 +266,10 @@ class NDAJunonECube:
                 corr_tmp = dict(zip(corr_hdr_fields, struct.unpack(corr_hdr_dtype, block)))
                 corr_tmp['byte_pos_in_file'] = cur_start_pos
                 self.ecube['corr'].append(corr_tmp)
-                f.seek(corr_data_length, 1)
+                if load_data:
+                    self.load_data(i)
+                else:
+                    f.seek(corr_data_length, 1)
 
         self.check_magic()
 
@@ -289,11 +292,11 @@ class NDAJunonECube:
     def check_magic(self):
 
         if self.ecube['magic'] != 0x7F800000:
-            raise NDAJunonError('[{}:{}] Wrong eCube Magic Word (Header)'.format(self.junon_data.file_name(), self.index))
+            raise NDAJunonError('[{}:{}] Wrong eCube Magic Word (Header)'.format(self.junon_data.get_file_name(), self.index))
 
         for i in range(self.junon_data.header['nbchan']):
             if self.ecube['corr'][i]['magic'] != 0xFF800001:
-                raise NDAJunonError('[{}:{}] Wrong eCube Magic Word (Corr[{}])'.format(self.junon_data.file_name(), self.index, i))
+                raise NDAJunonError('[{}:{}] Wrong eCube Magic Word (Corr[{}])'.format(self.junon_data.get_file_name(), self.index, i))
 
 
 def read_srn_nda_junon(file_path, verbose=False):

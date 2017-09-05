@@ -32,7 +32,7 @@ class NDARoutineData(NDAData):
         name = "SRN/NDA Routine Dataset"
         meta = {}
         NDAData.__init__(self, file, header, data, name)
-        self.file_info = {'name': self.file, 'size': self.file_size(), 'file_data_offset': 0}
+        self.file_info = {'name': self.file, 'size': self.get_file_size(), 'file_data_offset': 0}
         self.detect_format()
         self.set_filedate()
         self.debug = debug
