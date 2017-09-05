@@ -7,6 +7,7 @@ Python module to read Nancay/NDA/JunoN data from SRN/NDA.
 """
 
 import struct
+import datetime
 import sys
 import os
 from maser.data.nancay.nda.nda import *
@@ -16,6 +17,10 @@ __date__ = "25-JUL-2017"
 __version__ = "0.10"
 
 __all__ = ["NDAJunonData", "read_srn_nda_junon"]
+
+
+class NDAJunonError(Exception):
+    pass
 
 
 class NDAJunonData(NDAData):
@@ -28,9 +33,15 @@ class NDAJunonData(NDAData):
         NDAData.__init__(self, file, header, data, name)
         self.debug = debug
         self.header = self.header_from_file()
-        self.header['ncube'] = (os.path.getsize(self.file) - self.header['size']) / self.header['cube_size']
+        self.header['ncube'] = (os.path.getsize(self.file) - self.header['size']) // self.header['cube_size']
         #self.meta = meta
         self.cur_ptr_in_file = 0
+
+        if self.debug:
+            print("{} eCubes in current file".format(self.header['ncube']))
+
+        self.ecube_positions_in_file = [self.header['size'] + ii * self.header['cube_size']
+                                        for ii in range(self.header['ncube'])]
 
     def header_from_file(self):
         """
@@ -102,7 +113,7 @@ class NDAJunonData(NDAData):
 
                 if desc['stream_10G'] == 1:
 
-                    desc['cube_size'] = 8 + desc['nbchan']*(desc['nfreq']+2)
+                    desc['cube_size'] = 4 * (8 + desc['nbchan']*(desc['nfreq']+2))
                     desc['magic_word'] = 0x7F800000
 
                 if desc['stream_10G'] == 2:
@@ -110,9 +121,9 @@ class NDAJunonData(NDAData):
                     desc['cube_size'] = 2048
                     desc['magic_word'] = 0xFF800000
 
-        except WrongFormatException as e:
+        except NDAJunonError("Wrong Format Exception") as e:
 
-            print(e.message)
+            print(e)
 
         return desc
 
@@ -164,7 +175,7 @@ class NDAJunonData(NDAData):
         # RH = ecube['corr'][3]
         # cross = ecube['corr'][1:2]
 
-        #cpos0 = self.first_ecube_position_in_file()  # position of 1st cube
+        # cpos0 = self.first_ecube_position_in_file()  # position of 1st cube
         cpos0 = self.header['size'] # position of 1st cube (= after end of header)
         csize = self.header['cube_size']  # size of a cube
         fsize = os.path.getsize(self.file)  # size of file
@@ -212,6 +223,77 @@ class NDAJunonData(NDAData):
                 ecube['corr'].append(corr_tmp)
 
         return ecube
+
+
+class NDAJunonECube:
+
+    def __init__(self, junon_data, index_input, debug=False):
+        self.junon_data = junon_data
+        self.debug = debug
+        self.ecube = dict()
+
+        if isinstance(self.index, int):
+            self.index = index_input
+        else:
+            raise NDAJunonError("Unable to process provided index value... Aborting")
+
+        if self.junon_data.header['stream_10G'] != 1:
+            raise NDAJunonError("This file doesn't contain Spectrum data. Aborting...")
+
+        ecube_hdr_fields = ['magic', 'id', 'date_jd', 'date_sec', 'date_nsub', 'date_dsub']
+        ecube_hdr_dtype = '<LLLLLL'
+        ecube_hdr_length = 24
+        ecube_hdr_skip = 8
+
+        corr_hdr_fields = ['magic', 'no']
+        corr_hdr_dtype = '<LL'
+        corr_hdr_length = 8
+
+        corr_data_length = self.junon_data.header['nfreq']*4
+
+        with open(self.junon_data.file, 'rb') as f:
+
+            f.seek(self.junon_data.ecube_positions_in_file[self.index], 0)
+
+            block = f.read(ecube_hdr_length)
+            self.ecube.update(dict(zip(ecube_hdr_fields, struct.unpack(ecube_hdr_dtype, block))))
+            f.read(ecube_hdr_skip)
+            self.ecube['corr'] = list()
+
+            for i in range(self.junon_data.header['nbchan']):
+                cur_start_pos = f.tell()
+                block = f.read(corr_hdr_length)
+                corr_tmp = dict(zip(corr_hdr_fields, struct.unpack(corr_hdr_dtype, block)))
+                corr_tmp['byte_pos_in_file'] = cur_start_pos
+                self.ecube['corr'].append(corr_tmp)
+                f.seek(corr_data_length, 1)
+
+        self.check_magic()
+
+    def get_datetime(self):
+        dt_epoch = datetime.datetime(1970, 1, 1)
+        return dt_epoch + datetime.timedelta(days=self.ecube['date_jd'] +
+                                                  self.ecube['date_sec']/86400 +
+                                                  self.ecube['date_nsub']/(self.ecube['date_dsub']*86400))
+
+    def load_data(self, index):
+
+        corr_data_length = self.junon_data.header['nfreq']*4
+
+        with open(self.junon_data.file, 'rb') as f:
+            f.seek(self.ecube['corr'][index]['byte_pos_in_file'])
+            block = f.read(corr_data_length)
+            corr_tmp_data = struct.unpack('<{}f'.format(self.junon_data.header['nfreq']), block)
+            self.ecube['corr'][index]['data'] = corr_tmp_data
+
+    def check_magic(self):
+
+        if self.ecube['magic'] != 0x7F800000:
+            raise NDAJunonError('[{}:{}] Wrong eCube Magic Word (Header)'.format(self.junon_data.file_name(), self.index))
+
+        for i in range(self.junon_data.header['nbchan']):
+            if self.ecube['corr'][i]['magic'] != 0xFF800001:
+                raise NDAJunonError('[{}:{}] Wrong eCube Magic Word (Corr[{}])'.format(self.junon_data.file_name(), self.index, i))
 
 
 def read_srn_nda_junon(file_path, verbose=False):

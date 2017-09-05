@@ -7,6 +7,7 @@ Python module to work with SRN/NDA/Routine data
 """
 
 import datetime
+import os
 from maser.data.nancay.nda.nda import *
 
 __author__ = "Baptiste Cecconi"
@@ -49,7 +50,7 @@ class NDARoutineData(NDAData):
             else:
                 raise WrongFormatException('Unknown file Extension')
 
-        except WrongFormatException as e
+        except WrongFormatException as e:
             print("Error in nda.routine.detect_format()")
             print("Trying: {}".format(self.file))
             print(e)
