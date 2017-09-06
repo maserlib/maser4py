@@ -213,7 +213,8 @@ class NDAJunonECube:
             self.ecube['corr'].append(corr_tmp)
             if load_data:
                 self.load_data(i)
-            f.seek(corr_data_length, 1)
+            else:
+                f.seek(corr_data_length, 1)
 
         self.check_magic()
 
@@ -228,7 +229,7 @@ class NDAJunonECube:
 
         f = self.parent.file_handle
 
-        f.seek(self.ecube['corr'][index]['data_pos_in_file'])
+        f.seek(self.ecube['corr'][index]['data_pos_in_file'], 0)
         block = f.read(corr_data_length)
         corr_tmp_data = struct.unpack('<{}f'.format(self.parent.header['nfreq']), block)
         self.ecube['corr'][index]['data'] = corr_tmp_data
