@@ -36,11 +36,14 @@ class NDARoutineData(NDAData):
         data = []
         name = "SRN/NDA Routine Dataset"
         NDAData.__init__(self, file, header, data, name)
+        self.file_handle = open(self.file, 'rb')
+
         self.file_info = {'name': self.file, 'size': self.get_file_size()}
         self.detect_format()
         self.set_filedate()
         self.debug = debug
         self.header = self.header_from_file()
+
         meta = dict()
         meta['obsty_id'] = 'srn'
         meta['instr_id'] = 'nda'
@@ -92,28 +95,30 @@ class NDARoutineData(NDAData):
         :return header: Header data dictionary
         """
 
-        with open(self.file, 'rb') as f:
-            self.file_info['header_raw'] = f.read(self.file_info['record_size'])
-            self.fix_corrupted_header()
+        f = self.file_handle
+        self.file_info['header_raw'] = f.read(self.file_info['record_size'])
+        self.fix_corrupted_header()
 
-            if int(self.file_info['filedate']) < 19901127:
-                self.file_info['header_version'] = 1
-                header = self.header_from_rt1_format_1()
-            elif int(self.file_info['filedate']) < 19940224:
-                self.file_info['header_version'] = 2
-                header = self.header_from_rt1_format_2()
-            elif int(self.file_info['filedate']) < 19990119:
-                self.file_info['header_version'] = 3
-                header = self.header_from_rt1_format_3()
-            elif int(self.file_info['filedate']) < 20001101:
-                self.file_info['header_version'] = 4
-                header = self.header_from_rt1_format_4()
-            elif int(self.file_info['filedate']) < 20090922:
-                self.file_info['header_version'] = 5
-                header = self.header_from_rt1_format_5()
-            else:
-                self.file_info['header_version'] = 6
-                header = self.header_from_rt1_format_6()
+        if int(self.file_info['filedate']) < 19901127:
+            self.file_info['header_version'] = 1
+            header = self.header_from_rt1_format_1()
+        elif int(self.file_info['filedate']) < 19940224:
+            self.file_info['header_version'] = 2
+            header = self.header_from_rt1_format_2()
+        elif int(self.file_info['filedate']) < 19990119:
+            self.file_info['header_version'] = 3
+            header = self.header_from_rt1_format_3()
+        elif int(self.file_info['filedate']) < 20001101:
+            self.file_info['header_version'] = 4
+            header = self.header_from_rt1_format_4()
+        elif int(self.file_info['filedate']) < 20090922:
+            self.file_info['header_version'] = 5
+            header = self.header_from_rt1_format_5()
+        else:
+            self.file_info['header_version'] = 6
+            header = self.header_from_rt1_format_6()
+
+        self.fix_old_version_header()
 
         if self.debug:
             print('Header version is {}'.format(self.file_info['header_version']))
@@ -257,9 +262,12 @@ class NDARoutineData(NDAData):
     def get_last_sweep(self, load_data=True):
         return self.get_single_sweep(len(self)-1, load_data)
 
-    def get_freq_list(self):
+    def get_freq_axis(self):
         return [i/400*(self.meta['freq_max']-self.meta['freq_min'])+self.meta['freq_min']
                 for i in range(self.meta['freq_len'])]
+
+    def get_time_axis(self):
+        return [self.get_single_sweep(item).get_datetime() for item in range(len(self))]
 
 
 class NDARoutineSweep:
@@ -268,33 +276,50 @@ class NDARoutineSweep:
         self.parent = parent
         self.debug = self.parent.debug
         self.data = dict()
-        self.load_data = load_data
 
         if isinstance(index_input, int):
             self.index = index_input
         else:
             raise NDARoutineError("Unable to process provided index value... Aborting")
 
-        data_start_pos = self.parent.file_info['data_offset_in_file'] \
-                         + self.index * self.parent.file_info['record_size']
+        self.data_start_pos = self.parent.file_info['data_offset_in_file'] \
+                            + self.index * self.parent.file_info['record_size']
         rec_date_fields = ['hr', 'min', 'sec', 'cs']
         rec_date_dtype = '<bbbb'
 
-        with open(self.parent.file, 'rb') as f:
-            f.seek(data_start_pos, 0)
-            block = f.read(self.parent.file_info['record_size'])
-            rec_date = dict(zip(rec_date_fields, struct.unpack(rec_date_dtype, block[0:4])))
-            rec_data = struct.unpack('<'+'b'*400, block[4:404])
-            rec_status = block[404]
+        f = self.parent.file_handle
 
+        f.seek(self.data_start_pos, 0)
+        block = f.read(4)
+        rec_date = dict(zip(rec_date_fields, struct.unpack(rec_date_dtype, block)))
+        rec_data = list()
+        rec_status = 0
+
+        self.data['loaded'] = False
         self.data['hms'] = rec_date
         self.data['data'] = rec_data
         self.data['status'] = rec_status
+
+        self.fix_hms_time()
+
+        if load_data:
+            self.load_data()
 
         if self.index % 2 == 0:
             self.data['polar'] = 'LH'
         else:
             self.data['polar'] = 'RH'
+
+    def load_data(self):
+
+        f = self.parent.file_handle
+
+        f.seek(self.data_start_pos+4, 0)
+        block = f.read(401)
+        self.data['data'] = struct.unpack('<' + 'b' * 400, block[0:400])
+        self.data['status'] = int(block[400])
+
+        self.data['loaded'] = True
 
     def get_time(self):
         return datetime.time(int(self.data['hms']['hr']),
@@ -305,20 +330,49 @@ class NDARoutineSweep:
     def get_datetime(self):
 
         start_date = self.parent.get_start_date()
-        meridian_date = self.parent.get_meridian_datetime().date()
+        start_time = self.parent.get_first_sweep().get_time()
+        end_time = self.parent.get_first_sweep().get_time()
         cur_time = self.get_time()
+        meridian_date = self.parent.get_meridian_datetime().date()
         cur_date = meridian_date
         if start_date < meridian_date:
             if self.get_time() > datetime.time(12, 0, 0):
                 cur_date = start_date
+
         return datetime.datetime(cur_date.year, cur_date.month, cur_date.day,
                                  cur_time.hour, cur_time.minute, cur_time.second, cur_time.microsecond)
 
     def get_data(self):
+        if not self.data['loaded']:
+            self.load_data()
         return self.data['data']
 
     def get_data_in_db(self):
         return [item * 0.3125 for item in self.data['data']]
 
-    def fix_time(self):
-        pass
+    def fix_hms_time(self):
+        hms = self.data['hms']
+        ts_error = False
+        if hms['hr'] > 23:
+            ts_error = True
+        if hms['min'] > 59:
+            ts_error = True
+        if hms['sec'] > 59:
+            ts_error = True
+        if hms['cs'] > 99:
+            ts_error = True
+
+        if ts_error:
+            if hms['cs'] == 100:
+                hms['cs'] = 0
+                hms['sec'] += 1
+            if hms['sec'] == 60:
+                hms['sec'] = 0
+                hms['min'] += 1
+            if hms['min'] == 60:
+                hms['min'] = 0
+                hms['hr'] += 1
+            if hms['hr'] == 24:
+                hms['hr'] = 0
+
+        self.data['hms'] = hms
