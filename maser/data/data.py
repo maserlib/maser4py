@@ -14,10 +14,14 @@ __date__ = "26-JUL-2017"
 __version__ = "0.10"
 __project__ = "MASER"
 
-__all__ = ["MaserData"]
+__all__ = ["MaserError", "MaserData"]
 
 pds_bin = '/Users/baptiste/Projets/VOParis/igpp-git/pds-cdf-1.0.11/bin/'
 cdf_bin = '/Applications/cdf/cdf/bin/'
+
+
+class MaserError(Exception):
+    pass
 
 
 class MaserData:
