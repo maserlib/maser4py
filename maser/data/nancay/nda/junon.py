@@ -135,25 +135,25 @@ class NDAJunonData(NDAData):
         str_data = ['Nothing', 'Spectrum', 'Waveform']
         print('-- Data content:  {}'.format(str_data[self.header['stream_10G']]))
 
-    def first_ecube_ptr_in_file(self):
-        """
-
-        :return:
-        """
-
-        f = self.file_handle
-        f.seek(self.header['size'], 0)
-        word = 0x00000000
-        fpos = f.tell()
-        epos = self.header['cube_size']*4+self.header['size']
-        while word != self.header['magic_word'] and fpos < epos:
-            fpos = f.tell()
-            block = f.read(4)
-            word = struct.unpack("<L", block)[0]
-            if self.debug:
-                print("{}: {}".format(fpos, word))
-
-        return fpos
+#    def first_ecube_ptr_in_file(self):
+#        """
+#
+#        :return:
+#        """
+#
+#        f = self.file_handle
+#        f.seek(self.header['size'], 0)
+#        word = 0x00000000
+#        fpos = f.tell()
+#        epos = self.header['cube_size']*4+self.header['size']
+#        while word != self.header['magic_word'] and fpos < epos:
+#            fpos = f.tell()
+#            block = f.read(4)
+#            word = struct.unpack("<L", block)[0]
+#            if self.debug:
+#                print("{}: {}".format(fpos, word))
+#
+#        return fpos
 
     def get_first_ecube(self):
         return self.get_single_ecube(0)
