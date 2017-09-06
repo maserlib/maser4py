@@ -198,7 +198,7 @@ class NDAJunonECube:
 
         f = self.parent.file_handle
 
-        f.seek(self.parent.ecube_positions_in_file[self.index], 0)
+        f.seek(self.parent.ecube_ptr_in_file[self.index], 0)
 
         block = f.read(ecube_hdr_length)
         self.ecube.update(dict(zip(ecube_hdr_fields, struct.unpack(ecube_hdr_dtype, block))))
