@@ -6,6 +6,7 @@ Python module to work with SRN/NDA/Routine data
 @author: B.Cecconi(LESIA)
 """
 
+import struct
 import datetime
 import os
 from maser.data.nancay.nda.nda import *
@@ -14,14 +15,18 @@ __author__ = "Baptiste Cecconi"
 __copyright__ = "Copyright 2017, LESIA-PADC-USN, Observatoire de Paris"
 __credits__ = ["Baptiste Cecconi", "Andree Coffre", "Laurent Lamy"]
 __license__ = "GPLv3"
-__version__ = "2.0b0"
+__version__ = "2.0b1"
 __maintainer__ = "Baptiste Cecconi"
 __email__ = "baptiste.cecconi@obspm.fr"
 __status__ = "Production"
-__date__ = "30-JUL-2017"
+__date__ = "06-SEP-2017"
 __project__ = "MASER/SRN/NDA"
 
-__all__ = ["NDARoutineData"]
+__all__ = ["NDARoutineData", "NDARoutineSweep", "NDARoutineError"]
+
+
+class NDARoutineError(NDAError):
+    pass
 
 
 class NDARoutineData(NDAData):
@@ -32,57 +37,39 @@ class NDARoutineData(NDAData):
         name = "SRN/NDA Routine Dataset"
         meta = {}
         NDAData.__init__(self, file, header, data, name)
-        self.file_info = {'name': self.file, 'size': self.get_file_size(), 'file_data_offset': 0}
+        self.file_info = {'name': self.file, 'size': self.get_file_size()}
         self.detect_format()
         self.set_filedate()
         self.debug = debug
         self.header = self.header_from_file()
         self.meta = meta
-        self.cur_ptr_in_file = 0
 
     def detect_format(self):
-        try:
-            if self.file.endswith('.RT1'):
-                self.file_into['format'] = 'RT1'
-                self.file_info['record_size'] = 405
-            elif self.file.endswith('.cdf'):
-                self.file_info['format'] = 'CDF'
-            else:
-                raise WrongFormatException('Unknown file Extension')
-
-        except WrongFormatException as e:
-            print("Error in nda.routine.detect_format()")
-            print("Trying: {}".format(self.file))
-            print(e)
+        if self.file.endswith('.RT1'):
+            self.file_info['format'] = 'RT1'
+            self.file_info['record_size'] = 405
+            self.file_info['data_offset_in_file'] = self.file_info['record_size']
+        elif self.file.endswith('.cdf'):
+            self.file_info['format'] = 'CDF'
+        else:
+            raise NDAError('NDA/Routine: Unknown file Extension')
 
     def set_filedate(self):
-        try:
-            if self.file_info['format'] == 'RT1':
-                filedate = ((os.path.basename(self.file).split('.'))[0])[1:7]
-                if int(filedate[0:2]) < 90:
-                    century_str = '20'
-                else:
-                    century_str = '19'
-                self.file_info['filedate'] = century_str + filedate
+        if self.file_info['format'] == 'RT1':
+            filedate = ((os.path.basename(self.file).split('.'))[0])[1:7]
+            if int(filedate[0:2]) < 90:
+                century_str = '20'
             else:
-                raise NotImplemented("Format {} not implemented yet")
-
-        except NotImplemented as e:
-            print("Error in nda.routine.set_filedate()")
-            print("Trying: {}".format(self.file))
-            print(e)
+                century_str = '19'
+            self.file_info['filedate'] = century_str + filedate
+        else:
+            raise NDAError("NDA/Routine: Format {} not implemented yet")
 
     def header_from_file(self):
-        try:
-            if self.file_info['format'] == 'RT1':
-                return self.header_from_rt1()
-            else:
-                raise NotImplemented("Format {} not implemented yet")
-
-        except NotImplemented as e:
-            print("Error in nda.routine.header_from_file()")
-            print("Trying: {}".format(self.file))
-            print(e)
+        if self.file_info['format'] == 'RT1':
+            return self.header_from_rt1()
+        else:
+            raise NDAError("NDA/Routine: Format {} not implemented yet")
 
     def header_from_rt1(self):
         """
@@ -93,10 +80,13 @@ class NDARoutineData(NDAData):
 
         with open(self.file, 'rb') as f:
             self.file_info['header_raw'] = f.read(self.file_info['record_size'])
+            self.fix_corrupted_header()
 
             if int(self.file_info['filedate']) < 19901127:
                 self.file_info['header_version'] = 1
                 header = self.header_from_rt1_format_1()
+                header['merid_hh'] = 0  # hour
+                header['merid_mm'] = 0  # minute
             elif int(self.file_info['filedate']) < 19940224:
                 self.file_info['header_version'] = 2
                 header = self.header_from_rt1_format_2()
@@ -115,7 +105,6 @@ class NDARoutineData(NDAData):
 
         print('Header version is {}'.format(self.file_info['header_version']))
         return header
-
 
     def header_from_rt1_format_1(self):
 
@@ -183,3 +172,81 @@ class NDARoutineData(NDAData):
         header['h_stp_mm'] = raw[62:64]  # Observation stop time (minutes)
         return header
 
+    def fix_corrupted_header(self):
+        if self.file_info['filedate'] == '19910725':
+            self.file_info['header_raw'] = "{}08{}".format(self.file_info['header_raw'][0:18],
+                                                           self.file_info['header_raw'][20:])
+        elif self.file_info['filedate'] == '19940224':
+            self.file_info['header_raw'] = "{}0426{}".format(self.file_info['header_raw'][0:18],
+                                                             self.file_info['header_raw'][22:])
+        elif self.file_info['filedate'] == '19940305':
+            self.file_info['header_raw'] = "{}0351{}".format(self.file_info['header_raw'][0:18],
+                                                             self.file_info['header_raw'][22:])
+        elif self.file_info['filedate'] == '19940306':
+            self.file_info['header_raw'] = "{}0347{}".format(self.file_info['header_raw'][0:18],
+                                                             self.file_info['header_raw'][22:])
+
+    def get_meridian_datetime(self, from_file=True):
+        meridian_dt = None
+        if from_file:
+            meridian_dt = datetime.datetime.strptime(self.file_info['filedate'], '%Y%m%d') + \
+                          datetime.timedelta(hours=int(self.header['merid_hh']), minutes=int(self.header['merid_mm']))
+        else:
+            NDARoutineError("Ephemeris from IMCCE webservice not implemented yet")
+
+        return meridian_dt
+
+    def get_single_sweep(self, index=0, load_data=True):
+
+        return NDARoutineSweep(self, index, load_data)
+
+
+class NDARoutineSweep:
+
+    def __init__(self, parent, index_input, load_data=True):
+        self.parent = parent
+        self.debug = self.parent.debug
+        self.data = dict()
+        self.load_data = load_data
+
+        if isinstance(index_input, int):
+            self.index = index_input
+        else:
+            raise NDARoutineError("Unable to process provided index value... Aborting")
+
+        data_start_pos = self.parent.file_info['data_offset_in_file'] \
+                         + self.index * self.parent.file_info['record_size']
+        rec_date_fields = ['hr', 'min', 'sec', 'cs']
+        rec_date_dtype = '<bbbb'
+
+        with open(self.parent.file, 'rb') as f:
+            f.seek(data_start_pos, 0)
+            block = f.read(self.parent.file_info['record_size'])
+            rec_date = dict(zip(rec_date_fields, struct.unpack(rec_date_dtype, block[0:4])))
+            rec_data = struct.unpack('<'+'b'*400, block[4:404])
+            rec_status = block[404]
+
+        self.data['hms'] = rec_date
+        self.data['data'] = rec_data
+        self.data['status'] = rec_status
+
+    def get_datetime(self):
+
+        dt = self.parent.get_meridian_datetime()
+        start_time = datetime.time(self.data['hms']['hr'], self.data['hms']['min'])
+        if dt.time() < start_time:
+            dt = dt - datetime.timedelta(days=1)
+
+        return dt + datetime.timedelta(hours=int(self.data['hms']['hr']),
+                                       minutes=int(self.data['hms']['min']),
+                                       seconds=int(self.data['hms']['sec']),
+                                       milliseconds=int(self.data['hms']['cs']) * 10)
+
+    def get_data(self):
+        return self.data['data']
+
+    def get_data_in_db(self):
+        return [item * 0.3125 for item in self.data['data']]
+
+    def fix_time(self):
+        pass
