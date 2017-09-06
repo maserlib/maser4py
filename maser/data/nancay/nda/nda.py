@@ -16,10 +16,10 @@ __date__ = "25-JUL-2017"
 __version__ = "0.10"
 __project__ = "MASER/SRN/NDA"
 
-__all__ = ["NDAData", "WrongFormatException"]
+__all__ = ["NDAData", "NDAError"]
 
 
-class WrongFormatException(Exception):
+class NDAError(MaserError):
     pass
 
 
