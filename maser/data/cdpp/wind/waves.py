@@ -19,16 +19,31 @@ __all__ = ["WindWavesData", "read_wind_waves"]
 
 class WindWavesData(CDPPData):
     """
-    Class for Wind/Waves data
+    Class for Wind/Waves data.
+    This is a class inheriting from the CDPPData class.
     """
 
     def __init__(self, file, header, data, name, meta, orbit=None):
+        """
+        This method instantiates a WindWavesData. The method overrides the __init__() method from CDPPData, adding the
+        meta and orbit attributes, that are specific to the WindWavesData class
+        :param file: path to the input file.
+        :param header: dict() containing header
+        :param data: dict() containing data
+        :param name: string containing the name of dataset
+        :param meta: dict() containing metadata
+        :param orbit: orbital data (default to None)
+        """
         CDPPData.__init__(self, file, header, data, name)
         self.meta = meta
         if orbit:
             self.orbit = orbit
 
     def get_datetime(self):
+        """
+        Method that provides the date and time, using a datetime.datetime object.
+        :returns: datetime of instance
+        """
         if self.name == "WIND_WAVES_TNR_L3_NN":
             return self.get_datetime_ur8()
         elif self.name == "WIND_WAVES_TNR_L3_BQT":
@@ -39,17 +54,21 @@ class WindWavesData(CDPPData):
             print("Unknown dataset name...")
             return None
 
-    def getvar_meta(self, var_name):
+    def getvar_meta(self, key_name):
         """
-        Method to retrieve the variable metadata
-        :return: 
+        Method to retrieve the metadata attribute
+        :param key_name: named key to be fetch in the metadata attribute
+        :return: value corresponding to the input key
         """
-        return self.meta[var_name]
+        return self.meta[key_name]
 
 
 def read_wind_waves_nn(file_path, verbose=False):
     """
-    Method to read a Wind/Waves NN data file from CDPP deep archive"
+    Method to read a Wind/Waves NN data file from CDPP deep archive
+    :param file_path: path to file.
+    :param verbose: optional flag to activate verbose mode
+    :returns: a WindWavesData instance built from the input file.
     """
 
     ccsds_fields = ["CCSDS_PREAMBLE", "CCSDS_JULIAN_DAY_B1", "CCSDS_JULIAN_DAY_B2", "CCSDS_JULIAN_DAY_B3",
@@ -118,7 +137,10 @@ def read_wind_waves_nn(file_path, verbose=False):
 
 def read_wind_waves_bqt(file_path, verbose=False):
     """
-    Method to read a Wind/Waves BQT data file from CDPP deep archive"
+    Method to read a Wind/Waves BQT data file from CDPP deep archive
+    :param file_path: path to file.
+    :param verbose: optional flag to activate verbose mode
+    :returns: a WindWavesData instance built from the input file.
     """
 
     ccsds_fields = ["CCSDS_PREAMBLE", "CCSDS_JULIAN_DAY_B1", "CCSDS_JULIAN_DAY_B2", "CCSDS_JULIAN_DAY_B3",
@@ -252,7 +274,7 @@ def read_wind_waves_radio_60s(file_path, verbose=False):
     Method to read a Wind/Waves BQT data file from CDPP deep archive
     :param file_path: input file name (full path)
     :param verbose: optional flag to activate verbose mode
-    :return WavesData: output WavesData object
+    :returns: a WindWavesData instance built from the input file.
     """
 
     ccsds_fields = ["CCSDS_PREAMBLE", "CCSDS_JULIAN_DAY_B1", "CCSDS_JULIAN_DAY_B2", "CCSDS_JULIAN_DAY_B3",
@@ -342,8 +364,8 @@ def read_wind_waves_radio_60s(file_path, verbose=False):
 def read_wind_waves(file_path):
     """
     Generic method to read Wind/Waves data from CDPP deep archive, using file name convention to recognize data level
-    :param file_path: 
-    :return WavesData: 
+    :param file_path: path of the file to read
+    :returns: a WindWavesData instance built from the input file
     """
 
     file_name = os.path.basename(file_path)
