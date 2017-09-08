@@ -17,10 +17,10 @@ __version__ = "0.11"
 __all__ = ["InterballAuroralData", "read_int_aur_polrad"]
 
 
-class InterballAuroralData(CDPPData):
+class InterballAuroralData(CDPPDataFromFile):
 
     def __init__(self, file, header, data, name, meta):
-        CDPPData.__init__(self, file, header, data, name)
+        CDPPDataFromFile.__init__(self, file, header, data, name)
         self.meta = meta
 
     def decode_session_name(self):
@@ -73,7 +73,7 @@ class InterballAuroralData(CDPPData):
         return self.meta[var_name]
 
     def get_epncore(self):
-        md = CDPPData.get_epncore(self)
+        md = CDPPDataFromFile.get_epncore(self)
         md["target_class"] = "planet"
         md["target_name"] = "Earth"
         md["target_region"] = "Magnetosphere"

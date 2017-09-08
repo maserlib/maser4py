@@ -17,10 +17,10 @@ __version__ = "0.10"
 __all__ = ["ISEE3SBHData", "read_isee3_sbh_3d_radio_source"]
 
 
-class ISEE3SBHData(CDPPData):
+class ISEE3SBHData(CDPPDataFromFile):
 
     def __init__(self, file, header, data, name, meta, orbit):
-        CDPPData.__init__(self, file, header, data, name)
+        CDPPDataFromFile.__init__(self, file, header, data, name)
         self.meta = meta
         self.orbit = orbit
 

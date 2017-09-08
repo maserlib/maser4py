@@ -29,13 +29,13 @@ class NDARoutineError(NDAError):
     pass
 
 
-class NDARoutineData(NDAData):
+class NDARoutineData(NDADataFromFile):
 
     def __init__(self, file, debug=False):
         header = {}
         data = []
         name = "SRN/NDA Routine Dataset"
-        NDAData.__init__(self, file, header, data, name)
+        NDADataFromFile.__init__(self, file, header, data, name)
         self.file_handle = open(self.file, 'rb')
 
         self.file_info = {'name': self.file, 'size': self.get_file_size()}

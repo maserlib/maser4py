@@ -19,7 +19,7 @@ __author__ = "Baptiste Cecconi"
 __date__ = "26-JUL-2017"
 __version__ = "0.10"
 
-__all__ = ["RadioJoveData"]
+__all__ = ["RadioJoveDataFromFile"]
 
 packet_size = 10000
 
@@ -31,13 +31,13 @@ class RadioJoveError(Exception):
 ################################################################################
 # Defining the generic class for RadioJove Data (inherited from MaserData)
 ################################################################################
-class RadioJoveData(MaserData):
+class RadioJoveDataFromFile(MaserDataFromFile):
     """
     Class for RadioJove data
     """
 
     def __init__(self, file, verbose=True, debug=False):
-        MaserData.__init__(self, file, verbose, debug)
+        MaserDataFromFile.__init__(self, file, verbose, debug)
         self.file_info = {'name': self.file, 'size': self.get_file_size(), 'file_data_offset': 0}
         self.header, self.notes, self.time, self.frequency = self.open_radiojove_spx()
         self.data = self.extract_radiojove_spx_data()

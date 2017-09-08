@@ -16,7 +16,7 @@ __date__ = "10-JUL-2017"
 __version__ = "0.11"
 __project__ = "MASER/CDPP"
 
-__all__ = ["CDPPData"]
+__all__ = ["CDPPDataFromFile"]
 
 
 class CCSDSDate:
@@ -159,10 +159,10 @@ class CCSDSDate:
             + datetime.timedelta(microseconds=micro)
 
 
-class CDPPData(MaserData):
+class CDPPDataFromFile(MaserDataFromFile):
 
     def __init__(self, file, header, data, name):
-        MaserData.__init__(self, file)
+        MaserDataFromFile.__init__(self, file)
         self.header = header
         self.data = data
         self.name = name

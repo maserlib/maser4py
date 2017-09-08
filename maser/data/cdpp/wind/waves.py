@@ -17,7 +17,7 @@ __version__ = "0.11"
 __all__ = ["WindWavesData", "read_wind_waves"]
 
 
-class WindWavesData(CDPPData):
+class WindWavesData(CDPPDataFromFile):
     """
     Class for Wind/Waves data.
     This is a class inheriting from the CDPPData class.
@@ -34,7 +34,7 @@ class WindWavesData(CDPPData):
         :param meta: dict() containing metadata
         :param orbit: orbital data (default to None)
         """
-        CDPPData.__init__(self, file, header, data, name)
+        CDPPDataFromFile.__init__(self, file, header, data, name)
         self.meta = meta
         if orbit:
             self.orbit = orbit

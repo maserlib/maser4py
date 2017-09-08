@@ -22,14 +22,14 @@ class NDAJunonError(Exception):
     pass
 
 
-class NDAJunonData(NDAData):
+class NDAJunonData(NDADataFromFile):
 
     def __init__(self, file, debug=False):
         header = {}
         data = []
         name = "SRN/NDA JunoN Dataset"
         # meta = {}
-        NDAData.__init__(self, file, header, data, name)
+        NDADataFromFile.__init__(self, file, header, data, name)
         self.file_handle = open(self.file, 'rb')
 
         self.debug = debug

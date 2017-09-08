@@ -17,10 +17,10 @@ __version__ = "0.11"
 __all__ = ["VikingV4nData", "read_viking"]
 
 
-class VikingV4nData(CDPPData):
+class VikingV4nData(CDPPDataFromFile):
 
     def __init__(self, file, header1, header2, header3, status, data, name, meta, orbit):
-        CDPPData.__init__(self, file, header1, data, name)
+        CDPPDataFromFile.__init__(self, file, header1, data, name)
         self.header_v4l = header2
         self.header_v4h = header3
         self.status = status
@@ -31,7 +31,7 @@ class VikingV4nData(CDPPData):
         if item == "DATETIME_UTC":
             return self.get_datetime(is_utc=True)
         else:
-            return CDPPData.__getitem__(self, item)
+            return CDPPDataFromFile.__getitem__(self, item)
 
     def get_datetime(self, is_utc=False):
         if is_utc:
@@ -47,13 +47,13 @@ class VikingV4nData(CDPPData):
         """
         var_data = list()
         if self.name == "VIKING_V4":
-            dataset_names = CDPPData.getvar_names(self)
+            dataset_names = CDPPDataFromFile.getvar_names(self)
             for dataset in dataset_names:
                 if var_name in self.meta[dataset].keys():
                     for cur_data in self.data:
                         var_data.append(cur_data[dataset][var_name])
         else:
-            var_data = CDPPData.getvar(self, var_name)
+            var_data = CDPPDataFromFile.getvar(self, var_name)
         return var_data
 
     def getvar_names(self):
@@ -62,7 +62,7 @@ class VikingV4nData(CDPPData):
         :return: 
         """
         if self.name == "VIKING_V4":
-            dataset_names = CDPPData.getvar_names(self)
+            dataset_names = CDPPDataFromFile.getvar_names(self)
             var_names = list()
 
             for dataset in dataset_names:
@@ -79,7 +79,7 @@ class VikingV4nData(CDPPData):
         """
         meta = None
         if self.name == "VIKING_V4":
-            dataset_names = CDPPData.getvar_names(self)
+            dataset_names = CDPPDataFromFile.getvar_names(self)
             for dataset in dataset_names:
                 if var_name in self.meta[dataset].keys():
                     meta = self.meta[dataset][var_name]
@@ -88,7 +88,7 @@ class VikingV4nData(CDPPData):
         return meta
 
     def get_epncore(self):
-        md = CDPPData.get_epncore(self)
+        md = CDPPDataFromFile.get_epncore(self)
         md["time_min"] = self["DATETIME_UTC"][0]
         md["time_max"] = self["DATETIME_UTC"][-1]
         md["time_scale"] = "UTC"

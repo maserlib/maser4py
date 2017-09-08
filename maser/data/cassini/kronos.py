@@ -192,10 +192,10 @@ class CassiniKronosData(object):
         return file_list
 
 
-class CassiniKronosFile(MaserData):
+class CassiniKronosFile(MaserDataFromFile):
 
     def __init__(self, file):
-        MaserData.__init__(self, file)
+        MaserDataFromFile.__init__(self, file)
         self.level = self.extract_level_from_file_name()
         self.start_time, self.end_time = self.extract_interval_from_file_name()
 

@@ -16,17 +16,17 @@ __date__ = "25-JUL-2017"
 __version__ = "0.10"
 __project__ = "MASER/SRN/NDA"
 
-__all__ = ["NDAData", "NDAError"]
+__all__ = ["NDADataFromFile", "NDAError"]
 
 
 class NDAError(MaserError):
     pass
 
 
-class NDAData(MaserData):
+class NDADataFromFile(MaserDataFromFile):
 
     def __init__(self, file, header, data, name, verbose=True, debug=False):
-        MaserData.__init__(self, file, verbose=verbose, debug=debug)
+        MaserDataFromFile.__init__(self, file, verbose=verbose, debug=debug)
         self.header = header
         self.data = data
         self.name = name
