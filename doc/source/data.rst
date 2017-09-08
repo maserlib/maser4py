@@ -26,7 +26,7 @@ To be done
 The *cdpp* module
 *****************
 
-The *CDPP* module provides methods to deal with the CDPP deep archive data.
+The *CDPP* module provides classes and methods to deal with the CDPP deep archive data.
 
 The *interball* submodule
 =========================
@@ -56,17 +56,22 @@ To be done
 The *cassini* module
 ********************
 
-The *Cassini* module provides methods to deal with the Cassini/RPWS/HFR (Kronos) data from LESIA/ObsParis.
+The *Cassini* module provides classes and methods to deal with the Cassini/RPWS/HFR (Kronos) data from LESIA/ObsParis.
 
 The *nancay* module
 *******************
 
-The *Nancay* module provides methods to deal with the Station de Radioastronomie de Nancay data.
+The *Nancay* module provides classes and methods to deal with the Station de Radioastronomie de Nancay data.
 
 The *nda* submodule
 ===================
 
-To be done
+The *NDA* module provides classes and methods to deal with the Nancay Decameter Array data.
+
+
+The *junon* submodule
+---------------------
+
 
 The *radiojove* module
 **********************
