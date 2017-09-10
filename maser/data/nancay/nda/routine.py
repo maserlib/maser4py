@@ -9,6 +9,7 @@ Python module to work with SRN/NDA/Routine data
 import struct
 import datetime
 import os
+from maser.data.data import *
 from maser.data.nancay.nda.nda import *
 
 __author__ = "Baptiste Cecconi"
@@ -54,6 +55,14 @@ class NDARoutineData(NDADataFromFile):
         meta['freq_stp'] = (meta['freq_max']-meta['freq_min'])/0.4  # kHz
         meta['freq_res'] = float(self.header['freq_res'])  # kHz
         self.meta = meta
+
+    def get_mime_type(self):
+        if self.file_info['format'] == 'RT1':
+            return 'application/x-binary-rt1'
+        elif self.file_info['format'] == 'CDF':
+            return 'application/x-cdf'
+        else:
+            raise NDARoutineError("Wrong file format")
 
     def __len__(self):
         if self.file_info['format'] == 'RT1':
@@ -270,17 +279,12 @@ class NDARoutineData(NDADataFromFile):
         return [self.get_single_sweep(item).get_datetime() for item in range(len(self))]
 
 
-class NDARoutineSweep:
+class NDARoutineSweep(MaserDataSweep):
 
     def __init__(self, parent, index_input, load_data=True):
-        self.parent = parent
+        MaserDataSweep.__init__(self, parent, index_input)
         self.debug = self.parent.debug
         self.data = dict()
-
-        if isinstance(index_input, int):
-            self.index = index_input
-        else:
-            raise NDARoutineError("Unable to process provided index value... Aborting")
 
         self.data_start_pos = self.parent.file_info['data_offset_in_file'] \
                             + self.index * self.parent.file_info['record_size']
