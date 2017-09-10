@@ -7,6 +7,8 @@ Python module to create a generic Class for Data and data files handling
 
 import os
 import math
+import datetime
+from dateutil import parser
 
 __author__ = "Baptiste Cecconi"
 __institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
@@ -14,7 +16,7 @@ __date__ = "26-JUL-2017"
 __version__ = "0.10"
 __project__ = "MASER"
 
-__all__ = ["MaserError", "MaserDataFromFile"]
+__all__ = ["MaserError", "MaserData", "MaserDataFromFile", "MaserDataFromInterval", "MaserDataRecord", "MaserDataSweep"]
 
 pds_bin = '/Users/baptiste/Projets/VOParis/igpp-git/pds-cdf-1.0.11/bin/'
 cdf_bin = '/Applications/cdf/cdf/bin/'
@@ -32,10 +34,56 @@ class MaserData:
     Basic MaserData class with minimal methods
     """
 
-    def __init__(self):
+    def __init__(self, verbose=True, debug=False):
+        """
+        Method to instantiate generic MaserData object.
+        :param verbose: (bool) set to False to remove verbose output (default to True)
+        :param debug: (bool) set to True to have debug output (default to False)
+        """
+        self.verbose = verbose
+        self.debug = debug
         self.start_time = None
         self.end_time = None
-        self.dataset_name = ''
+        self.dataset_name = None
+
+
+class MaserDataFromInterval(MaserData):
+    """
+    MaserDataFromInterval class for MaserData objects built from an interval and a dataset
+    """
+
+    def __init__(self, start_time, end_time, dataset='', verbose=True, debug=False):
+        """
+        Method to instantiate a MaserDataFromInterval object.
+        :param start_time: start date-time (either ISO formatted or datetime.datetime object)
+        :param end_time: end date-time (either ISO formatted or datetime.datetime object)
+        :param dataset: (string) dataset name
+        :param verbose: (bool) set to False to remove verbose output (default to True)
+        :param debug: (bool) set to True to have debug output (default to False)
+        """
+        MaserData.__init__(self, verbose, debug)
+        self.start_time = self.parse_time(start_time)
+        self.end_time = self.parse_time(end_time)
+        self.dataset_name = dataset
+
+    @staticmethod
+    def parse_time(input_time):
+        """
+        Method to parse an input time
+        :param input_time: date-time (either ISO formatted or datetime.datetime object)
+        :returns: datetime.datetime object
+        """
+
+        if isinstance(input_time, datetime.datetime):
+            dt = input_time
+        elif isinstance(input_time, str):
+            dt = parser.parse(input_time)
+        elif input_time is None:
+            dt = None
+        else:
+            raise MaserError("Unable to parse input time ({})".format(input_time))
+
+        return dt
 
 
 class MaserDataFromFile(MaserData):
@@ -49,13 +97,10 @@ class MaserDataFromFile(MaserData):
         :param file: input file (including path to file)
         :param verbose: (bool) set to False to remove verbose output (default to True)
         :param debug: (bool) set to True to have debug output (default to False)
-        :returns: (MaserData) object built from the input file.
         """
 
-        MaserData.__init__(self)
+        MaserData.__init__(self, verbose, debug)
         self.file = os.path.abspath(file)
-        self.verbose = verbose
-        self.debug = debug
         self.format = ''
 
     def get_file_name(self):
@@ -139,3 +184,56 @@ class MaserDataFromFileCDF(MaserDataFromFile):
 
     def get_mime_type(self):
         return 'application/x-cdf'
+
+
+class MaserDataRecord(object):
+
+    def __init__(self, parent, raw_data):
+        self.parent = parent
+        self.data = self.load_data(raw_data)
+
+    def load_data(self, raw_data):
+        """
+        Placeholder method to be overridden by subclass methods
+        :returns: empty header and data dict()
+        """
+        return dict()
+
+    def __getitem__(self, key):
+        """
+        Overrides generic __getitem__ and looks into self.data content
+        :param key: key
+        :return: value
+        """
+        if key in self.data.keys():
+            return self.data[key]
+        else:
+            raise MaserError("Key {} doesn't exist".format(key))
+
+    def get_datetime(self):
+        """
+        Method to get the datetime of the current record.
+        :return: datetime.datetime object
+        """
+        return None
+
+
+class MaserDataSweep(MaserData):
+
+    def __init__(self, parent, index):
+        MaserData.__init__(self)
+        self.parent = parent
+        self.data = None
+        self.header = None
+
+        if isinstance(index, int):
+            self.index = index
+        else:
+            raise MaserError("Unable to process provided index value... Aborting")
+
+    def get_datetime(self):
+        """
+        Method to get the datetime of the current sweep (or start of sweep).
+        :return: datetime.datetime object
+        """
+        return None
