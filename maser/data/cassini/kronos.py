@@ -15,7 +15,8 @@ __author__ = "Baptiste Cecconi"
 __date__ = "29-AUG-2017"
 __version__ = "0.01"
 
-__all__ = ["CassiniKronosData", "CassiniKronosLevel", "CassiniKronosFile", "CassiniKronosRecord"]
+__all__ = ["CassiniKronosData", "CassiniKronosLevel", "CassiniKronosFile", "CassiniKronosRecord",
+           "load_data_from_file", "load_data_from_interval", "ydh_to_datetime"]
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Module variables
@@ -66,7 +67,7 @@ all_levels['skr'] = {'name': 'Kronos Level 4 SKR', 'path': 'skr'}
 # Module classes
 
 
-class KronosError(Exception):
+class KronosError(MaserError):
     pass
 
 
@@ -114,18 +115,18 @@ class CassiniKronosLevel:
             raise KronosError("Not yet implemented error")
 
 
-class CassiniKronosData(object):
+class CassiniKronosData(MaserDataFromInterval):
 
     def __init__(self, start_time=None, end_time=None, levels=list()):
+        MaserDataFromInterval.__init__(self, start_time, end_time, levels)
         self.start_time = start_time
         self.end_time = end_time
-        self.levels = levels
-        self.rpws_data_dir = os.environ['NAS_RPWS']
+        self.root_data_dir = os.environ['NAS_RPWS']
 
         if self.start_time is not None and self.end_time is not None:
             self.periods = self.period_dir_list()
             self.files = list()
-            for item in self.levels:
+            for item in self.dataset_name:
                 self.files.extend(self.make_file_list(item))
 
             self.data = list()
@@ -135,7 +136,7 @@ class CassiniKronosData(object):
     def __str__(self):
         return "<{} object> {} to {} with level(s) {}".\
             format(type(self).__qualname__, self.start_time.isoformat(),
-                   self.end_time.isoformat(), ', '.join([item.name for item in self.levels]))
+                   self.end_time.isoformat(), ', '.join([item.name for item in self.dataset_name]))
 
     def __repr__(self):
         print(self)
@@ -148,9 +149,7 @@ class CassiniKronosData(object):
         return CassiniKronosData(start_time, end_time, levels)
 
     @classmethod
-    def from_ydh_interval(cls, start_time, end_time, levels):
-        start_time = datetime.datetime.strptime(start_time, "%Y%j.%H")
-        end_time = datetime.datetime.strptime(end_time, "%Y%j.%H")
+    def from_interval(cls, start_time, end_time, levels):
         if levels is list:
             levels = [CassiniKronosLevel(item) for item in levels]
         else:
@@ -159,7 +158,7 @@ class CassiniKronosData(object):
 
     def load_extra_level(self, level, sublevel=None):
         new_level = CassiniKronosLevel(level, sublevel)
-        self.levels.append(new_level)
+        self.dataset_name.append(new_level)
         self.files.extend(self.make_file_list(new_level))
         for item in self.files:
             if item.level.name == new_level.name:
@@ -174,7 +173,7 @@ class CassiniKronosData(object):
         return this_dir_list
 
     def level_path(self, period_dir, level):
-        return os.path.join(os.path.join(self.rpws_data_dir, period_dir), all_levels[level.name]['path'])
+        return os.path.join(os.path.join(self.root_data_dir, period_dir), all_levels[level.name]['path'])
 
     def make_file_list(self, level):
         file_list = list()
@@ -338,17 +337,26 @@ class CassiniKronosRecord:
             raise KronosError("Field {} doesn't exist in this record ({})".format(item, self.level.name))
 
 
-class CassiniKronosSweep:
+#class CassiniKronosSweep:
+#
+#    def __init__(self, data):
+#        data.load_extra_level('lis')
+#        self.mode = CassiniKronosMode(raw_mode)
+#
+#
+#class CassiniKronosMode:
+#
+#    def __init__(self, raw_mode):
+#        self.raw_mode = raw_mode
 
-    def __init__(self, data):
-        data.load_extra_level('lis')
-        self.mode = CassiniKronosMode(raw_mode)
+
+def load_data_from_file(file):
+    return CassiniKronosData.from_file(file)
 
 
-class CassiniKronosMode:
-
-    def __init__(self, raw_mode):
-        self.raw_mode = raw_mode
+def load_data_from_interval(start_time, end_time, levels):
+    return CassiniKronosData.from_interval(start_time, end_time, levels)
 
 
-
+def ydh_to_datetime(ydh_time):
+    return datetime.datetime.strptime(ydh_time, '%Y%j.%H')
