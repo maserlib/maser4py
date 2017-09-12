@@ -8,7 +8,7 @@ Python module to create a generic Class for Data and data files handling
 import os
 import math
 import datetime
-from dateutil import parser
+import dateutil.parser
 
 __author__ = "Baptiste Cecconi"
 __institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
@@ -18,7 +18,7 @@ __project__ = "MASER"
 
 __all__ = ["MaserError", "MaserData", "MaserDataFromFile", "MaserDataFromInterval", "MaserDataRecord", "MaserDataSweep"]
 
-pds_bin = '/Users/baptiste/Projets/VOParis/igpp-git/pds-cdf-1.0.11/bin/'
+pds_bin = '/Users/baptiste/Projets/VOParis/igpp-git/VG1_JUPITER-cdf-1.0.11/bin/'
 cdf_bin = '/Applications/cdf/cdf/bin/'
 
 
@@ -77,7 +77,7 @@ class MaserDataFromInterval(MaserData):
         if isinstance(input_time, datetime.datetime):
             dt = input_time
         elif isinstance(input_time, str):
-            dt = parser.parse(input_time)
+            dt = dateutil.parser.parse(input_time)
         elif input_time is None:
             dt = None
         else:
@@ -210,12 +210,8 @@ class MaserDataRecord(object):
         else:
             raise MaserError("Key {} doesn't exist".format(key))
 
-    def get_datetime(self):
-        """
-        Method to get the datetime of the current record.
-        :return: datetime.datetime object
-        """
-        return None
+    def get_datetime(self) -> datetime.datetime:
+        pass
 
 
 class MaserDataSweep(MaserData):
