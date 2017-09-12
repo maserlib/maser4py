@@ -116,12 +116,14 @@ class PDSPPIVoyagerPRAJupiterData(MaserDataFromInterval):
                     sweep = dict()
                     data_offset = 12 + 284 * i
                     raw_word = int(line[data_offset:data_offset + 4])
-                    if raw_word != 0:
+                    attenuator_index = raw_word & 7
+                    startpolar_index = (raw_word & 1536)//512
+                    if raw_word != 0 and attenuator_index not in attenuator_dict.keys():
                         sweep['datetime'] = start_time + datetime.timedelta(seconds=i*6)
                         sweep['status'] = dict()
                         sweep['status']['raw_word'] = raw_word
-                        sweep['status']['attenuator'] = attenuator_dict[raw_word & 7]
-                        sweep['status']['startpolar'] = startpolar_dict[(raw_word & 1536)//512]
+                        sweep['status']['attenuator'] = attenuator_dict[attenuator_index]
+                        sweep['status']['startpolar'] = startpolar_dict[startpolar_index]
                         sweep['data'] = [int(line[data_offset+(j+1)*4:data_offset+(j+2)*4]) for j in range(70)]
                         frame.append(sweep)
         return frame
