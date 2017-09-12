@@ -23,7 +23,7 @@ __project__ = "MASER/PADC"
 
 __all__ = ["PDSPPIVoyagerPRAJupiterData"]
 
-default_root_data_path = "/Users/baptiste/Volumes/kronos-dio/voyager/pra/data/PDS_data/"
+default_root_data_path = "/Users/baptiste/Volumes/kronos-dio/voyager/data/pra/PDS_data/"
 
 
 class PDSPPIVoyagerPRAJupiterData(MaserDataFromInterval):
@@ -144,19 +144,19 @@ class PDSPPIVoyagerPRAJupiterData(MaserDataFromInterval):
     def __getitem__(self, item):
         return [self.data[i][item] for i in range(len(self))]
 
-    def get_polar_data(self, selected_polar):
+    def get_polar_data(self, selected_polar, db=True):
         result = list()
         f = self.get_freq_list()
         if selected_polar in ['R', 'L']:
             for d, s in zip(self['data'], self['status']):
                 sweep = dict()
                 sweep['polar'] = s['startpolar']
+                if db:
+                    d = [d[i]/100 + s['attenuator'] for i in range(70)]
                 if selected_polar == s['startpolar']:
                     sweep['data'] = [d[i*2] for i in range(35)]
-                    # sweep['freq'] = [f[i*2] for i in range(35)]
                 else:
                     sweep['data'] = [d[i*2+1] for i in range(35)]
-                    # sweep['freq'] = [f[i*2+1] for i in range(35)]
                 result.append(sweep)
 
         return result
