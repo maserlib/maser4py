@@ -154,7 +154,7 @@ class PDSPPIVoyagerPRAJupiterData(MaserDataFromInterval):
                 sweep = dict()
                 sweep['polar'] = s['startpolar']
                 if db:
-                    d = [d[i]/100 + s['attenuator'] for i in range(70)]
+                    d = [d[i]/100 - s['attenuator'] for i in range(70)]
                 if selected_polar == s['startpolar']:
                     sweep['data'] = [d[i*2] for i in range(35)]
                 else:
