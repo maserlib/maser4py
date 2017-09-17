@@ -11,6 +11,7 @@ import struct
 from maser.data.data import *
 import datetime
 import numpy
+import hashlib
 
 __author__ = "Baptiste Cecconi"
 __date__ = "29-AUG-2017"
@@ -317,6 +318,22 @@ class CassiniKronosData(MaserDataFromInterval):
     def records(self):
         return CassiniKronosRecords(self)
 
+    def get_modes(self):
+        modes = dict()
+        for t, d in self.sweeps():
+            hh = hashlib.md5(repr(d['n1']['fi']).encode('utf-8')).hexdigest()
+            if hh not in modes.keys():
+                modes[hh] = dict()
+                modes[hh]['fi'] = d['n1']['fi']
+                modes[hh]['dti'] = d['n1']['dti']
+                modes[hh]['ant'] = d['n1']['ant']
+                if self.level.name != 'n1':
+                    modes[hh]['f'] = d['n2']['f']
+                    modes[hh]['df'] = d['n2']['df']
+                    modes[hh]['dt'] = d['n2']['dt']
+
+        return modes
+
 
 class CassiniKronosSweeps:
 
@@ -330,7 +347,7 @@ class CassiniKronosSweeps:
         return self
 
     def __next__(self):
-        if self.cur_index >= self.max_index:
+        if self.cur_index == self.max_index-1:
             raise StopIteration
         else:
             self.cur_index += 1
@@ -338,6 +355,13 @@ class CassiniKronosSweeps:
             for key in self.parent.data.keys():
                 data[key] = self.parent.data[key][self.indices == self.cur_index]
             return self.times[self.cur_index], data
+
+    def __len__(self):
+        return self.max_index
+
+    def get_mode_hash(self):
+        d = self.parent.data['n1'][self.indices == self.cur_index]
+        return hashlib.md5(repr(d['fi']).encode('utf-8')).hexdigest()
 
 
 class CassiniKronosRecords:
@@ -353,7 +377,7 @@ class CassiniKronosRecords:
         return self
 
     def __next__(self):
-        if self.cur_index == self.max_index:
+        if self.cur_index == self.max_index-1:
             raise StopIteration
         else:
             self.cur_index += 1
@@ -361,6 +385,9 @@ class CassiniKronosRecords:
             for key in self.parent.data.keys():
                 data[key] = self.parent.data[key][self.cur_index]
             return self.times[self.cur_index], self.freqs[self.cur_index], data
+
+    def __len__(self):
+        return self.max_index
 
 
 class CassiniKronosFile(MaserDataFromFile):
