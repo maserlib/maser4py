@@ -98,8 +98,8 @@ class CassiniKronosLevel:
                                          "auto1", "auto2", "cross1", "cross2"]
             self.record_def['dtype'] = "<LLLLhbbbbbbhh"
             self.record_def['np_dtype'] = [('ydh', '<i4'), ('num', '<i4'), ('ti', '<i4'), ('fi', '<i4'),
-                                           ('dti', '<i2'), ('c', 'i'), ('ant', 'i'), ('agc1', 'i'),
-                                           ('agc2', 'i'), ('cross1', '<i2'), ('cross2', '<i2')]
+                                           ('dti', '<i2'), ('c', 'i1'), ('ant', 'i1'), ('agc1', 'i1'),
+                                           ('agc2', 'i1'), ('cross1', '<i2'), ('cross2', '<i2')]
             self.record_def['length'] = struct.calcsize(self.record_def['dtype'])  # = 28
             self.description = "Cassini/RPWS/HFR Level 1 (Receiver units)"
             self.depends = [None]
@@ -157,24 +157,26 @@ class CassiniKronosData(MaserDataFromInterval):
             file_start = [item.start_time for item in self.files]
             self.files = [x for y, x in sorted(zip(file_start, self.files))]
 
-            self.data = None
+            self.data = dict()
+            first_file = True
             for item in self.files:
 
                 cur_data = item.read_data_binary()
-                if self.data is None:
-                    self.data = cur_data.copy()
-                else:
-                    self.data = numpy.append(self.data.copy(), cur_data.copy())
 
-                #for lev_item in self.level.depends:
-                #    dep_data = item.other_level(lev_item).read_data_binary()
-                #    for c in cur_data:
-                #        for d in dep_data.copy():
-                #            if d['num'] == c['num']:
-                #                c.merge(d)
-                #                dep_data.remove(d)
-                #                break
-                #self.data.extend(cur_data)
+                if first_file:
+                    self.data[self.level.name] = cur_data.copy()
+                else:
+                    self.data[self.level.name] = numpy.append(self.data[self.level.name].copy(), cur_data.copy())
+
+                for lev_item in self.level.depends:
+                    dep_data = item.other_level(lev_item).read_data_binary()
+
+                    if first_file:
+                        self.data[lev_item] = dep_data[cur_data['num']].copy()
+                    else:
+                        self.data[lev_item] = numpy.append(self.data[lev_item].copy(), dep_data[cur_data['num']].copy())
+
+                first_file = False
 
     def __str__(self):
         return "<{} object> {} to {} with level {}".\
@@ -243,12 +245,18 @@ class CassiniKronosData(MaserDataFromInterval):
 
     def __getitem__(self, item):
         if item in self.level.record_def['fields']:
-            return numpy.array([self.data[i][item] for i in range(len(self))])
+            return numpy.array([self.data[self.level.name][i][item] for i in range(len(self))])
+        elif item == 'datetime':
+            return numpy.array([t97_to_datetime(tt) for tt in self['t97']])
+        elif self.level.depends is not None:
+            for lev_item in self.level.depends:
+                if item in CassiniKronosLevel(lev_item).record_def['fields']:
+                    return numpy.array([self.data[lev_item][i][item] for i in range(len(self))])
         else:
             raise CassiniKronosError("Field {} doesn't exist in this record ({})".format(item, self.dataset_name))
 
     def __len__(self):
-        return len(self.data)
+        return len(self.data[self.level.name])
 
     def __add__(self, other):
         # checking class
@@ -507,3 +515,7 @@ def load_data_from_interval(start_time, end_time, input_level, verbose=False, de
 
 def ydh_to_datetime(ydh_time):
     return datetime.datetime.strptime(ydh_time, '%Y%j.%H')
+
+
+def t97_to_datetime(t97_time):
+    return datetime.datetime(1997,1,1) + datetime.timedelta(days=t97_time - 1)
