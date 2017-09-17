@@ -16,8 +16,9 @@ __author__ = "Baptiste Cecconi"
 __date__ = "29-AUG-2017"
 __version__ = "0.01"
 
-__all__ = ["CassiniKronosData", "CassiniKronosLevel", "CassiniKronosFile", "CassiniKronosRecord",
-           "load_data_from_file", "load_data_from_interval", "ydh_to_datetime"]
+__all__ = ["CassiniKronosData", "CassiniKronosLevel", "CassiniKronosFile",
+           "CassiniKronosRecords", "CassiniKronosSweeps",
+           "load_data_from_file", "load_data_from_interval", "ydh_to_datetime", "t97_to_datetime"]
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Module variables
@@ -97,9 +98,10 @@ class CassiniKronosLevel:
             self.record_def['fields'] = ["ydh", "num", "ti", "fi", "dti", "c", "ant", "agc1", "agc2",
                                          "auto1", "auto2", "cross1", "cross2"]
             self.record_def['dtype'] = "<LLLLhbbbbbbhh"
-            self.record_def['np_dtype'] = [('ydh', '<i4'), ('num', '<i4'), ('ti', '<i4'), ('fi', '<i4'),
-                                           ('dti', '<i2'), ('c', 'i1'), ('ant', 'i1'), ('agc1', 'i1'),
-                                           ('agc2', 'i1'), ('cross1', '<i2'), ('cross2', '<i2')]
+            self.record_def['np_dtype'] = [('ydh', '<u4'), ('num', '<u4'),
+                                           ('ti', '<u4'), ('fi', '<u4'), ('dti', '<i2'), ('c', 'u1'), ('ant', 'u1'),
+                                           ('agc1', 'u1'), ('agc2', 'u1'), ('auto1', 'u1'), ('auto2', 'u1'),
+                                           ('cross1', '<i2'), ('cross2', '<i2')]
             self.record_def['length'] = struct.calcsize(self.record_def['dtype'])  # = 28
             self.description = "Cassini/RPWS/HFR Level 1 (Receiver units)"
             self.depends = [None]
@@ -108,7 +110,7 @@ class CassiniKronosLevel:
             self.record_def['fields'] = ["ydh", "num", "t97", "f", "dt", "df", "autoX", "autoZ",
                                          "crossR", "crossI", "ant"]
             self.record_def['dtype'] = "<LLdfffffffb"
-            self.record_def['np_dtype'] = [('ydh', '<i4'), ('num', '<i4'), ('t97', '<f8'), ('f', '<f4'),
+            self.record_def['np_dtype'] = [('ydh', '<u4'), ('num', '<u4'), ('t97', '<f8'), ('f', '<f4'),
                                            ('dt', '<f4'), ('df', '<f4'), ('autoX', '<f4'), ('autoZ', '<f4'),
                                            ('crossR', '<f4'), ('crossI', '<f4'), ('ant', 'i1')]
             self.record_def['length'] = struct.calcsize(self.record_def['dtype'])  # = 45
@@ -119,7 +121,7 @@ class CassiniKronosLevel:
             self.record_def['fields'] = ["ydh", "num0", "num1", "s0", "s1", "q0", "q1", "u0", "u1", "v0", "v1",
                                          "th", "ph", "zr", "snx0", "snz1", "snx0", "snz1"]
             self.record_def['dtype'] = "<LLLfffffffffffffff"
-            self.record_def['np_dtype'] = [('ydh', '<i4'), ('num', '<i4', 2), ('s', '<f4', 2), ('q', '<f4', 2),
+            self.record_def['np_dtype'] = [('ydh', '<u4'), ('num', '<u4', 2), ('s', '<f4', 2), ('q', '<f4', 2),
                                            ('u', '<f4', 2), ('v', '<f4', 2), ('th', '<f4'), ('ph', '<f4'),
                                            ('zr', '<f4'), ('snx', '<f4', 2), ('snz', '<f4', 2)]
             self.record_def['length'] = struct.calcsize(self.record_def['dtype'])  # = 72
@@ -253,7 +255,7 @@ class CassiniKronosData(MaserDataFromInterval):
                 if item in CassiniKronosLevel(lev_item).record_def['fields']:
                     return numpy.array([self.data[lev_item][i][item] for i in range(len(self))])
         else:
-            raise CassiniKronosError("Field {} doesn't exist in this record ({})".format(item, self.dataset_name))
+            raise CassiniKronosError("Field {} doesn't exist".format(item))
 
     def __len__(self):
         return len(self.data[self.level.name])
@@ -308,6 +310,57 @@ class CassiniKronosData(MaserDataFromInterval):
                 else:
                     # case 4b: "self" ends after "other" ends
                     self.data = other.data[0:other_stop_index-1].extend(self.data)
+
+    def sweeps(self):
+        return CassiniKronosSweeps(self)
+
+    def records(self):
+        return CassiniKronosRecords(self)
+
+
+class CassiniKronosSweeps:
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.times, self.indices = numpy.unique(self.parent['datetime'], return_inverse=True)
+        self.cur_index = 0
+        self.max_index = len(self.times)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.cur_index >= self.max_index:
+            raise StopIteration
+        else:
+            self.cur_index += 1
+            data = dict()
+            for key in self.parent.data.keys():
+                data[key] = self.parent.data[key][self.indices == self.cur_index]
+            return self.times[self.cur_index], data
+
+
+class CassiniKronosRecords:
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.times = self.parent['datetime']
+        self.freqs = self.parent['f']
+        self.cur_index = 0
+        self.max_index = len(self.parent.data[self.parent.level.name])
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.cur_index == self.max_index:
+            raise StopIteration
+        else:
+            self.cur_index += 1
+            data = dict()
+            for key in self.parent.data.keys():
+                data[key] = self.parent.data[key][self.cur_index]
+            return self.times[self.cur_index], self.freqs[self.cur_index], data
 
 
 class CassiniKronosFile(MaserDataFromFile):
@@ -450,38 +503,37 @@ class CassiniKronosFile(MaserDataFromFile):
             if val['start_time'] <= self.end_time and val['end_time'] >= self.start_time:
                 return item
 
-
-class CassiniKronosRecord(MaserDataRecord):
-
-    def __init__(self, parent, raw_data):
-        MaserDataRecord.__init__(self, parent, raw_data)
-        self.data = self.read_binary(raw_data)
-        self.verbose = parent.verbose
-        self.debug = parent.debug
-
-    def read_binary(self, raw_data):
-        if self.parent.level.file_format == 'bin-fixed-record-length':
-            return dict(zip(self.parent.level.record_def['fields'],
-                            struct.unpack(self.parent.level.record_def['dtype'], raw_data)))
-        else:
-            raise CassiniKronosError("Not yet implemented")
-
-    def __getitem__(self, item):
-        if item in self.parent.level.record_def['fields']:
-            return self.data[item]
-        else:
-            raise CassiniKronosError("Field {} doesn't exist in this record ({})".format(item, self.parent.level.name))
-
-    def merge(self, extra):
-        if isinstance(extra, CassiniKronosRecord):
-            for ext_k in extra.data.keys():
-                if ext_k in self.data.keys():
-                    if extra.data[ext_k] != self.data[ext_k]:
-                        print("cur[{}] = {}".format(ext_k, self.data[ext_k]))
-                        print("ext[{}] = {}".format(ext_k, extra.data[ext_k]))
-                        raise CassiniKronosError("Inconsistent records while merging")
-                else:
-                    self.data[ext_k] = extra.data[ext_k]
+#class CassiniKronosRecord(MaserDataRecord):
+#
+#    def __init__(self, parent, raw_data):
+#        MaserDataRecord.__init__(self, parent, raw_data)
+#        self.data = self.read_binary(raw_data)
+#        self.verbose = parent.verbose
+#        self.debug = parent.debug
+#
+#    def read_binary(self, raw_data):
+#        if self.parent.level.file_format == 'bin-fixed-record-length':
+#            return dict(zip(self.parent.level.record_def['fields'],
+#                            struct.unpack(self.parent.level.record_def['dtype'], raw_data)))
+#        else:
+#            raise CassiniKronosError("Not yet implemented")
+#
+#    def __getitem__(self, item):
+#        if item in self.parent.level.record_def['fields']:
+#            return self.data[item]
+#        else:
+#            raise CassiniKronosError("Field {} doesn't exist in this record ({})".format(item, self.parent.level.name))
+#
+#    def merge(self, extra):
+#        if isinstance(extra, CassiniKronosRecord):
+#            for ext_k in extra.data.keys():
+#                if ext_k in self.data.keys():
+#                    if extra.data[ext_k] != self.data[ext_k]:
+#                        print("cur[{}] = {}".format(ext_k, self.data[ext_k]))
+#                        print("ext[{}] = {}".format(ext_k, extra.data[ext_k]))
+#                        raise CassiniKronosError("Inconsistent records while merging")
+#                else:
+#                    self.data[ext_k] = extra.data[ext_k]
 
 #class CassiniKronosSweep:
 #
