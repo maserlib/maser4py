@@ -40,17 +40,23 @@ all_periods['Venus1'] = {'start_time': datetime.datetime.strptime("1998116.13", 
 all_periods['Venus2'] = {'start_time': datetime.datetime.strptime("1999175.19", '%Y%j.%H'),
                          'end_time': datetime.datetime.strptime("1999175.21", '%Y%j.%H') + datetime.timedelta(
                              hours=1)}
+
 dd_list = [1, 91, 181, 271, 367]
 for yy in range(18):
     for dd in range(4):
         if not (yy == 17 and dd == 3):
-            all_periods['{:04d}_{:03d}_{:03d}'.format(yy + 2000, dd_list[dd], dd_list[dd + 1] - 1)] \
-                = {'start_time': datetime.datetime.strptime("{:04d}{:03d}.00".
-                                                            format(yy + 2000, dd_list[dd], dd_list[dd + 1] - 1),
-                                                            '%Y%j.%H'),
-                   'end_time': datetime.datetime.strptime("{:04d}{:03d}.23".
-                                                          format(yy + 2000, dd_list[dd], dd_list[dd + 1] - 1),
-                                                          '%Y%j.%H') + datetime.timedelta(hours=1)}
+            cur_period = '{:04d}_{:03d}_{:03d}'.format(yy + 2000, dd_list[dd], dd_list[dd + 1] - 1)
+            all_periods[cur_period] = {'start_time': datetime.datetime.strptime("{:04d}{:03d}.00".
+                                                                                format(yy + 2000, dd_list[dd]),
+                                                                                '%Y%j.%H')}
+            if dd == 3:
+                all_periods[cur_period]['end_time'] = datetime.datetime.strptime("{:04d}001.00".format(yy + 2000 + 1),
+                                                                                 '%Y%j.%H')
+            else:
+                all_periods[cur_period]['end_time'] = datetime.datetime.strptime("{:04d}{:03d}.23".
+                                                                                format(yy + 2000, dd_list[dd+1]-1),
+                                                                                '%Y%j.%H') \
+                                                      + datetime.timedelta(hours=1)
 
 all_levels = dict()
 all_levels['k'] = {'name': 'Kronos Level 0', 'path': 'k'}
@@ -145,17 +151,17 @@ class CassiniKronosLevel:
 
 class CassiniKronosData(MaserDataFromInterval):
 
-    def __init__(self, start_time=None, end_time=None, input_level=CassiniKronosLevel(''), depend=None,
+    def __init__(self, start_time=None, end_time=None, input_level=CassiniKronosLevel(''),
                  verbose=False, debug=False):
         MaserDataFromInterval.__init__(self, start_time, end_time, input_level.description, verbose=verbose, debug=debug)
         self.level = input_level
-        self.external_depend = depend
         self.start_time = start_time
         self.end_time = end_time
         self.root_data_dir = os.environ['NAS_RPWS']
 
         if self.start_time is not None and self.end_time is not None:
             self.periods = self.period_dir_list()
+            self.periods.sort()
             self.files = self.make_file_list()
             file_start = [item.start_time for item in self.files]
             self.files = [x for y, x in sorted(zip(file_start, self.files))]
@@ -197,9 +203,9 @@ class CassiniKronosData(MaserDataFromInterval):
         return CassiniKronosData(start_time, end_time, level, verbose=verbose, debug=debug)
 
     @classmethod
-    def from_interval(cls, start_time, end_time, input_level, depend=None, verbose=False, debug=False):
+    def from_interval(cls, start_time, end_time, input_level, verbose=False, debug=False):
         level = CassiniKronosLevel(input_level)
-        return CassiniKronosData(start_time, end_time, level, depend=depend, verbose=verbose, debug=debug)
+        return CassiniKronosData(start_time, end_time, level, verbose=verbose, debug=debug)
 
     @classmethod
     def load_n2_data(cls, start_time, end_time, verbose=False, debug=False):
@@ -208,7 +214,7 @@ class CassiniKronosData(MaserDataFromInterval):
     @classmethod
     def load_n3b_data(cls, start_time, end_time, n2_data=None, verbose=False, debug=False):
         return CassiniKronosData.from_interval(start_time, end_time, 'n3b',
-                                               depend=n2_data, verbose=verbose, debug=debug)
+                                               verbose=verbose, debug=debug)
 
 #    def load_extra_level(self, input_level, input_sublevel=''):
 #        new_level = CassiniKronosLevel(input_level, input_sublevel)
@@ -223,7 +229,8 @@ class CassiniKronosData(MaserDataFromInterval):
         this_dir_list = list()
         dir_list = all_periods
         for key, val in dir_list.items():
-            if val['start_time'] <= self.end_time and val['end_time'] >= self.start_time:
+            if (val['start_time'] < self.end_time and val['end_time'] > self.start_time) \
+                    or val['start_time'] == self.start_time or val['end_time'] == self.end_time:
                 this_dir_list.append(key)
         return this_dir_list
 
@@ -232,13 +239,14 @@ class CassiniKronosData(MaserDataFromInterval):
 
     def make_file_list(self):
         file_list = list()
-        for dir_item in self.period_dir_list():
+        for dir_item in self.periods:
             dir_path = os.path.join(os.path.join(self.root_data_dir, dir_item), all_levels[self.level.name]['path'])
             if os.path.exists(dir_path):
                 for file_item in os.listdir(dir_path):
                     cur_file = CassiniKronosFile(os.path.join(dir_path, file_item),
                                                  verbose=self.verbose, debug=self.debug)
-                    if cur_file.start_time <= self.end_time and cur_file.end_time >= self.start_time:
+                    if (cur_file.start_time < self.end_time and cur_file.end_time > self.start_time) \
+                            or cur_file.start_time == self.start_time or cur_file.end_time == self.end_time:
                         file_list.append(cur_file)
 #            else:
 #                print("Warning directory doesn't exist: {}".format(dir_path))
