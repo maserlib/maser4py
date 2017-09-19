@@ -125,19 +125,17 @@ class CassiniKronosLevel:
             self.depends = ['n1']
         elif self.name == "n3b":
             self.file_format = 'bin-fixed-record-length'
-            self.record_def['fields'] = ["ydh", "num0", "num1", "s0", "s1", "q0", "q1", "u0", "u1", "v0", "v1",
-                                         "th", "ph", "zr", "snx0", "snz1", "snx0", "snz1"]
+            self.record_def['fields'] = ["ydh", "num", "s", "q", "u", "v", "th", "ph", "zr", "snx", "snz"]
             self.record_def['dtype'] = "<LLLfffffffffffffff"
             self.record_def['np_dtype'] = [('ydh', '<u4'), ('num', '<u4', 2), ('s', '<f4', 2), ('q', '<f4', 2),
                                            ('u', '<f4', 2), ('v', '<f4', 2), ('th', '<f4'), ('ph', '<f4'),
                                            ('zr', '<f4'), ('snx', '<f4', 2), ('snz', '<f4', 2)]
             self.record_def['length'] = struct.calcsize(self.record_def['dtype'])  # = 72
             self.description = "Cassini/RPWS/HFR Level 3b (Generic 3 antenna GP)"
-            self.depends = ['n2']
+            self.depends = ['n1', 'n2']
         elif self.name == "n3c":
             self.file_format = 'bin-fixed-record-length'
-            self.record_def['fields'] = ["ydh", "num0", "num1", "s", "q", "u", "v0", "v1",
-                                         "th0", "th1", "ph0", "ph1", "zr", "snx0", "snz1", "snx0", "snz1"]
+            self.record_def['fields'] = ["ydh", "num", "s", "q", "u", "v", "th", "ph", "zr", "snx", "snz"]
             self.record_def['dtype'] = "<LLLffffffffffffff"
             self.record_def['np_dtype'] = [('ydh', '<i4'), ('num', '<i4', 2), ('s', '<f4'), ('q', '<f4'),
                                            ('u', '<f4'), ('v', '<f4', 2), ('th', '<f4', 2), ('ph', '<f4', 2),
@@ -186,6 +184,9 @@ class CassiniKronosData(MaserDataFromInterval):
                         self.data[lev_item] = numpy.append(self.data[lev_item].copy(), dep_data[cur_data['num']].copy())
 
                 first_file = False
+
+            if self.level.name == 'n3b':
+                self.flatten_n3b()
 
     def __str__(self):
         return "<{} object> {} to {} with level {}".\
@@ -253,6 +254,30 @@ class CassiniKronosData(MaserDataFromInterval):
 
         # file_list.sort(key=dict(zip(file_list, [item.file_name for item in file_list])).get)
         return file_list
+
+    def flatten_n3b(self):
+
+        self.data['n1'] = self.data['n1'].flatten()
+        self.data['n2'] = self.data['n2'].flatten()
+
+        flatten_n3b = numpy.empty(len(self.data['n2']),
+                                  dtype=[('ydh', '<u4'), ('num', '<u4'),
+                                         ('s', '<f4'), ('q', '<f4'), ('u', '<f4'), ('v', '<f4'),
+                                         ('th', '<f4'), ('ph', '<f4'),
+                                         ('zr', '<f4'), ('snx', '<f4'), ('snz', '<f4')])
+        flatten_n3b['ydh'] = numpy.array([self.data['n3b']['ydh'], self.data['n3b']['ydh']]).T.flatten()
+        flatten_n3b['num'] = self.data['n3b']['num'].flatten()
+        flatten_n3b['s'] = self.data['n3b']['s'].flatten()
+        flatten_n3b['q'] = self.data['n3b']['q'].flatten()
+        flatten_n3b['u'] = self.data['n3b']['u'].flatten()
+        flatten_n3b['v'] = self.data['n3b']['v'].flatten()
+        flatten_n3b['th'] = numpy.array([self.data['n3b']['th'], self.data['n3b']['th']]).T.flatten()
+        flatten_n3b['ph'] = numpy.array([self.data['n3b']['ph'], self.data['n3b']['ph']]).T.flatten()
+        flatten_n3b['zr'] = numpy.array([self.data['n3b']['zr'], self.data['n3b']['zr']]).T.flatten()
+        flatten_n3b['snx'] = self.data['n3b']['snx'].flatten()
+        flatten_n3b['snz'] = self.data['n3b']['snz'].flatten()
+
+        self.data['n3b'] = flatten_n3b
 
     def __getitem__(self, item):
         if item in self.level.record_def['fields']:
