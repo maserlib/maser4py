@@ -141,8 +141,28 @@ class CassiniKronosLevel:
                                            ('u', '<f4'), ('v', '<f4', 2), ('th', '<f4', 2), ('ph', '<f4', 2),
                                            ('zr', '<f4'), ('snx', '<f4', 2), ('snz', '<f4', 2)]
             self.record_def['length'] = struct.calcsize(self.record_def['dtype'])  # = 68
-            self.description = "Cassini/RPWS/HFR Level 3b (Circular polarization 3 antenna GP)"
-            self.depends = ['n2']
+            self.description = "Cassini/RPWS/HFR Level 3c (Circular polarization 3 antenna GP)"
+            self.depends = ['n1','n2']
+        elif self.name == "n3d":
+            self.file_format = 'bin-fixed-record-length'
+            self.record_def['fields'] = ["ydh", "num", "s", "q", "u", "v", "th", "ph", "snx", "snz"]
+            self.record_def['dtype'] = "<LLffffffff"
+            self.record_def['np_dtype'] = [('ydh', '<i4'), ('num', '<i4'), ('s', '<f4'), ('q', '<f4'),
+                                           ('u', '<f4'), ('v', '<f4'), ('th', '<f4'), ('ph', '<f4'),
+                                           ('snx', '<f4'), ('snz', '<f4')]
+            self.record_def['length'] = struct.calcsize(self.record_def['dtype'])
+            self.description = "Cassini/RPWS/HFR Level 3d (Known source position 2 antenna GP)"
+            self.depends = ['n1', 'n2']
+        elif self.name == "n3e":
+            self.file_format = 'bin-fixed-record-length'
+            self.record_def['fields'] = ["ydh", "num", "s", "q", "u", "v", "th", "ph", "snx", "snz"]
+            self.record_def['dtype'] = "<LLffffffff"
+            self.record_def['np_dtype'] = [('ydh', '<i4'), ('num', '<i4'), ('s', '<f4'), ('q', '<f4'),
+                                           ('u', '<f4'), ('v', '<f4'), ('th', '<f4'), ('ph', '<f4'),
+                                           ('snx', '<f4'), ('snz', '<f4')]
+            self.record_def['length'] = struct.calcsize(self.record_def['dtype'])
+            self.description = "Cassini/RPWS/HFR Level 3e (Circular polarization 2 antenna GP)"
+            self.depends = ['n1', 'n2']
         else:
             raise CassiniKronosError("Not yet implemented error")
 
@@ -613,16 +633,7 @@ def load_data_from_file(file, verbose=False, debug=False):
 
 
 def load_data_from_interval(start_time, end_time, input_level, verbose=False, debug=False):
-
-    if isinstance(input_level, str):
-        return CassiniKronosData.from_interval(start_time, end_time, input_level, verbose=verbose, debug=debug)
-    elif isinstance(input_level, list):
-        result = []
-        for item in input_level:
-            result.append(CassiniKronosData.from_interval(start_time, end_time, item, verbose=verbose, debug=debug))
-        return result
-    else:
-        raise MaserError("Can't decode level input... Aborting.")
+    return CassiniKronosData.from_interval(start_time, end_time, input_level, verbose=verbose, debug=debug)
 
 
 def ydh_to_datetime(ydh_time):
