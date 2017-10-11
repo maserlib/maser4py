@@ -170,7 +170,7 @@ class NDANewRoutineECube(MaserDataSweep):
 
         f = self.parent.file_handle
 
-        corr_data_length = self.parent.header['nfreq'] * self.parent.header['nbchan']
+        corr_data_length = self.parent.header['nfreq'] * 4
 
         f.seek(self.parent.ecube_ptr_in_file[self.index], 0)
 
