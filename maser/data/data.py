@@ -146,6 +146,24 @@ class MaserDataFromFile(MaserData):
         s = round(size/p, 2)
         return '{} {}'.format(s, size_name[i])
 
+    def __lt__(self, other):
+        return self.get_file_name() < other.get_file_name()
+
+    def __gt__(self, other):
+        return self.get_file_name() > other.get_file_name()
+
+    def __eq__(self, other):
+        return self.get_file_name() == other.get_file_name()
+
+    def __le__(self, other):
+        return self.get_file_name() <= other.get_file_name()
+
+    def __ge__(self, other):
+        return self.get_file_name() >= other.get_file_name()
+
+    def __ne__(self, other):
+        return self.get_file_name() != other.get_file_name()
+
 
 class MaserDataFromFileCDF(MaserDataFromFile):
 
