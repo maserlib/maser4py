@@ -140,11 +140,11 @@ class NDANewRoutineData(NDADataFromFile):
 
         return header
 
-    def get_first_ecube(self):
-        return self.get_single_ecube(0)
+    def get_first_ecube(self, load_data=True):
+        return self.get_single_ecube(0, load_data)
 
-    def get_last_ecube(self):
-        return self.get_single_ecube(-1)
+    def get_last_ecube(self, load_data=True):
+        return self.get_single_ecube(len(self)-1, load_data)
 
     def get_single_ecube(self, index_input=0, load_data=True):
         return NDANewRoutineECube(self, index_input, load_data)
