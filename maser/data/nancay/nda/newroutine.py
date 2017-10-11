@@ -43,9 +43,9 @@ class NDANewRoutineData(NDADataFromFile):
         ifrq_min = 0
         ifrq_max = 0
         for i in range(2048):
-            if self.header['frq'][i] < 10:
+            if self.header['freq'][i] < 10:
                 ifrq_min = i + 1
-            if self.header['frq'][i] <= 40:
+            if self.header['freq'][i] <= 40:
                 ifrq_max = i
 
         self.header['ncube'] = (self.get_file_size() - self.header['size']) // self.header['cube_size']
@@ -62,8 +62,8 @@ class NDANewRoutineData(NDADataFromFile):
         meta['obsty_id'] = 'srn'
         meta['instr_id'] = 'nda'
         meta['recvr_id'] = 'newroutine'
-        meta['freq_min'] = float(self.header['frq'][ifrq_min])  # MHz
-        meta['freq_max'] = float(self.header['frq'][ifrq_max])  # MHz
+        meta['freq_min'] = float(self.header['freq'][ifrq_min])  # MHz
+        meta['freq_max'] = float(self.header['freq'][ifrq_max])  # MHz
         meta['freq_len'] = ifrq_max - ifrq_min + 1
         meta['freq_stp'] = 48.828125  # kHz
         meta['freq_res'] = 48.828125  # kHz
@@ -121,7 +121,7 @@ class NDANewRoutineData(NDADataFromFile):
         header['acc'] = hdr_val[3]  # accumulating factor
         header['subband'] = hdr_val[4:68]  # selected sub-bands
         header['nfreq'] = hdr_val[68]  # Number of FFT points
-        header['frq'] = hdr_val[69:2117]  # frequency values
+        header['freq'] = hdr_val[69:2117]  # frequency values
         header['ifrq'] = hdr_val[2117:4165]  # frequency indices
 
         sel_chan = [int(ii) for ii in
@@ -150,7 +150,7 @@ class NDANewRoutineData(NDADataFromFile):
         return NDANewRoutineECube(self, index_input, load_data)
 
     def get_freq_axis(self):
-        return self.header['frq']
+        return self.header['freq']
 
     def get_time_axis(self):
         return [self.get_single_ecube(item, load_data=False).get_datetime() for item in range(len(self))]
