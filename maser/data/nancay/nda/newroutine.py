@@ -16,7 +16,7 @@ __author__ = "Baptiste Cecconi"
 __date__ = "03-OCT-2017"
 __version__ = "0.10"
 
-__all__ = ["NDANewRoutineData", "NDANewRoutineError"] #, "read_srn_nda_new_routine"]
+__all__ = ["NDANewRoutineData", "NDANewRoutineError", "NDANewRoutineECube", "read_srn_nda_new_routine"]
 
 
 class NDANewRoutineError(NDAError):
@@ -156,71 +156,15 @@ class NDANewRoutineData(NDADataFromFile):
         return [self.get_single_ecube(item, load_data=False).get_datetime() for item in range(len(self))]
 
 
-class NDANewRoutineECube(MaserDataSweep):
+class NDANewRoutineECube(NDADataECube):
+    pass
 
-    def __init__(self, newroutine_data, index_input, load_data=True):
-        MaserDataSweep.__init__(self, newroutine_data, index_input)
-        self.debug = self.parent.debug
-        self.data = dict()
 
-        ecube_hdr_read_param = {'fields': ['magic', 'id', 'date_jd', 'date_sec', 'date_nsub', 'date_dsub'],
-                                'dtype': '<LLLLLL', 'length': 24, 'skip': 8}
+def read_srn_nda_new_routine(file_path):
+    """
 
-        corr_hdr_read_param = {'fields': ['magic', 'no'], 'dtype': '<LL', 'length': 8}
+    :param file_path:
+    :return:
+    """
 
-        f = self.parent.file_handle
-
-        corr_data_length = self.parent.header['nfreq'] * 4
-
-        f.seek(self.parent.ecube_ptr_in_file[self.index], 0)
-
-        block = f.read(ecube_hdr_read_param['length'])
-        self.data.update(dict(zip(ecube_hdr_read_param['fields'],
-                                  struct.unpack(ecube_hdr_read_param['dtype'], block))))
-        f.read(ecube_hdr_read_param['skip'])
-        self.data['corr'] = list()
-
-        for i in range(self.parent.header['nbchan']):
-            block = f.read(corr_hdr_read_param['length'])
-
-            corr_tmp = dict(zip(corr_hdr_read_param['fields'],
-                                struct.unpack(corr_hdr_read_param['dtype'], block)))
-            corr_tmp['data_pos_in_file'] = f.tell()
-
-            self.data['corr'].append(corr_tmp)
-
-            if load_data:
-                self.load_data(i)
-            else:
-                self.data['corr'][i]['data'] = list()
-                f.seek(corr_data_length, 1)
-
-        self.check_magic()
-
-    def get_datetime(self):
-        dt_epoch = datetime.datetime(1970, 1, 1)
-        return dt_epoch + datetime.timedelta(days=self.data['date_jd'] + self.data['date_sec'] / 86400 +
-                                                  self.data['date_nsub'] / (self.data['date_dsub'] * 86400) - 2440587.5)
-
-    def load_data(self, index):
-
-        corr_data_length = self.parent.header['nfreq'] * 4
-
-        f = self.parent.file_handle
-
-        f.seek(self.data['corr'][index]['data_pos_in_file'], 0)
-        block = f.read(corr_data_length)
-        corr_tmp_data = struct.unpack('<{}f'.format(self.parent.header['nfreq']), block)
-        self.data['corr'][index]['data'] = corr_tmp_data
-
-    def check_magic(self):
-
-        if self.data['magic'] != 0x7F800000:
-            raise NDANewRoutineError('[{}:{}] Wrong eCube Magic Word (Header) [0x{:08X}]'
-                                .format(self.parent.get_file_name(), self.index, self.data['magic']))
-
-        for i in range(self.parent.header['nbchan']):
-            if self.data['corr'][i]['magic'] != 0xFF800001:
-                raise NDANewRoutineError('[{}:{}] Wrong eCube Magic Word (Corr[{}]) [0x{:08X}]'
-                                    .format(self.parent.get_file_name(), self.index,
-                                            i, self.data['corr'][i]['magic']))
+    return NDANewRoutineData(file_path)
