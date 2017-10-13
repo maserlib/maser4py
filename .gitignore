@@ -9,3 +9,4 @@ __pycache__
 doc/build
 !doc/build/latex/maser4py.pdf
 maser4py_docpack.zip
+*.ipynb*
