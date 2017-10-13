@@ -8,5 +8,4 @@ __pycache__
 *.egg*
 doc/build
 !doc/build/latex/maser4py.pdf
-tests
 maser4py_docpack.zip
