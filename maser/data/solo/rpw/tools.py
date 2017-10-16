@@ -51,7 +51,7 @@ def file2cdf(cdf):
     elif os.path.isfile(str(cdf)):
         return CDF.CDF(cdf)
     else:
-        msg = "Unknonw input cdf!"
+        msg = "Unknown input cdf!"
         logger.error(msg)
         raise RpwException(msg)
 
