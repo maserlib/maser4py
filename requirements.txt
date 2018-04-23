@@ -1,8 +1,9 @@
 numpy>=1.11.0
-openpyxl>=2.3.5
+openpyxl
 Sphinx>=1.4.1
 matplotlib
 sphinx_rtd_theme
 pytz
 astropy
 python-dateutil
+spacepy

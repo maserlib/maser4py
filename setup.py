@@ -46,7 +46,7 @@ setup(
     cmdclass=cmdclass,
     entry_points={
         "console_scripts": [
-            "maser4py=maser.maser:main",
+            "maser=maser.script:main",
             "xlsx2skt=maser.utils.cdf.converter:xlsxskt",
             "skt2cdf=maser.utils.cdf.converter:sktcdf",
             "cdfvalid=maser.utils.cdf.validator:main",

@@ -13,7 +13,7 @@ import logging
 from shutil import move
 from tempfile import TemporaryDirectory
 
-from ..cdf import CDF, CDFError
+from spacepy.pycdf import CDF, CDFError
 
 from ...toolbox import setup_logging, run_command, quote, move_safe
 from ..tools import get_cdftype, get_vattrs, get_cdftypename

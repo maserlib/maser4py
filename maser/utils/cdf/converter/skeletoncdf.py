@@ -1,27 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""xlsx2skt module.
+""" skeletoncdf module.
 
-Module to convert an Excel (.xlsx) file
-into a CDF skeleton table (.skt).
+Program to convert a CDF skeleton table into
+a binary CDF ("master").
+
+Skeleton/binary CDF can also be generated from
+a formatted Excel xlsx file.
 """
 
 # ________________ HEADER _________________________
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
-import sys
 import os
+import os.path as osp
 from datetime import datetime
 import logging
-import argparse
 
 from openpyxl import load_workbook
 from collections import OrderedDict
 
-from ...toolbox import setup_logging, uniq, quote, truncate_str, insert_char
+from ...toolbox import uniq, quote, truncate_str, insert_char
 from ...._version import __version__
+
+from ...toolbox import which, run_command
 
 # ________________ HEADER _________________________
 
@@ -107,6 +111,11 @@ VATTRS_BOARD += "  ! --------     ----   -----"
 
 # ________________ Class Definition __________
 # (If required, define here classes)
+class SkeletonCDFException(Exception):
+    """CDFConvException exception class."""
+    pass
+
+
 class Xlsx2skt:
     """Class to convert a formatted Excel file into a CDF skeleton table."""
 
@@ -115,10 +124,7 @@ class Xlsx2skt:
                  output_dir=None,
                  overwrite=False,
                  ignore_none=False,
-                 auto_pad=False,
-                 verbose=True,
-                 debug=False,
-                 quiet=False):
+                 auto_pad=False):
         """__init__ method."""
         self.xlsx_file = xlsx_file
         self.overwrite = overwrite
@@ -137,61 +143,55 @@ class Xlsx2skt:
 
         self.skt_file = skt_file
 
-    # Setup the logging
-        setup_logging(
-            filename=None, quiet=quiet,
-            verbose=verbose,
-            debug=debug)
-
     def _parse_xlsx(self):
         """Parse the Excel 2007 format file."""
         xlsx = self.xlsx_file
 
         if not os.path.isfile(xlsx):
             logger.error("Cannot find Excel file called %s!", xlsx)
-            sys.exit(-1)
+            raise SkeletonCDFException
 
         if os.path.splitext(xlsx)[1] != ".xlsx":
             logger.error("Invalid input Excel format!")
-            sys.exit(-1)
+            raise SkeletonCDFException
 
         logger.info("Parsing %s file...", xlsx)
         wkbk = load_workbook(xlsx, read_only=True)
-        sheet_names = wkbk.get_sheet_names()
+        sheet_names = wkbk.sheetnames
 
         if ("rVariables" in sheet_names) or ("variables" in sheet_names):
             logger.warning("rVariable type is not supported!")
 
         sheets = dict()
         for shtn in SHEET_NAMES:
-            logger.info("Loading %s sheet...", shtn)
+            logger.debug("Loading %s sheet...", shtn)
             if shtn not in sheet_names:
                 logger.error("Missing %s sheet in the input Excel file!", shtn)
-                sys.exit(-1)
+                raise SkeletonCDFException
             else:
                 wksht = wkbk[shtn]
 
-                ncol = wksht.max_column
-                nrow = wksht.max_row
-                if ncol is None or nrow is None:
-                    wksht.calculate_dimension(force=True)
-                    ncol = wksht.max_column
-                    nrow = wksht.max_row
-
-                ncol += 1
-                nrow += 1
-
                 sheet_data = OrderedDict()
                 for i, row in enumerate(wksht.rows):
-                    cells_i = []
-                    for cell in row:
-                        if i == 0:
+                    # Get sheet columns names on the first row
+                    # And initialize columns lists
+                    if i == 0:
+                        header = []
+                        for cell in row:
+                            if cell.value is None:
+                                continue
                             sheet_data[cell.value] = []
-                        else:
-                            cells_i.append(cell.value)
-                    if i != 0:
-                        for k, key in enumerate(sheet_data):
-                            sheet_data[key].append(cells_i[k])
+                            header.append(cell.value)
+                    # Then, get cell values for each column
+
+                    else:
+                        ncell = len(row)
+                        for j, key in enumerate(header):
+                            if ncell > j:
+                                sheet_data[key].append(row[j].value)
+                            else:
+                                logger.debug("Warning -- empty cell!")
+                                sheet_data[key].append(None)
 
                 sheets[shtn] = sheet_data
 
@@ -204,18 +204,18 @@ class Xlsx2skt:
         self.cdf_items["zVariables"] = \
             uniq(sheets["zVariables"]["Variable Name"],
                  not_none=True)
-        logger.info("%i GLOBAL attributes returned",
+        logger.debug("%i GLOBAL attributes returned",
                   len(self.cdf_items["GLOBALattributes"]))
-        logger.info("%i Variable attributes returned",
+        logger.debug("%i Variable attributes returned",
                   len(self.cdf_items["VARIABLEattributes"]))
-        logger.info("%i zVariables returned",
+        logger.debug("%i zVariables returned",
                   len(self.cdf_items["zVariables"]))
 
         return sheets
 
     def _build_skt(self, xlsx_sheets):
         """Build the CDF skeleton table content using the Excel data."""
-        logger.info("Building CDF skeleton table body... ")
+        logger.debug("Building CDF skeleton table body... ")
 
         skt_name = os.path.splitext(os.path.basename(self.skt_file))[0]
         xlsx_name = os.path.basename(self.xlsx_file)
@@ -223,7 +223,7 @@ class Xlsx2skt:
         file_header = "!Skeleton table for the \"" + skt_name + "\" CDF.\n"
         file_header += "!Generated: " + \
             CURRENT_DATETIME.strftime("%Y-%m-%d %H:%M:%S") + "\n"
-        file_header += "!Skeleton table created by xlsx2skt.py V" + \
+        file_header += "!Skeleton table created by skeletoncdf.py V" + \
             __version__ + "\n"
         file_header += "!Skeleton table created from " + xlsx_name + "\n"
 
@@ -268,7 +268,7 @@ class Xlsx2skt:
             return skt
         else:
             logger.error(skt + " has not been saved correctly!")
-            return None
+            raise (SkeletonCDFException)
 
     @classmethod
     def convert(cls, *args, **kwargs):
@@ -279,10 +279,7 @@ class Xlsx2skt:
         skt_body = xlsx2skt._build_skt(xlsx_sheets)
         skt_path = xlsx2skt._write_skt(skt_body)
 
-        if skt_path:
-            return True
-        else:
-            return False
+        return skt_path
 
     def _build_header(self, header_sheet, options_sheet):
         """Build the CDF skeleton table header part."""
@@ -297,7 +294,7 @@ class Xlsx2skt:
             else:
                 logger.error(col +
                              " column is missing in the \"header\" sheet!")
-                sys.exit(-1)
+                raise (SkeletonCDFException)
 
         header_body.append("")
         header_body.append(HEADER_BOARD)
@@ -334,7 +331,7 @@ class Xlsx2skt:
 
         if global_sheet["Attribute Name"][0] is None:
             logger.error("First Global attribute name must not be null!")
-            sys.exit(-1)
+            raise (SkeletonCDFException)
         else:
             last_valid_attr = global_sheet["Attribute Name"][0]
 
@@ -353,14 +350,14 @@ class Xlsx2skt:
             enum_i = global_sheet["Entry Number"][i]
             if enum_i is None:
                 logger.error("Attribute \"%s\" Entry Number is empty!", attr)
-                sys.exit(-1)
+                raise (SkeletonCDFException)
             else:
                 enum_i = str(enum_i)
 
             dtype_i = global_sheet["Data Type"][i]
             if dtype_i is None:
                 logger.error("Attribute \"%s\" Data Type is empty!", attr)
-                sys.exit(-1)
+                raise (SkeletonCDFException)
             else:
                 dtype_i = str(dtype_i)
 
@@ -435,7 +432,7 @@ class Xlsx2skt:
 
     def _build_zvariables(self, zvars_sheet, vattrs_sheet,
                          options_sheet, nrv_sheet,
-                         ignore_none=False,
+                         ignore_none=True,
                          auto_pad=True):
         """Build the CDF skeleton table.
 
@@ -475,13 +472,13 @@ class Xlsx2skt:
 
             if dtype_i == "None":
                 logger.error("Wrong Data Type for %s!", zvar)
-                sys.exit(-1)
+                raise (SkeletonCDFException)
             if nelem_i == "None":
                 logger.error("Wrong Number Elements for %s!", zvar)
-                sys.exit(-1)
+                raise (SkeletonCDFException)
             if dims_i == "None":
                 logger.error("Wrong Dims for %s!", zvar)
-                sys.exit(-1)
+                raise (SkeletonCDFException)
 
             if sizes_i == "None":
                 sizes_i = ""
@@ -596,45 +593,84 @@ def assign_pad(data_type):
         return "None"
 
 
-def main():
-    """xlsx2skt main program."""
-    parser = argparse.ArgumentParser(
-        description='CDF converter main modulea Excel 2007 ' +
-        'format file into a CDF skeleton table',
-        add_help=True)
-    parser.add_argument('excel', nargs=1,
-                        help='Excel 2007 format file (.xlsx)')
-    parser.add_argument('-s', '--skeleton', nargs='?',
-                        default=None,
-                        help='Output CDF skeleton table (.skt)')
-    parser.add_argument('-o', '--output_dir', nargs='?',
-                        default=None,
-                        help='Path of the output directory')
-    parser.add_argument('-O', '--Overwrite', action='store_true',
-                        help='Overwrite existing output files')
-    parser.add_argument('-V', '--Verbose', action='store_true',
-                        help='Verbose mode')
-    parser.add_argument('-D', '--Debug', action='store_true',
-                        help='Debug mode')
-    parser.add_argument('-Q', '--Quiet', action='store_true',
-                        help='Quiet mode')
-    parser.add_argument('-I', '--Ignore_none', action='store_true',
-                        help='Ignore NoneType zVariables')
-    parser.add_argument('-A', '--Auto_pad', action='store_true',
-                        help='Value of !VAR_PADVALUE ' +
-                        'is automatically assigned')
-    args = parser.parse_args()
+def skeletoncdf(input_skt,
+             output_cdf=None,
+             output_dir=None,
+             overwrite=False,
+             from_xlsx=None,
+             ignore_none=True,
+             auto_pad=True,
+             exe=None):
+    """make_cdf.
+    Make a CDF Master binary file from a ASCII
+    skeleton table using the skeletoncdf program.
 
-    Xlsx2skt.convert(args.excel[0],
-                  skt_file=args.skeleton,
-                  output_dir=args.output_dir,
-                  overwrite=args.Overwrite,
-                  ignore_none=args.Ignore_none,
-                  auto_pad=args.Auto_pad,
-                  verbose=args.Verbose,
-                  debug=args.Debug,
-                  quiet=args.Quiet)
+    If the "fom_xlsx" keyword is True, then
+    convert first the input Excel skeleton file into a valid CDF skeleton
+    table.
+    """
+    if from_xlsx:
+        input_xlsx = input_skt
+        logger.info("Converting {0} into skeleton table...".format(input_xlsx))
+        input_skt = Xlsx2skt.convert(input_xlsx,
+                                   output_dir=output_dir,
+                                   overwrite=overwrite,
+                                   ignore_none=ignore_none,
+                                   auto_pad=auto_pad)
+        if input_skt is None:
+            input_skt = os.path.splitext(input_xlsx)[0] + ".skt"
+            logger.error("OUTPUT \"{0}\" HAS NOT BEEN SAVED!".format(input_skt))
+            return None
+
+    # Set output_cdf file path
+    if output_cdf is None:
+        output_cdf = osp.splitext(input_skt)[0] + ".cdf"
+    if output_dir is None:
+        output_dir = os.getcwd()
+    else:
+        output_cdf = osp.join(output_dir, os.path.basename(output_cdf))
+
+    # Initialize command line
+    cmd = []
+
+    # If skeletoncdf program path is not provided
+    # then search it on the $PATH
+    if exe is None:
+        if "CDF_BIN" in os.environ:
+            exe = osp.join(os.environ["CDF_BIN"], "skeletoncdf")
+        else:
+            exe = which('skeletoncdf')
+    if exe is None:
+        logger.error("skeletoncdf program is not callable!")
+        return None
+    cmd.append(exe)
+    if os.path.isfile(output_cdf) and overwrite:
+        logger.warning("%s existing file will be overwritten!",
+                       output_cdf)
+        cmd.append("-delete")
+    cmd.append(input_skt)
+    cmd.extend(["-cdf", output_cdf])
+    myenv = os.environ.copy()
+    logger.info("Executing {0}...".format(" ".join(cmd)))
+    res = run_command(cmd, env=myenv)
+    output, errors = res.communicate()
+    if res.wait() == 0:
+        logger.debug(output)
+        if os.path.isfile(output_cdf):
+            logger.info(output_cdf + " has been saved correctly!")
+            return output_cdf
+        else:
+            logger.error(output_cdf + " has not been saved correctly!")
+    else:
+        logger.error("ERROR RUNNING COMMAND: ")
+        logger.error(" ".join(cmd))
+        logger.error("STDOUT - %s", str(output))
+        logger.error("STDERR - %s", str(errors))
+        logger.error("OUTPUT \"{0}\" HAS NOT BEEN SAVED!".format(output_cdf))
+
+    return None
+
 
 # _________________ Main ____________________________
 if __name__ == "__main__":
-    main()
+    print(__file__)
