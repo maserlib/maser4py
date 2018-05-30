@@ -86,14 +86,12 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     print()
     same_keys = set(d1) & set(d2)
     print("MATCHED KEYS : ", len(same_keys))
-    # print(same_keys)
     print("******************************")
 
 
     # ***** Alphabetical order *****
     order_same_keys = sorted(list(same_keys))
     n_same_keys = len(order_same_keys)
-    #print(n_same_keys)
 
     i = 1
     j = 1
@@ -120,20 +118,17 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                 print(str(j), "/", str(n_same_keys), ": OK")
                 print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
                 j += 1
-
         i += 1
 
     cdf1.close()
     cdf2.close()
-    return cdf1, cdf2
-
 
 
 # *°*°*°*°*°*°*°*°
 #  Main program
 # *°*°*°*°*°*°*°*°
 
-data = compare_cdf_files(cdf_file1, cdf_file2)
+compare_cdf_files(cdf_file1, cdf_file2)
 
 print()
 print("End !")
