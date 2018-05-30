@@ -126,7 +126,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     #print(n_same_keys)
 
     i = 1
-
+    j = 1
     while i < n_same_keys+1:
         find_str = order_same_keys[i-1]
         field1 = cdf1[find_str]
@@ -134,18 +134,17 @@ def compare_cdf_files(cdf_file1, cdf_file2):
 
         if len(field1) != len(field2):
             print()
-            print(str(i), ". WARNING : sizes different !!!")
-            print("  ", find_str)
-            print("     ", field1.shape, "     ", field2.shape)
+            print(str(j), "/", str(n_same_keys), ". WARNING : sizes different !!!")
+            print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
+            j = j + 1
 
         else:
             arraycheck = numpy.array_equal(field1, field2)
             if arraycheck == False:
                 print()
-                print(str(i), ". WARNING : same size but values different !!!")
-                print("  ", find_str)
-                print("     ", field1.shape, "     ", field2.shape)
-                print("     Array_Equal : ", numpy.array_equal(field1, field2))
+                print(str(j), "/", str(n_same_keys), ". WARNING : values different !!!")
+                print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
+                j = j + 1
         i = i + 1
 
     cdf1.close()
