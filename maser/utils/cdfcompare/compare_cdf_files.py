@@ -5,17 +5,12 @@
 
 import os
 import os.path
-import sys
-import logging
-import operator
 import numpy
 from spacepy import pycdf
 
 
-
 cdf_file1 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
 cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_81297ce_CNE_V02.cdf"
-#cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
 
 
 list_cdf = [cdf_file1,cdf_file2]
@@ -33,13 +28,8 @@ def checking_file_exist(cdf_file):
 # Listing the names of all variables
 def read_cdf_list_keys(cdf_file):
     cdf = pycdf.CDF(cdf_file)
-    n_keys = len(cdf)
-    #print(cdf)
     cdf_data = cdf.copy()
     listkeys = list(cdf_data.keys())
-    #print(listkeys)
-    #print(cdf)
-    #print(len(listkeys))
     cdf.close()
     return listkeys
 
@@ -61,20 +51,6 @@ def list_elements(liste):
 def compare_cdf_files(cdf_file1, cdf_file2):
     cdf1 = pycdf.CDF(cdf_file1)
     cdf2 = pycdf.CDF(cdf_file2)
-
-    #print()
-    #print(cdf1)
-    #print()
-    #print(cdf2)
-
-    list1 = list(cdf1.keys())
-    list2 = list(cdf2.keys())
-    # print()
-    # print(list1)
-    # print(len(list1))
-    # print()
-    # print(list2)
-    # print(len(list2))
 
     i = 0
     while i < 2:
@@ -157,12 +133,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
 #  Main program
 # *°*°*°*°*°*°*°*°
 
-
 data = compare_cdf_files(cdf_file1, cdf_file2)
-
-
-
-
 
 print()
 print("End !")
