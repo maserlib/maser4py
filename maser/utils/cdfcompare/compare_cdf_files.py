@@ -54,7 +54,7 @@ def list_elements(liste):
     i = 0
     while i < n:
         print("     ", liste[i])
-        i = i + 1
+        i += 1
 
 
 # Comparing 2 CDF files data
@@ -86,7 +86,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             d1 = list_keys
         if i == 1:
             d2 = list_keys
-        i = i + 1
+        i += 1
 
     print()
     if len(d1) != len(d2):
@@ -103,7 +103,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     while i < 2:
         print("   List", i + 1, ':', len(notmathkeys[i]))
         list_elements(notmathkeys[i])
-        i = i + 1
+        i += 1
     print("******************************")
 
     # ***** Matched keys *****
@@ -130,7 +130,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             print()
             print(str(j), "/", str(n_same_keys), ". WARNING : sizes different !!!")
             print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
-            j = j + 1
+            j += 1
 
         else:
             arraycheck = numpy.array_equal(field1, field2)
@@ -138,14 +138,14 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                 print()
                 print(str(j), "/", str(n_same_keys), ". WARNING : values different !!!")
                 print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
-                j = j + 1
+                j += 1
             else:
                 print()
                 print(str(j), "/", str(n_same_keys), ": OK")
                 print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
-                j = j + 1
+                j += 1
 
-        i = i + 1
+        i += 1
 
     cdf1.close()
     cdf2.close()
