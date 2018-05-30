@@ -7,16 +7,10 @@ import os
 import os.path
 import sys
 import logging
-
-
 import operator
 import numpy
-
-
-from deepdiff import DeepDiff  # For Deep Difference of 2 objects
-from deepdiff import DeepSearch  # For finding if item exists in an object
 from spacepy import pycdf
-from deepdiff import DeepDiff
+
 
 
 cdf_file1 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
@@ -145,6 +139,12 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                 print(str(j), "/", str(n_same_keys), ". WARNING : values different !!!")
                 print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
                 j = j + 1
+            else:
+                print()
+                print(str(j), "/", str(n_same_keys), ": OK")
+                print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
+                j = j + 1
+
         i = i + 1
 
     cdf1.close()
