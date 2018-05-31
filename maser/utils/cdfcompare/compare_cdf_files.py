@@ -64,8 +64,8 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             d2 = list_keys
         i += 1
 
-    print()
     if len(d1) != len(d2):
+        print()
         print("******************************")
         print("WARING : Files different !!!")
         print("******************************")
