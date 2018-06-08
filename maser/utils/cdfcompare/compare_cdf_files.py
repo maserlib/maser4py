@@ -6,11 +6,14 @@
 import os
 import os.path
 import numpy
+import numpy as np
 from spacepy import pycdf
 
 
 cdf_file1 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
 cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_81297ce_CNE_V02.cdf"
+#cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
+
 
 
 list_cdf = [cdf_file1,cdf_file2]
@@ -107,17 +110,20 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             j += 1
 
         else:
-            arraycheck = numpy.array_equal(field1, field2)
-            if arraycheck == False:
-                print()
-                print(str(j), "/", str(n_same_keys), ". WARNING : values different !!!")
-                print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
-                j += 1
-            else:
+            arraycheck2 = np.array(field1.shape) == np.array(field1.shape)
+            uniq_val = np.unique(np.array(arraycheck2))
+            if len(uniq_val) == 1 and (uniq_val[0]) == True:
                 print()
                 print(str(j), "/", str(n_same_keys), ": OK")
                 print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
                 j += 1
+            else:
+                print()
+                print(str(j), "/", str(n_same_keys), ". WARNING : values different !!!")
+                print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
+                print(np.array(field1[:, :]) == np.array(field1[:, :]))
+                j += 1
+
         i += 1
 
     cdf1.close()
