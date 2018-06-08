@@ -5,7 +5,6 @@
 
 import os
 import os.path
-import numpy
 import numpy as np
 from spacepy import pycdf
 
