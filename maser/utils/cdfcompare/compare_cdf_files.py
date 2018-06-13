@@ -95,10 +95,18 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     order_same_keys = sorted(list(same_keys))
     n_same_keys = len(order_same_keys)
 
-    i = 1
+    i = 0
     j = 1
-    while i < n_same_keys+1:
+    skip_list = []
+
+    for i in range(n_same_keys):
+        i += 1
         find_str = order_same_keys[i-1]
+        # Skip list
+        if ('_LABEL' in find_str) or ('_UNITS' in find_str) or ('_FREQ' in find_str):
+            skip_list.extend([find_str])
+            i = i - 1
+            continue
         field1 = cdf1[find_str]
         field2 = cdf2[find_str]
 
@@ -112,9 +120,9 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             arraycheck2 = np.array(field1.shape) == np.array(field1.shape)
             uniq_val = np.unique(np.array(arraycheck2))
             if len(uniq_val) == 1 and (uniq_val[0]) == True:
-                print()
-                print(str(j), "/", str(n_same_keys), ": OK")
-                print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
+                # print()
+                # print(str(j), "/", str(n_same_keys), ": OK")
+                # print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
                 j += 1
             else:
                 print()
@@ -123,7 +131,10 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                 print(np.array(field1[:, :]) == np.array(field1[:, :]))
                 j += 1
 
-        i += 1
+    print()
+    print('******************')
+    print('SKIP LIST :', len(skip_list))
+    print('     ', skip_list)
 
     cdf1.close()
     cdf2.close()
