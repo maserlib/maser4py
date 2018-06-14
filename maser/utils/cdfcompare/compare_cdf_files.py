@@ -17,30 +17,6 @@ cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_81297ce_CNE_
 list_cdf = [cdf_file1,cdf_file2]
 
 
-
-# TEST BLOC
-cdffile = cdflib.CDF(cdf_file1)
-info_cdf = cdffile.cdf_info()
-#print(info_cdf.get('zVariables'))  # Returns the dictionary for zVariable numbers and their corresponding names
-#print(info_cdf.get('rVariables'))  # Returns the dictionary for rVariable numbers and their corresponding names
-#print(info_cdf.get('Attributes'))   # Returns the dictionary for attribute numbers and their corresponding names and scopes
-
-
-# Variable's information dictionary
-#dict = cdffile.varinq('CROSS_I')
-#print(dict.get('Num_Dims'))
-#print(dict.get('Dim_Vary'))
-
-
-#global_attributes = cdffile.globalattsget(expand = False)
-#print(lobal_attributes)
-
-#data_var = cdffile.varget(VariableName)
-cdffile.close()
-
-# TEST BLOC : End
-
-
 # Checking file
 def checking_file_exist(cdf_file):
     result = False
@@ -118,6 +94,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     # *°*°*  COMPARE GLOBAL ATTRUBUTES  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
+
     list_global_att1 = sorted(list(global_att1.keys()))
     list_global_att2 = sorted(list(global_att2.keys()))
     notmathattribute = returnNotMatches(list_global_att1, list_global_att2)
@@ -126,15 +103,15 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     l2 = len(notmathattribute[1])
 
     if l1 != 0 or l2 != 0:
-        print
+        print()
         print("****************************************")
         print("WARING : GLOBAL ATTRIBUTES DIFFERENT !!!")
         print("****************************************")
-        print
+        print()
         print('File 1 : ', len(global_att1), ' global attributes')
         print('File 2 : ', len(global_att2), ' global attributes')
         print('   ', notmathattribute)
-        print
+        print()
 
         # Remove not atched keys from the 2 dictionaries
         notmatch1 = notmathattribute[0]
@@ -152,25 +129,26 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         nl2 = len(global_att2)
         if nl1 == nl2: # The 2 dictionaries have the same keys
             # Compare 2 dictionaries
-
-    common_att = sorted(list(set(list_global_att1).intersection(list_global_att1)))
-    #print(common_att)
-
-
-    #for k, v in global_att1.items():
-        #print(k, ':', v)
-
-
-
-        #print(global_att1.keys())
-        #print(global_att1.values())
-
+            checking = global_att1 == global_att2
+            if checking == False:
+                # Not equal !!
+                common_att = sorted(list(global_att1.keys()))
+                for ind in range(len(common_att)):
+                    com_att = common_att[ind]
+                    dd1 = global_att1.get(com_att)
+                    dd2 = global_att2.get(com_att)
+                    if dd1 != dd2:
+                        print()
+                        print('** ', com_att)
+                        print('     File1 :', dd1)
+                        print('     File2 :', dd2)
 
 
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*
     # *°*°*  COMPARE DATA  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*
     if len(d1) != len(d2):
+        print()
         print()
         print("******************************")
         print("WARING : DATA DIFFERENT !!!")
@@ -225,9 +203,6 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             arraycheck2 = np.array(field1.shape) == np.array(field1.shape)
             uniq_val = np.unique(np.array(arraycheck2))
             if len(uniq_val) == 1 and (uniq_val[0]) == True:
-                # print()
-                # print(str(j), "/", str(n_same_keys), ": OK")
-                # print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
                 j += 1
             else:
                 print()
