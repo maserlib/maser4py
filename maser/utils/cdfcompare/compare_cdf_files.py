@@ -12,7 +12,7 @@ import cdflib
 
 cdf_file1 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
 cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_81297ce_CNE_V02.cdf"
-##cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
+#cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
 
 list_cdf = [cdf_file1,cdf_file2]
 
@@ -143,6 +143,13 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                         print('     File1 :', dd1)
                         print('     File2 :', dd2)
 
+    else:
+        print()
+        print("****************************************")
+        print("    GLOBAL ATTRIBUTES : IDENTICAL !!!")
+        print("****************************************")
+        print()
+
 
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*
     # *°*°*  COMPARE DATA  *°*°*
@@ -157,67 +164,76 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     # ***** Not matched keys *****
     print()
     notmathkeys = returnNotMatches(d1, d2)
-    print("NOT MATCHED KEYS:")
 
-    i = 0
-    while i < 2:
-        print("   List", i + 1, ':', len(notmathkeys[i]))
-        list_elements(notmathkeys[i])
-        i += 1
-    print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
+    if d1 == d2:
+        print()
+        print("****************************************")
+        print("       DATA : IDENTICAL !!!")
+        print("****************************************")
+        print()
+    else:
 
-    # ***** Matched keys *****
-    print()
-    same_keys = set(d1) & set(d2)
-    print("MATCHED KEYS : ", len(same_keys))
-    print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
+        print("NOT MATCHED KEYS:")
+
+        i = 0
+        while i < 2:
+            print("   List", i + 1, ':', len(notmathkeys[i]))
+            list_elements(notmathkeys[i])
+            i += 1
+        print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
+
+        # ***** Matched keys *****
+        print()
+        same_keys = set(d1) & set(d2)
+        print("MATCHED KEYS : ", len(same_keys))
+        print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
 
 
-    # ***** Alphabetical order *****
-    order_same_keys = sorted(list(same_keys))
-    n_same_keys = len(order_same_keys)
+        # ***** Alphabetical order *****
+        order_same_keys = sorted(list(same_keys))
+        n_same_keys = len(order_same_keys)
 
 
-    i = 0
-    j = 1
-    skip_list = []
+        i = 0
+        j = 1
+        skip_list = []
 
-    for i in range(n_same_keys):
-        i += 1
-        find_str = order_same_keys[i-1]
-        # Skip list
-        if ('_LABEL' in find_str) or ('_UNITS' in find_str) or ('_FREQ' in find_str):
-            skip_list.extend([find_str])
-            i = i - 1
-            continue
-        field1 = cdf1[find_str]
-        field2 = cdf2[find_str]
+        for i in range(n_same_keys):
+            i += 1
+            find_str = order_same_keys[i-1]
+            # Skip list
+            if ('_LABEL' in find_str) or ('_UNITS' in find_str) or ('_FREQ' in find_str):
+                skip_list.extend([find_str])
+                i = i - 1
+                continue
+            field1 = cdf1[find_str]
+            field2 = cdf2[find_str]
 
-        if len(field1) != len(field2):
-            print()
-            print(str(j), "/", str(n_same_keys), ". WARNING : sizes different !!!")
-            print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
-            j += 1
-
-        else:
-            arraycheck2 = np.array(field1.shape) == np.array(field1.shape)
-            uniq_val = np.unique(np.array(arraycheck2))
-            if len(uniq_val) == 1 and (uniq_val[0]) == True:
-                j += 1
-            else:
+            if len(field1) != len(field2):
                 print()
-                print(str(j), "/", str(n_same_keys), ". WARNING : values different !!!")
+                print(str(j), "/", str(n_same_keys), ". WARNING : sizes different !!!")
                 print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
-                print(np.array(field1[:, :]) == np.array(field1[:, :]))
                 j += 1
 
-    print()
-    print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
-    print('SKIP LIST :', len(skip_list))
-    print('     ', skip_list)
+            else:
+                arraycheck2 = np.array(field1.shape) == np.array(field1.shape)
+                uniq_val = np.unique(np.array(arraycheck2))
+                if len(uniq_val) == 1 and (uniq_val[0]) == True:
+                    j += 1
+                else:
+                    print()
+                    print(str(j), "/", str(n_same_keys), ". WARNING : values different !!!")
+                    print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
+                    print(np.array(field1[:, :]) == np.array(field1[:, :]))
+                    j += 1
 
-    cdf1.close()
-    cdf2.close()
+        print()
+        print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
+        print('SKIP LIST :', len(skip_list))
+        print('     ', skip_list)
+
+        cdf1.close()
+        cdf2.close()
 
 
 # *°*°*°*°*°*°*°*°
