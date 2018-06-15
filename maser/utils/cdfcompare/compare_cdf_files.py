@@ -240,6 +240,11 @@ def compare_cdf_files(cdf_file1, cdf_file2):
 #  Main program
 # *°*°*°*°*°*°*°*°
 
+print()
+print('COMPARING :')
+print(' CDF file 1 : ', cdf_file1)
+print(' CDF file 2 : ', cdf_file2)
+
 compare_cdf_files(cdf_file1, cdf_file2)
 
 print()
