@@ -14,7 +14,7 @@ cdf_file1 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
 cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_81297ce_CNE_V02.cdf"
 #cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
 
-list_cdf = [cdf_file1,cdf_file2]
+list_cdf = [cdf_file1, cdf_file2]
 
 
 # Checking file
@@ -240,6 +240,10 @@ def compare_cdf_files(cdf_file1, cdf_file2):
 #  Main program
 # *°*°*°*°*°*°*°*°
 
+#def cdf_compare(cdf_file1, cdf_file2):
+
+    ##list_cdf = [cdf_file1, cdf_file2]
+
 print()
 print('COMPARING :')
 print(' CDF file 1 : ', cdf_file1)
@@ -249,3 +253,5 @@ compare_cdf_files(cdf_file1, cdf_file2)
 
 print()
 print("End !")
+
+
