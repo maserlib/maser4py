@@ -4,20 +4,14 @@
 """Maser4py - Compare 2 CDF files module"""
 
 import os
+import sys
 import os.path
 import numpy as np
 from spacepy import pycdf
 import cdflib
 
+#logger = logging.getLogger(__name__)
 
-
-logger = logging.getLogger(__name__)
-
-cdf_file1 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
-cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_81297ce_CNE_V02.cdf"
-#cdf_file2 = "/obs/qnnguyen/Data/data_input/ROC-SGSE_L1_RPW-TNR-SURV_V01.cdf"
-
-list_cdf = [cdf_file1, cdf_file2]
 
 
 # Checking file
@@ -76,6 +70,7 @@ def delete_key(dict, key_to_remove):
 def compare_cdf_files(cdf_file1, cdf_file2):
     cdf1 = pycdf.CDF(cdf_file1)
     cdf2 = pycdf.CDF(cdf_file2)
+    list_cdf = [cdf_file1, cdf_file2]
 
     i = 0
     while i < 2:
@@ -243,18 +238,31 @@ def compare_cdf_files(cdf_file1, cdf_file2):
 #  Main program
 # *°*°*°*°*°*°*°*°
 
-#def cdf_compare(cdf_file1, cdf_file2):
+def cdf_compare(cdf_file1, cdf_file2):
 
-    ##list_cdf = [cdf_file1, cdf_file2]
+    list_cdf = [cdf_file1, cdf_file2]
 
-print()
-print('COMPARING :')
-print(' CDF file 1 : ', cdf_file1)
-print(' CDF file 2 : ', cdf_file2)
+    print()
+    print('COMPARING :')
+    print(' CDF file 1 : ', cdf_file1)
+    print(' CDF file 2 : ', cdf_file2)
 
-compare_cdf_files(cdf_file1, cdf_file2)
+    compare_cdf_files(cdf_file1, cdf_file2)
 
-print()
-print("End !")
+    print()
+    print("End !")
+
+    val = 'OK'
+
+    return val
 
 
+# _________________ Main _________________
+
+if __name__ == '__main__':
+    if len(sys.argv)==3:
+        print(len(sys.argv))
+        print(sys.argv)
+        print('2 argrs')
+        result=cdf_compare(sys.argv[1], sys.argv[2])
+        print(result)
