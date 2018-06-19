@@ -13,13 +13,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-#fh = logging.FileHandler('outputlog.log')
-#fh.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-#ch = logging.StreamHandler()
-#ch.setLevel(logging.DEBUG)
-
 
 # Checking file
 def checking_file_exist(cdf_file):
