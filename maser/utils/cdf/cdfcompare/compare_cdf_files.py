@@ -9,9 +9,16 @@ import os.path
 import numpy as np
 from spacepy import pycdf
 import cdflib
+import logging
 
-#logger = logging.getLogger(__name__)
-
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+# create file handler which logs even debug messages
+#fh = logging.FileHandler('outputlog.log')
+#fh.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+#ch = logging.StreamHandler()
+#ch.setLevel(logging.DEBUG)
 
 
 # Checking file
@@ -41,7 +48,7 @@ def list_elements(liste):
     n = len(liste)
     i = 0
     while i < n:
-        print("     ", liste[i])
+        #logger.debug("     %s", liste[i])
         i += 1
 
 # Getting a variable's data
@@ -101,15 +108,12 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     l2 = len(notmathattribute[1])
 
     if l1 != 0 or l2 != 0:
-        print()
-        print("****************************************")
-        print("WARING : GLOBAL ATTRIBUTES DIFFERENT !!!")
-        print("****************************************")
-        print()
-        print('File 1 : ', len(global_att1), ' global attributes')
-        print('File 2 : ', len(global_att2), ' global attributes')
-        print('   ', notmathattribute)
-        print()
+        logger.warning("****************************************")
+        logger.warning("WARNING : GLOBAL ATTRIBUTES DIFFERENT !!!")
+        logger.warning("****************************************")
+        logger.warning('File 1 : %s%s', str(len(global_att1)), ' global attributes')
+        logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
+        logger.warning('   %s', notmathattribute)
 
         # Remove not atched keys from the 2 dictionaries
         notmatch1 = notmathattribute[0]
@@ -136,55 +140,44 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                     dd1 = global_att1.get(com_att)
                     dd2 = global_att2.get(com_att)
                     if dd1 != dd2:
-                        print()
-                        print('** ', com_att)
-                        print('     File1 :', dd1)
-                        print('     File2 :', dd2)
+                        logger.debug('** %s', com_att)
+                        logger.debug('     File1 : %s', dd1)
+                        logger.debug('     File2 : %s', dd2)
 
     else:
-        print()
-        print("****************************************")
-        print("    GLOBAL ATTRIBUTES : IDENTICAL !!!")
-        print("****************************************")
-        print()
+        logger.info("****************************************")
+        logger.info("    GLOBAL ATTRIBUTES : IDENTICAL !!!")
+        logger.info("****************************************")
 
 
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*
     # *°*°*  COMPARE DATA  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*
     if len(d1) != len(d2):
-        print()
-        print()
-        print("******************************")
-        print("WARING : DATA DIFFERENT !!!")
-        print("******************************")
+        logger.warning("******************************")
+        logger.warning("WARNING : DATA DIFFERENT !!!")
+        logger.warning("******************************")
 
     # ***** Not matched keys *****
-    print()
     notmathkeys = returnNotMatches(d1, d2)
 
     if d1 == d2:
-        print()
-        print("****************************************")
-        print("       DATA : IDENTICAL !!!")
-        print("****************************************")
-        print()
+        logger.info("****************************************")
+        logger.info("       DATA : IDENTICAL !!!")
+        logger.info("****************************************")
     else:
 
-        print("NOT MATCHED KEYS:")
+        logger.warning("NOT MATCHED KEYS:")
 
         i = 0
         while i < 2:
-            print("   List", i + 1, ':', len(notmathkeys[i]))
+            logger.warning("   File %d : %d - %s", i + 1, len(notmathkeys[i]), notmathkeys[i])
             list_elements(notmathkeys[i])
             i += 1
-        print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
 
         # ***** Matched keys *****
-        print()
         same_keys = set(d1) & set(d2)
-        print("MATCHED KEYS : ", len(same_keys))
-        print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
+        logger.info("MATCHED KEYS : %d", len(same_keys))
 
 
         # ***** Alphabetical order *****
@@ -208,9 +201,8 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             field2 = cdf2[find_str]
 
             if len(field1) != len(field2):
-                print()
-                print(str(j), "/", str(n_same_keys), ". WARNING : sizes different !!!")
-                print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
+                logger.warning("%d/%d. Sizes different !!!", j, n_same_keys)
+                logger.warning("   %s:     %s      %s", find_str, field1.shape, field2.shape)
                 j += 1
 
             else:
@@ -219,16 +211,13 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                 if len(uniq_val) == 1 and (uniq_val[0]) == True:
                     j += 1
                 else:
-                    print()
-                    print(str(j), "/", str(n_same_keys), ". WARNING : values different !!!")
-                    print("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
-                    print(np.array(field1[:, :]) == np.array(field1[:, :]))
+                    logger.warning("%d/%d. Values different !!!", j, n_same_keys)
+                    logger.warning("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
+                    logger.warning(np.array(field1[:, :]) == np.array(field1[:, :]))
                     j += 1
 
-        print()
-        print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
-        print('SKIP LIST :', len(skip_list))
-        print('     ', skip_list)
+        logger.info('SKIP LIST : %d', len(skip_list))
+        logger.info('     %s', skip_list)
 
         cdf1.close()
         cdf2.close()
@@ -242,15 +231,10 @@ def cdf_compare(cdf_file1, cdf_file2):
 
     list_cdf = [cdf_file1, cdf_file2]
 
-    print()
-    print('COMPARING :')
-    print(' CDF file 1 : ', cdf_file1)
-    print(' CDF file 2 : ', cdf_file2)
+    logger.info(' CDF file 1 : %s', cdf_file1)
+    logger.info(' CDF file 2 : %s', cdf_file2)
 
     compare_cdf_files(cdf_file1, cdf_file2)
-
-    print()
-    print("End !")
 
     val = 'OK'
 
@@ -261,8 +245,8 @@ def cdf_compare(cdf_file1, cdf_file2):
 
 if __name__ == '__main__':
     if len(sys.argv)==3:
-        print(len(sys.argv))
-        print(sys.argv)
-        print('2 argrs')
+        logging.basicConfig(level=logging.DEBUG, \
+            format='%(levelname)s : %(message)s')
+
         result=cdf_compare(sys.argv[1], sys.argv[2])
-        print(result)
+        logger.debug(result)
