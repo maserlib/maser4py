@@ -73,6 +73,8 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     cdf2 = pycdf.CDF(cdf_file2)
     list_cdf = [cdf_file1, cdf_file2]
 
+    dict_result = {}
+
     i = 0
     while i < 2:
         cdf_file = list_cdf[i]
@@ -107,6 +109,8 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         logger.warning('File 1 : %s%s', str(len(global_att1)), ' global attributes')
         logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
         logger.warning('   %s', notmathattribute)
+
+        dict_result = {'gvars':{}}
 
         # Remove not atched keys from the 2 dictionaries
         notmatch1 = notmathattribute[0]
@@ -150,6 +154,8 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         logger.warning("******************************")
         logger.warning("WARNING : DATA DIFFERENT !!!")
         logger.warning("******************************")
+
+        dict_result["data"] = {}
 
     # ***** Not matched keys *****
     notmathkeys = returnNotMatches(d1, d2)
@@ -215,6 +221,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         cdf1.close()
         cdf2.close()
 
+    return dict_result
 
 # *°*°*°*°*°*°*°*°
 #  Main program
@@ -225,11 +232,10 @@ def cdf_compare(cdf_file1, cdf_file2):
     logger.info(' CDF file 1 : %s', cdf_file1)
     logger.info(' CDF file 2 : %s', cdf_file2)
 
-    compare_cdf_files(cdf_file1, cdf_file2)
+    dict_result = compare_cdf_files(cdf_file1, cdf_file2)
 
-    val = 'OK'
 
-    return val
+    return dict_result
 
 
 # _________________ Main _________________
@@ -240,4 +246,4 @@ if __name__ == '__main__':
             format='%(levelname)s : %(message)s')
 
         result=cdf_compare(sys.argv[1], sys.argv[2])
-        logger.debug(result)
+        logger.debug("Result : %s", result)
