@@ -16,13 +16,9 @@ logger.setLevel(logging.DEBUG)
 
 # Checking file
 def checking_file_exist(cdf_file):
-    result = False
-    if os.path.isfile(cdf_file) and os.access(cdf_file, os.R_OK):
-       result = True
-    else:
-      print("WARING : ")
-      print ("   ", cdf_file, " : Either file is missing or is not readable")
-      result = False
+    if (os.path.isfile(cdf_file) == False) or (os.access(cdf_file, os.R_OK) == False):
+        logger.error("%s : missing or is not readable", cdf_file)
+        exit()
 
 # Listing the names of all variables
 def read_cdf_list_keys(cdf_file):
@@ -68,6 +64,8 @@ def delete_key(dict, key_to_remove):
 
 # Comparing 2 CDF files data
 def compare_cdf_files(cdf_file1, cdf_file2):
+    checking_file_exist(cdf_file1)
+    checking_file_exist(cdf_file2)
     cdf1 = pycdf.CDF(cdf_file1)
     cdf2 = pycdf.CDF(cdf_file2)
     list_cdf = [cdf_file1, cdf_file2]
@@ -75,7 +73,6 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     i = 0
     while i < 2:
         cdf_file = list_cdf[i]
-        checking_file_exist(cdf_file)
         list_keys = read_cdf_list_keys(cdf_file)
         global_att = get_global_attributes(cdf_file)
 
