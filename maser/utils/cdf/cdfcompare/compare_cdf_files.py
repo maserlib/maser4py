@@ -16,9 +16,12 @@ logger.setLevel(logging.DEBUG)
 
 # Checking file
 def checking_file_exist(cdf_file):
-    if (os.path.isfile(cdf_file) == False) or (os.access(cdf_file, os.R_OK) == False):
-        logger.error("%s : missing or is not readable", cdf_file)
+    if os.path.isfile(cdf_file) == False:
+        logger.error("%s : does not exist !", cdf_file)
         exit()
+    if os.access(cdf_file, os.R_OK) == False:
+        logger.error("%s : is not readable !", cdf_file)
+        exist()
 
 # Listing the names of all variables
 def read_cdf_list_keys(cdf_file):
