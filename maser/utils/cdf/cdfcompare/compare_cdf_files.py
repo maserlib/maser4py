@@ -42,7 +42,7 @@ def list_elements(liste):
         #logger.debug("     %s", liste[i])
         i += 1
 
-# Getting global attributes
+# Getting global attributes (gAttrs)
 def get_global_attributes(cdf_file):
     cdf = pycdf.CDF(cdf_file)
     cdf_data = cdf.copy()
@@ -103,7 +103,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
         logger.warning('   %s', notmathattribute)
 
-        dict_result = {'gvars':{}}
+        dict_result = {'gAttrs':{}}
 
         # Remove not atched keys from the 2 dictionaries
         notmatch1 = notmathattribute[0]
