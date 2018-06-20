@@ -156,12 +156,15 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*
     # *°*°*  COMPARE DATA  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*
+
+    dict_result['zVars'] = {}
+
     if len(d1) != len(d2):
         logger.warning("******************************")
         logger.warning("WARNING : DATA DIFFERENT !!!")
         logger.warning("******************************")
 
-        dict_result["zVars"] = {} # Data
+        zVars = {} # Data
 
     # ***** Not matched keys *****
     notmathkeys = returnNotMatches(d1, d2)
@@ -177,8 +180,11 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         i = 0
         while i < 2:
             logger.warning("   File %d : %d - %s", i + 1, len(notmathkeys[i]), notmathkeys[i])
-            list_elements(notmathkeys[i])
             i += 1
+
+        zVars['NotMatched'] = [notmathkeys[0], notmathkeys[1]]
+
+        dict_result['zVars'] = zVars
 
         # ***** Matched keys *****
         same_keys = set(d1) & set(d2)
