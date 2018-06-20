@@ -251,13 +251,9 @@ def compare_cdf_files(cdf_file1, cdf_file2):
 # *°*°*°*°*°*°*°*°
 
 def cdf_compare(cdf_file1, cdf_file2):
-
     logger.info(' CDF file 1 : %s', cdf_file1)
     logger.info(' CDF file 2 : %s', cdf_file2)
-
     dict_result = compare_cdf_files(cdf_file1, cdf_file2)
-
-
     return dict_result
 
 
