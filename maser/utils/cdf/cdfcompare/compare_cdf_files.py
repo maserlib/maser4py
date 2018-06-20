@@ -148,7 +148,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         logger.warning("WARNING : DATA DIFFERENT !!!")
         logger.warning("******************************")
 
-        dict_result["data"] = {}
+        dict_result["zVars"] = {} # Data
 
     # ***** Not matched keys *****
     notmathkeys = returnNotMatches(d1, d2)
