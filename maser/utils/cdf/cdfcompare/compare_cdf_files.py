@@ -58,6 +58,19 @@ def delete_key(dict, key_to_remove):
     return dict
 
 
+# Getting a given vAttr's not matched keys
+def get_not_mathed_vAttrKey(field1, field2):
+    vAttrsList1 = field1.attrs  # class 'spacepy.pycdf.zAttrList'
+    listA1 = sorted([attr_key for attr_key in vAttrsList1])
+    vAttrsList2 = field2.attrs
+    listA2 = sorted([attr_key for attr_key in vAttrsList2])
+    if listA1 != listA2:
+        result = returnNotMatches(listA1, listA2)
+    else:
+        result = []
+
+    return result
+
 # Comparing 2 CDF files data
 def compare_cdf_files(cdf_file1, cdf_file2):
     checking_file_exist(cdf_file1)
@@ -200,6 +213,11 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         diff_array = {}  # For different dimensions
         diff_data = [] # For different data
 
+        NotMatch_vAttr = {}
+
+        vAttrs = {}
+
+
         for i in range(n_same_keys):
             i += 1
             find_str = order_same_keys[i-1]
@@ -211,6 +229,11 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             field1 = cdf1[find_str]
             field2 = cdf2[find_str]
 
+
+            # *°*°*°*°*°*°*°*°*°*°*°*°*
+            # *°* Compare zVariables *°*
+            # *°*°*°*°*°*°*°*°*°*°*°*°*
+
             if len(field1) != len(field2):
                 logger.warning("%d/%d. Sizes different !!!", j, n_same_keys)
                 logger.warning("   %s:     %s      %s", find_str, field1.shape, field2.shape)
@@ -220,16 +243,22 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             else:
                 arraycheck2 = np.array(field1.shape) == np.array(field1.shape)
                 uniq_val = np.unique(np.array(arraycheck2))
-                if len(uniq_val) == 1 and (uniq_val[0]) == True:
-                    j += 1
-                else:
+
+                if len(uniq_val) == 1 and (uniq_val[0]) == False:
                     logger.warning("%d/%d. Values different !!!", j, n_same_keys)
                     logger.warning("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
                     logger.warning(np.array(field1[:, :]) == np.array(field1[:, :]))
                     diff_data = [diff_data, find_str]
-                    j += 1
                 if len(diff_data) != 0:
                     diff_data = diff_data[1:]
+
+            # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
+            # *°* Compare Variable Attributes *°*
+            # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
+
+            tab_diff = get_not_mathed_vAttrKey(field1, field2)
+            NotMatch_vAttr[find_str] = tab_diff
+
 
         if len(diff_array) != 0:
             zVars['Size'] = diff_array
@@ -237,6 +266,10 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             zVars['Value'] = diff_array
 
         dict_result = {'gAttrs' : gAttrs, 'zVars' : zVars}
+
+        if len(NotMatch_vAttr) != 0:
+            vAttrs['NotMatched'] = NotMatch_vAttr
+            dict_result['vAttrs'] = vAttrs
 
         logger.info('SKIP LIST : %d', len(skip_list))
         logger.info('     %s', skip_list)
