@@ -43,15 +43,6 @@ def list_elements(liste):
         #logger.debug("     %s", liste[i])
         i += 1
 
-# Getting a variable's data
-def get_variable(cdf_file, VariableName):     # IS NOT USED !!!
-    cdffile = cdflib.CDF(cdf_file)
-    cdffile.cdf_info()
-    data_var = cdffile.varget(VariableName)
-    cdffile.close()
-    return data_var
-
-
 # Getting global attributes
 def get_global_attributes(cdf_file):
     cdf = pycdf.CDF(cdf_file)
