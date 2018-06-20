@@ -141,7 +141,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                         logger.debug('     File1 : %s', val1)
                         logger.debug('     File2 : %s', val2)
 
-                        DiffValueAttr[com_att] = {val1, val2}
+                        DiffValueAttr[com_att] = [val1, val2]
 
                 gAttrs['Value'] = DiffValueAttr
 
@@ -200,6 +200,9 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         j = 1
         skip_list = []
 
+        diff_array = {}  # For different dimensions
+        diff_data = [] # For different data
+
         for i in range(n_same_keys):
             i += 1
             find_str = order_same_keys[i-1]
@@ -214,6 +217,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             if len(field1) != len(field2):
                 logger.warning("%d/%d. Sizes different !!!", j, n_same_keys)
                 logger.warning("   %s:     %s      %s", find_str, field1.shape, field2.shape)
+                diff_array[find_str] = [field1.shape,field2.shape]
                 j += 1
 
             else:
@@ -225,7 +229,17 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                     logger.warning("%d/%d. Values different !!!", j, n_same_keys)
                     logger.warning("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
                     logger.warning(np.array(field1[:, :]) == np.array(field1[:, :]))
+                    diff_data = [diff_data, find_str]
                     j += 1
+                if len(diff_data) != 0:
+                    diff_data = diff_data[1:]
+
+        if len(diff_array) != 0:
+            zVars['Size'] = diff_array
+        if len(diff_data) != 0:
+            zVars['Value'] = diff_array
+
+        dict_result = {'gAttrs' : gAttrs, 'zVars' : zVars}
 
         logger.info('SKIP LIST : %d', len(skip_list))
         logger.info('     %s', skip_list)
@@ -258,4 +272,5 @@ if __name__ == '__main__':
             format='%(levelname)s : %(message)s')
 
         result=cdf_compare(sys.argv[1], sys.argv[2])
+        logger.debug("")
         logger.debug("Result : %s", result)
