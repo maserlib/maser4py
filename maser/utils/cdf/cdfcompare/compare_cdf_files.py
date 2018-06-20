@@ -8,7 +8,6 @@ import sys
 import os.path
 import numpy as np
 from spacepy import pycdf
-import cdflib
 import logging
 
 logger = logging.getLogger(__name__)
@@ -49,7 +48,6 @@ def get_global_attributes(cdf_file):
     cdf_data = cdf.copy()
     global_attributes = cdf_data.attrs
     cdf.close()
-    print(global_attributes)
     return global_attributes
 
 
