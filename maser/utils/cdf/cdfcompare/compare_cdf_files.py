@@ -144,7 +144,6 @@ def compare_cdf_files(cdf_file1, cdf_file2):
                         DiffValueAttr[com_att] = [val1, val2]
 
                 gAttrs['Value'] = DiffValueAttr
-
         dict_result = {'gAttrs': gAttrs}
 
     else:
@@ -156,8 +155,6 @@ def compare_cdf_files(cdf_file1, cdf_file2):
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*
     # *°*°*  COMPARE DATA  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*
-
-    dict_result['zVars'] = {}
 
     if len(d1) != len(d2):
         logger.warning("******************************")
