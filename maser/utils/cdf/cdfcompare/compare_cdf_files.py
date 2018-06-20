@@ -103,9 +103,11 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
         logger.warning('   %s', notmathattribute)
 
-        dict_result = {'gAttrs':{}}
+        gAttrs = {}
+        gAttrs['NotMatched'] = notmathattribute
+        dict_result = {'gAttrs':gAttrs}
 
-        # Remove not atched keys from the 2 dictionaries
+        # Remove not matched keys from the 2 dictionaries
         notmatch1 = notmathattribute[0]
         notmatch2 = notmathattribute[1]
 
