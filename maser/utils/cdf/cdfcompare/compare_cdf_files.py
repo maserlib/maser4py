@@ -103,9 +103,9 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
         logger.warning('   %s', notmathattribute)
 
+        # Add not matched attributes list to the returned dictionary
         gAttrs = {}
         gAttrs['NotMatched'] = notmathattribute
-        dict_result = {'gAttrs':gAttrs}
 
         # Remove not matched keys from the 2 dictionaries
         notmatch1 = notmathattribute[0]
@@ -127,14 +127,25 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             if checking == False:
                 # Not equal !!
                 common_att = sorted(list(global_att1.keys()))
+
+                DiffValueAttr = {}
+
                 for ind in range(len(common_att)):
                     com_att = common_att[ind]
                     dd1 = global_att1.get(com_att)
                     dd2 = global_att2.get(com_att)
                     if dd1 != dd2:
+                        val1 = dd1[0]
+                        val2 = dd2[0]
                         logger.debug('** %s', com_att)
-                        logger.debug('     File1 : %s', dd1)
-                        logger.debug('     File2 : %s', dd2)
+                        logger.debug('     File1 : %s', val1)
+                        logger.debug('     File2 : %s', val2)
+
+                        DiffValueAttr[com_att] = {val1, val2}
+
+                gAttrs['Value'] = DiffValueAttr
+
+        dict_result = {'gAttrs': gAttrs}
 
     else:
         logger.info("****************************************")
