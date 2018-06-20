@@ -23,7 +23,7 @@ def checking_file_exist(cdf_file):
         logger.error("%s : is not readable !", cdf_file)
         exist()
 
-# Listing the names of all variables
+# Listing the names of all data variables (zVars)
 def read_cdf_list_keys(cdf_file):
     cdf = pycdf.CDF(cdf_file)
     cdf_data = cdf.copy()
@@ -44,19 +44,23 @@ def list_elements(liste):
         i += 1
 
 # Getting a variable's data
-def get_variable(cdf_file, VariableName):
+def get_variable(cdf_file, VariableName):     # IS NOT USED !!!
     cdffile = cdflib.CDF(cdf_file)
     cdffile.cdf_info()
     data_var = cdffile.varget(VariableName)
     cdffile.close()
     return data_var
 
+
 # Getting global attributes
 def get_global_attributes(cdf_file):
-    cdffile = cdflib.CDF(cdf_file)
-    global_attributes = cdffile.globalattsget(expand = False)
-    cdffile.close()
+    cdf = pycdf.CDF(cdf_file)
+    cdf_data = cdf.copy()
+    global_attributes = cdf_data.attrs
+    cdf.close()
+    print(global_attributes)
     return global_attributes
+
 
 # Deleting a dictionnary's key
 def delete_key(dict, key_to_remove):
