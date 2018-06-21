@@ -46,12 +46,7 @@ setup(
     cmdclass=cmdclass,
     entry_points={
         "console_scripts": [
-            "maser=maser.script:main",
-            "xlsx2skt=maser.utils.cdf.converter:xlsxskt",
-            "skt2cdf=maser.utils.cdf.converter:sktcdf",
-            "cdfvalid=maser.utils.cdf.validator:main",
-            "leapsec=maser.utils.time.leapsec:main",
-            "maser-rpw=maser.data.solo.rpw:main"],
+            "maser=maser.script:main"]
     },
     install_requires=['openpyxl>=2.3.5', 'numpy>=1.11.0',
                       'matplotlib', 'sphinx>=1.4.1', 'pytz',
