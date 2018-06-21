@@ -4,3 +4,4 @@
 from .leapsec import Lstable
 from .time import *
 from .const import *
+from .subparser import add_leapsec_subparser

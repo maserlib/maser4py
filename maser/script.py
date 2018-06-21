@@ -6,12 +6,15 @@
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
 import sys
+import os
 import argparse
 import logging
+from datetime import datetime
 
 from ._version import __version__
 from .utils.toolbox import setup_logging
 from .utils.cdf.converter import skeletoncdf, SkeletonCDFException, add_skeletoncdf_subparser
+from .utils.time import Lstable, add_leapsec_subparser
 
 # ________________ HEADER _________________________
 
@@ -20,6 +23,7 @@ from .utils.cdf.converter import skeletoncdf, SkeletonCDFException, add_skeleton
 # (define here the global variables)
 logger = logging.getLogger(__name__)
 
+INPUT_DATE = "%Y-%m-%dT%H:%M:%S"
 
 # ________________ Class Definition __________
 # (If required, define here classes)
@@ -46,12 +50,13 @@ def main():
                         action='store_true',
                         help="Debug mode")
 
-    # Add maser subparser
-    cdf_subparser = parser.add_subparsers(dest="cdf",
-                                          description='maser CDF sub-commands')
+    # Add maser subparsers
+    subparsers = parser.add_subparsers(dest="maser",
+                                          description='maser sub-commands')
 
-    # Add utils.cdf.converter subparser
-    add_skeletoncdf_subparser(cdf_subparser)
+    # Initializing subparsers
+    add_skeletoncdf_subparser(subparsers)
+    add_leapsec_subparser(subparsers)
 
     # Parse args
     args = parser.parse_args()
@@ -64,52 +69,64 @@ def main():
         debug=args.debug)
 
     if args.version:
-        logger.info("This is MASER4PY V{0}".format(__version__))
-    elif 'skeletoncdf' in args.cdf:
-        skeletons = args.skeletons
-        nskt = len(skeletons)
-        logger.info("{0} input file(s) found.".format(nskt))
-        # Initializing list of bad conversion encountered
-        bad_skt = []
-        # Loop over the input skeleton files
-        for i, skt in enumerate(args.skeletons):
-            logger.info("Executing skeletoncdf for {0}... [{1}/{2}]".format(skt, i + 1, nskt))
-            cdf = skeletoncdf(skt,
-                              from_xlsx=args.excel_format,
-                              output_dir=args.output_dir[0],
-                              overwrite=args.overwrite,
-                              exe=args.skeletoncdf[0],
-                              ignore_none=args.ignore_none,
-                              auto_pad=args.auto_pad)
-            try:
-                cdf = skeletoncdf(skt,
-                                  from_xlsx=args.excel_format,
-                                  output_dir=args.output_dir[0],
-                                  overwrite=args.overwrite,
-                                  exe=args.skeletoncdf[0],
-                                  ignore_none=args.ignore_none,
-                                  auto_pad=args.auto_pad)
-            except SkeletonCDFException as strerror:
-                logger.error("SkeletonCDF error -- {0}".format(strerror))
-                cdf = None
-            except ValueError as strerror:
-                logger.error("Value error -- {0}".format(strerror))
-                cdf = None
-            except:
-                logger.error(sys.exc_info()[0])
-                cdf = None
-            finally:
-                if cdf is None:
-                    bad_skt.append(skt)
-                    logger.error("Converting {0} has failed, aborting!".format(skt))
-                    if not args.force:
-                        sys.exit(-1)
+        print("This is MASER4PY V{0}".format(__version__))
+    elif args.maser is not None:
+        # skeletoncdf sub-command
+        if 'skeletoncdf' in args.maser:
+            skeletons = args.skeletons
+            nskt = len(skeletons)
+            logger.info("{0} input file(s) found.".format(nskt))
+            # Initializing list of bad conversion encountered
+            bad_skt = []
+            # Loop over the input skeleton files
+            for i, skt in enumerate(args.skeletons):
+                logger.info("Executing skeletoncdf for {0}... [{1}/{2}]".format(skt, i + 1, nskt))
+                try:
+                    cdf = skeletoncdf(skt,
+                                      from_xlsx=args.excel_format,
+                                      output_dir=args.output_dir[0],
+                                      overwrite=args.overwrite,
+                                      exe=args.skeletoncdf[0],
+                                      ignore_none=args.ignore_none,
+                                      auto_pad=args.auto_pad)
+                except SkeletonCDFException as strerror:
+                    logger.error("SkeletonCDF error -- {0}".format(strerror))
+                    cdf = None
+                except ValueError as strerror:
+                    logger.error("Value error -- {0}".format(strerror))
+                    cdf = None
+                except:
+                    logger.error(sys.exc_info()[0])
+                    cdf = None
+                finally:
+                    if cdf is None:
+                        bad_skt.append(skt)
+                        logger.error("Converting {0} has failed, aborting!".format(skt))
+                        if not args.force:
+                            sys.exit(-1)
 
-        if len(bad_skt) > 0:
-            logger.warning("Following files have not been converted correctly:")
-            for bad in bad_skt:
-                logger.warning(bad)
-
+            if len(bad_skt) > 0:
+                logger.warning("Following files have not been converted correctly:")
+                for bad in bad_skt:
+                    logger.warning(bad)
+        # leapsec sub-command
+        elif 'leapsec' in args.maser:
+            # If get_file then download CDFLeapSeconds.txt file and exit
+            if args.DOWNLOAD_FILE:
+                target_dir = os.path.dirname(args.filepath[0])
+                Lstable.get_lstable_file(target_dir=target_dir,
+                                         overwrite=args.OVERWRITE)
+                sys.exit()
+            lst = Lstable(file=args.filepath[0])
+            if args.date[0] is not None:
+                date = datetime.strptime(args.date[0], INPUT_DATE)
+                print("{0} sec.".format(lst.get_leapsec(date=date)))
+            elif args.SHOW_TABLE:
+                print(lst)
+            else:
+                parser.print_help()
+    else:
+        parser.print_help()
 
     # _________________ Main ____________________________
 
