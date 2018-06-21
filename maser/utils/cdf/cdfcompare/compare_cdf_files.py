@@ -82,8 +82,8 @@ def get_matched_vAttrKey(field1, field2):
     notmatch_list = not_match[0] + not_match[1]
     all_items = listA1 + listA2
     all_items_list = sorted(list(set(all_items)))
-    uniq_items_list = [x for x in all_items_list if notmatch_list not in notmatch_list]
-    return uniq_items_list
+    uniq_items = [x for x in all_items_list if x not in notmatch_list]
+    return uniq_items
 
 # Comparing 2 CDF files data
 def compare_cdf_files(cdf_file1, cdf_file2):
