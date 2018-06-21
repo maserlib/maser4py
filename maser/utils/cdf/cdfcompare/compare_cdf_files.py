@@ -71,6 +71,19 @@ def get_not_matched_vAttrKey(field1, field2):
 
     return result
 
+# Getting a given vAttr's matched keys
+def get_matched_vAttrKey(field1, field2):
+    vAttrsList1 = field1.attrs  # class 'spacepy.pycdf.zAttrList'
+    listA1 = sorted([attr_key for attr_key in vAttrsList1])
+    vAttrsList2 = field2.attrs
+    listA2 = sorted([attr_key for attr_key in vAttrsList2])
+
+    not_match = get_not_matched_vAttrKey(field1, field2)
+    notmatch_list = not_match[0] + not_match[1]
+    all_items = listA1 + listA2
+    uniq_items_list = list(set(all_items)) # sorted uniq items list
+    return uniq_items_list
+
 # Comparing 2 CDF files data
 def compare_cdf_files(cdf_file1, cdf_file2):
     checking_file_exist(cdf_file1)
@@ -214,7 +227,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         diff_data = [] # For different data
 
         NotMatch_vAttr = {}
-
+        Match_vAttr = {}
         vAttrs = {}
 
 
@@ -259,6 +272,9 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             tab_diff = get_not_matched_vAttrKey(field1, field2)
             NotMatch_vAttr[find_str] = tab_diff
 
+            uniq_items_2lists = get_matched_vAttrKey(field1, field2)
+            Match_vAttr[find_str] = uniq_items_2lists
+            print(uniq_items_2lists)
 
         if len(diff_array) != 0:
             zVars['Size'] = diff_array
