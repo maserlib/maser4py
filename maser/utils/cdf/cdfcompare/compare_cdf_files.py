@@ -273,13 +273,28 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             tab_diff = get_not_matched_vAttrKey(field1, field2)
             NotMatch_vAttr[find_str] = tab_diff
 
-            uniq_items_2lists = get_matched_vAttrKey(field1, field2)
+            uniq_items_vAtt = get_matched_vAttrKey(field1, field2)
+
+            #print(uniq_items_vAtt)              #   IS NOT GOOD !!
+            #print(tab_diff)
+            vAttrsList1 = field1.attrs
+            vAttrsList2 = field2.attrs
+
+            k = 0
+            count = len(uniq_items_vAtt)
+            while k < count:
+                check_item = uniq_items_vAtt[k]
+                #print(check_item)
+
+                #print(vAttrsList1[check_item], vAttrsList2[check_item])
+
+                # if vAttrsList1[check_item] == vAttrsList2[check_item]:
+                #     print(check_item, " : equal")
+                # else:
+                #     print(check_item, " : not equal")
+                k += 1
 
 
-
-
-            #Match_vAttr[find_str] = uniq_items_2lists
-            print(uniq_items_2lists)
 
         if len(diff_array) != 0:
             zVars['Size'] = diff_array
