@@ -59,7 +59,7 @@ def delete_key(dict, key_to_remove):
 
 
 # Getting a given vAttr's not matched keys
-def get_not_mathed_vAttrKey(field1, field2):
+def get_not_matched_vAttrKey(field1, field2):
     vAttrsList1 = field1.attrs  # class 'spacepy.pycdf.zAttrList'
     listA1 = sorted([attr_key for attr_key in vAttrsList1])
     vAttrsList2 = field2.attrs
@@ -256,7 +256,7 @@ def compare_cdf_files(cdf_file1, cdf_file2):
             # *°* Compare Variable Attributes *°*
             # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
-            tab_diff = get_not_mathed_vAttrKey(field1, field2)
+            tab_diff = get_not_matched_vAttrKey(field1, field2)
             NotMatch_vAttr[find_str] = tab_diff
 
 
