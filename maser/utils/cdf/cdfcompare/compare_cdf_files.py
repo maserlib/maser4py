@@ -228,9 +228,8 @@ def compare_cdf_files(cdf_file1, cdf_file2):
         diff_data = [] # For different data
 
         NotMatch_vAttr = {}
-        Match_vAttr = {}
         vAttrs = {}
-
+        Value_vAttr = {}
 
         for i in range(n_same_keys):
             i += 1
@@ -275,26 +274,24 @@ def compare_cdf_files(cdf_file1, cdf_file2):
 
             uniq_items_vAtt = get_matched_vAttrKey(field1, field2)
 
-            #print(uniq_items_vAtt)              #   IS NOT GOOD !!
-            #print(tab_diff)
             vAttrsList1 = field1.attrs
             vAttrsList2 = field2.attrs
 
-            k = 0
             count = len(uniq_items_vAtt)
-            while k < count:
+            DiffValue_vAttr = {}
+
+            for k in range(count):
                 check_item = uniq_items_vAtt[k]
-                #print(check_item)
+                logger.info("%s : %s  |  %s", check_item, vAttrsList1[check_item], vAttrsList2[check_item])
 
-                #print(vAttrsList1[check_item], vAttrsList2[check_item])
-
-                # if vAttrsList1[check_item] == vAttrsList2[check_item]:
-                #     print(check_item, " : equal")
-                # else:
-                #     print(check_item, " : not equal")
-                k += 1
-
-
+                if vAttrsList1[check_item] == vAttrsList2[check_item]:
+                     logger.info("%s : equal", check_item)
+                else:
+                    logger.info("%s : not equal", check_item)
+                    DiffValue_vAttr[check_item] = [vAttrsList1[check_item], vAttrsList2[check_item]]
+                    Value_vAttr[find_str] = DiffValue_vAttr
+                    vAttrs['Value'] = Value_vAttr
+                    logger.debug("vAttrs['Value'] : %s", vAttrs['Value'])
 
         if len(diff_array) != 0:
             zVars['Size'] = diff_array
@@ -305,6 +302,9 @@ def compare_cdf_files(cdf_file1, cdf_file2):
 
         if len(NotMatch_vAttr) != 0:
             vAttrs['NotMatched'] = NotMatch_vAttr
+            dict_result['vAttrs'] = vAttrs
+        if len(Value_vAttr) !=0:
+            vAttrs['Value'] = Value_vAttr
             dict_result['vAttrs'] = vAttrs
 
         logger.info('SKIP LIST : %d', len(skip_list))
