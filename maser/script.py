@@ -134,6 +134,13 @@ def main():
             nargs = len(cdfcompare)
             if (nargs < 3 or nargs > 3):
                 print('SYNTAX : cdf_compare cdf_file_path1 cdf_file_Path2')
+            else:
+                for file1, file2 in enumerate(args.cdf_compare):
+                    try:
+                        result = cdf_compare(file1, file2)
+                    finally:
+                        if result is None:
+                            logger.error('CDF_COMPARE : Faillure !!!')
 
     else:
         parser.print_help()
