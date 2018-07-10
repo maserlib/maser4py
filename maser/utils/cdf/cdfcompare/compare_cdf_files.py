@@ -11,7 +11,7 @@ from spacepy import pycdf
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
 
 # Checking file
 def checking_file_exist(cdf_file):
