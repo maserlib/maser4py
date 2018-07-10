@@ -141,6 +141,7 @@ def main():
                     finally:
                         if result is None:
                             logger.error('CDF_COMPARE : Faillure !!!')
+                            sys.exit(-1)
 
     else:
         parser.print_help()
