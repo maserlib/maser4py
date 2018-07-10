@@ -14,6 +14,7 @@ from datetime import datetime
 from ._version import __version__
 from .utils.toolbox import setup_logging
 from .utils.cdf.converter import skeletoncdf, SkeletonCDFException, add_skeletoncdf_subparser
+from .utils.cdf.cdfcompare import cdf_compare
 from .utils.time import Lstable, add_leapsec_subparser
 
 # ________________ HEADER _________________________
