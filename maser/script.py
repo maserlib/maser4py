@@ -130,8 +130,11 @@ def main():
                 # leapsec sub-command
         # cdf_compare sub-command
         elif 'cdf_compare' in args.maser:
-            print('TTTTEEEST')
-            cdf_compare()
+            cdfcompare = args.cdf_compare
+            nargs = len(cdfcompare)
+            if (nargs < 3 or nargs > 3):
+                print('SYNTAX : cdf_compare cdf_file_path1 cdf_file_Path2')
+
     else:
         parser.print_help()
 
