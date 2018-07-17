@@ -130,18 +130,12 @@ def main():
                 # leapsec sub-command
         # cdf_compare sub-command
         elif 'cdf_compare' in args.maser:
-            cdfcompare = args.cdf_compare
-            nargs = len(cdfcompare)
-            if (nargs < 3 or nargs > 3):
-                print('SYNTAX : cdf_compare cdf_file_path1 cdf_file_Path2')
-            else:
-                for file1, file2 in enumerate(args.cdf_compare):
-                    try:
-                        result = cdf_compare(file1, file2)
-                    finally:
-                        if result is None:
-                            logger.error('CDF_COMPARE : Faillure !!!')
-                            sys.exit(-1)
+            try:
+                result = cdf_compare(args.cdf_filepath1[0], args.cdf_filepath2[0])
+            finally:
+                if result is None:
+                    logger.error('CDF_COMPARE : Faillure !!!')
+                    sys.exit(-1)
 
     else:
         parser.print_help()
