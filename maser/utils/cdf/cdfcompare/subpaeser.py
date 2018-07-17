@@ -22,8 +22,10 @@ def add_cdfcompare_subparser(subparser):
     """cdf.cdfcompare script program."""
     cdfcompare_parser = subparser.add_parser('cdf_compare',
                                     help='Compare 2 CDF files.')
-    cdfcompare_parser.add_argument('cdf_compare', nargs='+',
-                           help="Input CDF file paths")
+    cdfcompare_parser.add_argument('cdf_filepath1', nargs=1,
+                           help="Input CDF file path 1")
+    cdfcompare_parser.add_argument('cdf_filepath2', nargs=1,
+                                   help="Input CDF file path 2")
 
 
     # _________________ Main ____________________________
