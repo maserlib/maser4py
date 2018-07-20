@@ -200,7 +200,7 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
         logger.info("****************************************")
     else:
 
-        logger.warning("NOT MATCHED KEYS:")
+        logger.warning("NOT MATCHED zVARIABLES :")
 
         i = 0
         while i < 2:
@@ -213,7 +213,7 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
 
         # ***** Matched keys *****
         same_keys = set(d1) & set(d2)
-        logger.info("MATCHED KEYS : %d", len(same_keys))
+        logger.info("MATCHED zVARIABLES : %d", len(same_keys))
 
 
         # ***** Alphabetical order *****
@@ -301,7 +301,7 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
             vAttrs['Value'] = Value_vAttr
             dict_result['vAttrs'] = vAttrs
 
-        logger.info('SKIP LIST : %d', len(skip_list))
+        logger.info('IGNORED zVARIABLES LIST : %d', len(skip_list))
         logger.info('     %s', skip_list)
 
         cdf1.close()
