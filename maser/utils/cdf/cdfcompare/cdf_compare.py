@@ -117,6 +117,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     # *°*°*  COMPARE GLOBAL ATTRUBUTES  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
+    print(sys.argv)
     print(ignore_gatt)
     print(ignore_zvar)
     print(ignore_vatt)
