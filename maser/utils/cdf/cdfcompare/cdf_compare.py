@@ -141,11 +141,9 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
         notmatch2 = notmathattribute[1]
 
         for key_to_remove in  notmatch1:
-            key_to_remove = notmatch1[c]
             global_att1 = delete_key(global_att1, key_to_remove)
 
-        for c in range(len(notmatch2)):
-            key_to_remove = notmatch2[c]
+        for key_to_remove in notmatch2:
             global_att2 = delete_key(global_att2, key_to_remove)
 
         nl1 = len(global_att1)
