@@ -118,6 +118,8 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
     print(ignore_gatt)
+    print(ignore_zvar)
+    print(ignore_vatt)
 
     list_global_att1 = sorted(list(global_att1.keys()))
     list_global_att2 = sorted(list(global_att2.keys()))
@@ -319,7 +321,8 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
 # *°*°*°*°*°*°*°*°
 
 if __name__ == '__main__':
-    if len(sys.argv)==4:
+    if len(sys.argv)>=3:
         result=cdf_compare(sys.argv[1], sys.argv[2])
         logger.debug("")
         logger.debug("Result : %s", result)
+
