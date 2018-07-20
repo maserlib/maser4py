@@ -11,7 +11,7 @@ from spacepy import pycdf
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 
 # Checking file
 def checking_file_exist(cdf_file):
@@ -106,9 +106,11 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
         if i == 0:
             d1 = list_keys
             global_att1 = global_att    # Dictionnary
+            logger.info(global_att1.keys())
         if i == 1:
             d2 = list_keys
             global_att2 = global_att    # Dictionnary
+            logger.info(global_att2.keys())
         i += 1
 
 
@@ -274,12 +276,12 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
             DiffValue_vAttr = {}
 
             for check_item in uniq_items_vAtt:
-                logger.info("%s : %s  |  %s", check_item, vAttrsList1[check_item], vAttrsList2[check_item])
+                logger.debug("%s : %s  |  %s", check_item, vAttrsList1[check_item], vAttrsList2[check_item])
 
                 if vAttrsList1[check_item] == vAttrsList2[check_item]:
-                     logger.info("%s : equal", check_item)
+                     logger.debug("%s : equal", check_item)
                 else:
-                    logger.info("%s : not equal", check_item)
+                    logger.debug("%s : not equal", check_item)
                     DiffValue_vAttr[check_item] = [vAttrsList1[check_item], vAttrsList2[check_item]]
                     Value_vAttr[key] = DiffValue_vAttr
                     vAttrs['Value'] = Value_vAttr
