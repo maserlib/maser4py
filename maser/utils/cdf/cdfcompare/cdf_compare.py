@@ -159,8 +159,7 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
 
                 DiffValueAttr = {}
 
-                for ind in range(len(common_att)):
-                    com_att = common_att[ind]
+                for com_att in common_att:
                     dd1 = global_att1.get(com_att)
                     dd2 = global_att2.get(com_att)
                     if dd1 != dd2:
