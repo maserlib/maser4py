@@ -274,11 +274,9 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
             vAttrsList1 = field1.attrs
             vAttrsList2 = field2.attrs
 
-            count = len(uniq_items_vAtt)
             DiffValue_vAttr = {}
 
-            for k in range(count):
-                check_item = uniq_items_vAtt[k]
+            for check_item in uniq_items_vAtt:
                 logger.info("%s : %s  |  %s", check_item, vAttrsList1[check_item], vAttrsList2[check_item])
 
                 if vAttrsList1[check_item] == vAttrsList2[check_item]:
