@@ -27,10 +27,13 @@ def add_cdfcompare_subparser(subparser):
     cdfcompare_parser.add_argument('cdf_filepath2', nargs=1,
                                    help="Input CDF file path 2")
     cdfcompare_parser.add_argument('--ignore_gatt', nargs="+",
+                                   default=[None],
                                    help="Global attributes to ignore")
     cdfcompare_parser.add_argument('--ignore_zvar', nargs="+",
+                                   default=[None],
                                    help="Global attributes to ignore")
     cdfcompare_parser.add_argument('--ignore_vatt', nargs="+",
+                                   default=[None],
                                    help="Global attributes to ignore")
 
     # _________________ Main ____________________________
