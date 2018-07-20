@@ -87,7 +87,7 @@ def get_matched_vAttrKey(field1, field2):
     return uniq_items
 
 # Comparing 2 CDF files data
-def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_vatt=[], ignore_zvar=[]):
+def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vatt=[]):
     logger.warning(' CDF file 1 : %s', cdf_file1)
     logger.warning(' CDF file 2 : %s', cdf_file2)
     checking_file_exist(cdf_file1)
