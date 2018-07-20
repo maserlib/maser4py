@@ -106,11 +106,11 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
         if i == 0:
             d1 = list_keys
             global_att1 = global_att    # Dictionnary
-            logger.info(global_att1.keys())
+            logger.info("File1's zVariables List : %s" % global_att1.keys())
         if i == 1:
             d2 = list_keys
             global_att2 = global_att    # Dictionnary
-            logger.info(global_att2.keys())
+            logger.info("File2's zVariables List : %s" % global_att2.keys())
         i += 1
 
 
