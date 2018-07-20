@@ -10,8 +10,9 @@ import numpy as np
 from spacepy import pycdf
 import logging
 
+logging.basicConfig(level=logging.INFO, format='%(levelname)s : %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+#logger.setLevel(logging.INFO)
 
 # Checking file
 def checking_file_exist(cdf_file):
@@ -86,7 +87,7 @@ def get_matched_vAttrKey(field1, field2):
     return uniq_items
 
 # Comparing 2 CDF files data
-def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
+def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_vatt=[], ignore_zvar=[]):
     logger.warning(' CDF file 1 : %s', cdf_file1)
     logger.warning(' CDF file 2 : %s', cdf_file2)
     checking_file_exist(cdf_file1)
@@ -116,6 +117,7 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
     # *°*°*  COMPARE GLOBAL ATTRUBUTES  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
+    print(ignore_gatt)
 
     list_global_att1 = sorted(list(global_att1.keys()))
     list_global_att2 = sorted(list(global_att2.keys()))
@@ -317,10 +319,7 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
 # *°*°*°*°*°*°*°*°
 
 if __name__ == '__main__':
-    if len(sys.argv)==3:
-        logging.basicConfig(level=logging.DEBUG,\
-            format='%(levelname)s : %(message)s')
-
+    if len(sys.argv)==4:
         result=cdf_compare(sys.argv[1], sys.argv[2])
         logger.debug("")
         logger.debug("Result : %s", result)
