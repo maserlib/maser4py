@@ -26,6 +26,8 @@ def add_cdfcompare_subparser(subparser):
                            help="Input CDF file path 1")
     cdfcompare_parser.add_argument('cdf_filepath2', nargs=1,
                                    help="Input CDF file path 2")
+    cdfcompare_parser.add_argument('--ignore_gatt', nargs="+",
+                                   help="Global attributes to ignore")
 
 
     # _________________ Main ____________________________
