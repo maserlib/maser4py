@@ -106,11 +106,9 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
         if i == 0:
             d1 = list_keys
             global_att1 = global_att    # Dictionnary
-            logger.info("File1's zVariables List : %s", global_att1.keys())
         if i == 1:
             d2 = list_keys
             global_att2 = global_att    # Dictionnary
-            logger.info("File2's zVariables List : %s", global_att2.keys())
         i += 1
 
 
@@ -131,8 +129,12 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
         logger.warning("WARNING : GLOBAL ATTRIBUTES DIFFERENT !!!")
         logger.warning("****************************************")
         logger.warning('File 1 : %s%s', str(len(global_att1)), ' global attributes')
+        logger.info("File1's Global Attributes List : %s", global_att1.keys())
         logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
-        logger.warning('   %s', notmathattribute)
+        logger.info("File2's Global Attributes List : %s", global_att2.keys())
+        logger.warning("NOT MATCHED GLOBAL ATTRIBUTES :")
+        logger.warning("   File1 : %s", notmathattribute[0])
+        logger.warning("   File2 : %s", notmathattribute[1])
 
         # Add not matched attributes list to the returned dictionary
         gAttrs = {}
@@ -166,8 +168,8 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
                         val1 = dd1[0]
                         val2 = dd2[0]
                         logger.debug('** %s', com_att)
-                        logger.debug('     File1 : %s', val1)
-                        logger.debug('     File2 : %s', val2)
+                        logger.debug("   File1 : %s", val1)
+                        logger.debug("   File2 : %s", val2)
 
                         DiffValueAttr[com_att] = [val1, val2]
 
