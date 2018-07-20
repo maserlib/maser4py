@@ -221,8 +221,6 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
         order_same_keys = sorted(list(same_keys))
         n_same_keys = len(order_same_keys)
 
-
-        i = 0
         j = 1
         skip_list = []
 
@@ -233,16 +231,13 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
         vAttrs = {}
         Value_vAttr = {}
 
-        for i in range(n_same_keys):
-            i += 1
-            find_str = order_same_keys[i-1]
+        for key in order_same_keys:
             # Skip list
-            if ('_LABEL' in find_str) or ('_UNITS' in find_str) or ('_FREQ' in find_str):
-                skip_list.extend([find_str])
-                i = i - 1
+            if ('_LABEL' in key) or ('_UNITS' in key) or ('_FREQ' in key):
+                skip_list.extend([key])
                 continue
-            field1 = cdf1[find_str]
-            field2 = cdf2[find_str]
+            field1 = cdf1[key]
+            field2 = cdf2[key]
 
 
             # *°*°*°*°*°*°*°*°*°*°*°*°*
@@ -251,8 +246,8 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
 
             if len(field1) != len(field2):
                 logger.warning("%d/%d. Sizes different !!!", j, n_same_keys)
-                logger.warning("   %s:     %s      %s", find_str, field1.shape, field2.shape)
-                diff_array[find_str] = [field1.shape,field2.shape]
+                logger.warning("   %s:     %s      %s", key, field1.shape, field2.shape)
+                diff_array[key] = [field1.shape,field2.shape]
                 j += 1
 
             else:
@@ -261,9 +256,9 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
 
                 if len(uniq_val) == 1 and (uniq_val[0]) == False:
                     logger.warning("%d/%d. Values different !!!", j, n_same_keys)
-                    logger.warning("  ", find_str, " :     ", field1.shape, "     ", field2.shape)
+                    logger.warning("  ", key, " :     ", field1.shape, "     ", field2.shape)
                     logger.warning(np.array(field1[:, :]) == np.array(field1[:, :]))
-                    diff_data = [diff_data, find_str]
+                    diff_data = [diff_data, key]
                 if len(diff_data) != 0:
                     diff_data = diff_data[1:]
 
@@ -272,7 +267,7 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
             # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
             tab_diff = get_not_matched_vAttrKey(field1, field2)
-            NotMatch_vAttr[find_str] = tab_diff
+            NotMatch_vAttr[key] = tab_diff
 
             uniq_items_vAtt = get_matched_vAttrKey(field1, field2)
 
@@ -291,7 +286,7 @@ def cdf_compare(cdf_file1, cdf_file2, no_gatt=[], no_vatt=[], no_zvar=[]):
                 else:
                     logger.info("%s : not equal", check_item)
                     DiffValue_vAttr[check_item] = [vAttrsList1[check_item], vAttrsList2[check_item]]
-                    Value_vAttr[find_str] = DiffValue_vAttr
+                    Value_vAttr[key] = DiffValue_vAttr
                     vAttrs['Value'] = Value_vAttr
                     logger.debug("vAttrs['Value'] : %s", vAttrs['Value'])
 
