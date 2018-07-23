@@ -157,6 +157,9 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
 
     list_global_att1 = sorted(list(global_att1.keys()))
     list_global_att2 = sorted(list(global_att2.keys()))
+    if ind_ignore_gatt != -1:
+        list_global_att1 = [n for n in list_global_att1 if n not in list_ignore_gatt]
+        list_global_att2 = [n for n in list_global_att2 if n not in list_ignore_gatt]
     notmathattribute = returnNotMatches(list_global_att1, list_global_att2)
 
     l1 = len(notmathattribute[0])
@@ -167,9 +170,9 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         logger.warning("WARNING : GLOBAL ATTRIBUTES DIFFERENT !!!")
         logger.warning("****************************************")
         logger.warning('File 1 : %s%s', str(len(global_att1)), ' global attributes')
-        logger.info("File1's Global Attributes List : %s", global_att1.keys())
+        logger.info("File1's Global Attributes List : %s", list_global_att1)
         logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
-        logger.info("File2's Global Attributes List : %s", global_att2.keys())
+        logger.info("File2's Global Attributes List : %s", list_global_att2)
         logger.warning("NOT MATCHED GLOBAL ATTRIBUTES :")
         logger.warning("   File1 : %s", notmathattribute[0])
         logger.warning("   File2 : %s", notmathattribute[1])
