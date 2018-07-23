@@ -131,8 +131,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     else:
         logger.info("No variable attributes to be ignored")
         ind_ignore_vatt = -1
-    print(len(sys.argv))
-    print(ind_ignore_gatt, ind_ignore_zvar, ind_ignore_vatt)
 
     dict_result = {}
 
@@ -170,9 +168,9 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         logger.warning("WARNING : GLOBAL ATTRIBUTES DIFFERENT !!!")
         logger.warning("****************************************")
         logger.warning('File 1 : %s%s', str(len(global_att1)), ' global attributes')
-        logger.info("File1's Global Attributes List : %s", list_global_att1)
+        logger.debug("File1's Global Attributes List : %s", list_global_att1)
         logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
-        logger.info("File2's Global Attributes List : %s", list_global_att2)
+        logger.debug("File2's Global Attributes List : %s", list_global_att2)
         logger.warning("NOT MATCHED GLOBAL ATTRIBUTES :")
         logger.warning("   File1 : %s", notmathattribute[0])
         logger.warning("   File2 : %s", notmathattribute[1])
@@ -184,8 +182,12 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         # Remove not matched keys from the 2 dictionaries
         notmatch1 = notmathattribute[0]
         notmatch2 = notmathattribute[1]
+        if ind_ignore_gatt != -1: notmatch1.extend(list_ignore_gatt)
+        if ind_ignore_gatt != -1: notmatch2.extend(list_ignore_gatt)
+        logger.warning("File1 - Keys to ignore for comparing : %s", notmatch1)
+        logger.warning("File2 - Keys to ignore for comparing : %s", notmatch2)
 
-        for key_to_remove in  notmatch1:
+        for key_to_remove in notmatch1:
             global_att1 = delete_key(global_att1, key_to_remove)
 
         for key_to_remove in notmatch2:
