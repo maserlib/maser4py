@@ -96,25 +96,43 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     cdf2 = pycdf.CDF(cdf_file2)
     list_cdf = [cdf_file1, cdf_file2]
 
-    n_argv = len(sys.argv)
+    list_argv = sys.argv
 
-    if "--ignore_gatt" in (sys.argv): ind_ignore_gatt = (sys.argv).index("--ignore_gatt")
+    if "--ignore_gatt" in (list_argv):
+        ind_ignore_gatt = (list_argv).index("--ignore_gatt")
+        list_ignore_gatt = []
+        for item in list_argv[ind_ignore_gatt + 1 :]:
+            if item.startswith("--ignore_") == False: list_ignore_gatt.append(item)
+            else: break
+        logger.warning("Ignored global attributes list : %s", list_ignore_gatt)
     else:
-        print("No global attributes to be ignored")
+        logger.info("No global attributes to be ignored")
         ind_ignore_gatt = -1
-    if "--ignore_zvar" in (sys.argv): ind_ignore_zvar = (sys.argv).index("--ignore_zvar")
+
+    if "--ignore_zvar" in (list_argv):
+        ind_ignore_zvar = (list_argv).index("--ignore_zvar")
+        list_ignore_zvar = []
+        for item in list_argv[ind_ignore_zvar + 1 :]:
+            if item.startswith("--ignore_") == False: list_ignore_zvar.append(item)
+            else: break
+        logger.warning("Ignored zVariables list : %s", list_ignore_zvar)
     else:
-        print("No zVariables to be ignored")
+        logger.info("No zVariables to be ignored")
         ind_ignore_zvar = -1
-    if "--ignore_vatt" in (sys.argv): ind_ignore_vatt = (sys.argv).index("--ignore_vatt")
+
+    if "--ignore_vatt" in (list_argv):
+        ind_ignore_vatt = (list_argv).index("--ignore_vatt")
+        list_ignore_vatt = []
+        for item in list_argv[ind_ignore_vatt + 1:]:
+            if item.startswith("--ignore_") == False: list_ignore_vatt.append(item)
+            else:
+                break
+        logger.warning("Ignored variable attributes list : %s", list_ignore_vatt)
     else:
-        print("No variable attributes to be ignored")
+        logger.info("No variable attributes to be ignored")
         ind_ignore_vatt = -1
-    print(n_argv)
+    print(len(sys.argv))
     print(ind_ignore_gatt, ind_ignore_zvar, ind_ignore_vatt)
-    # print(ignore_gatt)
-    # print(ignore_zvar)
-    # print(ignore_vatt)
 
     dict_result = {}
 
