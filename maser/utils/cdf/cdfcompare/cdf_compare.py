@@ -96,6 +96,26 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     cdf2 = pycdf.CDF(cdf_file2)
     list_cdf = [cdf_file1, cdf_file2]
 
+    n_argv = len(sys.argv)
+
+    if "--ignore_gatt" in (sys.argv): ind_ignore_gatt = (sys.argv).index("--ignore_gatt")
+    else:
+        print("No global attributes to be ignored")
+        ind_ignore_gatt = -1
+    if "--ignore_zvar" in (sys.argv): ind_ignore_zvar = (sys.argv).index("--ignore_zvar")
+    else:
+        print("No zVariables to be ignored")
+        ind_ignore_zvar = -1
+    if "--ignore_vatt" in (sys.argv): ind_ignore_vatt = (sys.argv).index("--ignore_vatt")
+    else:
+        print("No variable attributes to be ignored")
+        ind_ignore_vatt = -1
+    print(n_argv)
+    print(ind_ignore_gatt, ind_ignore_zvar, ind_ignore_vatt)
+    # print(ignore_gatt)
+    # print(ignore_zvar)
+    # print(ignore_vatt)
+
     dict_result = {}
 
     i = 0
@@ -116,15 +136,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     #*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
     # *°*°*  COMPARE GLOBAL ATTRUBUTES  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
-
-    print(sys.argv)
-    ind_ignore_gatt = (sys.argv).index("--ignore_gatt")
-    ind_ignore_zvar = (sys.argv).index("--ignore_zvar")
-    ind_ignore_vatt = (sys.argv).index("--ignore_vatt")
-    print(ind_ignore_gatt, ind_ignore_zvar, ind_ignore_vatt)
-    print(ignore_gatt)
-    print(ignore_zvar)
-    print(ignore_vatt)
 
     list_global_att1 = sorted(list(global_att1.keys()))
     list_global_att2 = sorted(list(global_att2.keys()))
