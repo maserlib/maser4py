@@ -118,6 +118,10 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
     print(sys.argv)
+    ind_ignore_gatt = (sys.argv).index("--ignore_gatt")
+    ind_ignore_zvar = (sys.argv).index("--ignore_zvar")
+    ind_ignore_vatt = (sys.argv).index("--ignore_vatt")
+    print(ind_ignore_gatt, ind_ignore_zvar, ind_ignore_vatt)
     print(ignore_gatt)
     print(ignore_zvar)
     print(ignore_vatt)
