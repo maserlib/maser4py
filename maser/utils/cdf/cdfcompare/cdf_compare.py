@@ -10,7 +10,7 @@ import numpy as np
 from spacepy import pycdf
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(levelname)s : %(message)s')
+logging.basicConfig(level=logging.WARNING, format='%(levelname)s : %(message)s')
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.INFO)
 
@@ -297,7 +297,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
             # *°*°*°*°*°*°*°*°*°*°*°*°*
 
             if len(field1) != len(field2):
-                logger.warning("   %s:     %s      %s", key, field1.shape, field2.shape)
+                logger.warning("%s:     %s      %s", key, field1.shape, field2.shape)
                 diff_array[key] = [field1.shape,field2.shape]
                 j += 1
 
@@ -318,10 +318,11 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
             # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
             tab_diff = get_not_matched_vAttrKey(field1, field2)
+            logger.warning("Different Variable Attribute's keys of the zVariable '%s' : %s", key, tab_diff)
             NotMatch_vAttr[key] = tab_diff
 
             uniq_items_vAtt = get_matched_vAttrKey(field1, field2)
-            print(uniq_items_vAtt)
+            logger.info("Identical Variable Attribute's key : %s", uniq_items_vAtt)
 
             vAttrsList1 = field1.attrs
             vAttrsList2 = field2.attrs
@@ -350,9 +351,11 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         if len(NotMatch_vAttr) != 0:
             vAttrs['NotMatched'] = NotMatch_vAttr
             dict_result['vAttrs'] = vAttrs
+            logger.debug("Not Matched Variable Attributes : %s", NotMatch_vAttr.keys())
         if len(Value_vAttr) !=0:
             vAttrs['Value'] = Value_vAttr
             dict_result['vAttrs'] = vAttrs
+            logger.debug("Variable Attribute's value different : %s", NotMatch_vAttr)
 
         cdf1.close()
         cdf2.close()
@@ -368,4 +371,6 @@ if __name__ == '__main__':
         result=cdf_compare(sys.argv[1], sys.argv[2])
         logger.debug("")
         logger.debug("Result : %s", result)
+
+
 
