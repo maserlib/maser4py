@@ -291,7 +291,8 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 continue
             field1 = cdf1[key]
             field2 = cdf2[key]
-
+            #print(key)
+            #print(type(field1), type(field2))
 
             # *°*°*°*°*°*°*°*°*°*°*°*°*
             # *°* Compare zVariables *°*
