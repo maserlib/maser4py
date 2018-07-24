@@ -82,7 +82,10 @@ def get_matched_vAttrKey(field1, field2):
     listA2 = sorted([attr_key for attr_key in vAttrsList2])
 
     not_match = get_not_matched_vAttrKey(field1, field2)
-    notmatch_list = not_match[0] + not_match[1]
+    if not_match != []:
+        notmatch_list = not_match[0] + not_match[1]
+    else:
+        notmatch_list = []
     all_items = listA1 + listA2
     all_items_list = sorted(list(set(all_items)))
     uniq_items = [x for x in all_items_list if x not in notmatch_list]
@@ -99,6 +102,9 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     list_cdf = [cdf_file1, cdf_file2]
 
     list_argv = sys.argv
+    list_ignore_gatt = []
+    list_ignore_zvar = []
+    list_ignore_vatt = []
 
     if "--ignore_gatt" in (list_argv):
         ind_ignore_gatt = (list_argv).index("--ignore_gatt")
@@ -268,7 +274,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         n_same_keys = len(order_same_keys)
 
         j = 1
-        skip_list = []
 
         diff_array = {}  # For different dimensions
         diff_data = [] # For different data
@@ -278,12 +283,11 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         Value_vAttr = {}
 
         # Ignored zVariables for comparison
+        if ind_ignore_zvar != -1:
+            logger.warning("%s zVariables to be ignored for comparison : %s", len(list_ignore_zvar), list_ignore_zvar)
 
         for key in order_same_keys:
-            # Skip list
-            if key in list_ignore_zvar:
-            #if ('_LABEL' in key) or ('_UNITS' in key) or ('_FREQ' in key):
-                skip_list.extend([key])
+            if (key in list_ignore_zvar):
                 continue
             field1 = cdf1[key]
             field2 = cdf2[key]
@@ -294,7 +298,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
             # *°*°*°*°*°*°*°*°*°*°*°*°*
 
             if len(field1) != len(field2):
-                logger.warning("%d/%d. Sizes different !!!", j, n_same_keys)
                 logger.warning("   %s:     %s      %s", key, field1.shape, field2.shape)
                 diff_array[key] = [field1.shape,field2.shape]
                 j += 1
@@ -350,9 +353,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         if len(Value_vAttr) !=0:
             vAttrs['Value'] = Value_vAttr
             dict_result['vAttrs'] = vAttrs
-
-        logger.info('IGNORED zVARIABLES LIST : %d', len(skip_list))
-        logger.info('     %s', skip_list)
 
         cdf1.close()
         cdf2.close()
