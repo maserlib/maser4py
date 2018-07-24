@@ -152,7 +152,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
 
 
     #*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
-    # *°*°*  COMPARE GLOBAL ATTRUBUTES  *°*°*
+    # *°*°*  COMPARE GLOBAL ATTRIBUTES  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
     list_global_att1 = sorted(list(global_att1.keys()))
@@ -227,14 +227,14 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         logger.info("****************************************")
 
 
-    # *°*°*°*°*°*°*°*°*°*°*°*°*°*
-    # *°*°*  COMPARE DATA  *°*°*
-    # *°*°*°*°*°*°*°*°*°*°*°*°*°*
+    # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
+    # *°*°*  COMPARE zVARIABLES  *°*°*
+    # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
     if len(d1) != len(d2):
-        logger.warning("******************************")
-        logger.warning("WARNING : DATA DIFFERENT !!!")
-        logger.warning("******************************")
+        logger.warning("**********************************")
+        logger.warning("WARNING : zVARIABLES DIFFERENT !!!")
+        logger.warning("**********************************")
 
         zVars = {} # Data
 
@@ -243,7 +243,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
 
     if d1 == d2:
         logger.info("****************************************")
-        logger.info("       DATA : IDENTICAL !!!")
+        logger.info("       zVARIABLES : IDENTICAL !!!")
         logger.info("****************************************")
     else:
 
