@@ -291,8 +291,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 continue
             field1 = cdf1[key]
             field2 = cdf2[key]
-            #print(key)
-            #print(type(field1), type(field2))
 
             # *°*°*°*°*°*°*°*°*°*°*°*°*
             # *°* Compare zVariables *°*
@@ -323,6 +321,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
             NotMatch_vAttr[key] = tab_diff
 
             uniq_items_vAtt = get_matched_vAttrKey(field1, field2)
+            print(uniq_items_vAtt)
 
             vAttrsList1 = field1.attrs
             vAttrsList2 = field2.attrs
