@@ -339,7 +339,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                     DiffValue_vAttr[check_item] = [vAttrsList1[check_item], vAttrsList2[check_item]]
                     Value_vAttr[key] = DiffValue_vAttr
                     vAttrs['Value'] = Value_vAttr
-                    logger.warning("vAttrs['Value'] : %s", vAttrs['Value'])
+                    logger.debug("vAttrs['Value'] : %s", vAttrs['Value'])
 
         if len(diff_array) != 0:
             zVars['Size'] = diff_array
