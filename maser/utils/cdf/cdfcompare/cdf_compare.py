@@ -186,12 +186,9 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         # Add not matched attributes list to the returned dictionary
         gAttrs = {}
         gAttrs['NotMatched'] = notmathattribute
-
         # Remove not matched keys from the 2 dictionaries
         notmatch1 = notmathattribute[0]
         notmatch2 = notmathattribute[1]
-        if ind_ignore_gatt != -1: notmatch1.extend(list_ignore_gatt)
-        if ind_ignore_gatt != -1: notmatch2.extend(list_ignore_gatt)
 
         for key_to_remove in notmatch1:
             global_att1 = delete_key(global_att1, key_to_remove)
@@ -209,18 +206,18 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 common_att = sorted(list(global_att1.keys()))
 
                 DiffValueAttr = {}
-
                 for com_att in common_att:
-                    dd1 = global_att1.get(com_att)
-                    dd2 = global_att2.get(com_att)
-                    if dd1 != dd2:
-                        val1 = dd1[0]
-                        val2 = dd2[0]
-                        logger.debug('** %s', com_att)
-                        logger.debug("   File1 : %s", val1)
-                        logger.debug("   File2 : %s", val2)
+                    if com_att not in list_ignore_gatt:
+                        dd1 = global_att1.get(com_att)
+                        dd2 = global_att2.get(com_att)
+                        if dd1 != dd2:
+                            val1 = dd1[0]
+                            val2 = dd2[0]
+                            logger.debug('** %s', com_att)
+                            logger.debug("   File1 : %s", val1)
+                            logger.debug("   File2 : %s", val2)
 
-                        DiffValueAttr[com_att] = [val1, val2]
+                            DiffValueAttr[com_att] = [val1, val2]
 
                 gAttrs['Value'] = DiffValueAttr
         dict_result = {'gAttrs': gAttrs}
