@@ -171,6 +171,9 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     l1 = len(notmathattribute[0])
     l2 = len(notmathattribute[1])
 
+    if list_ignore_gatt != []:
+        logger.warning("%s Global Attributes to be ignored for comparison : %s", len(list_ignore_gatt), list_ignore_gatt)
+
     if l1 != 0 or l2 != 0:
         logger.warning("****************************************")
         logger.warning("WARNING : GLOBAL ATTRIBUTES DIFFERENT !!!")
@@ -232,6 +235,10 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     # *°*°*  COMPARE zVARIABLES  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
+    # Ignored zVariables for comparison
+    if ind_ignore_zvar != -1:
+        logger.warning("%s zVariables to be ignored for comparison : %s", len(list_ignore_zvar), list_ignore_zvar)
+
     if len(d1) != len(d2):
         logger.warning("**********************************")
         logger.warning("WARNING : zVARIABLES DIFFERENT !!!")
@@ -277,10 +284,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         vAttrs = {}
         Value_vAttr = {}
 
-        # Ignored zVariables for comparison
-        if ind_ignore_zvar != -1:
-            logger.warning("%s zVariables to be ignored for comparison : %s", len(list_ignore_zvar), list_ignore_zvar)
-
         for key in order_same_keys:
             if (key in list_ignore_zvar):
                 continue
@@ -311,6 +314,10 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
             # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
             # *°* Compare Variable Attributes *°*
             # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
+
+            # Ignored zVariables for comparison
+            if list_ignore_vatt != []:
+                logger.warning("%s Variable Attributes to be ignored for comparison : %s", len(list_ignore_vatt), list_ignore_vatt)
 
             tab_diff = get_not_matched_vAttrKey(field1, field2)
             logger.warning("Different Variable Attribute's keys of the zVariable '%s' : %s", key, tab_diff)
