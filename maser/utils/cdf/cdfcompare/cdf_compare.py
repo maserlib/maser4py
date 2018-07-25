@@ -192,8 +192,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         notmatch2 = notmathattribute[1]
         if ind_ignore_gatt != -1: notmatch1.extend(list_ignore_gatt)
         if ind_ignore_gatt != -1: notmatch2.extend(list_ignore_gatt)
-        logger.warning("File1 - Global Attribute to be ignored for comparaison : %s", notmatch1)
-        logger.warning("File2 - Global Attribute to be ignored for comparaison : %s", notmatch2)
 
         for key_to_remove in notmatch1:
             global_att1 = delete_key(global_att1, key_to_remove)
