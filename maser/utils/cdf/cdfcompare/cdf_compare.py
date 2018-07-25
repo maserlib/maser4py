@@ -358,6 +358,8 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         cdf1.close()
         cdf2.close()
 
+        logger.warning("Result dictionnay of the comparaison %s", dict_result)
+
     return dict_result
 
 # *°*°*°*°*°*°*°*°
