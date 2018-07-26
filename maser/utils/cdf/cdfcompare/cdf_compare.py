@@ -320,8 +320,16 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 logger.warning("%s Variable Attributes to be ignored for comparison : %s", len(list_ignore_vatt), list_ignore_vatt)
 
             tab_diff = get_not_matched_vAttrKey(field1, field2)
-            logger.warning("Different Variable Attribute's keys of the zVariable '%s' : %s", key, tab_diff)
-            NotMatch_vAttr[key] = tab_diff
+            if list_ignore_vatt !=[]:
+                for item1 in tab_diff[0]:
+                    if item1 in list_ignore_vatt:
+                        (tab_diff[0]).remove(item1)
+                for item2 in tab_diff[1]:
+                    if item2 in list_ignore_vatt:
+                        (tab_diff[1]).remove(item2)
+            if tab_diff[0] != [] or tab_diff[1] != []:
+                logger.warning("Different Variable Attribute's keys of the zVariable '%s' : %s", key, tab_diff)
+                NotMatch_vAttr[key] = tab_diff
 
             uniq_items_vAtt = get_matched_vAttrKey(field1, field2)
             logger.info("Identical Variable Attribute's key : %s", uniq_items_vAtt)
