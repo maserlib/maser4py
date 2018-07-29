@@ -12,7 +12,6 @@ import logging
 
 logging.basicConfig(level=logging.WARNING, format='%(levelname)s : %(message)s')
 logger = logging.getLogger(__name__)
-#logger.setLevel(logging.INFO)
 
 # Checking file
 def checking_file_exist(cdf_file):
