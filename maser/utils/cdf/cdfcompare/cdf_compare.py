@@ -106,6 +106,23 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     list_ignore_zvar = []
     list_ignore_vatt = []
 
+    if sys.argv == ['']:
+        if ignore_gatt != []:
+            list_ignore_gatt = ignore_gatt
+            logger.warning("Ignored global attributes list : %s", list_ignore_gatt)
+        else:
+            logger.info("No global attributes to be ignored")
+        if ignore_zvar != []:
+            list_ignore_zvar = ignore_zvar
+            logger.warning("Ignored zVariables list : %s", list_ignore_zvar)
+        else:
+            logger.info("No zVariables to be ignored")
+        if ignore_vatt != []:
+            list_ignore_vatt = ignore_vatt
+            logger.warning("Ignored variable attributes list : %s", list_ignore_vatt)
+        else:
+            logger.info("No variable attributes to be ignored")
+
     if "--ignore_gatt" in (list_argv):
         ind_ignore_gatt = (list_argv).index("--ignore_gatt")
         list_ignore_gatt = []
