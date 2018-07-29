@@ -106,56 +106,56 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     list_ignore_zvar = []
     list_ignore_vatt = []
 
-    if sys.argv == ['']:
+    if list_argv == ['']: # Execution under Python
         if ignore_gatt != []:
             list_ignore_gatt = ignore_gatt
             logger.warning("Ignored global attributes list : %s", list_ignore_gatt)
         else:
             logger.info("No global attributes to be ignored")
+
         if ignore_zvar != []:
             list_ignore_zvar = ignore_zvar
             logger.warning("Ignored zVariables list : %s", list_ignore_zvar)
         else:
             logger.info("No zVariables to be ignored")
+
         if ignore_vatt != []:
             list_ignore_vatt = ignore_vatt
             logger.warning("Ignored variable attributes list : %s", list_ignore_vatt)
         else:
             logger.info("No variable attributes to be ignored")
 
-    if "--ignore_gatt" in (list_argv):
-        ind_ignore_gatt = (list_argv).index("--ignore_gatt")
-        list_ignore_gatt = []
-        for item in list_argv[ind_ignore_gatt + 1 :]:
-            if item.startswith("--ignore_") == False: list_ignore_gatt.append(item)
-            else: break
-        logger.warning("Ignored global attributes list : %s", list_ignore_gatt)
-    else:
-        logger.info("No global attributes to be ignored")
-        ind_ignore_gatt = -1
+    else: # Execution under command lines
+        if "--ignore_gatt" in (list_argv):
+            ind_ignore_gatt = (list_argv).index("--ignore_gatt")
+            list_ignore_gatt = []
+            for item in list_argv[ind_ignore_gatt + 1 :]:
+                if item.startswith("--ignore_") == False: list_ignore_gatt.append(item)
+                else: break
+            logger.warning("Ignored global attributes list : %s", list_ignore_gatt)
+        else:
+            logger.info("No global attributes to be ignored")
 
-    if "--ignore_zvar" in (list_argv):
-        ind_ignore_zvar = (list_argv).index("--ignore_zvar")
-        list_ignore_zvar = []
-        for item in list_argv[ind_ignore_zvar + 1 :]:
-            if item.startswith("--ignore_") == False: list_ignore_zvar.append(item)
-            else: break
-        logger.warning("Ignored zVariables list : %s", list_ignore_zvar)
-    else:
-        logger.info("No zVariables to be ignored")
-        ind_ignore_zvar = -1
+        if "--ignore_zvar" in (list_argv):
+            ind_ignore_zvar = (list_argv).index("--ignore_zvar")
+            list_ignore_zvar = []
+            for item in list_argv[ind_ignore_zvar + 1 :]:
+                if item.startswith("--ignore_") == False: list_ignore_zvar.append(item)
+                else: break
+            logger.warning("Ignored zVariables list : %s", list_ignore_zvar)
+        else:
+            logger.info("No zVariables to be ignored")
 
-    if "--ignore_vatt" in (list_argv):
-        ind_ignore_vatt = (list_argv).index("--ignore_vatt")
-        list_ignore_vatt = []
-        for item in list_argv[ind_ignore_vatt + 1:]:
-            if item.startswith("--ignore_") == False: list_ignore_vatt.append(item)
-            else:
-                break
-        logger.warning("Ignored variable attributes list : %s", list_ignore_vatt)
-    else:
-        logger.info("No variable attributes to be ignored")
-        ind_ignore_vatt = -1
+        if "--ignore_vatt" in (list_argv):
+            ind_ignore_vatt = (list_argv).index("--ignore_vatt")
+            list_ignore_vatt = []
+            for item in list_argv[ind_ignore_vatt + 1:]:
+                if item.startswith("--ignore_") == False: list_ignore_vatt.append(item)
+                else:
+                    break
+            logger.warning("Ignored variable attributes list : %s", list_ignore_vatt)
+        else:
+            logger.info("No variable attributes to be ignored")
 
     dict_result = {}
 
@@ -180,7 +180,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
 
     list_global_att1 = sorted(list(global_att1.keys()))
     list_global_att2 = sorted(list(global_att2.keys()))
-    if ind_ignore_gatt != -1:
+    if list_ignore_gatt != []:
         list_global_att1 = [n for n in list_global_att1 if n not in list_ignore_gatt]
         list_global_att2 = [n for n in list_global_att2 if n not in list_ignore_gatt]
     notmathattribute = returnNotMatches(list_global_att1, list_global_att2)
@@ -253,7 +253,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
     # Ignored zVariables for comparison
-    if ind_ignore_zvar != -1:
+    if list_ignore_zvar != []:
         logger.warning("%s zVariables to be ignored for comparison : %s", len(list_ignore_zvar), list_ignore_zvar)
 
     if len(d1) != len(d2):
