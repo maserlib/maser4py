@@ -177,8 +177,12 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     # *°*°*  COMPARE GLOBAL ATTRIBUTES  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
+    # Initialize the Global Attributes dictionary
+    gAttrs = {}
+
     list_global_att1 = sorted(list(global_att1.keys()))
     list_global_att2 = sorted(list(global_att2.keys()))
+
     if list_ignore_gatt != []:
         list_global_att1 = [n for n in list_global_att1 if n not in list_ignore_gatt]
         list_global_att2 = [n for n in list_global_att2 if n not in list_ignore_gatt]
@@ -189,7 +193,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
 
     if list_ignore_gatt != []:
         logger.warning("%s Global Attributes to be ignored for comparison : %s", len(list_ignore_gatt), list_ignore_gatt)
-
     if l1 != 0 or l2 != 0:
         logger.warning("****************************************")
         logger.warning("WARNING : GLOBAL ATTRIBUTES DIFFERENT !!!")
@@ -202,8 +205,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         logger.warning("   File1 : %s - %s", len(notmathattribute[0]), notmathattribute[0])
         logger.warning("   File2 : %s - %s", len(notmathattribute[1]) ,notmathattribute[1])
 
-        # Add not matched attributes list to the returned dictionary
-        gAttrs = {}
         gAttrs['NotMatched'] = notmathattribute
         # Remove not matched keys from the 2 dictionaries
         notmatch1 = notmathattribute[0]
@@ -215,36 +216,37 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         for key_to_remove in notmatch2:
             global_att2 = delete_key(global_att2, key_to_remove)
 
-        nl1 = len(global_att1)
-        nl2 = len(global_att2)
-        if nl1 == nl2: # The 2 dictionaries have the same keys
-            # Compare 2 dictionaries
-            checking = global_att1 == global_att2
-            if checking == False:
-                # Not equal !!
-                common_att = sorted(list(global_att1.keys()))
+    # Compare Global Attributes's value
+    nl1 = len(global_att1)
+    nl2 = len(global_att2)
+    if nl1 == nl2:  # The 2 dictionaries have the same keys
+        # Compare 2 dictionaries
+        checking = global_att1 == global_att2
+        if checking == False:
+            # Not equal !!
+            logger.warning("************************************************")
+            logger.warning("WARNING : GLOBAL ATTRIBUTES' VALUE DIFFERENT !!!")
+            logger.warning("************************************************")
+            common_att = sorted(list(global_att1.keys()))
 
-                DiffValueAttr = {}
-                for com_att in common_att:
-                    if com_att not in list_ignore_gatt:
-                        dd1 = global_att1.get(com_att)
-                        dd2 = global_att2.get(com_att)
-                        if dd1 != dd2:
-                            val1 = dd1[0]
-                            val2 = dd2[0]
-                            logger.debug('** %s', com_att)
-                            logger.debug("   File1 : %s", val1)
-                            logger.debug("   File2 : %s", val2)
+            DiffValueAttr = {}
+            for com_att in common_att:
+                if com_att not in list_ignore_gatt:
+                    dd1 = global_att1.get(com_att)
+                    dd2 = global_att2.get(com_att)
+                    if dd1 != dd2:
+                        val1 = dd1[0]
+                        val2 = dd2[0]
+                        logger.debug('** %s', com_att)
+                        logger.debug("   File1 : %s", val1)
+                        logger.debug("   File2 : %s", val2)
 
-                            DiffValueAttr[com_att] = [val1, val2]
+                        DiffValueAttr[com_att] = [val1, val2]
 
-                gAttrs['Value'] = DiffValueAttr
-        dict_result = {'gAttrs': gAttrs}
-
-    else:
-        logger.info("****************************************")
-        logger.info("    GLOBAL ATTRIBUTES : IDENTICAL !!!")
-        logger.info("****************************************")
+            gAttrs['Value'] = DiffValueAttr
+            logger.warning("*°*°* gAttrs *°*°*")
+            logger.warning(gAttrs["Value"])
+    dict_result = {'gAttrs': gAttrs}
 
 
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
@@ -406,6 +408,11 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         # Case of we need to force to ignore some zVariables 
         if forced_ignored_zvar != []:
             logger.warning("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
+
+    if dict_result != {}:
+        logger.warning("*°*°* FINAL RESULT *°*°*")
+        logger.warning(dict_result)
+
 
     return dict_result
 
