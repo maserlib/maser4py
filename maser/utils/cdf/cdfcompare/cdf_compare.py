@@ -306,8 +306,11 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
             if (key in list_ignore_zvar):
                 continue
 
-            field1 = cdf1[key]
-            field2 = cdf2[key]
+            # Raw values comparison : It's really necessary for time values like "Epoch"
+            #   cdf1.raw_var(key) => 549441617029459008
+            #   cdf1[key] => 2017-05-30 18:39:07.845459
+            field1 = cdf1.raw_var(key)
+            field2 = cdf2.raw_var(key)
 
             # *°*°*°*°*°*°*°*°*°*°*°*°*
             # *°* Compare zVariables *°*
