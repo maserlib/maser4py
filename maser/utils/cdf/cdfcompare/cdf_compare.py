@@ -314,7 +314,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
             # *°*°*°*°*°*°*°*°*°*°*°*°*
 
             if len(field1) != len(field2):
-                logger.warning("%s:     %s      %s", key, field1.shape, field2.shape)
+                logger.warning("%s:     %s      %s", key, np.array(field1.shape), np.array(field2.shape))
                 diff_array[key] = [field1.shape,field2.shape]
                 j += 1
 
