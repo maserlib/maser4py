@@ -253,6 +253,8 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     # *°*°*  COMPARE zVARIABLES  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
+    zVars = {}  # Data
+
     # Ignored zVariables for comparison
     if list_ignore_zvar != []:
         logger.warning("%s zVariables to be ignored for comparison : %s", len(list_ignore_zvar), list_ignore_zvar)
@@ -262,8 +264,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         logger.warning("WARNING : zVARIABLES DIFFERENT !!!")
         logger.warning("**********************************")
 
-        zVars = {} # Data
-
     # ***** Not matched keys *****
     notmathkeys = returnNotMatches(d1, d2)
 
@@ -272,17 +272,15 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         logger.info("       zVARIABLES : IDENTICAL !!!")
         logger.info("****************************************")
     else:
+        if (notmathkeys[0] != []) or (notmathkeys[1] != []):
+            logger.warning("NOT MATCHED zVARIABLES :")
+            i = 0
+            while i < 2:
+                logger.warning("   File %d : %d - %s", i + 1, len(notmathkeys[i]), notmathkeys[i])
+                i += 1
 
-        logger.warning("NOT MATCHED zVARIABLES :")
-
-        i = 0
-        while i < 2:
-            logger.warning("   File %d : %d - %s", i + 1, len(notmathkeys[i]), notmathkeys[i])
-            i += 1
-
-        zVars['NotMatched'] = [notmathkeys[0], notmathkeys[1]]
-
-        dict_result['zVars'] = zVars
+            zVars['NotMatched'] = [notmathkeys[0], notmathkeys[1]]
+            dict_result['zVars'] = zVars
 
         # ***** Matched keys *****
         same_keys = set(d1) & set(d2)
@@ -307,6 +305,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         for key in order_same_keys:
             if (key in list_ignore_zvar):
                 continue
+
             field1 = cdf1[key]
             field2 = cdf2[key]
 
@@ -320,7 +319,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 j += 1
 
             else:
-                arraycheck2 = np.array(field1.shape) == np.array(field1.shape)
+                arraycheck2 = np.array(field1.shape) == np.array(field2.shape)
                 uniq_val = np.unique(np.array(arraycheck2))
 
                 if len(uniq_val) == 1 and (uniq_val[0]) == False:
