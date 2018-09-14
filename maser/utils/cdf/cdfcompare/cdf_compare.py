@@ -322,7 +322,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 j += 1
 
             else:
-                arraycheck2 = np.array(field1.shape) == np.array(field2.shape)
+                arraycheck2 = field1[...] == field2[...]
                 uniq_val = np.unique(np.array(arraycheck2))
 
                 if len(uniq_val) == 1 and (uniq_val[0]) == False:
