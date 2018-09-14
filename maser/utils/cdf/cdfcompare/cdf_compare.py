@@ -296,6 +296,8 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         diff_array = {}  # For different dimensions
         diff_data = [] # For different data
 
+        diff_zvar_values = [] # For zVariable key which has different values
+
         NotMatch_vAttr = {}
         vAttrs = {}
         Value_vAttr = {}
@@ -323,15 +325,12 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
 
             else:
                 arraycheck2 = field1[...] == field2[...]
-                uniq_val = np.unique(np.array(arraycheck2))
+                uniq_val = np.unique(arraycheck2)  # [], [False  True], [ True], [ False]
 
-                if len(uniq_val) == 1 and (uniq_val[0]) == False:
-                    logger.warning("%d/%d. Values different !!!", j, n_same_keys)
-                    logger.warning("  ", key, " :     ", field1.shape, "     ", field2.shape)
-                    logger.warning(np.array(field1[:, :]) == np.array(field1[:, :]))
-                    diff_data = [diff_data, key]
-                if len(diff_data) != 0:
-                    diff_data = diff_data[1:]
+                # zVariable's key : Different values
+                if False in uniq_val:
+                    logger.warning("Different values for zVar '%s' %s", key, arraycheck2)
+                    diff_zvar_values.append(key)
 
             # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
             # *°* Compare Variable Attributes *°*
@@ -342,7 +341,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 logger.warning("%s Variable Attributes to be ignored for comparison : %s", len(list_ignore_vatt), list_ignore_vatt)
 
             tab_diff = get_not_matched_vAttrKey(field1, field2)
-           
             
             # Case of ACQUISITION_TIME_LABEL ACQUISITION_TIME_UNITS BAND_LABEL CHANNEL_LABEL FRONT_END_LABEL RPW_STATUS_LABEL
             #         TEMPERATURE_LABEL ...
@@ -386,7 +384,9 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         if len(diff_array) != 0:
             zVars['Size'] = diff_array
         if len(diff_data) != 0:
-            zVars['Value'] = diff_array
+            zVars['Value'] = diff_data
+        if len(diff_zvar_values) != 0:
+            zVars['Diff_Val'] = diff_zvar_values
 
         dict_result = {'gAttrs' : gAttrs, 'zVars' : zVars}
 
