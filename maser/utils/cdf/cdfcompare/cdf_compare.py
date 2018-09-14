@@ -329,7 +329,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
 
                 # zVariable's key : Different values
                 if False in uniq_val:
-                    logger.warning("Different values for zVar '%s' %s", key, arraycheck2)
+                    logger.warning("Different values for zVariable '%s'", key)
                     diff_zvar_values.append(key)
 
             # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
