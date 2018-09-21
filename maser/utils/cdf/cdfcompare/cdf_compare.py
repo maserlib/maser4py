@@ -341,10 +341,6 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 logger.warning("%s Variable Attributes to be ignored for comparison : %s", len(list_ignore_vatt), list_ignore_vatt)
 
             tab_diff = get_not_matched_vAttrKey(field1, field2)
-            print("******KEY : ", key)
-            print("******field1 : ", field1)
-            print("******field1 : ", field1)
-            print("*****Tab_diff : ", tab_diff)
             
             # Case of ACQUISITION_TIME_LABEL ACQUISITION_TIME_UNITS BAND_LABEL CHANNEL_LABEL FRONT_END_LABEL RPW_STATUS_LABEL
             #         TEMPERATURE_LABEL ...
