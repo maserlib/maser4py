@@ -302,7 +302,7 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
         vAttrs = {}
         Value_vAttr = {}
 
-        forced_ignored_zvar = []
+        # forced_ignored_zvar = []
 
         for key in order_same_keys:
             if (key in list_ignore_zvar):
@@ -341,13 +341,16 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 logger.warning("%s Variable Attributes to be ignored for comparison : %s", len(list_ignore_vatt), list_ignore_vatt)
 
             tab_diff = get_not_matched_vAttrKey(field1, field2)
+            print("******KEY : ", key)
+            print("******field1 : ", field1)
+            print("******field1 : ", field1)
+            print("*****Tab_diff : ", tab_diff)
             
             # Case of ACQUISITION_TIME_LABEL ACQUISITION_TIME_UNITS BAND_LABEL CHANNEL_LABEL FRONT_END_LABEL RPW_STATUS_LABEL
             #         TEMPERATURE_LABEL ...
-            # tab_diff == []
-            if tab_diff == []:
-                forced_ignored_zvar.append(key)
-                continue
+            # if tab_diff == []:
+            #     forced_ignored_zvar.append(key)
+            #     continue
 
             if list_ignore_vatt !=[]:
                 for item1 in list_ignore_vatt:
@@ -408,8 +411,8 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
                 logger.warning("     *°* %s : %s", key1, value1)
 
         # Case of we need to force to ignore some zVariables 
-        if forced_ignored_zvar != []:
-            logger.warning("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
+        # if forced_ignored_zvar != []:
+        #     logger.warning("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
 
     if dict_result != {}:
         logger.warning("*°*°* FINAL RESULT *°*°*")
