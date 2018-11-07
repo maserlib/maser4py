@@ -1,12 +1,19 @@
-import unittest
 import datetime
 import os
-import numpy
-from maser.data.data import *
-from maser.data.cassini.kronos import *
+import unittest
 
-os.environ['NAS_RPWS'] = '/Users/baptiste/PycharmProjects/maser4py/maser/data/tests/data/kronos/'
-rpws_root_path = os.environ['NAS_RPWS']
+import numpy
+
+from pathlib import Path
+from maser.data import MaserDataFromFile
+from maser.data.padc.lesia.cassini.kronos import CassiniKronosData, CassiniKronosLevel, CassiniKronosFile, \
+    CassiniKronosRecords, CassiniKronosSweeps, load_data_from_file, load_data_from_interval, ydh_to_datetime
+from maser.data.tests import load_test_data, get_data_directory
+
+load_test_data("kronos")
+
+os.environ['NAS_RPWS'] = str(get_data_directory() / 'kronos')
+rpws_root_path = Path(os.environ['NAS_RPWS'])
 
 verbose = False
 
@@ -16,8 +23,8 @@ class StaticFunctionTest(unittest.TestCase):
     """ Test case for static functions"""
 
     def test_from_file_result_class(self):
-        input_file = rpws_root_path + '2012_181_270/n2/P2012181.00'
-        self.assertIsInstance(load_data_from_file(input_file), CassiniKronosData)
+        input_file = rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.00'
+        self.assertIsInstance(load_data_from_file(str(input_file)), CassiniKronosData)
 
     def test_from_interval_result_class(self):
         self.assertIsInstance(load_data_from_interval(ydh_to_datetime("2012181.00"),
@@ -57,15 +64,15 @@ class CassiniKronosDataClassTest(unittest.TestCase):
 
     def test_rpws_data_dir(self):
         data = CassiniKronosData()
-        self.assertEqual(data.root_data_dir, rpws_root_path)
+        self.assertEqual(data.root_data_dir, str(rpws_root_path))
 
     def test_print(self):
-        data = CassiniKronosData.from_file(rpws_root_path + '2012_181_270/n2/P2012181.00')
+        data = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.00'))
         self.assertEqual(str(data),
                          '<CassiniKronosData object> 2012-06-29T00:00:00 to 2012-06-29T01:00:00 with level n2')
 
     def test_init_from_file(self):
-        data = CassiniKronosData.from_file(rpws_root_path+'2012_181_270/n2/P2012181.00', verbose=verbose)
+        data = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.00'), verbose=verbose)
         self.assertIsInstance(data, CassiniKronosData)
         self.assertEqual(data.start_time, datetime.datetime(2012, 6, 29, 0, 0, 0))
         self.assertEqual(data.end_time, datetime.datetime(2012, 6, 29, 1, 0, 0))
@@ -78,8 +85,8 @@ class CassiniKronosDataClassTest(unittest.TestCase):
         self.assertEqual(data['datetime'][78261], datetime.datetime(2012, 6, 29, 0, 59, 45, 210000))
 
     def test_init_from_interval_ydh(self):
-        data = CassiniKronosData.from_interval(ydh_to_datetime('2012181.00'), ydh_to_datetime('2012182.00'), 'n2',
-                                               verbose=verbose)
+        data = CassiniKronosData.from_interval(ydh_to_datetime('2012181.00'),
+                                               ydh_to_datetime('2012182.00'), 'n2', verbose=verbose)
         self.assertIsInstance(data, CassiniKronosData)
         self.assertEqual(len(data), 1730845)
         self.assertEqual(data.start_time, datetime.datetime(2012, 6, 29, 0, 0, 0))
@@ -111,7 +118,7 @@ class CassiniKronosDataClassTest(unittest.TestCase):
 #        self.assertEqual(level_list.sort(), ['n1', 'n2'].sort())
 
     def test_file_list(self):
-        data = CassiniKronosData.from_file(rpws_root_path+'2012_181_270/n2/P2012181.00')
+        data = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.00'))
         self.assertIsInstance(data.files, list)
         self.assertEqual(data.files[0].level.name, 'n2')
         self.assertIsInstance(data.files[0], CassiniKronosFile)
@@ -122,24 +129,24 @@ class CassiniKronosDataClassTest(unittest.TestCase):
 #        self.assertEqual(data.level_path(data.periods[0], data.dataset_name[0]), rpws_root_path+'2012_181_270/n2')
 
     def test_period(self):
-        data = CassiniKronosData.from_file(rpws_root_path+'2012_181_270/n2/P2012181.00')
+        data = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.00'))
         self.assertEqual(data.periods[0], '2012_181_270')
 
     def test_modes_from_file(self):
-        data = CassiniKronosData.from_file(rpws_root_path+'2012_181_270/n2/P2012181.00')
+        data = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.00'))
         modes = data.get_modes()
         self.assertEqual(len(modes.keys()), 1)
         self.assertEqual(list(modes.keys())[0], '41bc04a0e85e944f068c86e438700a05')
 
     def test_modes_from_interval(self):
-        data = CassiniKronosData.from_interval(ydh_to_datetime('2012180.23'), ydh_to_datetime('2012181.01'), 'n2',
-                                               verbose=verbose)
+        data = CassiniKronosData.from_interval(ydh_to_datetime('2012180.23'),
+                                               ydh_to_datetime('2012181.01'), 'n2', verbose=verbose)
         modes = data.get_modes()
         self.assertEqual(len(modes.keys()), 1)
         self.assertEqual(list(modes.keys())[0], '41bc04a0e85e944f068c86e438700a05')
 
     def test_n3b_with_data(self):
-        data = CassiniKronosData.from_file(rpws_root_path+'2012_181_270/n3b/N3b_dsq2012181.18')
+        data = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n3b' / 'N3b_dsq2012181.18'))
         self.assertIn('n1', list(data.data.keys()))
         self.assertIn('n2', list(data.data.keys()))
         self.assertIn('n3b', list(data.data.keys()))
@@ -147,55 +154,56 @@ class CassiniKronosDataClassTest(unittest.TestCase):
         self.assertEqual(data['datetime'][0], datetime.datetime(2012, 6, 29, 18, 0, 6, 200000))
 
     def test_n3b_without_data(self):
-        data = CassiniKronosData.from_file(rpws_root_path+'2012_181_270/n3b/N3b_dsq2012181.00')
+        data = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n3b' / 'N3b_dsq2012181.00'))
         self.assertIn('n1', list(data.data.keys()))
         self.assertIn('n2', list(data.data.keys()))
         self.assertIn('n3b', list(data.data.keys()))
         self.assertEqual(len(data), 0)
 
     def test_n3e_data(self):
-        data = CassiniKronosData.from_file(rpws_root_path+'2012_181_270/n3e/N3e_dsq2012181.00')
+        data = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n3e' / 'N3e_dsq2012181.00'))
         self.assertIn('n1', list(data.data.keys()))
         self.assertIn('n2', list(data.data.keys()))
         self.assertIn('n3e', list(data.data.keys()))
         self.assertEqual(len(data), 47088)
         self.assertEqual(data['num'][1], 1)
 
+
 class CassiniKronosFileClassTest(unittest.TestCase):
 
     """Test case for CassiniKronosFile class"""
 
     def test_inherited_class(self):
-        file = CassiniKronosFile(rpws_root_path+'2012_181_270/n1/R2012181.00')
+        file = CassiniKronosFile(str(rpws_root_path / '2012_181_270' / 'n1' / 'R2012181.00'))
         self.assertIsInstance(file, MaserDataFromFile)
 
     def test_file_k(self):
-        file = CassiniKronosFile(rpws_root_path+'2012_181_270/k/K2012181.00')
+        file = CassiniKronosFile(str(rpws_root_path / '2012_181_270' / 'k' / 'K2012181.00'))
         self.assertEqual(file.level.name, 'k')
         self.assertEqual(file.level.sublevel, '')
         self.assertFalse(file.level.implemented)
 
     def test_file_n1(self):
-        file = CassiniKronosFile(rpws_root_path+'2012_181_270/n1/R2012181.00')
+        file = CassiniKronosFile(str(rpws_root_path / '2012_181_270' / 'n1' / 'R2012181.00'))
         self.assertEqual(file.level.name, 'n1')
         self.assertEqual(file.level.sublevel, '')
         self.assertEqual(file.start_time, datetime.datetime(2012, 6, 29, 0, 0, 0))
         self.assertEqual(file.end_time, datetime.datetime(2012, 6, 29, 1, 0, 0))
 
     def test_file_n2(self):
-        file = CassiniKronosFile(rpws_root_path+'2012_181_270/n2/P2012181.23')
+        file = CassiniKronosFile(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.23'))
         self.assertEqual(file.level.name, 'n2')
         self.assertEqual(file.level.sublevel, '')
         self.assertEqual(file.start_time, datetime.datetime(2012, 6, 29, 23, 0, 0))
         self.assertEqual(file.end_time, datetime.datetime(2012, 6, 30, 0, 0, 0))
 
     def test_file_n3b(self):
-        file = CassiniKronosFile(rpws_root_path+'2012_181_270/n3b/N3b_dsq2012181.00')
+        file = CassiniKronosFile(str(rpws_root_path / '2012_181_270' / 'n3b' / 'N3b_dsq2012181.00'))
         self.assertEqual(file.level.name, 'n3b')
         self.assertEqual(file.level.sublevel, 'dsq')
 
     def test_read_data_binary(self):
-        file = CassiniKronosFile(rpws_root_path+'2012_181_270/n2/P2012181.23')
+        file = CassiniKronosFile(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.23'))
         data = file.read_data_binary()
         self.assertIsInstance(data, numpy.ndarray)
         self.assertIsInstance(data[0], numpy.void)
@@ -203,7 +211,7 @@ class CassiniKronosFileClassTest(unittest.TestCase):
         self.assertEqual(len(data), file.get_file_size() // file.level.record_def['length'])
 
     def test_period(self):
-        file = CassiniKronosFile(rpws_root_path+'2012_181_270/n2/P2012181.23')
+        file = CassiniKronosFile(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.23'))
         self.assertEqual(file.period(), '2012_181_270')
 
 
@@ -212,7 +220,7 @@ class CassiniKronosRecordsClassTest(unittest.TestCase):
     """Test case for CassiniKronosRecords class"""
 
     def test_iterator(self):
-        o = CassiniKronosData.from_file(rpws_root_path+'2012_181_270/n2/P2012181.00', verbose=verbose)
+        o = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.00'), verbose=verbose)
         records = o.records()
         self.assertIsInstance(records, CassiniKronosRecords)
         t, f, d = next(records)
@@ -234,7 +242,7 @@ class CassiniKronosSweepsClassTest(unittest.TestCase):
     """Test case for CassiniKronosRecords class"""
 
     def test_iterator(self):
-        o = CassiniKronosData.from_file(rpws_root_path+'2012_181_270/n2/P2012181.00', verbose=verbose)
+        o = CassiniKronosData.from_file(str(rpws_root_path / '2012_181_270' / 'n2' / 'P2012181.00'), verbose=verbose)
         sweeps = o.sweeps()
         self.assertIsInstance(sweeps, CassiniKronosSweeps)
         t, d = next(sweeps)
