@@ -1,9 +1,10 @@
-import unittest
 import datetime
 import os
+import unittest
+
 import numpy
 from maser.data.data import *
-from maser.data.cassini.kronos import *
+from maser.data.padc.lesia.cassini.kronos import *
 
 os.environ['NAS_RPWS'] = '/Users/baptiste/PycharmProjects/maser4py/maser/data/tests/data/kronos/'
 rpws_root_path = os.environ['NAS_RPWS']
