@@ -15,7 +15,7 @@ __author__ = "Baptiste Cecconi"
 __date__ = "30-MAR-2017"
 __version__ = "0.02"
 
-__all__ = ["load_dmt_n1_1134_from_webservice", "read_dmt_n1_1134"]
+__all__ = ["CDPPDemeterN11134Data", "load_dmt_n1_1134_from_webservice", "read_dmt_n1_1134"]
 
 
 class CDPPDemeterN11134Sweep(MaserDataSweep):
@@ -206,7 +206,7 @@ class CDPPDemeterN11134Data(CDPPDataFromFile):
         if self.debug:
             print("This is {}.get_time_axis()".format(__class__.__name__))
 
-        return self.get_datetime_ccsds_cds()
+        return self.get_datetime_ccsds_cds(['BLOCK_1', 'CCSDS_DATE'])
 
     def get_single_datetime(self, index):
 
@@ -221,6 +221,15 @@ class CDPPDemeterN11134Data(CDPPDataFromFile):
             print("This is {}.get_single_sweep()".format(__class__.__name__))
 
         return CDPPDemeterN11134Sweep(self, cur_index, debug=self.debug, verbose=self.verbose)
+
+    def get_frequency(self, cur_index=0):
+
+        if self.debug:
+            print("This is {}.get_frequency()".format(__class__.__name__))
+
+        return numpy.linspace(self.header[cur_index]["BLOCK_4"]['LOWER_FREQ'],
+                              self.header[cur_index]["BLOCK_4"]['UPPER_FREQ'],
+                              num=self.header[cur_index]["BLOCK_4"]['NBF'])
 
 
 def load_dmt_n1_1134_from_webservice(file_name, user='cecconi', password=None, check_file=True,
