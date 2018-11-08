@@ -8,7 +8,7 @@ Python module to read a Viking/V4n/E5 data file from CDPP deep archive (http://c
 
 import os
 import struct
-from maser.data.cdpp.cdpp import *
+from maser.data.cdpp.cdpp import CDPPDataFromFile
 
 __author__ = "Baptiste Cecconi"
 __date__ = "10-JUL-2017"
@@ -87,8 +87,8 @@ class VikingV4nData(CDPPDataFromFile):
             meta = self.meta[var_name]
         return meta
 
-    def get_epncore(self):
-        md = CDPPDataFromFile.get_epncore(self)
+    def get_epncore_meta(self):
+        md = CDPPDataFromFile.get_epncore_meta(self)
         md["time_min"] = self["DATETIME_UTC"][0]
         md["time_max"] = self["DATETIME_UTC"][-1]
         md["time_scale"] = "UTC"

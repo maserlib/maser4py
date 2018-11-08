@@ -1,1 +1,0 @@
-from maser.data.cdpp.wind.waves import *

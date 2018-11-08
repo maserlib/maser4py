@@ -1,9 +1,12 @@
 import unittest
 import datetime
-from maser.data.cdpp.cdpp import *
-from maser.data.cdpp.wind.waves import *
-from maser.data.cdpp.isee3.sbh import *
-from maser.data.cdpp.viking.v4n import *
+from maser.data.tests import load_test_data, get_data_directory
+from maser.data.cdpp import CDPPDataFromFile
+from maser.data.cdpp.wind.waves import WindWavesData, read_wind_waves
+from maser.data.cdpp.isee3.sbh import ISEE3SBHData, read_isee3_sbh_3d_radio_source
+from maser.data.cdpp.viking.v4n import VikingV4nData, read_viking
+
+load_test_data("cdpp")
 
 
 class CDPPDataTest(unittest.TestCase):
@@ -19,68 +22,68 @@ class CDPPDataTest(unittest.TestCase):
 
 
 def load_wind_waves_nn():
-    file_path = "data/WI_WA_TNR_L3_NN_19941114_V02.DAT"
-    return read_wind_waves(file_path)
+    file_path = get_data_directory() / "cdpp" / "wind" / "WI_WA_TNR_L3_NN_19941114_V02.DAT"
+    return read_wind_waves(str(file_path))
 
 
 def load_wind_waves_bqt():
-    file_path = "data/WI_WA_TNR_L3_BQT_19941114_1MN.DAT"
-    return read_wind_waves(file_path)
+    file_path = get_data_directory() / "cdpp" / "wind" / "WI_WA_TNR_L3_BQT_19941114_1MN.DAT"
+    return read_wind_waves(str(file_path))
 
 
 def load_wind_waves_radio_60s():
-    file_path = "data/WIN_TNR_60S_19941114.B3E"
-    return read_wind_waves(file_path)
+    file_path = get_data_directory() / "cdpp" / "wind" / "WIN_TNR_60S_19941114.B3E"
+    return read_wind_waves(str(file_path))
 
 
 def load_isee3_sbh_3d_radio_source():
-    file_path = "data/SBH_ISEE3_19780820"
-    return read_isee3_sbh_3d_radio_source(file_path)
+    file_path = get_data_directory() / "cdpp" / "isee3" / "SBH_ISEE3_19780820"
+    return read_isee3_sbh_3d_radio_source(str(file_path))
 
 
 def load_viking_v4():
-    file_path = "data/V4N_0101_003"
-    return read_viking(file_path)
+    file_path = get_data_directory() / "cdpp" / "viking" / "V4N_0101_003"
+    return read_viking(str(file_path))
 
 
 def load_viking_v4_v1():
-    file_path = "data/V4N_0101_003"
-    return read_viking(file_path, "VIKING_V4_V1")
+    file_path = get_data_directory() / "cdpp" / "viking" / "V4N_0101_003"
+    return read_viking(str(file_path), "VIKING_V4_V1")
 
 
 def load_viking_v4_v2():
-    file_path = "data/V4N_0101_003"
-    return read_viking(file_path, "VIKING_V4_V2")
+    file_path = get_data_directory() / "cdpp" / "viking" / "V4N_0101_003"
+    return read_viking(str(file_path), "VIKING_V4_V2")
 
 
 def load_viking_v4l_fbl():
-    file_path = "data/V4N_0101_003"
-    return read_viking(file_path, "VIKING_V4L_FBL")
+    file_path = get_data_directory() / "cdpp" / "viking" / "V4N_0101_003"
+    return read_viking(str(file_path), "VIKING_V4L_FBL")
 
 
 def load_viking_v4l_ni():
-    file_path = "data/V4N_0101_003"
-    return read_viking(file_path, "VIKING_V4L_Ni")
+    file_path = get_data_directory() / "cdpp" / "viking" / "V4N_0101_003"
+    return read_viking(str(file_path), "VIKING_V4L_Ni")
 
 
 def load_viking_v4l_dft():
-    file_path = "data/V4N_0101_003"
-    return read_viking(file_path, "VIKING_V4L_DFT")
+    file_path = get_data_directory() / "cdpp" / "viking" / "V4N_0101_003"
+    return read_viking(str(file_path), "VIKING_V4L_DFT")
 
 
 def load_viking_v4l_wf():
-    file_path = "data/V4N_0101_003"
-    return read_viking(file_path, "VIKING_V4L_WF")
+    file_path = get_data_directory() / "cdpp" / "viking" / "V4N_0101_003"
+    return read_viking(str(file_path), "VIKING_V4L_WF")
 
 
 def load_viking_v4h_sfa():
-    file_path = "data/V4N_0101_003"
-    return read_viking(file_path, "VIKING_V4H_SFA")
+    file_path = get_data_directory() / "cdpp" / "viking" / "V4N_0101_003"
+    return read_viking(str(file_path), "VIKING_V4H_SFA")
 
 
 def load_viking_v4h_fb():
-    file_path = "data/V4N_0101_003"
-    return read_viking(file_path, "VIKING_V4H_FB")
+    file_path = get_data_directory() / "cdpp" / "viking" / "V4N_0101_003"
+    return read_viking(str(file_path), "VIKING_V4H_FB")
 
 
 class WindWavesDataTest(unittest.TestCase):
