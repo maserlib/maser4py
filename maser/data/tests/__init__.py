@@ -9,7 +9,8 @@ _test_data_root_url = 'http://maser.obspm.fr/data/maser4py/tests/data'
 _test_data_root_local = Path(__file__).parent / 'data'
 
 # data directories and files to be downloaded
-_test_data_files = {'cdpp': {'isee3': ['SBH_ISEE3_19780820'],
+_test_data_files = {'cdpp': {'demeter': ['DMT_N1_1134_018401_20041105_235807_20041106_003155.DAT'],
+                             'isee3': ['SBH_ISEE3_19780820'],
                              'viking': ['V4N_0101_003'],
                              'wind': ['WI_WA_TNR_L3_BQT_19941114_1MN.DAT', 'WI_WA_TNR_L3_NN_19941114_V02.DAT',
                                       'WIN_TNR_60S_19941114.B3E']},
@@ -91,6 +92,7 @@ def load_test_data(database_name='all', reload=False):
 
             # set up local directory variable, and create directory if necessary
             test_data_path = Path(_test_data_root_local) / database
+            test_data_url_path = '{}/{}'.format(_test_data_root_url, database)
             if not test_data_path.exists():
                 test_data_path.mkdir()
 
@@ -101,7 +103,7 @@ def load_test_data(database_name='all', reload=False):
                 cur_local_path = test_data_path / Path(cur_dir)
 
                 # URL of current sub-directory
-                cur_url_path = '{}/{}'.format(_test_data_root_url, cur_dir)
+                cur_url_path = '{}/{}'.format(test_data_url_path, cur_dir)
 
                 # create cur_local_path if it doesn't exist:
                 if not cur_local_path.exists():
@@ -115,5 +117,8 @@ def load_test_data(database_name='all', reload=False):
 
                     # download is file doesn't exist or reload=True
                     if not cur_file_path.exists() or reload:
-                        download_url = '{}/{}/{}'.format(cur_url_path, cur_dir, cur_file)
-                        urllib.request.urlretrieve(download_url)
+                        download_url = '{}/{}'.format(cur_url_path, cur_file)
+                        print("Trying to download URL: {}".format(download_url))
+                        print("into: {}\n".format(cur_file_path))
+                        urllib.request.urlretrieve(download_url, str(cur_file_path))
+                        print("Done.")
