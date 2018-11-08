@@ -62,3 +62,5 @@ class CDPPInterballAuroralPOLRADRSPDataTest(unittest.TestCase):
         self.assertSetEqual(set(s.data.keys()), {'EX', 'EY', 'EZ'})
         self.assertEqual(len(s.data['EX']), 240)
         self.assertAlmostEqual(s.data['EX'][0], 6.211469825662024e-20)
+
+

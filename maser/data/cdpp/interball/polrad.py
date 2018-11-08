@@ -227,7 +227,7 @@ class CDPPInterballAuroralPOLRADRSPData(CDPPDataFromFile):
         return md
 
 
-def load_int_aur_polrad_from_webservice(file_name, user='cecconi', password=None, check_file=True,
+def load_int_aur_polrad_from_webservice(file_name, user=None, password=None, check_file=True,
                                         verbose=False, debug=False):
 
     if debug:

@@ -389,7 +389,7 @@ class CDPPWebService:
         self.auth_token_expire = datetime.datetime.now()
         self.file = {}
 
-    def connect(self, user="cecconi", password=None):
+    def connect(self, user=None, password=None):
         """
         Connection to CDPP webservice, in order to get a valid authentication token.
         :param user: valid CDPP web service user
