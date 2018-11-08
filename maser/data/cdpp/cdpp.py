@@ -253,13 +253,24 @@ class CDPPDataFromFile(MaserDataFromFile):
             dt.append(cur_date)
         return dt
 
-    def get_datetime_ccsds_cds(self):
+    def get_datetime_ccsds_cds(self, keys=None):
         """
         Method to retrieve the list of datetime par sweep (from CCSDS-CDS format)
+        :param keys: set to dict key value (string) of list of dict key values if required (default is None)
         :return dt: list of datetime
         """
         dt = list()
-        for cur_header in self.header:
+        for cur_header_item in self.header:
+            if keys is None:
+                cur_header = cur_header_item
+            elif type(keys) is str:
+                cur_header = cur_header_item[keys]
+            elif type(keys) is list:
+                cur_header_tmp = cur_header_item
+                for key_item in keys:
+                    cur_header_tmp = cur_header_tmp[key_item]
+                cur_header = cur_header_tmp
+
             days = cur_header["CCSDS_JULIAN_DAY_B1"] * 2**16 + \
                    cur_header["CCSDS_JULIAN_DAY_B2"] * 2**8 + \
                    cur_header["CCSDS_JULIAN_DAY_B3"]
