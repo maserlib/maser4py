@@ -10,6 +10,7 @@ _test_data_root_local = Path(__file__).parent / 'data'
 
 # data directories and files to be downloaded
 _test_data_files = {'cdpp': {'demeter': ['DMT_N1_1134_018401_20041105_235807_20041106_003155.DAT'],
+                             'interball': ['POLR_RSPN2_19971116', 'POLR_RSPN2_19990126'],
                              'isee3': ['SBH_ISEE3_19780820'],
                              'viking': ['V4N_0101_003'],
                              'wind': ['WI_WA_TNR_L3_BQT_19941114_1MN.DAT', 'WI_WA_TNR_L3_NN_19941114_V02.DAT',
@@ -119,6 +120,6 @@ def load_test_data(database_name='all', reload=False):
                     if not cur_file_path.exists() or reload:
                         download_url = '{}/{}'.format(cur_url_path, cur_file)
                         print("Trying to download URL: {}".format(download_url))
-                        print("into: {}\n".format(cur_file_path))
+                        print("into: {}".format(cur_file_path))
                         urllib.request.urlretrieve(download_url, str(cur_file_path))
-                        print("Done.")
+                        print("Done.\n")
