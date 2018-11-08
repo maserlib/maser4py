@@ -8,7 +8,9 @@ Python module to define classes for the Nancay Decameter Array (NDA) datasets at
 
 import struct
 import datetime
-from maser.data.data import *
+from maser.data.data import MaserError
+from maser.data.data import MaserDataFromFile
+from maser.data.data import MaserDataSweep
 
 __author__ = "Baptiste Cecconi"
 __institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
@@ -34,11 +36,11 @@ class NDADataFromFile(MaserDataFromFile):
     def __len__(self):
         return len(self.data)
 
-
 class NDADataECube(MaserDataSweep):
-    def __init__(self, parent_obj, index_input, load_data=True):
+    def __init__(self, parent_obj, index_input, load_data=True, filter_frequency=False):
         MaserDataSweep.__init__(self, parent_obj, index_input)
         self.debug = self.parent.debug
+        self.filter_frequency = filter_frequency
         self.data = dict()
 
         ecube_hdr_read_param = {'fields': ['magic', 'id', 'date_jd', 'date_sec', 'date_nsub', 'date_dsub'],
@@ -89,7 +91,11 @@ class NDADataECube(MaserDataSweep):
         f.seek(self.data['corr'][index]['data_pos_in_file'], 0)
         block = f.read(corr_data_length)
         corr_tmp_data = struct.unpack('<{}f'.format(self.parent.header['nfreq']), block)
-        self.data['corr'][index]['data'] = corr_tmp_data
+        if self.filter_frequency:
+            self.data['corr'][index]['data'] = \
+                corr_tmp_data[self.parent.header['ifrq_min']:self.parent.header['ifrq_max']]
+        else:
+            self.data['corr'][index]['data'] = corr_tmp_data
 
     def check_magic(self):
 
@@ -102,3 +108,4 @@ class NDADataECube(MaserDataSweep):
                 raise NDAError('[{}:{}] Wrong eCube Magic Word (Corr[{}]) [0x{:08X}]'
                                .format(self.parent.get_file_name(), self.index,
                                        i, self.data['corr'][i]['magic']))
+
