@@ -9,7 +9,7 @@ Python module to read a DEMETER S/C data from CDPP deep archive (http://cdpp-arc
 import struct
 import numpy
 from maser.data import MaserError, MaserDataSweep
-from maser.data.cdpp.cdpp import CDPPDataFromFile, CDPPFileFromWebServiceSync
+from maser.data.cdpp import CDPPDataFromFile, CDPPFileFromWebServiceSync
 
 __author__ = "Baptiste Cecconi"
 __date__ = "30-MAR-2017"
