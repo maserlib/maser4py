@@ -114,6 +114,9 @@ class CCSDSDate(object):
         self.epoch_type = ''
         self._n_bytes_t_field = len(self.T_field)  # this value will be check by derived classes
 
+    def _decode_t_field(self) -> datetime:
+        return datetime.datetime
+
 
 class CCSDSDateCUC(CCSDSDate):
     """Class for CCSDS CUC (Level 1) time format object.
@@ -196,7 +199,7 @@ class CCSDSDateCDS(CCSDSDate):
 
 
 class CCSDSDateCCS(CCSDSDate):
-    """Class for CCSDS CDS (Level 1) time format object.
+    """Class for CCSDS CCS (Level 1) time format object.
     """
     def __init__(self, p_field, t_field):
         CCSDSDate.__init__(self, p_field, t_field)
