@@ -25,7 +25,7 @@ class ISEE3SBHData(CDPPDataFromFile):
         self.orbit = orbit
 
     def get_datetime(self):
-        return self.get_datetime_ccsds_ccs()
+        return self.get_datetime_ccsds()
 
 
 def read_isee3_sbh_3d_radio_source(file_path, verbose=False):
@@ -44,9 +44,9 @@ def read_isee3_sbh_3d_radio_source(file_path, verbose=False):
     header_dtype += "hhhhhh"
     header_length += 12
 
-    header_fields += ["CCSDS_PREAMBLE", "CCSDS_YEAR", "CCSDS_MONTH", "CCSDS_DAY", "CCSDS_HOUR", "CCSDS_MINUTE",
-                      "CCSDS_SECOND", "CCSDS_SECOND_E_2", "CCSDS_SECOND_E_4"]
-    header_dtype += "bhbbbbbbb"
+    header_fields += ["CCSDS_PREAMBLE", "CCSDS_B0", "CCSDS_B1", "CCSDS_B2", "CCSDS_B3", "CCSDS_B4", "CCSDS_B5",
+                      "CCSDS_B6", "CCSDS_B7", "CCSDS_B8"]
+    header_dtype += 'BBBBBBBBBB'
     header_length += 10
 
     header_fields += ["DATA_RATE", "RECEIVER_MODE", "S_ANTENNA"]
@@ -99,6 +99,36 @@ def read_isee3_sbh_3d_radio_source(file_path, verbose=False):
                 block = frb.read(header_length)
                 header_i = dict(zip(header_fields, struct.unpack(header_dtype, block)))
 
+                # => Here we fix the `P_Field` which is corrupted
+                # first we reverse the order of the bits in the byte
+                P_Field_tmp = int('{:08b}'.format(header_i['CCSDS_PREAMBLE'])[::-1], 2)
+                # Then we put back the initial 0-2 bits into bits 5-7 (defining the resolution)
+                # as those bits are not in reverse order in the file...
+                P_Field_tmp = (P_Field_tmp & 31) + (header_i['CCSDS_PREAMBLE'] & 7)*32
+
+                header_i['P_Field'] = P_Field_tmp
+                if header_i['CCSDS_PREAMBLE'] == 80:
+                    header_i['T_Field'] = bytearray([header_i['CCSDS_B0'], header_i['CCSDS_B1'],
+                                                     header_i['CCSDS_B2'], header_i['CCSDS_B3'],
+                                                     header_i['CCSDS_B4'], header_i['CCSDS_B5'],
+                                                     header_i['CCSDS_B6'],
+                                                     ])
+                elif header_i['CCSDS_PREAMBLE'] == 81:
+                    header_i['T_Field'] = bytearray([header_i['CCSDS_B0'], header_i['CCSDS_B1'],
+                                                     header_i['CCSDS_B2'], header_i['CCSDS_B3'],
+                                                     header_i['CCSDS_B4'], header_i['CCSDS_B5'],
+                                                     header_i['CCSDS_B6'], header_i['CCSDS_B7'],
+                                                     ])
+                elif header_i['CCSDS_PREAMBLE'] == 82:
+                    header_i['T_Field'] = bytearray([header_i['CCSDS_B0'], header_i['CCSDS_B1'],
+                                                     header_i['CCSDS_B2'], header_i['CCSDS_B3'],
+                                                     header_i['CCSDS_B4'], header_i['CCSDS_B5'],
+                                                     header_i['CCSDS_B6'], header_i['CCSDS_B7'],
+                                                     header_i['CCSDS_B8'],
+                                                     ])
+                else:
+                    raise Exception('Wrong CCSDS P_Field for this dataset')
+
                 orbit_i = {"SC_GSE_X": header_i["SPACECRAFT_POSITION_X"],
                            "SC_GSE_Y": header_i["SPACECRAFT_POSITION_Y"],
                            "SC_GSE_Z": header_i["SPACECRAFT_POSITION_Z"]}
@@ -133,7 +163,6 @@ def read_isee3_sbh_3d_radio_source(file_path, verbose=False):
                     block = frb.read(2 * header_i["N_PHI"])
                     cur_phi = struct.unpack(">" + "h" * header_i["N_PHI"], block)
                     data_i["PHI_DATA"].append(cur_phi)
-
 
                 # Reading number of octets in the current sweep
                 block = frb.read(4)
