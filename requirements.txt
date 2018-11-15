@@ -7,3 +7,4 @@ pytz
 astropy
 python-dateutil
 spacepy
+requests

@@ -151,26 +151,26 @@ class CDPPDataFromFile(MaserDataFromFile):
 
         return dt
 
-    def get_datetime_ccsds_ccs(self, prefix=None):
-        """Method to retrieve the list of datetime par sweep (from CCSDS-CCS format)
-        :param prefix: CCSDS_CCS key string prefix (default = None)
-        :return dt: list of datetime
-        """
-
-        dt = list()
-        if prefix is None:
-            prefix_str = ""
-        else:
-            prefix_str = prefix
-
-        for cur_header in self.header:
-            dt.append(datetime.datetime(cur_header[prefix_str+"CCSDS_YEAR"], cur_header[prefix_str+"CCSDS_MONTH"],
-                                        cur_header[prefix_str+"CCSDS_DAY"], cur_header[prefix_str+"CCSDS_HOUR"],
-                                        cur_header[prefix_str+"CCSDS_MINUTE"], cur_header[prefix_str+"CCSDS_SECOND"],
-                                        int(cur_header[prefix_str+"CCSDS_SECOND_E_2"] * 1e4) +
-                                        int(cur_header[prefix_str+"CCSDS_SECOND_E_4"] * 1e2)))
-
-        return dt
+    # def get_datetime_ccsds_ccs(self, prefix=None):
+    #     """Method to retrieve the list of datetime par sweep (from CCSDS-CCS format)
+    #     :param prefix: CCSDS_CCS key string prefix (default = None)
+    #     :return dt: list of datetime
+    #     """
+    #
+    #     dt = list()
+    #     if prefix is None:
+    #         prefix_str = ""
+    #     else:
+    #         prefix_str = prefix
+    #
+    #     for cur_header in self.header:
+    #         dt.append(datetime.datetime(cur_header[prefix_str+"CCSDS_YEAR"], cur_header[prefix_str+"CCSDS_MONTH"],
+    #                                     cur_header[prefix_str+"CCSDS_DAY"], cur_header[prefix_str+"CCSDS_HOUR"],
+    #                                     cur_header[prefix_str+"CCSDS_MINUTE"], cur_header[prefix_str+"CCSDS_SECOND"],
+    #                                     int(cur_header[prefix_str+"CCSDS_SECOND_E_2"] * 1e4) +
+    #                                     int(cur_header[prefix_str+"CCSDS_SECOND_E_4"] * 1e2)))
+    #
+    #     return dt
 
     def get_epncore_meta(self):
 
