@@ -22,7 +22,7 @@ import json
 import os
 import filecmp
 import getpass
-from .ccsds import CCSDSDate
+from .ccsds import decode_ccsds_date
 from maser.data.data import MaserDataFromFile, MaserError
 import socket
 hostname = socket.getfqdn()
@@ -112,9 +112,20 @@ class CDPPDataFromFile(MaserDataFromFile):
             dt.append(cur_date)
         return dt
 
+    def get_datetime_ccsds(self, p_field_key='P_Field', t_field_key='T_Field'):
+        """Method to retrieve the list of datetime per sweep (from CCSDS format)
+        :return dt: list of datetime
+        """
+        dt = list()
+        for cur_header_item in self.header:
+            cur_p_field = cur_header_item[p_field_key]
+            cur_t_field = cur_header_item[t_field_key]
+            dt.append(decode_ccsds_date(cur_p_field, cur_t_field).datetime)
+        return dt
+
     def get_datetime_ccsds_cds(self, keys=None):
         """
-        Method to retrieve the list of datetime par sweep (from CCSDS-CDS format)
+        Method to retrieve the list of datetime per sweep (from CCSDS-CDS format)
         :param keys: set to dict key value (string) of list of dict key values if required (default is None)
         :return dt: list of datetime
         """

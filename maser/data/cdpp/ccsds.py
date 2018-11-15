@@ -11,12 +11,12 @@ __institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
 __date__ = "14-NOV-2018"
 __project__ = "MASER/CDPP"
 
-__all__ = ["decode_ccsds_date", "CCSDSDateCUC", "CCSDSDateCDS", "CCSDSDateCCS"]
+__all__ = ["decode_ccsds_date", "CCSDSDate", "CCSDSDateCUC", "CCSDSDateCDS", "CCSDSDateCCS"]
 
 import datetime
 
 
-def decode_ccsds_date(p_field, t_field) -> object:
+def decode_ccsds_date(p_field, t_field) -> 'CCSDSDate':
     """Decode a CCSDS time format into a CCSDSDate derived object.
 
     A CCSDS Date is composed of 2 fields: a time specification field (`t_field`) and a time code
