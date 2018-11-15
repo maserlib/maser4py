@@ -35,9 +35,9 @@ class VikingV4nData(CDPPDataFromFile):
 
     def get_datetime(self, is_utc=False):
         if is_utc:
-            return self.get_datetime_ccsds_ccs("UTC_")
+            return self.get_datetime_ccsds("UTC_P_Field", "UTC_T_Field")
         else:
-            return self.get_datetime_ccsds_ccs()
+            return self.get_datetime_ccsds()
 
     def getvar(self, var_name):
         """
@@ -171,10 +171,11 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
     header1_dtype = ">h"
 
     # WARNING: CNES/CDPP SCRIBE DESCRIPTOR IS WRONG -- CCSDS DAY_IN_YEAR_02 is not present
-    header1_fields += ["CCSDS_PREAMBLE", "CCSDS_YEAR", "CCSDS_MONTH",
-                       "CCSDS_DAY", "CCSDS_HOUR", "CCSDS_MINUTE", "CCSDS_SECOND", "CCSDS_SECOND_E_2",
-                       "CCSDS_SECOND_E_4"]
-    header1_dtype += 'bhbbbbbbb'
+    # This dataset uses CCSDS-CCS Time Format.
+    # year, month, day, hour, minute, second, CCSDS_B0*256 + CCSDS_B1
+    header1_fields += ["CCSDS_PREAMBLE", "CCSDS_B0", "CCSDS_B1", "CCSDS_B2", "CCSDS_B3", "CCSDS_B4", "CCSDS_B5",
+                       "CCSDS_B6", "CCSDS_B7", "CCSDS_B8"]
+    header1_dtype += 'BBBBBBBBBB'
 
     header1_fields += ["CALENDAR_YEAR", "CALENDER_MONTH", "CALENDAR_DAY", "CALENDAR_HOUR",
                        "CALENDAR_MINUTE", "CALENDAR_SECOND", "CALENDAR_MILLI_SECOND"]
@@ -200,10 +201,10 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                        "V4L_MODE_SWITCH_FLAGS_FIRST_SWITCH_SERIAL_NUMBER"]
     header1_dtype += 'hhh'
 
-    header1_fields += ["UTC_CCSDS_PREAMBLE", "UTC_CCSDS_YEAR", "UTC_CCSDS_MONTH",
-                       "UTC_CCSDS_DAY", "UTC_CCSDS_HOUR", "UTC_CCSDS_MINUTE", "UTC_CCSDS_SECOND",
-                       "UTC_CCSDS_SECOND_E_2", "UTC_CCSDS_SECOND_E_4"]
-    header1_dtype += 'bhbbbbbbb'
+    header1_fields += ["UTC_CCSDS_PREAMBLE", "UTC_CCSDS_B0", "UTC_CCSDS_B1", "UTC_CCSDS_B2",
+                       "UTC_CCSDS_B3", "UTC_CCSDS_B4", "UTC_CCSDS_B5", "UTC_CCSDS_B6",
+                       "UTC_CCSDS_B7", "UTC_CCSDS_B8"]
+    header1_dtype += 'BBBBBBBBBB'
 
     # WARNING: CNES/CDPP SCRIBE DESCRIPTOR IS WRONG -- CCSDS DAY_IN_YEAR_02 is not present
     header1_fields += ["UTC_CALENDAR_YEAR", "UTC_CALENDER_MONTH", "UTC_CALENDAR_DAY", "UTC_CALENDAR_HOUR",
@@ -305,6 +306,20 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                 # Reading header1 parameters in the current record
                 block = frb.read(header1_length)
                 header1_i = dict(zip(header1_fields, struct.unpack(header1_dtype, block)))
+                header1_i['P_Field'] = int('{:08b}'.format(header1_i['CCSDS_PREAMBLE'])[::-1], 2)
+                header1_i['T_Field'] = bytearray([header1_i['CCSDS_B0'], header1_i['CCSDS_B1'],
+                                                  header1_i['CCSDS_B2'], header1_i['CCSDS_B3'],
+                                                  header1_i['CCSDS_B4'], header1_i['CCSDS_B5'],
+                                                  header1_i['CCSDS_B6'], header1_i['CCSDS_B7'],
+                                                  header1_i['CCSDS_B8'],
+                                                  ])
+                header1_i['UTC_P_Field'] = int('{:08b}'.format(header1_i['UTC_CCSDS_PREAMBLE'])[::-1], 2)
+                header1_i['UTC_T_Field'] = bytearray([header1_i['UTC_CCSDS_B0'], header1_i['UTC_CCSDS_B1'],
+                                                      header1_i['UTC_CCSDS_B2'], header1_i['UTC_CCSDS_B3'],
+                                                      header1_i['UTC_CCSDS_B4'], header1_i['UTC_CCSDS_B5'],
+                                                      header1_i['UTC_CCSDS_B6'], header1_i['UTC_CCSDS_B7'],
+                                                      header1_i['UTC_CCSDS_B8'],
+                                                      ])
                 frb.read(header1_spare_len)
 
                 # Reading header2 parameters in the current record
