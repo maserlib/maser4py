@@ -6,21 +6,6 @@ Python module to work with SRN/NDA/Routine data
 @author: B.Cecconi(LESIA)
 """
 
-import struct
-import datetime
-import os
-import sys
-# import numpy
-from maser.data.data import MaserDataSweep, MaserData
-from maser.data.nancay.nda.nda import NDAError
-from maser.data.nancay.nda.nda import NDADataFromFile
-from spacepy import pycdf as cdf
-import dateutil.parser
-
-# import sunpy.sun
-# get_sun_B0([time])	Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the Sun-disk center as seen from Earth.
-# get_sun_L0([time])	Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the Sun-disk center as seen from Earth.
-
 __author__ = "Baptiste Cecconi"
 __copyright__ = "Copyright 2017, LESIA-PADC-USN, Observatoire de Paris"
 __credits__ = ["Baptiste Cecconi", "Andree Coffre", "Laurent Lamy"]
@@ -37,6 +22,21 @@ _dat_version = "01"
 
 __all__ = ["NDARoutineDataRT1", "NDARoutineDataCDF", "NDARoutineSweepRT1", "NDARoutineSweepCDF", "NDARoutineError",
            "load_nda_routine_from_file"]
+
+import struct
+import datetime
+import os
+import sys
+# import numpy
+from ...data import MaserDataSweep, MaserData
+from ..nda import NDAError
+from ..nda import NDADataFromFile
+from spacepy import pycdf as cdf
+import dateutil.parser
+
+# import sunpy.sun
+# get_sun_B0([time]) #	Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the Sun-disk center as seen from Earth.
+# get_sun_L0([time]) #	Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the Sun-disk center as seen from Earth.
 
 
 def _detect_format(file, debug=False):
@@ -266,8 +266,7 @@ class NDARoutineDataRT1(NDARoutineData):
         return meridian_dt
 
     def _header_from_file(self):
-        """
-
+        """ Return file header
         :return:
         """
         if self.debug:
@@ -275,9 +274,8 @@ class NDARoutineDataRT1(NDARoutineData):
         return self._header_from_rt1()
 
     def _header_from_rt1(self):
-        """
-        Decodes the RT1 file header (format 1, see SRN NDA ROUTINE JUP documentation)
-        :return header: Header data dictionary
+        """ Return RT1 file header (format 1, see SRN NDA ROUTINE JUP documentation)
+        :return header: (dict) Header data dictionary
         """
         if self.debug:
             print("This is {}._header_from_rt1()".format(__class__.__name__))

@@ -6,17 +6,15 @@ Python module to read Nancay/NDA/NewRoutine data from SRN/NDA.
 @author: B.Cecconi(LESIA)
 """
 
-import struct
-import datetime
-import os
-from maser.data.data import *
-from maser.data.nancay.nda.nda import *
-
 __author__ = "Baptiste Cecconi"
 __date__ = "03-OCT-2017"
 __version__ = "0.10"
 
 __all__ = ["NDANewRoutineData", "NDANewRoutineError", "NDANewRoutineECube", "read_srn_nda_new_routine"]
+
+import struct
+import os
+from ..nda import NDAError, NDADataFromFile, NDADataECube
 
 
 class NDANewRoutineError(NDAError):

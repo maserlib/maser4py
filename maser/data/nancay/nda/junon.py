@@ -6,17 +6,14 @@ Python module to read Nancay/NDA/JunoN data from SRN/NDA.
 @author: B.Cecconi(LESIA)
 """
 
-import struct
-import datetime
-import os
-from maser.data.data import *
-from maser.data.nancay.nda.nda import *
-
 __author__ = "Baptiste Cecconi"
 __date__ = "12-OCT-2017"
 __version__ = "0.11"
 
 __all__ = ["NDAJunonData", "NDAJunonECube", "NDAJunonError", "read_srn_nda_junon"]
+
+import struct
+from ..nda import NDADataECube, NDADataFromFile, NDAError
 
 
 class NDAJunonError(NDAError):
