@@ -10,23 +10,256 @@ __author__ = "Baptiste Cecconi"
 __copyright__ = "Copyright 2017, LESIA-PADC, Observatoire de Paris"
 __credits__ = ["Baptiste Cecconi"]
 __license__ = "GPLv3"
-__version__ = "1.0b0"
+__version__ = "1.0b2"
 __maintainer__ = "Baptiste Cecconi"
 __email__ = "baptiste.cecconi@obspm.fr"
 __status__ = "Production"
-__date__ = "11-SEP-2017"
-__project__ = "MASER/PADC"
+__date__ = "27-FEB-2018"
+__project__ = "MASER/PADC PDS/PPI/Voyager"
 
-__all__ = ["PDSPPIVoyagerPRAJupiterData"]
+__all__ = ["PDSPPIVoyagerPRADataFromLabel", "PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel"]
 
+import numpy
+import struct
 import datetime
-import os
-from maser.data.data import MaserDataFromInterval, MaserError
+from maser.data import MaserDataSweep
+from maser.data.pds import PDSDataFromLabel, PDSDataObject, PDSDataTableObject, PDSDataTimeSeriesObject
 
-default_root_data_path = "/Users/baptiste/Volumes/kronos-dio/voyager/data/pra/PDS_data"
+import logging
+_module_logger = logging.getLogger('maser.data.pds.ppi.voyager.pra')
+
+default_root_data_path = "/Users/baptiste/Volumes/kronos-dio/voyager/data/pra/PDS_data/"
 
 
-class PDSPPIVoyagerPRAJupiterData(MaserDataFromInterval):
+class PDSPPIVoyagerPRARDRLowBand6SecSweep(MaserDataSweep):
+
+    def __init__(self, parent, index, verbose=False, debug=False):
+
+        self.logger = logging.getLogger('maser.data.pds.ppi.voyager.pra.PDSPPIVoyagerPRARDRLowBand6SecSweep')
+        if debug:
+            self.logger.setLevel(logging.DEBUG)
+        self.logger.debug('### This is PDSPPIVoyagerPRARDRLowBand6SecSweep.__init__()')
+
+        MaserDataSweep.__init__(self, parent, index, verbose, debug)
+
+        cur_row, cur_swp = self.parent._split_index(index)
+        self.raw_sweep = self.parent.object['TABLE'].data['SWEEP{}'.format(cur_swp+1)][cur_row]
+        self.status = self.raw_sweep[0]
+        polar_indices = self._get_polar_indices()
+        self.data = {}
+        self.freq = {}
+        for item in ['R', 'L']:
+            self.data[item] = self.raw_sweep[1:][polar_indices[item]]
+            self.freq[item] = self.parent.frequency[polar_indices[item]]
+        self.freq['avg'] = (self.freq['R']+self.freq['L'])/2
+        self.attenuator = self._get_attenuator_value()
+        self.type = self._get_sweep_type()
+
+        self.logger.debug("PDSPPIVoyagerPRARDRLowBand6SecSweep instance created")
+
+    def get_datetime(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecSweep.get_datetime()")
+
+        return self.parent.get_single_datetime(self.index)
+
+    def _get_sweep_type(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecSweep._get_sweep_type()")
+
+        if (self.status & 1536) // 512 in [0, 3]:
+            return 'R'
+        else:
+            return 'L'
+
+    def _get_polar_indices(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecSweep._get_polar_indices()")
+
+        even_idx = numpy.linspace(0, 68, 35, dtype=numpy.int8)
+        odd_idx = numpy.linspace(1, 69, 35, dtype=numpy.int8)
+        if self._get_sweep_type() == 'R':
+            return {'R': even_idx, 'L': odd_idx}
+        else:
+            return {'L': even_idx, 'R': odd_idx}
+
+    def _get_attenuator_value(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecSweep._get_attenuator_value()")
+
+        if self.status & 1:
+            return 15
+        elif (self.status//2) & 1:
+            return 30
+        elif (self.status//4) & 1:
+            return 45
+        else:
+            return 0
+
+
+class PDSPPIVoyagerPRADataObject(PDSDataObject):
+
+    def __init__(self, product, parent, obj_label, obj_name, verbose=False, debug=False):
+
+        self.logger = logging.getLogger('maser.data.pds.ppi.voyager.pra.PDSPPIVoyagerPRADataObject')
+        if debug:
+            self.logger.setLevel(logging.DEBUG)
+        self.logger.debug('### This is PDSPPIVoyagerPRADataObject.__init__()')
+
+        PDSDataObject.__init__(self, product, parent, obj_label, obj_name, verbose, debug)
+
+        self.data = self.data_from_object_type()
+
+        self.logger.debug("PDSPPIVoyagerPRADataObject instance created")
+
+    def data_from_object_type(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRADataObject.data_from_object_type()")
+
+        if self.obj_type == 'TABLE':
+            return PDSDataTableObject(self.product, self, self.label, self.verbose, self.debug)
+        elif self.obj_type == 'TIME_SERIES':
+            return PDSDataTimeSeriesObject(self.product, self, self.label, self.verbose, self.debug)
+        elif self.obj_type == 'HEADER_TABLE':
+            return PDSDataTableObject(self.product, self, self.label, self.verbose, self.debug)
+        elif self.obj_type == 'F1_F2_TIME_SERIES':
+            return PDSPPIVoyagerPRAHighRateDataTimeSeriesObject(self.product, self, self.label, self.verbose, self.debug)
+        elif self.obj_type == 'F3_F4_TIME_SERIES':
+            return PDSPPIVoyagerPRAHighRateDataTimeSeriesObject(self.product, self, self.label, self.verbose, self.debug)
+
+
+class PDSPPIVoyagerPRAHighRateDataTimeSeriesObject(PDSDataTimeSeriesObject):
+
+    def __init__(self, product, parent, obj_label, verbose=True, debug=False):
+
+        self.logger = logging.getLogger('maser.data.pds.ppi.voyager.pra.PDSPPIVoyagerPRAHighRateDataTimeSeriesObject')
+        if debug:
+            self.logger.setLevel(logging.DEBUG)
+        self.logger.debug('### This is PDSPPIVoyagerPRAHighRateDataTimeSeriesObject.__init__()')
+
+        PDSDataTimeSeriesObject.__init__(self, product, parent, obj_label, verbose, debug)
+
+    def load_data(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRAHighRateDataTimeSeriesObject.load_data()")
+
+        PDSDataTableObject.load_data(self)
+        self._fix_sample_pair_data()
+
+    def _fix_sample_pair_data(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRAHighRateDataTimeSeriesObject._fix_sample_pair_data()")
+
+        sample_pair_data = self['SAMPLE_PAIR']
+        self['SAMPLE_PAIR'] = numpy.zeros((self.n_rows, self.n_columns, 2), numpy.int16)
+        for ii in range(self.n_rows):
+            for jj in range(self.n_columns):
+                self['SAMPLE_PAIR'][ii, jj, :] = struct.unpack('2H', struct.pack('I', sample_pair_data[ii, jj]))
+
+
+class PDSPPIVoyagerPRADataFromLabel(PDSDataFromLabel):
+
+    def __init__(self, file, load_data=True, verbose=False, debug=False):
+
+        self.logger = logging.getLogger('maser.data.pds.ppi.voyager.pra.PDSPPIVoyagerPRADataFromLabel')
+        if debug:
+            self.logger.setLevel(logging.DEBUG)
+        self.logger.debug('### This is PDSPPIVoyagerPRADataFromLabel.__init__()')
+
+        PDSDataFromLabel.__init__(self, file, load_data, PDSPPIVoyagerPRADataObject, verbose, debug)
+        self.frequency = self._get_freq_axis()
+        if load_data:
+            self.time = self._get_time_axis()
+        self._set_start_time()
+        self._set_end_time()
+
+    def _set_start_time(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRADataFromLabel._set_start_time()")
+
+        if self.label['START_TIME'] == "N/A":
+            self.start_time = self.get_first_sweep().get_datetime()
+        else:
+            PDSDataFromLabel._set_start_time(self)
+
+    def _set_end_time(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRADataFromLabel._set_end_time()")
+
+        if self.label['STOP_TIME'] == "N/A":
+            self.end_time = self.get_last_sweep().get_datetime()
+        else:
+            PDSDataFromLabel._set_end_time(self)
+
+    def _get_time_axis(self):
+        pass
+
+    def _get_freq_axis(self):
+        pass
+
+    def get_freq_axis(self, unit):
+        pass
+
+
+class PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(PDSPPIVoyagerPRADataFromLabel):
+
+    def __init__(self, file, load_data=True, verbose=False, debug=False):
+
+        self.logger = logging.getLogger('maser.data.pds.ppi.voyager.pra.PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel')
+        if debug:
+            self.logger.setLevel(logging.DEBUG)
+        self.logger.debug('### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.__init__()')
+
+        PDSPPIVoyagerPRADataFromLabel.__init__(self, file, load_data, verbose, debug)
+        self.nsweep = int(self.label['TABLE']['ROWS']) * 8
+
+    def _split_index(self, index):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel._split_index()")
+
+        if index < 0:
+            index += self.object['TABLE'].data.n_rows * 8
+        return index // 8, index % 8
+
+    def get_single_datetime(self, index):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_single_datetime()")
+
+        return self.time[index]
+
+    def _get_freq_axis(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel._get_freq_axis()")
+
+        return numpy.arange(1326, -18, -19.2)
+
+    def get_freq_axis(self, unit="kHz"):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_freq_axis()")
+
+        unit_conversion = {'HZ': 1e-3, 'KHZ': 1, 'MHZ': 1e3}
+        return self.frequency/unit_conversion[unit.upper()]
+
+    def get_single_sweep(self, index=0, **kwargs):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_single_sweep()")
+
+        return PDSPPIVoyagerPRARDRLowBand6SecSweep(self, index)
+
+    def _get_time_axis(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel._get_time_axis()")
+
+        if not self.object['TABLE'].data_loaded:
+            self.load_data('TABLE')
+
+        times = []
+        for item_date, item_second in zip(self.object['TABLE'].data['DATE'], self.object['TABLE'].data['SECOND']):
+            yy = (item_date // 10000) + 1900
+            if yy < 70:
+                yy += 100
+            mm = (item_date % 10000) // 100
+            dd = item_date % 100
+            sec = item_second + 3.9
+            for ii in range(8):
+                times.append(datetime.datetime(yy,mm, dd, 0, 0, 0) + datetime.timedelta(seconds=sec + 6 * ii))
+
+        return numpy.array(times)
+
+    def get_time_axis(self):
+        self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_time_axis()")
+
+        return self.time
+
+
+"""
+
+class PDSPPIVoyagerPRADataFromInterval(MaserDataFromInterval):
 
     def __init__(self, start_time, end_time, sc_id=1, root_data_path=default_root_data_path,
                  verbose=False, debug=False):
@@ -37,7 +270,7 @@ class PDSPPIVoyagerPRAJupiterData(MaserDataFromInterval):
         else:
             raise MaserError("Wrong input for 'SC_ID' argument. Must be 1 or 2.")
 
-        self.data_path = root_data_path + '/VG{}_JUPITER'.format(sc_id)
+        self.data_path = os.path.join(root_data_path, 'VG{}_JUPITER'.format(sc_id))
         self.data = list()
         self.files = list()
 
@@ -163,3 +396,4 @@ class PDSPPIVoyagerPRAJupiterData(MaserDataFromInterval):
 
         return result
 
+"""
