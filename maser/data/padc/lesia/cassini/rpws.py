@@ -6,12 +6,6 @@ Python module to work with PDS/PPI/Cassini/RPWS and PADC/LESIA/Cassini/Kronos da
 @author: B.Cecconi(LESIA)
 """
 
-import os, sys
-from pathlib import Path
-import numpy
-import datetime
-from scipy.io import readsav
-
 __author__ = "Baptiste Cecconi"
 __copyright__ = "Copyright 2017, LESIA-PADC, Observatoire de Paris"
 __credits__ = ["Baptiste Cecconi", "Laurent Lamy"]
@@ -24,6 +18,10 @@ __date__ = "22-FEB-2017"
 __project__ = "MASER/PDS PDS/Cassini/RPWS"
 
 __ALL__ = ['agc_db', 'auto_db', 'cal1']
+
+from pathlib import Path
+import numpy
+from scipy.io import readsav
 
 
 def _load_constants():
