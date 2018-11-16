@@ -6,17 +6,17 @@ Python module to read a INTERBALL Auroral S/C data from CDPP deep archive (http:
 @author: B.Cecconi(LESIA)
 """
 
-import struct
-import numpy
-from maser.data.cdpp import CDPPDataFromFile, CDPPFileFromWebServiceSync
-from maser.data.data import MaserError, MaserDataSweep
-
 __author__ = "Baptiste Cecconi"
 __date__ = "26-MAR-2018"
 __version__ = "0.12"
 
 __all__ = ["load_int_aur_polrad_from_webservice", "read_int_aur_polrad"]
 
+import struct
+import numpy
+from maser.data.cdpp import CDPPDataFromFile, CDPPFileFromWebServiceSync
+from maser.data.data import MaserError, MaserDataSweep
+from .const import *
 
 class CDPPInterballAuroralPOLRADRSPSweep(MaserDataSweep):
 
@@ -120,11 +120,7 @@ class CDPPInterballAuroralPOLRADRSPData(CDPPDataFromFile):
                     nsweep += 1
 
         name = 'INT_AUR_POLRAD_RSP'
-
-        meta = {"FREQ": {"unit": "kHz", "description": "Frequency"},
-                "EX": {"unit": "W/m^2/Hz", "description": "Flux Density on Antenna EX"},
-                "EY": {"unit": "W/m^2/Hz", "description": "Flux Density on Antenna EY"},
-                "EZ": {"unit": "W/m^2/Hz", "description": "Flux Density on Antenna EZ"}}
+        meta = INT_AUR_POLRAD_RSP_META
 
         CDPPDataFromFile.__init__(self, file, header, data, name)
         self.meta = meta
