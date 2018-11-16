@@ -10,11 +10,11 @@ __author__ = "Baptiste Cecconi"
 __copyright__ = "Copyright 2017, LESIA-PADC-USN, Observatoire de Paris"
 __credits__ = ["Baptiste Cecconi", "Andree Coffre", "Laurent Lamy"]
 __license__ = "GPLv3"
-__version__ = "2.0b3"
+__version__ = "2.0b1"
 __maintainer__ = "Baptiste Cecconi"
 __email__ = "baptiste.cecconi@obspm.fr"
 __status__ = "Production"
-__date__ = "09-APR-2018"
+__date__ = "06-SEP-2017"
 __project__ = "MASER/SRN/NDA"
 
 _cdf_version = "13"
