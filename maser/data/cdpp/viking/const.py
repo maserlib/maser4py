@@ -67,7 +67,7 @@ VIKING_V4H_SFA_META = {
         "description": "Stepped frequencies of the current scanning",
     },
     "ELECTRIC_SFA": {
-        "unit": u.Unit("mV^2/m^2/Hz"),
+        "unit": u.Unit("mV^2/(m^2 Hz)"),
         "description": "SFA measurements for an electric field component, either Ey or Ez",
     },
     "MAGNETIC_SFA": {
@@ -146,7 +146,7 @@ VIKING_V4L_NI_META = {
 
 VIKING_V4L_DFT_PHYS_META = {
     "DFT": {
-        "unit": u.Unit("mV^2/m^2/Hz"),
+        "unit": u.Unit("mV^2/(m^2 Hz)"),
         "description": "DFT power spectra",
     },
 }
