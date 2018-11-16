@@ -6,6 +6,14 @@ Python module to read a Cassini/Kronos data files from LESIA database (http://le
 @author: B.Cecconi(LESIA)
 """
 
+__author__ = "Baptiste Cecconi"
+__date__ = "07-NOV-2018"
+__version__ = "0.02"
+
+__all__ = ["CassiniKronosData", "CassiniKronosLevel", "CassiniKronosFile",
+           "CassiniKronosRecords", "CassiniKronosSweeps",
+           "load_data_from_file", "load_data_from_interval", "ydh_to_datetime", "t97_to_datetime"]
+
 import os
 import struct
 from maser.data.data import MaserError
@@ -15,14 +23,6 @@ import datetime
 import numpy
 import hashlib
 import collections.abc
-
-__author__ = "Baptiste Cecconi"
-__date__ = "07-NOV-2018"
-__version__ = "0.02"
-
-__all__ = ["CassiniKronosData", "CassiniKronosLevel", "CassiniKronosFile",
-           "CassiniKronosRecords", "CassiniKronosSweeps",
-           "load_data_from_file", "load_data_from_interval", "ydh_to_datetime", "t97_to_datetime"]
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Module variables
@@ -49,17 +49,14 @@ for yy in range(18):
     for dd in range(4):
         if not (yy == 17 and dd == 3):
             cur_period = '{:04d}_{:03d}_{:03d}'.format(yy + 2000, dd_list[dd], dd_list[dd + 1] - 1)
-            all_periods[cur_period] = {'start_time': datetime.datetime.strptime("{:04d}{:03d}.00".
-                                                                                format(yy + 2000, dd_list[dd]),
-                                                                                '%Y%j.%H')}
+            all_periods[cur_period] = {'start_time': datetime.datetime.strptime(
+                "{:04d}{:03d}.00".format(yy + 2000, dd_list[dd]), '%Y%j.%H')}
             if dd == 3:
-                all_periods[cur_period]['end_time'] = datetime.datetime.strptime("{:04d}001.00".format(yy + 2000 + 1),
-                                                                                 '%Y%j.%H')
+                all_periods[cur_period]['end_time'] = datetime.datetime.strptime(
+                    "{:04d}001.00".format(yy + 2000 + 1), '%Y%j.%H')
             else:
-                all_periods[cur_period]['end_time'] = datetime.datetime.strptime("{:04d}{:03d}.23".
-                                                                                format(yy + 2000, dd_list[dd+1]-1),
-                                                                                '%Y%j.%H') \
-                                                      + datetime.timedelta(hours=1)
+                all_periods[cur_period]['end_time'] = datetime.datetime.strptime(
+                    "{:04d}{:03d}.23".format(yy + 2000, dd_list[dd+1]-1), '%Y%j.%H') + datetime.timedelta(hours=1)
 
 all_levels = dict()
 all_levels['k'] = {'name': 'Kronos Level 0', 'path': 'k'}
@@ -145,7 +142,7 @@ class CassiniKronosLevel(object):
                                            ('zr', '<f4'), ('snx', '<f4', 2), ('snz', '<f4', 2)]
             self.record_def['length'] = struct.calcsize(self.record_def['dtype'])  # = 68
             self.description = "Cassini/RPWS/HFR Level 3c (Circular polarization 3 antenna GP)"
-            self.depends = ['n1','n2']
+            self.depends = ['n1', 'n2']
         elif self.name == "n3d":
             self.file_format = 'bin-fixed-record-length'
             self.record_def['fields'] = ["ydh", "num", "s", "q", "u", "v", "th", "ph", "snx", "snz"]
@@ -174,7 +171,8 @@ class CassiniKronosData(MaserDataFromInterval):
 
     def __init__(self, start_time=None, end_time=None, input_level=CassiniKronosLevel(''),
                  verbose=False, debug=False):
-        MaserDataFromInterval.__init__(self, start_time, end_time, input_level.description, verbose=verbose, debug=debug)
+        MaserDataFromInterval.__init__(self, start_time, end_time, input_level.description,
+                                       verbose=verbose, debug=debug)
         self.level = input_level
         self.start_time = start_time
         self.end_time = end_time
@@ -243,7 +241,7 @@ class CassiniKronosData(MaserDataFromInterval):
     @classmethod
     def load_n3c_data(cls, start_time, end_time, n2_data=None, verbose=False, debug=False):
         return CassiniKronosData.from_interval(start_time, end_time, 'n3c',
-                                           verbose=verbose, debug=debug)
+                                               verbose=verbose, debug=debug)
 
     @classmethod
     def load_n3d_data(cls, start_time, end_time, n2_data=None, verbose=False, debug=False):
@@ -481,7 +479,8 @@ class CassiniKronosFile(MaserDataFromFile):
         elif file_name.startswith('F'):
             level = CassiniKronosLevel('n3g', verbose=self.verbose, debug=self.debug)
         elif file_name.startswith('N'):
-            level = CassiniKronosLevel('n3{}'.format(file_name[2]), file_name[4:7], verbose=self.verbose, debug=self.debug)
+            level = CassiniKronosLevel('n3{}'.format(file_name[2]), file_name[4:7],
+                                       verbose=self.verbose, debug=self.debug)
         elif file_name.startswith('bg'):
             level = CassiniKronosLevel('bg', verbose=self.verbose, debug=self.debug)
         elif '.v' in file_name:
@@ -597,7 +596,7 @@ class CassiniKronosFile(MaserDataFromFile):
             if val['start_time'] <= self.end_time and val['end_time'] >= self.start_time:
                 return item
 
-#class CassiniKronosRecord(MaserDataRecord):
+# class CassiniKronosRecord(MaserDataRecord):
 #
 #    def __init__(self, parent, raw_data):
 #        MaserDataRecord.__init__(self, parent, raw_data)
@@ -629,14 +628,14 @@ class CassiniKronosFile(MaserDataFromFile):
 #                else:
 #                    self.data[ext_k] = extra.data[ext_k]
 
-#class CassiniKronosSweep:
+# class CassiniKronosSweep:
 #
 #    def __init__(self, data):
 #        data.load_extra_level('lis')
 #        self.mode = CassiniKronosMode(raw_mode)
 #
 #
-#class CassiniKronosMode:
+# class CassiniKronosMode:
 #
 #    def __init__(self, raw_mode):
 #        self.raw_mode = raw_mode
