@@ -112,7 +112,7 @@ class CDPPDataFromFile(MaserDataFromFile):
             dt.append(cur_date)
         return dt
 
-    def get_datetime_ccsds(self, p_field_key='P_Field', t_field_key='T_Field'):
+    def get_datetime_ccsds(self, p_field_key='P_Field', t_field_key='T_Field', epoch_key=None):
         """Method to retrieve the list of datetime per sweep (from CCSDS format)
         :return dt: list of datetime
         """
@@ -120,7 +120,8 @@ class CDPPDataFromFile(MaserDataFromFile):
         for cur_header_item in self.header:
             cur_p_field = cur_header_item[p_field_key]
             cur_t_field = cur_header_item[t_field_key]
-            dt.append(decode_ccsds_date(cur_p_field, cur_t_field).datetime)
+            cur_epoch = cur_header_item[epoch_key]
+            dt.append(decode_ccsds_date(cur_p_field, cur_t_field, cur_epoch).datetime)
         return dt
 
     def get_datetime_ccsds_cds(self, keys=None):

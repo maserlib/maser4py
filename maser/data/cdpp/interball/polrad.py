@@ -14,6 +14,7 @@ __all__ = ["load_int_aur_polrad_from_webservice", "read_int_aur_polrad"]
 
 import struct
 import numpy
+import datetime
 from maser.data.cdpp import CDPPDataFromFile, CDPPFileFromWebServiceSync
 from maser.data.data import MaserError, MaserDataSweep
 from .const import *
@@ -47,12 +48,15 @@ class CDPPInterballAuroralPOLRADRSPData(CDPPDataFromFile):
         if self.debug:
             print("This is {}.__init()".format(__class__.__name__))
 
-        ccsds_fields = ["CCSDS_PREAMBLE", "CCSDS_JULIAN_DAY_B1", "CCSDS_JULIAN_DAY_B2", "CCSDS_JULIAN_DAY_B3",
-                        "CCSDS_MILLISECONDS_OF_DAY"]
+        ccsds_fields = ["CCSDS_PREAMBLE",
+                        "CCSDS_JULIAN_DAY_B1", "CCSDS_JULIAN_DAY_B2", "CCSDS_JULIAN_DAY_B3",
+                        "CCSDS_MILLISECONDS_OF_DAY_B0", "CCSDS_MILLISECONDS_OF_DAY_B1",
+                        "CCSDS_MILLISECONDS_OF_DAY_B2", "CCSDS_MILLISECONDS_OF_DAY_B3",
+                        ]
         # CCSDS_PREAMBLE [Int, 8 bits] = 76
         # CCSDS_JULIAN_DAY [Int, 24 bits] = Days since 1950/01/01 (=1)
         # CCSDS_MILLISECONDS_OF_DAY [Int, 32 bits] = Millisecond of day
-        ccsds_dtype = ">bbbbi"
+        ccsds_dtype = ">BBBBBBBB"
 
         header_fields = ccsds_fields
         header_dtype = ccsds_dtype
@@ -76,6 +80,25 @@ class CDPPInterballAuroralPOLRADRSPData(CDPPDataFromFile):
                     # Reading header parameters in the current sweep
                     block = frb.read(8)
                     header_i = dict(zip(header_fields, struct.unpack(header_dtype, block)))
+
+                    # => Here we fix the `P_Field` which is corrupted
+                    # First we reverse the order of the bits in the byte
+                    P_Field_tmp = int('{:08b}'.format(header_i['CCSDS_PREAMBLE'])[::-1], 2)
+                    # Then we put back the initial 4-6 bits into bits 1-3 (defining the CSSDS code)
+                    # as those bits are not in reverse order in the file...
+                    P_Field_tmp = (P_Field_tmp & 241) + (header_i['CCSDS_PREAMBLE'] & 112) // 8
+
+                    header_i['P_Field'] = P_Field_tmp
+                    header_i['T_Field'] = bytearray([
+                        header_i["CCSDS_JULIAN_DAY_B1"],
+                        header_i["CCSDS_JULIAN_DAY_B2"],
+                        header_i["CCSDS_JULIAN_DAY_B3"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B0"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B1"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B2"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B3"],
+                    ])
+                    header_i['CSSDS_CDS_LEVEL_2_EPOCH'] = INT_AUR_POLRAD_RSP_CSSDS_EPOCH
                     block = frb.read(8)
                     header_i["SESSION_NAME"] = block
 
@@ -176,7 +199,7 @@ class CDPPInterballAuroralPOLRADRSPData(CDPPDataFromFile):
         if self.debug:
             print("This is {}.get_time_axis()".format(__class__.__name__))
 
-        return self.get_datetime_ccsds_cds()
+        return self.get_datetime_ccsds(epoch_key="CSSDS_CDS_LEVEL_2_EPOCH")
 
     def get_single_datetime(self, index):
 

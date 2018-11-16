@@ -16,7 +16,7 @@ __all__ = ["decode_ccsds_date", "CCSDSDate", "CCSDSDateCUC", "CCSDSDateCDS", "CC
 import datetime
 
 
-def decode_ccsds_date(p_field, t_field) -> 'CCSDSDate':
+def decode_ccsds_date(p_field, t_field, epoch=None) -> 'CCSDSDate':
     """Decode a CCSDS time format into a CCSDSDate derived object.
 
     A CCSDS Date is composed of 2 fields: a time specification field (`t_field`) and a time code
@@ -35,13 +35,13 @@ def decode_ccsds_date(p_field, t_field) -> 'CCSDSDate':
     :return: CCSDSDate derived object
     """
 
-    time_code_id = int((p_field & 14)/2)
+    time_code_id = int((p_field & 14)//2)
     if time_code_id == 1:
         return CCSDSDateCUC(p_field, t_field)  # This is CCSDS CUC level 1 format
     elif time_code_id == 2:
         raise NotImplementedError('CCSDS CUC level 2')  # This is CCSDS CUC level 2 format
     elif time_code_id == 4:
-        return CCSDSDateCDS(p_field, t_field)  # This is CCSDS CDS format
+        return CCSDSDateCDS(p_field, t_field, epoch)  # This is CCSDS CDS format (could be level 1 or 2)
     elif time_code_id == 5:
         return CCSDSDateCCS(p_field, t_field)  # This is CCSDS CCS format
     elif time_code_id == 6:
@@ -67,8 +67,10 @@ class CCSDSDate(object):
     * _Level 3_: No Interpretation Except for Recognition of Increasing Time Value
     * _Level 4_: No Interpretation
 
-    This module currently deals only with Level 1 time code formats. This module doesn't deal with ASCII formatted time
-    formats, for this use `datetime`, `dateutil`, or other equivalent modules.
+    This module can currently decode CUC Level 1, CDS level 1 and 2, and CCS time code formats.
+
+    This module doesn't deal with ASCII formatted time formats, in this case, use `datetime`, `dateutil`,
+    or other equivalent modules.
 
     For more info on CCSDS time formats, refer to "TIME CODE FORMATS" CCSDS 301.0-B-3, Jan. 2002.
 
@@ -156,7 +158,7 @@ class CCSDSDateCUC(CCSDSDate):
 class CCSDSDateCDS(CCSDSDate):
     """Class for CCSDS CDS (Level 1) time format object.
     """
-    def __init__(self, p_field, t_field):
+    def __init__(self, p_field, t_field, epoch=None):
         CCSDSDate.__init__(self, p_field, t_field)
 
         if self.P_field & 16 == 0:
@@ -166,7 +168,7 @@ class CCSDSDateCDS(CCSDSDate):
         else:
             self.epoch_type = "AGENCY_DEFINED"
             self.time_code_level = 2
-            raise NotImplemented('AGENCY_DEFINED epoch not implemented')
+            self.time_epoch = epoch
 
         self._n_bytes_day = int(((self.P_field & 32) / 32) + 2)
         self._n_bytes_millisecond = 4
