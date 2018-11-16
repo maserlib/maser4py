@@ -214,7 +214,7 @@ class PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(PDSPPIVoyagerPRADataFromLabel)
     def get_single_datetime(self, index):
         self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_single_datetime()")
 
-        return self.time[index]
+        return self._get_time_axis()[index]
 
     def _get_freq_axis(self):
         self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel._get_freq_axis()")
