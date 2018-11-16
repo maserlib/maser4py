@@ -120,7 +120,10 @@ class CDPPDataFromFile(MaserDataFromFile):
         for cur_header_item in self.header:
             cur_p_field = cur_header_item[p_field_key]
             cur_t_field = cur_header_item[t_field_key]
-            cur_epoch = cur_header_item[epoch_key]
+            if epoch_key is not None:
+                cur_epoch = cur_header_item[epoch_key]
+            else:
+                cur_epoch = None
             dt.append(decode_ccsds_date(cur_p_field, cur_t_field, cur_epoch).datetime)
         return dt
 
