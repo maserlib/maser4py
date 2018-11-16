@@ -14,8 +14,10 @@ _test_data_files = {'cdpp': {'demeter': ['DMT_N1_1134_018401_20041105_235807_200
                              'isee3': ['SBH_ISEE3_19780820'],
                              'viking': ['V4N_0101_003'],
                              'wind': ['WI_WA_TNR_L3_BQT_19941114_1MN.DAT', 'WI_WA_TNR_L3_NN_19941114_V02.DAT',
-                                      'WIN_TNR_60S_19941114.B3E']},
-                    'isee3': {'tlm_uiowa': ['telm_2014-08-09T22_uiframe.bin', 'telm_2014-08-09T23_uiframe.bin']},
+                                      'WIN_TNR_60S_19941114.B3E'],
+                             },
+                    'isee3': {'tlm_uiowa': ['telm_2014-08-09T22_uiframe.bin', 'telm_2014-08-09T23_uiframe.bin'],
+                              },
                     'kronos': {'2012_091_180/n1': ['R2012180.20', 'R2012180.21', 'R2012180.22'],
                                '2012_091_180/n2': ['P2012180.20', 'P2012180.21', 'P2012180.22'],
                                '2012_181_270/k': ['K2012181.00', 'K2012181.01', 'K2012181.02', 'K2012181.03',
@@ -67,11 +69,17 @@ _test_data_files = {'cdpp': {'demeter': ['DMT_N1_1134_018401_20041105_235807_200
                                                     'N3e_dsq2012181.12', 'N3e_dsq2012181.13', 'N3e_dsq2012181.14',
                                                     'N3e_dsq2012181.15', 'N3e_dsq2012181.16', 'N3e_dsq2012181.17',
                                                     'N3e_dsq2012181.18', 'N3e_dsq2012181.19', 'N3e_dsq2012181.20',
-                                                    'N3e_dsq2012181.21', 'N3e_dsq2012181.22', 'N3e_dsq2012181.23']},
+                                                    'N3e_dsq2012181.21', 'N3e_dsq2012181.22', 'N3e_dsq2012181.23'],
+                               },
                     'nda': {'routine': ['J160131.RT1', 'srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf'],
-                            'newroutine': ['J20170101_022612_Rou.dat']},
-                    'radiojove': {'sps': ['161210000000.sps']},
-                    'pds': {'VG1_JUPITER/PRA_I': ['PRA_I.TAB']}}
+                            'newroutine': ['J20170101_022612_Rou.dat'],
+                            'junon': ['20180223_034242_extract1.dat'],
+                            },
+                    'radiojove': {'sps': ['161210000000.sps'],
+                                  },
+                    'pds': {'VG1_JUPITER/PRA_I': ['PRA_I.TAB'],
+                            },
+                    }
 
 
 def get_data_directory():
