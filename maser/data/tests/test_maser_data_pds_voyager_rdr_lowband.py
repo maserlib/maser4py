@@ -2,7 +2,7 @@ import unittest
 import datetime
 from maser.data.tests import load_test_data, get_data_directory
 from maser.data import MaserDataFromFile
-from maser.data.pds.ppi.voyager.pra import PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel, \
+from maser.data.pds.voyager.pra import PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel, \
     PDSPPIVoyagerPRADataFromLabel, PDSPPIVoyagerPRADataObject
 from maser.data.pds import PDSDataFromLabel, PDSLabelDict
 

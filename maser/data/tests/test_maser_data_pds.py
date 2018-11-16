@@ -2,7 +2,7 @@ import unittest
 import datetime
 from maser.data.tests import load_test_data, get_data_directory
 from maser.data.data import MaserDataFromInterval
-from maser.data.pds.ppi.voyager.pra import PDSPPIVoyagerPRAJupiterData
+from maser.data.pds.voyager.pra import PDSPPIVoyagerPRAJupiterData
 
 load_test_data("pds")
 root_data_path = get_data_directory() / "pds"
