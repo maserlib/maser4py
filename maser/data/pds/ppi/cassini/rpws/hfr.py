@@ -19,9 +19,8 @@ __project__ = "MASER/PDS PDS/Cassini/RPWS"
 
 __ALL__ = ['PDSPPICassiniRPWSHFRLowRateFullDataFromLabel']
 
-from . import scet_day_millisecond_to_datetime
-from maser.data.pds.ppi.cassini.rpws import iso_time_to_datetime
-from ....pds import PDSDataFromLabel, PDSDataObject, PDSDataTableObject, PDSError, PDSDataTimeSeriesObject
+from . import scet_day_millisecond_to_datetime, iso_time_to_datetime
+from maser.data.pds import PDSDataFromLabel, PDSDataObject, PDSDataTableObject, PDSError, PDSDataTimeSeriesObject
 from maser.data.data import MaserDataSweep
 import dateutil.parser
 
