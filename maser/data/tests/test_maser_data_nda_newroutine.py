@@ -1,12 +1,13 @@
 import unittest
 import datetime
-import os
-from maser.data.data import *
-from maser.data.nancay.nda.nda import *
-from maser.data.nancay.nda.newroutine import *
+from maser.data.tests import load_test_data, get_data_directory
+from maser.data.nancay.nda import NDADataECube
+from maser.data.nancay.nda.newroutine import NDANewRoutineData
 
-test_file = 'data/nda/J20170101_022612_Rou.dat'
-rou = NDANewRoutineData(test_file)
+load_test_data("nda")
+file_path = get_data_directory() / "nda" / "newroutine" / "J20170101_022612_Rou.dat"
+
+rou = NDANewRoutineData(str(file_path))
 sweep_first = rou.get_first_ecube()
 sweep_last = rou.get_last_ecube()
 sweep_100 = rou.get_single_ecube(100)

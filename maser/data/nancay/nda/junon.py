@@ -6,17 +6,14 @@ Python module to read Nancay/NDA/JunoN data from SRN/NDA.
 @author: B.Cecconi(LESIA)
 """
 
-import struct
-import datetime
-import os
-from maser.data.data import *
-from maser.data.nancay.nda.nda import *
-
 __author__ = "Baptiste Cecconi"
 __date__ = "12-OCT-2017"
 __version__ = "0.11"
 
 __all__ = ["NDAJunonData", "NDAJunonECube", "NDAJunonError", "read_srn_nda_junon"]
+
+import struct
+from ..nda import NDADataECube, NDADataFromFile, NDAError
 
 
 class NDAJunonError(NDAError):
@@ -35,6 +32,10 @@ class NDAJunonData(NDADataFromFile):
 
         self.debug = debug
         self.header = self.header_from_file()
+        self.file_info = {'name': self.file,
+                          'size': self.get_file_size(),
+                          'format': 'DAT',
+                          }
         self.header['ncube'] = (self.get_file_size() - self.header['size']) // self.header['cube_size']
         # self.meta = meta
         self.cur_ptr_in_file = 0
@@ -121,9 +122,8 @@ class NDAJunonData(NDADataFromFile):
 
         return desc
 
-    def file_info(self):
+    def __str__(self):
         """
-
         :return:
         """
 
@@ -135,6 +135,9 @@ class NDAJunonData(NDADataFromFile):
         print('-- Header size:   {}'.format(self.header['size']))
         str_data = ['Nothing', 'Spectrum', 'Waveform']
         print('-- Data content:  {}'.format(str_data[self.header['stream_10G']]))
+
+    def __len__(self):
+        return len(self.ecube_ptr_in_file)
 
     def get_freq_axis(self):
         return self.header['freq']
