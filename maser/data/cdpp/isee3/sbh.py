@@ -6,15 +6,16 @@ Python module to read a ISEE3/SBH data file from CDPP deep archive (http://cdpp-
 @author: B.Cecconi(LESIA)
 """
 
-import struct
-import os
-from maser.data.cdpp import CDPPDataFromFile
-
 __author__ = "Baptiste Cecconi"
 __date__ = "10-JUL-2017"
 __version__ = "0.10"
 
 __all__ = ["ISEE3SBHData", "read_isee3_sbh_3d_radio_source"]
+
+import struct
+import os
+from maser.data.cdpp import CDPPDataFromFile
+from .const import *
 
 
 class ISEE3SBHData(CDPPDataFromFile):
@@ -182,12 +183,6 @@ def read_isee3_sbh_3d_radio_source(file_path, verbose=False):
                 nsweep += 1
 
     name = "ISEE3_SBH_3D_RADIO_SOURCE"
-    meta = {"FREQUENCY": {"unit": "kHz", "description": "Observed Frequency"},
-            "BANDWIDTH": {"unit": "kHz", "description": "Spectral Bandwidth of S and Z receivers"},
-            "DATA_QUALITY": {"unit": "", "description": "Quality of experimental data ( 1 = valid ; 0 = filler ) "},
-            "TIME": {"unit": "s", "description": "Time of step start relative to time of cycle start"},
-            "S_DATA": {"unit": "uV^2/Hz", "description": "S receiver measurements "},
-            "Z_DATA": {"unit": "uV^2/Hz", "description": "Z receiver measurements "},
-            "PHI_DATA": {"unit": "0.02 V", "description": "Dephasing between S and Z signals, in TM unit ( = 0.02 V)"}}
+    meta = ISEE3_SBH_3D_RADIO_SOURCE_META
 
     return ISEE3SBHData(os.path.basename(file_path), header, data, name, meta, orbit)

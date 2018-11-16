@@ -8,7 +8,7 @@ Python module to provide Viking constant variables.
 
 __author__ = "Baptiste Cecconi"
 __date__ = "15-NOV-2018"
-__version__ = "0.11"
+__version__ = "0.01"
 
 __all__ = ["VIKING_V1_META", "VIKING_V4H_SFA_META", "VIKING_V4H_FB_META", "VIKING_V4L_FBL_PHYS_META",
            "VIKING_V4L_FBL_DB_META", "VIKING_V2_META", "VIKING_V4L_NI_META", "VIKING_V4L_DFT_PHYS_META",
@@ -67,7 +67,7 @@ VIKING_V4H_SFA_META = {
         "description": "Stepped frequencies of the current scanning",
     },
     "ELECTRIC_SFA": {
-        "unit": u.Unit("(mV/m)^2/Hz"),
+        "unit": u.Unit("mV^2/m^2/Hz"),
         "description": "SFA measurements for an electric field component, either Ey or Ez",
     },
     "MAGNETIC_SFA": {
@@ -146,7 +146,7 @@ VIKING_V4L_NI_META = {
 
 VIKING_V4L_DFT_PHYS_META = {
     "DFT": {
-        "unit": u.Unit("mV/m)^2/Hz"),
+        "unit": u.Unit("mV^2/m^2/Hz"),
         "description": "DFT power spectra",
     },
 }
