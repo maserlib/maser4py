@@ -6,10 +6,6 @@ Python module to work with PDS/PPI/Voyager/PRA Data
 @author: B.Cecconi(LESIA)
 """
 
-import datetime
-import os
-from maser.data.data import *
-
 __author__ = "Baptiste Cecconi"
 __copyright__ = "Copyright 2017, LESIA-PADC, Observatoire de Paris"
 __credits__ = ["Baptiste Cecconi"]
@@ -22,6 +18,10 @@ __date__ = "11-SEP-2017"
 __project__ = "MASER/PADC"
 
 __all__ = ["PDSPPIVoyagerPRAJupiterData"]
+
+import datetime
+import os
+from maser.data.data import MaserDataFromInterval, MaserError
 
 default_root_data_path = "/Users/baptiste/Volumes/kronos-dio/voyager/data/pra/PDS_data/"
 
