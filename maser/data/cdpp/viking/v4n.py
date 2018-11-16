@@ -307,6 +307,8 @@ def read_viking(file_path, dataset="VIKING_V4", verbose=False):
                 # Reading header1 parameters in the current record
                 block = frb.read(header1_length)
                 header1_i = dict(zip(header1_fields, struct.unpack(header1_dtype, block)))
+                # => Here we fix the `P_Field` which is corrupted
+                # we reverse the order of the bits in the byte
                 header1_i['P_Field'] = int('{:08b}'.format(header1_i['CCSDS_PREAMBLE'])[::-1], 2)
                 header1_i['T_Field'] = bytearray([header1_i['CCSDS_B0'], header1_i['CCSDS_B1'],
                                                   header1_i['CCSDS_B2'], header1_i['CCSDS_B3'],
