@@ -12,46 +12,48 @@ __version__ = "0.11"
 
 __all__ = ["WIND_WAVES_RADIO_60S_META", "WIND_WAVES_TNR_L3_BQT_META", "WIND_WAVES_TNR_L3_NN_META"]
 
+import astropy.units as u
+
 # metadata block for each data set
 
 WIND_WAVES_TNR_L3_NN_META = {
     "PLASMA_FREQ": {
-        "unit": "kHz",
+        "unit": u.Unit("kHz"),
         "description": "Plasma Frequency from Neural Network",
     },
     "ELEC_DENSITY": {
-        "unit": "cm-3",
+        "unit": u.Unit("1 / cm^3"),
         "description": "Electronic Density from Neural Network",
     },
 }
 
 WIND_WAVES_TNR_L3_BQT_META = {
     "PLASMA_FREQUENCY_NN": {
-        "unit": "kHz",
+        "unit": u.Unit("kHz"),
         "description": "Plasma Frequency from Neural Network",
     },
     "PLASMA_FREQUENCY": {
-        "unit": "kHz",
+        "unit": u.Unit("kHz"),
         "description": "Plasma Frequency from Fit",
     },
     "COLD_ELECTRONS_TEMPERATURE": {
-        "unit": "eV",
+        "unit": u.Unit("eV"),
         "description": "Cold Electron Temperature from Fit",
     },
     "ELECTRONIC_DENSITY_RATIO": {
-        "unit": "N/A",
+        "unit": u.Unit("1 / cm^3") / u.Unit("1 / cm^3"),
         "description": "Electronic Density Ratio from Fit",
     },
     "ELECTRONIC_TEMPERATURE_RATIO": {
-        "unit": "N/A",
+        "unit": u.Unit("eV") / u.Unit("eV"),
         "description": "Electronic Temperature Ratio from Fit",
     },
     "PROTON_TEMPERATURE": {
-        "unit": "eV",
+        "unit": u.Unit("eV"),
         "description": "Proton Temperature from 3DP",
     },
     "SOLAR_WIND_VELOCITY": {
-        "unit": "km/s",
+        "unit": u.Unit("km/s"),
         "description": "Solar Wind Velocity from 3DP",
     },
     "FIT_ACCUR_PARAM_1": {
@@ -86,11 +88,11 @@ WIND_WAVES_TNR_L3_BQT_META = {
 
 WIND_WAVES_RADIO_60S_META = {
     "FREQ": {
-        "unit": "kHz",
+        "unit": u.Unit("kHz"),
         "description": "Frequency",
     },
     "INTENSITY": {
-        "unit": "uV^2/Hz",
+        "unit": u.Unit("uV^2/Hz"),
         "description": "Intensity",
     },
 }
