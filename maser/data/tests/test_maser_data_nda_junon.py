@@ -1,14 +1,18 @@
 import unittest
 import datetime
-from maser.data.nancay.nda.nda import *
-from maser.data.nancay.nda.junon import *
+from maser.data.tests import load_test_data, get_data_directory
+from maser.data.nancay.nda import NDADataECube
+from maser.data.nancay.nda.junon import NDAJunonData
 
-test_file = 'data/nda/J20170101_022612_Rou.dat'
-rou = NDAJunonData(test_file)
-sweep_first = rou.get_first_ecube()
-sweep_last = rou.get_last_ecube()
-sweep_100 = rou.get_single_ecube(100)
-sweep_101 = rou.get_single_ecube(101, load_data=False)
+load_test_data("nda")
+file_path = get_data_directory() / "nda" / "junon" / "20180223_034242_extract1.dat"
+
+o = NDAJunonData(str(file_path))
+
+sweep_first = o.get_first_ecube()
+sweep_last = o.get_last_ecube()
+sweep_100 = o.get_single_ecube(100)
+sweep_101 = o.get_single_ecube(101, load_data=False)
 
 
 class NDAJunonDataClass(unittest.TestCase):
@@ -16,28 +20,25 @@ class NDAJunonDataClass(unittest.TestCase):
     """Test case for NDARoutineData class"""
 
     def test_dataset_name(self):
-        self.assertEqual(rou.name, "SRN/NDA Junon Dataset")
-
-    def test_filedate(self):
-        self.assertEqual(rou.file_info['filedate'], "20170101")
+        self.assertEqual(o.name, "SRN/NDA JunoN Dataset")
 
     def test_len(self):
-        self.assertEqual(len(rou), 58188)
+        self.assertEqual(len(o), 128)
 
     def test_format(self):
-        self.assertEqual(rou.file_info['format'], 'DAT')
+        self.assertEqual(o.file_info['format'], 'DAT')
 
     def test_get_time_axis(self):
-        t = rou.get_time_axis()
-        self.assertEqual(len(t), len(rou))
-        self.assertEqual(t[0], datetime.datetime(2017, 1, 1, 2, 26, 14, 261199))
-        self.assertEqual(t[-1], datetime.datetime(2017, 1, 1, 10, 26, 0, 235901))
+        t = o.get_time_axis()
+        self.assertEqual(len(t), len(o))
+        self.assertEqual(t[0], datetime.datetime(2018, 2, 23, 3, 42, 42, 963809))
+        self.assertEqual(t[-1], datetime.datetime(2018, 2, 23, 3, 42, 53, 617342))
 
     def test_get_freq_axis(self):
-        f = rou.get_freq_axis()
-        self.assertEqual(len(f), 2048)
-        self.assertEqual(f[0], 0.)
-        self.assertEqual(f[-1], 99.951171875)
+        f = o.get_freq_axis()
+        self.assertEqual(len(f), 3072)
+        self.assertEqual(f[0], 6.25457763671875)
+        self.assertEqual(f[-1], 43.74237060546875)
 
 
 class NDANewRoutineSweep(unittest.TestCase):
@@ -55,9 +56,9 @@ class NDANewRoutineSweep(unittest.TestCase):
         self.assertEqual(sweep_100.index, 100)
 
     def test_get_datetime(self):
-        self.assertEqual(sweep_first.get_datetime(), datetime.datetime(2017, 1, 1, 2, 26, 14, 261199))
-        self.assertEqual(sweep_last.get_datetime(), datetime.datetime(2017, 1, 1, 10, 26, 0, 235901))
-        self.assertEqual(sweep_100.get_datetime(), datetime.datetime(2017, 1, 1, 2, 27, 3, 732667))
+        self.assertEqual(sweep_first.get_datetime(), datetime.datetime(2018, 2, 23, 3, 42, 42, 963809))
+        self.assertEqual(sweep_last.get_datetime(), datetime.datetime(2018, 2, 23, 3, 42, 53, 617342))
+        self.assertEqual(sweep_100.get_datetime(), datetime.datetime(2018, 2, 23, 3, 42, 51, 352458))
 
     def test_data(self):
         self.assertIsInstance(sweep_first.data, dict)
@@ -65,6 +66,6 @@ class NDANewRoutineSweep(unittest.TestCase):
 
     def test_load_data(self):
         self.assertEqual(len(sweep_100.data['corr']), 4)
-        self.assertEqual(len(sweep_100.data['corr'][0]['data']), 2048)
+        self.assertEqual(len(sweep_100.data['corr'][0]['data']), 3072)
         self.assertEqual(len(sweep_101.data['corr']), 4)
         self.assertEqual(len(sweep_101.data['corr'][0]['data']), 0)

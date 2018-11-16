@@ -32,6 +32,10 @@ class NDAJunonData(NDADataFromFile):
 
         self.debug = debug
         self.header = self.header_from_file()
+        self.file_info = {'name': self.file,
+                          'size': self.get_file_size(),
+                          'format': 'DAT',
+                          }
         self.header['ncube'] = (self.get_file_size() - self.header['size']) // self.header['cube_size']
         # self.meta = meta
         self.cur_ptr_in_file = 0
@@ -118,9 +122,8 @@ class NDAJunonData(NDADataFromFile):
 
         return desc
 
-    def file_info(self):
+    def __str__(self):
         """
-
         :return:
         """
 
@@ -132,6 +135,9 @@ class NDAJunonData(NDADataFromFile):
         print('-- Header size:   {}'.format(self.header['size']))
         str_data = ['Nothing', 'Spectrum', 'Waveform']
         print('-- Data content:  {}'.format(str_data[self.header['stream_10G']]))
+
+    def __len__(self):
+        return len(self.ecube_ptr_in_file)
 
     def get_freq_axis(self):
         return self.header['freq']
