@@ -23,7 +23,7 @@ import datetime
 import os
 from maser.data.data import MaserDataFromInterval, MaserError
 
-default_root_data_path = "/Users/baptiste/Volumes/kronos-dio/voyager/data/pra/PDS_data/"
+default_root_data_path = "/Users/baptiste/Volumes/kronos-dio/voyager/data/pra/PDS_data"
 
 
 class PDSPPIVoyagerPRAJupiterData(MaserDataFromInterval):
@@ -37,7 +37,7 @@ class PDSPPIVoyagerPRAJupiterData(MaserDataFromInterval):
         else:
             raise MaserError("Wrong input for 'SC_ID' argument. Must be 1 or 2.")
 
-        self.data_path = root_data_path + 'VG{}_JUPITER'.format(sc_id)
+        self.data_path = root_data_path + '/VG{}_JUPITER'.format(sc_id)
         self.data = list()
         self.files = list()
 
