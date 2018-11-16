@@ -2,7 +2,7 @@
 # -*- coding: latin-1 -*-
 
 """
-Python module to provide Viking constant variables.
+Python module to provide ISEE3 constant variables.
 @author: B.Cecconi(LESIA)
 """
 
