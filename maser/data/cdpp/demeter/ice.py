@@ -223,7 +223,7 @@ class CDPPDemeterN11134Data(CDPPDataFromFile):
 
         return self.time[index]
 
-    def get_single_sweep(self, cur_index):
+    def get_single_sweep(self, cur_index=0, **kwargs):
 
         if self.debug:
             print("This is {}.get_single_sweep()".format(__class__.__name__))
