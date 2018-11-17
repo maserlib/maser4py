@@ -10,7 +10,9 @@ __author__ = "Baptiste Cecconi"
 __date__ = "15-NOV-2018"
 __version__ = "0.01"
 
-__all__ = ["DMT_ICE_N1_1134_ORB_PARAM_META"]
+__all__ = ["DMT_ICE_N1_1134_ORB_PARAM_META", "DMT_ICE_N1_1134_ATT_PARAM_META", "DMT_ICE_N1_1134_DATA_HEADER_META",
+           "DMT_ICE_N1_1134_GEOMAG_PARAM_META", "DMT_ICE_N1_1134_POWER_SPECTRA_META",
+           "DMT_ICE_N1_1134_SOLAR_PARAM_META"]
 
 import astropy.units as u
 
