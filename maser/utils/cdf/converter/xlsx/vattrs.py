@@ -73,7 +73,7 @@ def add_var(xlsx, varname, entries,
     wb = lwb(xlsx)
 
     # Get sheet for variable attributes
-    ws = wb.get_sheet_by_name(VATT_SHEET_NAME)
+    ws = wb[VATT_SHEET_NAME]
 
     # Check if the variable exists
     rows = get_row(ws, varname, column="A")
@@ -111,7 +111,7 @@ def add_vattr(xlsx, attname, cdftype, entry,
     wb = lwb(xlsx)
 
     # Get sheet for variable attributes
-    ws = wb.get_sheet_by_name(VATT_SHEET_NAME)
+    ws = wb[VATT_SHEET_NAME]
 
     # Check if the variable attribute exists
     rows = get_row(ws, attname, column="B")
@@ -163,7 +163,7 @@ def set_vattr_entries(xlsx, attname, new_entry,
     wb = lwb(xlsx)
 
     # Get sheet for variable attributes
-    ws = wb.get_sheet_by_name(VATT_SHEET_NAME)
+    ws = wb[VATT_SHEET_NAME]
 
     # Get indices of row for the vattr
     rows = get_row(ws, attname, column="B")
@@ -198,7 +198,7 @@ def set_vattr_dtype(xlsx, attname, new_dtype,
     wb = lwb(xlsx)
 
     # Get sheet for variable attributes
-    ws = wb.get_sheet_by_name(VATT_SHEET_NAME)
+    ws = wb[VATT_SHEET_NAME]
 
     # Get indices of row for the vattr
     rows = get_row(ws, attname, column="B")
@@ -231,7 +231,7 @@ def rename_vattr(xlsx, old_attname, new_attname,
     wb = lwb(xlsx)
 
     # Get sheet for variable attributes
-    ws = wb.get_sheet_by_name(VATT_SHEET_NAME)
+    ws = wb[VATT_SHEET_NAME]
 
     # Get indices of row for the vattr
     rows = get_row(ws, old_attname, column="B")
@@ -264,7 +264,7 @@ def rm_vattr(xlsx, attname,
     wb = lwb(xlsx)
 
     # Get sheet for variable attributes
-    ws = wb.get_sheet_by_name(VATT_SHEET_NAME)
+    ws = wb[VATT_SHEET_NAME]
 
     # Get indices of row for the vattr
     rows = get_row(ws, attname, column="B")
@@ -304,7 +304,7 @@ def rm_var(xlsx, varname,
     wb = lwb(xlsx)
 
     # Get sheet for variable attributes
-    ws = wb.get_sheet_by_name(VATT_SHEET_NAME)
+    ws = wb[VATT_SHEET_NAME]
 
     # Get indices of row for the vattr
     rows = get_row(ws, varname, column="A")
@@ -335,7 +335,7 @@ def set_vattr_var(xlsx, old_varname, new_varname,
     wb = lwb(xlsx)
 
     # Get sheet for variable attributes
-    ws = wb.get_sheet_by_name(VATT_SHEET_NAME)
+    ws = wb[VATT_SHEET_NAME]
 
     # Check if the variable attribute exists
     rows = get_row(ws, old_varname)

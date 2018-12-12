@@ -60,7 +60,7 @@ def add_nrv(xlsx, varname, entries,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
+    ws = wb[NRV_SHEET_NAME]
 
     # Check if the NRV variable alreay exists
     max_row = ws.max_row + 1
@@ -116,7 +116,7 @@ def set_nrv_entries(xlsx, varname, new_entries,
         raise NrvException
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
+    ws = wb[NRV_SHEET_NAME]
 
     # Get indices of row for the var
     rows = get_row(ws, varname)
@@ -153,7 +153,7 @@ def add_nrv_entry(xlsx, varname, value,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
+    ws = wb[NRV_SHEET_NAME]
 
     # Get indices of row for the NRV variable
     rows = get_row(ws, varname)
@@ -182,7 +182,7 @@ def rename_nrv(xlsx, old_varname, new_varname,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
+    ws = wb[NRV_SHEET_NAME]
 
     # Get indices of row for the NRV variable
     rows = get_row(ws, old_varname)
@@ -212,7 +212,7 @@ def rm_nrv(xlsx, varname,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(NRV_SHEET_NAME)
+    ws = wb[NRV_SHEET_NAME]
 
     # Get indices of row for the NRV variable
     rows = get_row(ws, varname)

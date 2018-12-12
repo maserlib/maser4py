@@ -59,7 +59,7 @@ def check_args(sheet_name):
             else:
                 wb = lwb(xlsx)
 
-            shnames = wb.get_sheet_names()
+            shnames = wb.sheetnames
             if sheet_name not in shnames:
                 msg = "Input file does not contain {0} sheet!".format(
                                             sheet_name)
@@ -124,7 +124,7 @@ def add_row(file, sheet, row,
         raise XlsxException
 
     wb = lwb(file)
-    sh = wb.get_sheet_by_name(sheet)
+    sh = wb[sheet]
 
     max_row = sh.max_row
     max_col = sh.max_column
