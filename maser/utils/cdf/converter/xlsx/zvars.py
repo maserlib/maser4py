@@ -19,19 +19,6 @@ __all__ = ["add_zvar",
 
 # ________________ HEADER _________________________
 
-# Mandatory
-__version__ = ""
-__author__ = "Xavier Bonnin"
-__date__ = "2016-10-20"
-
-# Optional
-__license__ = ""
-__credit__ = [""]
-__maintainer__ = ""
-__email__ = ""
-__project__ = "MASER, RPW"
-__institute__ = "LESIA, Observatoire de Paris, LESIA"
-__changes__ = ""
 
 
 # ________________ Global Variables _____________
