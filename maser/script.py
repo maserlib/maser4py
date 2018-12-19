@@ -11,7 +11,7 @@ import argparse
 import logging
 from datetime import datetime
 
-from ._version import __version__
+from maser.settings import MASER_VERSION
 from .utils.toolbox import setup_logging
 from .utils.cdf.converter import skeletoncdf, SkeletonCDFException, add_skeletoncdf_subparser
 from .utils.cdf.cdfcompare import cdf_compare, add_cdfcompare_subparser
@@ -71,7 +71,7 @@ def main():
         debug=args.debug)
 
     if args.version:
-        print("This is MASER4PY V{0}".format(__version__))
+        print("This is MASER4PY V{0}".format(MASER_VERSION))
     elif args.maser is not None:
         # skeletoncdf sub-command
         if 'skeletoncdf' in args.maser:
