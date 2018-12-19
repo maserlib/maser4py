@@ -14,6 +14,7 @@ from datetime import datetime
 from ._version import __version__
 from .utils.toolbox import setup_logging
 from .utils.cdf.converter import skeletoncdf, SkeletonCDFException, add_skeletoncdf_subparser
+from .utils.cdf.cdfcompare import cdf_compare, add_cdfcompare_subparser
 from .utils.time import Lstable, add_leapsec_subparser
 
 # ________________ HEADER _________________________
@@ -57,6 +58,7 @@ def main():
     # Initializing subparsers
     add_skeletoncdf_subparser(subparsers)
     add_leapsec_subparser(subparsers)
+    add_cdfcompare_subparser(subparsers)
 
     # Parse args
     args = parser.parse_args()
@@ -125,6 +127,16 @@ def main():
                 print(lst)
             else:
                 parser.print_help()
+                # leapsec sub-command
+        # cdf_compare sub-command
+        elif 'cdf_compare' in args.maser:
+            try:
+                result = cdf_compare(args.cdf_filepath1[0], args.cdf_filepath2[0])
+            finally:
+                if result is None:
+                    logger.error('CDF_COMPARE : Faillure !!!')
+                    sys.exit(-1)
+
     else:
         parser.print_help()
 
