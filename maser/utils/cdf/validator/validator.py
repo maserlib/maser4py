@@ -1,9 +1,7 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Python 3 module to validate a CDF format file
-"""
+"""Python 3 module to validate a CDF format file."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
@@ -12,10 +10,12 @@ import sys
 import json
 import argparse
 import logging
+from shutil import move
+from tempfile import TemporaryDirectory
 
-from ..cdf import CDF, CDFError
+from spacepy.pycdf import CDF, CDFError
 
-from ...toolbox import which, setup_logging, run_command, quote
+from ...toolbox import setup_logging, run_command, quote, move_safe
 from ..tools import get_cdftype, get_vattrs, get_cdftypename
 from ....settings import SUPPORT_DIR
 
@@ -39,58 +39,77 @@ __change__ = {"0.1.0": "First beta version"}
 # (define here the global variables)
 logger = logging.getLogger(__name__)
 
+
+CDF_ENV = {"CDF_LEAPSECONDSTABLE": None, "CDF_BIN": None}
+
 ISTP_MOD_FILE = os.path.join(SUPPORT_DIR, "cdf",
                              "validator_model_istp.json")
 
 
 # ________________ Class Definition __________
 # (If required, define here classes)
+class ValidatorException(Exception):
+    """Exception class for Validator."""
+
+    pass
+
+
 class Validate():
+    """Class that provides tools to validate a CDF format file."""
 
-    """Class that provides tools to validate a CDF format file"""
-
-    def __init__(self, cdf_file,
+    def __init__(self,
+                 cdf_env=CDF_ENV,
                  log_file=None,
                  verbose=False,
                  debug=False,
                  quiet=False):
-
+        """Validate Init method."""
         # Setup the logging
         setup_logging(
             filename=log_file, quiet=quiet,
             verbose=verbose, debug=debug)
 
-        self._setcdf(cdf_file)
+        self.file = ""
+        self.cdf = None
+        self.cdf_env = self._init_cdfenv(cdf_env=cdf_env)
 
-    def _setcdf(self, cdf_file):
-        """Set the input cdf file"""
-        self.cdf_file = cdf_file
-        self.cdf = self.open_cdf()
+    def _init_cdfenv(self, cdf_env=CDF_ENV):
+        """Initialize instance."""
+        # get CDF program path
+        for key, val in cdf_env.items():
+            if val is None:
+                if key in os.environ:
+                    cdf_env[key] = os.environ[key]
+                else:
+                    logger.error("{0} is not defined!".format(key))
+                    raise CDFError
+        return cdf_env
 
-    def open_cdf(self):
-
-        """Open the input cdf file"""
-
-        logger.info("Opening " + self.cdf_file)
+    def open_cdf(self, file):
+        """Open the input cdf file."""
+        logger.info("Opening {0}".format(file))
+        self.file = file
         try:
-            cdf = CDF(self.cdf_file)
+            cdf = CDF(self.file)
             cdf.readonly(True)
         except CDFError as e:
             logger.error(e)
             raise CDFError
         else:
-            return cdf
+            self.cdf = cdf
 
     def close_cdf(self):
-        """ Close current cdf file"""
+        """Close current cdf file."""
         logger.info("Closing " + self.cdf_file)
         self.cdf.close()
 
     def is_istp_compliant(self):
+        """
+        Istp compliant.
 
-        """Check that the input CDF is compliant with
-            ISTP guidelines"""
-
+        Check that the input CDF is compliant with
+            ISTP guidelines
+        """
         issues = []
 
         issues.extend(self.is_model_compliant(ISTP_MOD_FILE))
@@ -99,13 +118,13 @@ class Validate():
         return issues
 
     def is_model_compliant(self, model_file):
-
-        """Check the CDF content compared to
-        the input mode file"""
+        """Check the CDF content compared to the input mode file."""
+        pass
 
         def check(cdf, items):
-
             """
+            Check CDF items.
+
             Check items of a given CDF
             GLOBALattributes, VARIABLEattributes, zVariables
             """
@@ -137,18 +156,18 @@ class Validate():
                     if isentry:
                         logger.debug("Checking attribute entries")
                         if nentry < len(item["entries"]):
-                            msg = (name + " "
-                                          + " has missing entries!")
+                            msg = (name + " " +
+                                          " has missing entries!")
                             logger.warning(msg)
                             issues.append(msg)
                         else:
                             for i in range(len(item["entries"])):
                                 if cdfitem[i] != item["entries"][i]:
-                                    msg = (quote(name) + " "
-                                            + " has a wrong entry value: "
-                                            + quote(item["entries"][i]) +
-                                            " (" + quote(cdfitem[i])
-                                            + " expected)!")
+                                    msg = (quote(name) + " " +
+                                           " has a wrong entry value: " +
+                                           quote(item["entries"][i]) +
+                                           " (" + quote(cdfitem[i]) +
+                                           " expected)!")
                                     logging.warning(msg)
                                     issues.append(msg)
 
@@ -157,10 +176,10 @@ class Validate():
                         cdftype = get_cdftype(item["type"])
                         for j in range(len(cdfitem)):
                             if cdfitem.type(j) != cdftype:
-                                msg = (quote(name)
-                                            + " has the wrong data type:" +
-                                            quote(item["type"])
-                                            + " expected)!")
+                                msg = (quote(name) +
+                                       " has the wrong data type:" +
+                                       quote(item["type"]) +
+                                       " expected)!")
                                 logging.warning(msg)
                                 issues.append(msg)
 
@@ -168,7 +187,7 @@ class Validate():
                         logger.debug("Checking data size")
                         if cdfitem.shape != item["size"]:
                             msg = (name + " " +
-                            " has the wrong size!")
+                                   " has the wrong size!")
                             logging.warning(msg)
                             issues.append(msg)
 
@@ -176,13 +195,13 @@ class Validate():
                         if len(cdfitem) != item["dims"]:
                             logger.debug("Checking data dimension(s)")
                             msg = (name + " " +
-                             " has the dims size!")
+                                   " has the dims size!")
                             logging.warning(msg)
                             issues.append(msg)
 
                     if isattrs:
-                        logger.info("Checking variable attributes of "
-                                    + quote(name) + ":")
+                        logger.info("Checking variable attributes of " +
+                                    quote(name) + ":")
                         check(cdf[name].attrs, item["attributes"])
                 else:
                     msg = (name + " required!")
@@ -215,11 +234,12 @@ class Validate():
         return issues
 
     def is_istp_fillval(self, zvarnames=None):
+        """
+        Is_istp_fillval.
 
-        """Check if the FILLVAL variable attribute values
+        Check if the FILLVAL variable attribute values
         are ISTP compliant
         """
-
         issues = []
 
         if zvarnames is None:
@@ -247,7 +267,7 @@ class Validate():
                         issues.append(msg)
                 else:
                     msg = ("%s has no FILLVAL attribute!"
-                    % (quote(zvname)))
+                           % (quote(zvname)))
                     logging.warning(msg)
                     issues.append(msg)
             else:
@@ -256,39 +276,69 @@ class Validate():
 
         return issues
 
-    def cdfvalidate(self, program=None):
-
-        """Run the cdfvalidate program in the GSFC CDF distribution"""
-
+    def cdfconvert(self, src, dst,
+                   args=None, program=None,
+                   overwrite=False):
+        """Run the cdfconvert program in the GSFC CDF distribution."""
         cmd = []
 
         if program is None:
-            program = which("cdfvalidate")
+            program = os.path.join(self.cdf_env["CDF_BIN"], "cdfconvert")
+
+        if program is None or not os.path.isfile(program):
+            logger.error("cdfconvert not found!")
+            return None
+
+        cmd = [program, src, dst]
+
+        if args is not None:
+            cmd.append(args)
+
+        if overwrite is True:
+            with TemporaryDirectory() as tempdir:
+                src = move_safe(src, tempdir)
+                self.cdfconvert(src, dst, args=args,
+                                program=program,
+                                overwrite=False)
+
+        return run_command(cmd)
+
+    def cdfvalidate(self, file, program=None):
+        """Run the cdfvalidate program in the GSFC CDF distribution."""
+        cmd = []
 
         if program is None:
-            logger.error("skeletoncdf PROGRAM IS NOT"
-                " IN THE $PATH VARIABLE!")
-            return None
-        cmd.append(program)
+            program = os.path.join(self.cdf_env["CDF_BIN"], "cdfvalidate")
 
-        res = run_command(cmd)
+        if program is None or not os.path.isfile(program):
+            logger.error("cdfvalidate not found!")
+            return None
+        cmd = [program, file]
+
+        return run_command(cmd)
+
+    @classmethod
+    def is_cdf_valid(cls, file, program=None, quiet=False):
+        """Call the cdfvalidate program."""
+        res = cls(quiet=quiet).cdfvalidate(file, program=program)
+
         output, errors = res.communicate()
         if res.wait() == 0:
             logger.info(output)
             return True
         else:
-            logger.error("ERROR RUNNING COMMAND: ")
-            logger.error(" ".join(cmd))
+            logger.error("ERROR RUNNING COMMAND cdfvalidate: ")
             logger.error("STDOUT - %s", str(output))
             logger.error("STDERR - %s", str(errors))
             return False
 
     def is_zvar_valid(self, zvarname):
+        """
+        Is_zvar_valid.
 
-        """ Ckech  the values of a zVariable
+        Check  the values of a zVariable
         comparing to the its VALIMIN/VALIDMAX attributes
         """
-
         issues = []
 
         cdf = self.cdf
@@ -333,9 +383,7 @@ class Validate():
 # ________________ Global Functions __________
 # (If required, define here gobal functions)
 def main():
-
-    """cdfvalidator main program"""
-
+    """Cdfvalidator main program."""
     parser = argparse.ArgumentParser(
         description='Validate a CDF format file',
         add_help=True)
@@ -382,10 +430,10 @@ def main():
 
     # Initialize a Validate object
     cdfvalid = Validate(args.cdf_file,
-                          log_file=args.log_file,
-                          verbose=args.Verbose,
-                          quiet=args.Quiet,
-                          debug=args.Debug)
+                        log_file=args.log_file,
+                        verbose=args.Verbose,
+                        quiet=args.Quiet,
+                        debug=args.Debug)
 
     if args.ISTP:
         cdfvalid.is_istp_compliant()

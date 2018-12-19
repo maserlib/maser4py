@@ -23,27 +23,18 @@ cd "`dirname "${workdir}"`" > /dev/null
 workdir="`pwd`";
 popd  > /dev/null
 
-if [[ -n ${CDF_BIN} ]];then
-    echo "Warning: it seems that the NASA CDF lib. is not configured correctly!"
+if [[ -z ${CDF_BIN} ]];then
+    echo "Warning: it seems that the NASA CDF software environment is not configured correctly!"
     exit -1
 fi
-. ${CDF_BIN}/definitions.B
 
 inputdir=${workdir}/../maser/support/cdf
 outputdir=/tmp
 
 # Input Excel 2007 format file to convert
 excel=$inputdir/converter_example.xlsx
-# Output skeleton table to create
-skeleton=$outputdir/converter_example.skt
-# Output master cdf file to create
-master=$outputdir/converter_example.cdf
 
-echo "Converting "$excel" into "$skeleton
-echo "xlsx2skt -OVIA "$excel" -s "$skeleton
-xlsx2skt -OVIA $excel -s $skeleton
+echo "Converting Excel file "$excel" into master binary CDF"
+maser -D skeletoncdf -I -A -e -o $outputdir $excel
 
-echo "Converting "$skeleton" into "$master
-echo "skt2cdf -OV "$skeleton" -c "$output_master
-skt2cdf -OV $skeleton -c $master
 

@@ -1,5 +1,5 @@
 tmp
-local
+local/*
 *.zip
 doc/build
 !doc/build/latex/maser4py.pdf

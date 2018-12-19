@@ -9,7 +9,7 @@ Module providing additional tools for the CDF format handling
 # (Include here the modules to import, e.g. import sys)
 import logging
 
-from .cdf import const, zAttr
+from spacepy.pycdf import const, zAttr
 import numpy
 import csv
 

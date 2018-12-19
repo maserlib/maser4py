@@ -26,8 +26,11 @@ fi
 currentdir=`pwd`
 cd $docdir
 
-# Buid doc
+# Build doc
 sphinx-build source build
+
+# Build api doc
+sphinx-apidoc -o build ../maser
 
 # Create pdf version
 make latexpdf

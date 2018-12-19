@@ -222,48 +222,8 @@ class Lstable:
 
 # ________________ Global Functions __________
 # (If required, define here gobal functions)
-def main():
-    """Main program."""
-    parser = argparse.ArgumentParser(add_help=True)
-    parser.add_argument("-f", "--filepath",
-                        nargs=1, default=[LS_FILE_DEF_PATH],
-                        help="CDFLeapSeconds.txt filepath.\n "
-                        "Default is ${0}".format(LS_FILE_DEF_PATH))
-    parser.add_argument("-d", "--date", nargs=1,
-                        default=[None],
-                        help="Return the leap seconds for "
-                        "a given date and time."
-                        "(Expected format is \"YYYY-MM-DDThh:mm:ss\")")
-    parser.add_argument("-D", "--DOWNLOAD-FILE", action='store_true',
-                        help="Download the CDFLeapSeconds.txt file"
-                        "from the NASA CDF Web site. "
-                        "The file will be saved in the path"
-                        " defined in the --filepath argument.")
-    parser.add_argument("-S", "--SHOW-TABLE", action='store_true',
-                        help="Show the leap sec. table")
-    parser.add_argument("-O", "--OVERWRITE", action='store_true',
-                        help="Overwrite existing file")
 
-    args = parser.parse_args()
-
-    setup_logging(verbose=True)
-
-    # If get_file then download CDFLeapSeconds.txt file and exit
-    if args.DOWNLOAD_FILE:
-        target_dir = os.path.dirname(args.filepath[0])
-        Lstable.get_lstable_file(target_dir=target_dir,
-                                 overwrite=args.OVERWRITE)
-        sys.exit()
-
-    lst = Lstable(file=args.filepath[0])
-    if args.date[0] is not None:
-        date = datetime.strptime(args.date[0], INPUT_DATE)
-        print("{0} sec.".format(lst.get_leapsec(date=date)))
-    elif args.SHOW_TABLE:
-        print(lst)
-    else:
-        parser.print_help()
 
 # _________________ Main ____________________________
-if (__name__ == "__main__"):
-    main()
+#if (__name__ == "__main__"):
+#    main()
