@@ -7,22 +7,39 @@
 # --------------------------------------------------------------------------------------------------------------
 # All necessary import:
 # --------------------------------------------------------------------------------------------------------------
-# import versioneer
+import os.path as osp
 
 from setuptools import find_packages
 from setuptools import setup
 from doc.utils import APIDoc
 from maser import _version
 
+# --------------------------------------------------------------------------------------------------------------
+# Global variables:
+# --------------------------------------------------------------------------------------------------------------
 
-# for management of the version string from various VCS
-# versioneer.VCS = "git"
-# versioneer.versionfile_source = "maser/_version.py"
-# versioneer.versionfile_build = "maser/_version.py"
-# versioneer.tag_prefix = ""
-# versioneer.parentdir_prefix = "maser-"
 
 packages = find_packages()
+
+
+ROOT_DIRECTORY = osp.dirname(osp.abspath(__file__))
+REQ_FILE = osp.join(ROOT_DIRECTORY, "requirements.txt")
+
+
+# --------------------------------------------------------------------------------------------------------------
+# Call the extra functions:
+# --------------------------------------------------------------------------------------------------------------
+
+def get_reqs(req_file):
+    """Get module dependencies from requirements.txt."""
+    if not osp.isfile(req_file):
+        raise BaseException("No requirements.txt file found, aborting!")
+    else:
+        with open(req_file, 'r') as fr:
+            requirements = fr.read().splitlines()
+
+    return requirements
+
 
 # --------------------------------------------------------------------------------------------------------------
 # Call the setup function:
@@ -32,26 +49,21 @@ packages = find_packages()
 cmdclass = {
     "build_doc": APIDoc,
 }
-# cmdclass.update(versioneer.get_cmdclass())
 
 setup(
     name='maser4py',
+    install_requires=get_reqs(REQ_FILE),
     version=_version.__version__,
     description="Python 3 module for the MASER portal",
     long_description=open("README.rst").read(),
-    author="X.Bonnin",
-    author_email="xavier.bonnin@obspm.fr",
-    license="BSD",
+    author="MASER team",
+    license="GPL",
     packages=packages,
     cmdclass=cmdclass,
     entry_points={
         "console_scripts": [
             "maser=maser.script:main"]
     },
-    install_requires=['openpyxl>=2.3.5', 'numpy>=1.11.0',
-                      'matplotlib', 'sphinx>=1.4.1', 'pytz',
-                      'sphinx_rtd_theme'],
     include_package_data=True,
     url="https://github.com/maserlib/maser4py"
-    # ext_modules=cythonize("maser/rpl/*.pyx"),
 )

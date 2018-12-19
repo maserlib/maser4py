@@ -3,7 +3,7 @@
 
 """maser._version."""
 
-__version__ = "0.6.2"
+__version__ = "0.7.0"
 __date__ = "12-MAY-2017"
 __change__ = {"0.1.0": "First beta release",
               "0.2.0": "Modify the source code tree",
@@ -22,4 +22,6 @@ __change__ = {"0.1.0": "First beta release",
               "0.5.0": "Update leapsec & doc",
               "0.6.0": "Add utils.time submodule, update leapsec",
               "0.6.1": "Fix a bug in toolbox.py",
-              "0.6.2": "Update maser command line interface"}
+              "0.7.0": "Update maser command line interface, "
+                       "Update obsolete openpyxl functions from the xlsx cdf converter, "
+                       "Add cdfcompare function"}
