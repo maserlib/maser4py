@@ -1,6 +1,13 @@
 CHANGELOG
 ====================
 
+0.7.0
+-----
+* Add cdf_compare function
+* Update maser command line interface call
+* Update obsolete openpyxl functions from the xlsx cdf converter
+* Use CHANGELOG.rst to get MASER version (in setup.py and program)
+
 0.6.1
 -----
 * Fix a bug in toolbox.py

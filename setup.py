@@ -8,11 +8,12 @@
 # All necessary import:
 # --------------------------------------------------------------------------------------------------------------
 import os.path as osp
+import re
+import sys
 
 from setuptools import find_packages
 from setuptools import setup
 from doc.utils import APIDoc
-from maser import _version
 
 # --------------------------------------------------------------------------------------------------------------
 # Global variables:
@@ -24,6 +25,7 @@ packages = find_packages()
 
 ROOT_DIRECTORY = osp.dirname(osp.abspath(__file__))
 REQ_FILE = osp.join(ROOT_DIRECTORY, "requirements.txt")
+CHANGELOG_FILE = osp.join(ROOT_DIRECTORY, "CHANGELOG.rst")
 
 
 # --------------------------------------------------------------------------------------------------------------
@@ -41,6 +43,18 @@ def get_reqs(req_file):
     return requirements
 
 
+def get_version(changelog):
+    """Get latest version from the input CHANGELOG.rst file."""
+    pattern = re.compile(r"(\d*)\.(\d*)\.(\w*)")
+    if osp.isfile(changelog):
+        with open(changelog, 'rt') as file:
+            for line in file:
+                if pattern.match(line):
+                    return line.strip()
+
+    print("WARNING: CHANGELOG.rst not found or invalid, version unknown!")
+    return "unknown"
+
 # --------------------------------------------------------------------------------------------------------------
 # Call the setup function:
 # --------------------------------------------------------------------------------------------------------------
@@ -53,9 +67,9 @@ cmdclass = {
 setup(
     name='maser4py',
     install_requires=get_reqs(REQ_FILE),
-    version=_version.__version__,
+    version=get_version(CHANGELOG_FILE),
     description="Python 3 module for the MASER portal",
-    long_description=open("README.rst").read(),
+    long_description=open(osp.join(ROOT_DIRECTORY, "README.rst")).read(),
     author="MASER team",
     license="GPL",
     packages=packages,

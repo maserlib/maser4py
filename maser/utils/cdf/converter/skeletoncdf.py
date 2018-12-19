@@ -23,7 +23,7 @@ from openpyxl import load_workbook
 from collections import OrderedDict
 
 from ...toolbox import uniq, quote, truncate_str, insert_char
-from ...._version import __version__
+from maser.settings import MASER_VERSION
 
 from ...toolbox import which, run_command
 
@@ -224,7 +224,7 @@ class Xlsx2skt:
         file_header += "!Generated: " + \
             CURRENT_DATETIME.strftime("%Y-%m-%d %H:%M:%S") + "\n"
         file_header += "!Skeleton table created by skeletoncdf.py V" + \
-            __version__ + "\n"
+            MASER_VERSION + "\n"
         file_header += "!Skeleton table created from " + xlsx_name + "\n"
 
         skt_header = self._build_header(xlsx_sheets["header"],
