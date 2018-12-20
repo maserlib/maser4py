@@ -16,6 +16,8 @@ popd  > /dev/null
 
 cd $workdir/..
 
+rm -rf dist/
+
 # Create wheel file
 python setup.py bdist_wheel
 
@@ -23,4 +25,4 @@ python setup.py bdist_wheel
 #twine register `ls dist/*.whl`
 
 # Upload
-#twine upload dist/*
+twine upload dist/*

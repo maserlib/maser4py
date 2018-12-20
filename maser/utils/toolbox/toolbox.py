@@ -83,15 +83,15 @@ class Singleton(type):
 # (If required, define here global functions)
 
 def get_version(changelog):
-    """Get latest version from the input CHANGELOG.rst file."""
-    pattern = re.compile(r"(\d*)\.(\d*)\.(\w*)")
+    """Get latest version from the input CHANGELOG.md file."""
+    pattern = re.compile(r"(\d*)\.(\w*)\.(\w*)")
     if osp.isfile(changelog):
         with open(changelog, 'rt') as file:
             for line in file:
                 if pattern.match(line):
                     return line.strip()
 
-    print("WARNING: CHANGELOG.rst not found or invalid, version unknown!")
+    print("WARNING: CHANGELOG.md not found or invalid, version unknown!")
     return "unknown"
 
 

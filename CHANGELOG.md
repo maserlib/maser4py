@@ -1,6 +1,14 @@
 CHANGELOG
 ====================
 
+0.7.1
+-----
+* Fix dependencies installation bug (in requirements.txt)
+* Change README.rst to README.md
+* Change CHANGELOG.rst to CHANGELOG.md
+* Change cdf import handling
+* Update read_wind_waves_file.py for python3 syntax
+
 0.7.0
 -----
 * Add cdf_compare function

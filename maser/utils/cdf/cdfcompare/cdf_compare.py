@@ -7,7 +7,7 @@ import os
 import sys
 import os.path
 import numpy as np
-from spacepy import pycdf
+from maser.utils.cdf import CDF
 import logging
 
 logging.basicConfig(level=logging.WARNING, format='%(levelname)s : %(message)s')
@@ -20,11 +20,11 @@ def checking_file_exist(cdf_file):
         exit()
     if os.access(cdf_file, os.R_OK) == False:
         logger.error("%s : is not readable !", cdf_file)
-        exist()
+        exit()
 
 # Listing the names of all data variables (zVars)
 def read_cdf_list_keys(cdf_file):
-    cdf = pycdf.CDF(cdf_file)
+    cdf = CDF(cdf_file)
     cdf_data = cdf.copy()
     listkeys = list(cdf_data.keys())
     cdf.close()
@@ -44,7 +44,7 @@ def list_elements(liste):
 
 # Getting global attributes (gAttrs)
 def get_global_attributes(cdf_file):
-    cdf = pycdf.CDF(cdf_file)
+    cdf = CDF(cdf_file)
     cdf_data = cdf.copy()
     global_attributes = cdf_data.attrs
     cdf.close()
@@ -62,7 +62,7 @@ def delete_key(dict, key_to_remove):
 
 # Getting a given vAttr's not matched keys
 def get_not_matched_vAttrKey(field1, field2):
-    vAttrsList1 = field1.attrs  # class 'spacepy.pycdf.zAttrList'
+    vAttrsList1 = field1.attrs  # class 'spacepy.cdf.zAttrList'
     listA1 = sorted([attr_key for attr_key in vAttrsList1])
     vAttrsList2 = field2.attrs
     listA2 = sorted([attr_key for attr_key in vAttrsList2])
@@ -75,7 +75,7 @@ def get_not_matched_vAttrKey(field1, field2):
 
 # Getting a given vAttr's matched keys
 def get_matched_vAttrKey(field1, field2):
-    vAttrsList1 = field1.attrs  # class 'spacepy.pycdf.zAttrList'
+    vAttrsList1 = field1.attrs  # class 'spacepy.cdf.zAttrList'
     listA1 = sorted([attr_key for attr_key in vAttrsList1])
     vAttrsList2 = field2.attrs
     listA2 = sorted([attr_key for attr_key in vAttrsList2])
@@ -96,8 +96,8 @@ def cdf_compare(cdf_file1, cdf_file2, ignore_gatt=[], ignore_zvar=[], ignore_vat
     logger.warning(' CDF file 2 : %s', cdf_file2)
     checking_file_exist(cdf_file1)
     checking_file_exist(cdf_file2)
-    cdf1 = pycdf.CDF(cdf_file1)
-    cdf2 = pycdf.CDF(cdf_file2)
+    cdf1 = CDF(cdf_file1)
+    cdf2 = CDF(cdf_file2)
     list_cdf = [cdf_file1, cdf_file2]
 
     list_argv = sys.argv
