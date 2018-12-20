@@ -15,10 +15,10 @@ SERVICE_DIR = os.path.join(MASER_LIB_DIR, "services")
 UTILS_DIR = os.path.join(MASER_LIB_DIR, "utils")
 SUPPORT_DIR = os.path.join(MASER_LIB_DIR, "support")
 
-if os.path.isfile(os.path.join(ROOT_DIRECTORY, "CHANGELOG.rst")):
-    MASER_VERSION = get_version(os.path.join(ROOT_DIRECTORY, "CHANGELOG.rst"))
-elif os.path.isfile(os.path.join(ROOT_DIRECTORY, "..", "CHANGELOG.rst")):
-    MASER_VERSION = get_version(os.path.join(ROOT_DIRECTORY, "..", "CHANGELOG.rst"))
+if os.path.isfile(os.path.join(ROOT_DIRECTORY, "CHANGELOG.md")):
+    MASER_VERSION = get_version(os.path.join(ROOT_DIRECTORY, "CHANGELOG.md"))
+elif os.path.isfile(os.path.join(ROOT_DIRECTORY, "..", "CHANGELOG.md")):
+    MASER_VERSION = get_version(os.path.join(ROOT_DIRECTORY, "..", "CHANGELOG.md"))
 else:
-    print("WARNING: CHANGELOG.rst not found or invalid, version unknown!")
+    print("WARNING: CHANGELOG.md not found or invalid, version unknown!")
     MASER_VERSION = "unknown"

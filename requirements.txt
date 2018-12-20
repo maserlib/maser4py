@@ -1,10 +1,7 @@
-numpy>=1.11.0
-openpyxl
-Sphinx>=1.4.1
-matplotlib
-sphinx_rtd_theme
-pytz
 astropy
+numpy
+openpyxl
+pytz
 python-dateutil
-spacepy
-requests
+Sphinx
+sphinx_rtd_theme
