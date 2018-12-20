@@ -9,7 +9,7 @@ Module providing additional tools for the CDF format handling
 # (Include here the modules to import, e.g. import sys)
 import logging
 
-from spacepy.pycdf import const, zAttr
+from maser.utils.cdf import const, zAttr
 import numpy
 import csv
 
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def get_cdftype(dtype):
     """
-        Return the id of a pycdf data type,
+        Return the id of a cdf data type,
         prividing the CDF data type.
     """
     return const.__dict__[dtype].value
@@ -33,7 +33,7 @@ def get_cdftype(dtype):
 
 def get_cdftypename(dtype=None):
     """
-        Return the CDF type name of a given pycdf cdf type
+        Return the CDF type name of a given cdf cdf type
         Return the full CDF data type dictionnary if no input
         argument is provided.
     """
@@ -64,7 +64,7 @@ def get_cdftypename(dtype=None):
 
 def get_numpttype(dtype=None):
     """
-        Return the numpy data type from a given pycdf data type.
+        Return the numpy data type from a given cdf data type.
         Return the full numpy data type dictionnary if no input
         argument is provided.
     """
@@ -99,7 +99,7 @@ def get_vattrs(cdf):
 
     """
     Retrieve the list of zVariables attributes
-    from a given pycdf object
+    from a given cdf object
     """
 
     vattrs = {}

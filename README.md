@@ -13,7 +13,10 @@ of the MASER portal (see section below).
 Installation
 ============
 
-Make sure that Python 3.4 (or higher) as well as pip and setuptools are already installed on your system.
+Prerequisites
+-------------
+
+Python 3.4, 3.5 or 3.6 must be available.
 
 The maser4py also requires the NASA CDF software to be run (visit http://cdf.gsfc.nasa.gov/ for more details). Especially the CDFLeapSeconds.txt file
 should be on the local disk and reachable from the $CDF_LEAPSECONDSTABLE env. variable. If it is not the case, maser4py offers tools to read and/or download
