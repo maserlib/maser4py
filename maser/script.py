@@ -12,10 +12,11 @@ import logging
 from datetime import datetime
 
 from maser.settings import MASER_VERSION
-from .utils.toolbox import setup_logging
-from .utils.cdf.converter import skeletoncdf, SkeletonCDFException, add_skeletoncdf_subparser
-from .utils.cdf.cdfcompare import cdf_compare, add_cdfcompare_subparser
-from .utils.time import Lstable, add_leapsec_subparser
+from maser.utils.toolbox import setup_logging
+from maser.utils.cdf.converter import skeletoncdf, SkeletonCDFException, add_skeletoncdf_subparser
+from maser.utils.cdf.cdfcompare import cdf_compare, add_cdfcompare_subparser
+from maser.utils.cdf.validator import cdfvalidator, ValidatorException, add_cdfvalidator_subparser
+from maser.utils.time import Lstable, add_leapsec_subparser
 
 # ________________ HEADER _________________________
 
@@ -59,6 +60,7 @@ def main():
     add_skeletoncdf_subparser(subparsers)
     add_leapsec_subparser(subparsers)
     add_cdfcompare_subparser(subparsers)
+    add_cdfvalidator_subparser(subparsers)
 
     # Parse args
     args = parser.parse_args()
@@ -136,6 +138,27 @@ def main():
                 if result is None:
                     logger.error('CDF_COMPARE : Faillure !!!')
                     sys.exit(-1)
+        elif 'cdf_validator' in args.maser:
+            cdfvalidator(args.cdf_file[0],
+                         is_istp=args.istp,
+                         model_json_file=args.model_file[0],
+                         cdfvalidate_bin=args.cdfvalidate_bin[0],
+                         run_cdf_validate=args.run_cdfvalidate)
+            try:
+                cdfvalidator(args.cdf_file[0],
+                             is_istp=args.istp,
+                             model_json_file=args.model_file[0],
+                             cdfvalidate_bin=args.cdfvalidate_bin[0],
+                             run_cdf_validate=args.run_cdfvalidate)
+            except ValidatorException as strerror:
+                logger.error("cdf_validator error -- {0}, aborting!".format(strerror))
+                sys.exit(-1)
+            except:
+                logger.error("cannot run cdf_validator, aborting!")
+                sys.exit(-1)
+        else:
+            print("Unknown maser sub-command")
+            parser.print_help()
 
     else:
         parser.print_help()

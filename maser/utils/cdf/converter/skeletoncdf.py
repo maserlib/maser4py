@@ -31,7 +31,7 @@ from ...toolbox import which, run_command
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__file__)
 
 CURRENT_DATETIME = datetime.now()
 ROW_LENGTH_MAX = 79

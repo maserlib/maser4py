@@ -6,41 +6,28 @@
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
 import os
-import sys
 import json
-import argparse
 import logging
-from shutil import move
 from tempfile import TemporaryDirectory
 
 from maser.utils.cdf import CDF
 
-from ...toolbox import setup_logging, run_command, quote, move_safe
+from ...toolbox import run_command, quote, move_safe
 from ..tools import get_cdftype, get_vattrs, get_cdftypename
 from ....settings import SUPPORT_DIR
 
+__all__ = ["Validate", "cdfvalidator", "ValidatorException"]
+
 # ________________ HEADER _________________________
 
-# Mandatory
-__version__ = "0.1.0"
-__author__ = "Xavier Bonnin"
-__date__ = "30-NOV-2015"
 
-# Optional
-__institute__ = "LESIA, Observatoire de Paris, CNRS"
-__project__ = "MASER"
-__license__ = ""
-__credit__ = [""]
-__maintainer__ = "Xavier Bonnin"
-__email__ = "xavier.bonnin@obspm.fr"
-__change__ = {"0.1.0": "First beta version"}
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__file__)
 
-
-CDF_ENV = {"CDF_LEAPSECONDSTABLE": None, "CDF_BIN": None}
+CDF_ENV = {"CDF_LEAPSECONDSTABLE": None,
+           "CDF_BIN": None}
 
 ISTP_MOD_FILE = os.path.join(SUPPORT_DIR, "cdf",
                              "validator_model_istp.json")
@@ -57,20 +44,13 @@ class ValidatorException(Exception):
 class Validate():
     """Class that provides tools to validate a CDF format file."""
 
-    def __init__(self,
-                 cdf_env=CDF_ENV,
-                 log_file=None,
-                 verbose=False,
-                 debug=False,
-                 quiet=False):
+    def __init__(self,cdf_file,
+                 cdf_env=CDF_ENV):
         """Validate Init method."""
-        # Setup the logging
-        setup_logging(
-            filename=log_file, quiet=quiet,
-            verbose=verbose, debug=debug)
 
-        self.file = ""
+        self.file = None
         self.cdf = None
+        self.open_cdf(cdf_file)
         self.cdf_env = self._init_cdfenv(cdf_env=cdf_env)
 
     def _init_cdfenv(self, cdf_env=CDF_ENV):
@@ -100,7 +80,7 @@ class Validate():
 
     def close_cdf(self):
         """Close current cdf file."""
-        logger.info("Closing " + self.cdf_file)
+        logger.info("Closing " + self.file)
         self.cdf.close()
 
     def is_istp_compliant(self):
@@ -132,7 +112,7 @@ class Validate():
 
             for item in items:
                 name = item['name']
-                logger.info("--> " + name)
+                logger.info("Checking \"{0}\"".format(name))
                 istype = ("type" in item)
                 isentry = ("entries" in item)
                 hasvalue = ("hasvalue" in item)
@@ -146,28 +126,24 @@ class Validate():
                     nentry = len(cdfitem)
 
                     if hasvalue:
-                        logger.debug("Checking value existence")
+                        logger.debug("Checking value existence...")
                         if nentry == 0 or len(cdfitem[0].strip()) == 0:
-                            msg = (name + " " +
-                                          " has no entry value!")
+                            msg = "--> \"{0}\" has no entry value!".format(name)
                             logger.warning(msg)
                             issues.append(msg)
 
                     if isentry:
-                        logger.debug("Checking attribute entries")
+                        logger.debug("Checking attribute entries...")
                         if nentry < len(item["entries"]):
-                            msg = (name + " " +
-                                          " has missing entries!")
+                            msg = "--> \"{0}\" has missing entries!".format(name)
                             logger.warning(msg)
                             issues.append(msg)
                         else:
                             for i in range(len(item["entries"])):
                                 if cdfitem[i] != item["entries"][i]:
-                                    msg = (quote(name) + " " +
-                                           " has a wrong entry value: " +
-                                           quote(item["entries"][i]) +
-                                           " (" + quote(cdfitem[i]) +
-                                           " expected)!")
+                                    msg = "--> \"{0}\" has a wrong entry value: ".format(name) + \
+                                            "\"{0}\" found, but \"{1}\" expected!".format(
+                                               cdfitem[i], item["entries"][i])
                                     logging.warning(msg)
                                     issues.append(msg)
 
@@ -176,35 +152,30 @@ class Validate():
                         cdftype = get_cdftype(item["type"])
                         for j in range(len(cdfitem)):
                             if cdfitem.type(j) != cdftype:
-                                msg = (quote(name) +
-                                       " has the wrong data type:" +
-                                       quote(item["type"]) +
-                                       " expected)!")
+                                msg = "--> \"{0}\" has the wrong data type:".format(name) + \
+                                       "\"{0}\" expected!".format(item["type"])
                                 logging.warning(msg)
                                 issues.append(msg)
 
                     if issize:
                         logger.debug("Checking data size")
                         if cdfitem.shape != item["size"]:
-                            msg = (name + " " +
-                                   " has the wrong size!")
+                            msg = "--> \"{0}\" has the wrong size!".format(name)
                             logging.warning(msg)
                             issues.append(msg)
 
                     if isdims:
                         if len(cdfitem) != item["dims"]:
                             logger.debug("Checking data dimension(s)")
-                            msg = (name + " " +
-                                   " has the dims size!")
+                            msg = "--> \"{0}\" has the wrong dims size!".format(name)
                             logging.warning(msg)
                             issues.append(msg)
 
                     if isattrs:
-                        logger.info("Checking variable attributes of " +
-                                    quote(name) + ":")
+                        logger.info("Checking variable attributes of \"{0}\"...".format(name))
                         check(cdf[name].attrs, item["attributes"])
                 else:
-                    msg = (name + " required!")
+                    msg = "--> \"{0}\" required!".format(name)
                     logging.warning(msg)
                     issues.append(msg)
 
@@ -303,7 +274,7 @@ class Validate():
 
         return run_command(cmd)
 
-    def cdfvalidate(self, file, program=None):
+    def cdfvalidator(self, file, program=None):
         """Run the cdfvalidate program in the GSFC CDF distribution."""
         cmd = []
 
@@ -382,67 +353,26 @@ class Validate():
 
 # ________________ Global Functions __________
 # (If required, define here gobal functions)
-def main():
-    """Cdfvalidator main program."""
-    parser = argparse.ArgumentParser(
-        description='Validate a CDF format file',
-        add_help=True)
-    parser.add_argument('cdf_file', nargs='?',
-                        default=None,
-                        help='Path of the CDF format file to validate')
-    parser.add_argument('-m', '--model_file', nargs='?',
-                        default=None,
-                        help='Path to the model file in JSON format')
-    parser.add_argument('-c', '--cdfvalidate', nargs='?',
-                        default=None,
-                        help='Path of the cdfvalidate program')
-    parser.add_argument('-l', '--log_file', nargs='?',
-                        default=None,
-                        help='Path of the output log file')
-    parser.add_argument('-I', '--ISTP', action='store_true',
-                        help='Check the ISTP guidelines compliance')
-    parser.add_argument('-C', '--CDFvalidate', action='store_true',
-                        help='Check the CDF integrity'
-                        'calling the CDFvalidate program')
-    parser.add_argument('-V', '--Verbose', action='store_true',
-                        help='Verbose mode')
-    parser.add_argument('-Q', '--Quiet', action='store_true',
-                        help='Quiet mode')
-    parser.add_argument('-D', '--Debug', action='store_true',
-                        help='Debug mode')
-    parser.add_argument('--version', action='store_true',
-                        help='Show version')
-    parser.add_argument('--change', action='store_true',
-                        help='Show change')
-    args = parser.parse_args()
-
-    if args.version:
-        print(__version__)
-        sys.exit(0)
-
-    if args.change:
-        print(__change__)
-        sys.exit(0)
-
-    if not args.cdf_file:
-        parser.print_help()
-        sys.exit(0)
+def cdfvalidator(cdf_file,
+                 is_istp=False,
+                 model_json_file=None,
+                 cdfvalidate_bin=None,
+                 run_cdf_validate=False):
+    """cdfvalidator main program."""
 
     # Initialize a Validate object
-    cdfvalid = Validate(args.cdf_file,
-                        log_file=args.log_file,
-                        verbose=args.Verbose,
-                        quiet=args.Quiet,
-                        debug=args.Debug)
+    cdfvalid = Validate(cdf_file=cdf_file)
 
-    if args.ISTP:
+    # Check ISTP compliance
+    if is_istp:
         cdfvalid.is_istp_compliant()
 
-    if args.model_file:
-        cdfvalid.is_model_compliant(args.model_file)
+    # Check compliance with input model json file
+    if model_json_file:
+        cdfvalid.is_model_compliant(model_json_file)
 
     cdfvalid.close_cdf()
 
 # _________________ Main ____________________________
 if __name__ == "__main__":
-    main()
+    print(__file__)
