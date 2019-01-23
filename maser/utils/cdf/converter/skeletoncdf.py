@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" skeletoncdf module.
+"""skeletoncdf module.
 
 Program to convert a CDF skeleton table into
 a binary CDF ("master").
@@ -113,6 +113,7 @@ VATTRS_BOARD += "  ! --------     ----   -----"
 # (If required, define here classes)
 class SkeletonCDFException(Exception):
     """CDFConvException exception class."""
+
     pass
 
 
@@ -205,11 +206,11 @@ class Xlsx2skt:
             uniq(sheets["zVariables"]["Variable Name"],
                  not_none=True)
         logger.debug("%i GLOBAL attributes returned",
-                  len(self.cdf_items["GLOBALattributes"]))
+                     len(self.cdf_items["GLOBALattributes"]))
         logger.debug("%i Variable attributes returned",
-                  len(self.cdf_items["VARIABLEattributes"]))
+                     len(self.cdf_items["VARIABLEattributes"]))
         logger.debug("%i zVariables returned",
-                  len(self.cdf_items["zVariables"]))
+                     len(self.cdf_items["zVariables"]))
 
         return sheets
 
@@ -228,15 +229,15 @@ class Xlsx2skt:
         file_header += "!Skeleton table created from " + xlsx_name + "\n"
 
         skt_header = self._build_header(xlsx_sheets["header"],
-                                       xlsx_sheets["Options"])
+                                        xlsx_sheets["Options"])
         skt_global = self._build_global(xlsx_sheets["GLOBALattributes"])
         skt_vattrs = self._build_vattributes()
         skt_zvars = self._build_zvariables(xlsx_sheets["zVariables"],
-                                          xlsx_sheets["VARIABLEattributes"],
-                                          xlsx_sheets["Options"],
-                                          xlsx_sheets["NRV"],
-                                          ignore_none=self.ignore,
-                                          auto_pad=self.auto_pad)
+                                           xlsx_sheets["VARIABLEattributes"],
+                                           xlsx_sheets["Options"],
+                                           xlsx_sheets["NRV"],
+                                           ignore_none=self.ignore,
+                                           auto_pad=self.auto_pad)
 
         skt_body = "\n".join([file_header, "", skt_header, "",
                               skt_global, "", skt_vattrs, "",
@@ -371,8 +372,8 @@ class Xlsx2skt:
             value_i = quote(value_i, unquote=True)
 
             if (value_i is None or
-               value_i.lower() == "none" or
-               value_i == ""):
+                    value_i.lower() == "none" or
+                    value_i == ""):
                 logger.warning("Attribute \"%s\" value is empty!", attr)
                 value_i = " "
 
@@ -390,9 +391,9 @@ class Xlsx2skt:
             # has a too long length
             if ischar:
                 value_i = truncate_str(value_i,
-                                    int(ROW_LENGTH_MAX / 3),
-                                    gap=(" " * (len(new_entry) + 12)),
-                                    min_length=6)
+                                       int(ROW_LENGTH_MAX / 3),
+                                       gap=(" " * (len(new_entry) + 12)),
+                                       min_length=6)
 
                 new_entry += quote(value_i) + " }"
             else:
@@ -431,9 +432,9 @@ class Xlsx2skt:
         return vattrs_body
 
     def _build_zvariables(self, zvars_sheet, vattrs_sheet,
-                         options_sheet, nrv_sheet,
-                         ignore_none=True,
-                         auto_pad=True):
+                          options_sheet, nrv_sheet,
+                          ignore_none=True,
+                          auto_pad=True):
         """Build the CDF skeleton table.
 
         VARIABLEattributes and zVariables parts.
@@ -467,8 +468,8 @@ class Xlsx2skt:
             dimvars_i = str(zvars_sheet["Dimension Variances"][i])
 
             logger.debug("  " + quote(zvar) + "    " + dtype_i +
-                      "     " + nelem_i + "     " + dims_i + "     " +
-                      sizes_i + "     " + recvar_i + "     " + dimvars_i)
+                         "     " + nelem_i + "     " + dims_i + "     " +
+                         sizes_i + "     " + recvar_i + "     " + dimvars_i)
 
             if dtype_i == "None":
                 logger.error("Wrong Data Type for %s!", zvar)
@@ -515,8 +516,8 @@ class Xlsx2skt:
                     vattr_dtype = str(vattrs_sheet["Data Type"][j])
                     if vattr_dtype == "None":
                         logger.error("Wrong Data Type for the " +
-                                    "attribute %s " +
-                                    "of the variable %s !", vattr_name, zvar)
+                                     "attribute %s " +
+                                     "of the variable %s !", vattr_name, zvar)
                         raise TypeError
 
                     if vattrs_sheet["Value"][j] is None:
@@ -554,7 +555,7 @@ class Xlsx2skt:
                         logger.error("Wrong NRV index for %s!", nrv_k)
                         raise TypeError
                     if (dtype_i == "CDF_CHAR" or
-                    dtype_i == "CDF_UCHAR"):
+                            dtype_i == "CDF_UCHAR"):
                         val_k = "{ " + quote(val_k) + " }"
                     nrv_body += "    [ " + idx_k + " ] = " + \
                         val_k + "\n"
@@ -594,14 +595,15 @@ def assign_pad(data_type):
 
 
 def skeletoncdf(input_skt,
-             output_cdf=None,
-             output_dir=None,
-             overwrite=False,
-             from_xlsx=None,
-             ignore_none=True,
-             auto_pad=True,
-             exe=None):
+                output_cdf=None,
+                output_dir=None,
+                overwrite=False,
+                from_xlsx=None,
+                ignore_none=True,
+                auto_pad=True,
+                exe=None):
     """make_cdf.
+
     Make a CDF Master binary file from a ASCII
     skeleton table using the skeletoncdf program.
 
@@ -613,20 +615,30 @@ def skeletoncdf(input_skt,
         input_xlsx = input_skt
         logger.info("Converting {0} into skeleton table...".format(input_xlsx))
         input_skt = Xlsx2skt.convert(input_xlsx,
-                                   output_dir=output_dir,
-                                   overwrite=overwrite,
-                                   ignore_none=ignore_none,
-                                   auto_pad=auto_pad)
+                                     output_dir=output_dir,
+                                     overwrite=overwrite,
+                                     ignore_none=ignore_none,
+                                     auto_pad=auto_pad)
         if input_skt is None:
             input_skt = os.path.splitext(input_xlsx)[0] + ".skt"
-            logger.error("OUTPUT \"{0}\" HAS NOT BEEN SAVED!".format(input_skt))
+            logger.error(
+                "OUTPUT \"{0}\" HAS NOT BEEN SAVED!".format(input_skt))
             return None
+
+    # If output_dir does not provide then use current one
+    # If provided, but does not exist, then create it
+    if output_dir is None:
+        output_dir = os.getcwd()
+    else:
+        if not osp.isdir(output_dir):
+            logger.warning(
+                "{0} output directory not found, create it!".format(
+                    output_dir))
+            os.mkdir(output_dir)
 
     # Set output_cdf file path
     if output_cdf is None:
         output_cdf = osp.splitext(input_skt)[0] + ".cdf"
-    if output_dir is None:
-        output_dir = os.getcwd()
     else:
         output_cdf = osp.join(output_dir, os.path.basename(output_cdf))
 

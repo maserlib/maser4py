@@ -1,6 +1,5 @@
 maser4py: The Python 3 package for the MASER portal
 ###################################################
-X.Bonnin (LESIA, Obs. Paris, CNRS), 19-DEC-2018
 
 About maser4py
 ==============
@@ -29,7 +28,7 @@ From a terminal, enter:
 
    pip install maser4py
 
-Using Source
+Using source
 ------------
 
 From a terminal, enter:
@@ -51,10 +50,10 @@ Usage
 From Python, enter "import maser".
 The module also offers specific command line interfaces.
 
-For more details, see the maser4py user manual available in the pdf format (in doc/build/latex/maser4py.pdf) or from https://pypi.python.org/pypi/maser4py (see in "Package Documentation").
+For more details, see the maser4py user manual.
 
-Tree
-====
+Content
+=======
 
 The maser4py directory contains the following items:
 
@@ -80,8 +79,8 @@ The maser4py directory contains the following items:
 
     setup.py maser4py package setup file
 
-About MASER
-===========
+About MASER project
+===================
 
 The MASER (Measuring, Analyzing & Simulating Emissions in the Radio range) portal is offering access to a series of tools and databases linked to low frequency radioastronomy (a few kilohertz to a few tens of megahertz). Radio measurements in this spectral range are done with ground based observatories (for frequencies above the terrestrial ionosphere cutoff at 10 MHz) or from space based platforms (at low frequencies).
 
