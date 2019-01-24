@@ -462,7 +462,11 @@ class PDSDataFromLabel(MaserDataFromFile):
         md['granule_uid'] = ":".join([self.label['DATA_SET_ID'], self.label['PRODUCT_ID']])
         md['granule_gid'] = self.label['DATA_SET_ID']
 
-        md['instrument_host_name'] = self.label['INSTRUMENT_HOST_NAME']
+        if 'SPACECRAFT_NAME' in self.label.keys():
+            md['instrument_host_name'] = self.label['SPACECRAFT_NAME']
+        elif 'INSTRUMENT_HOST_NAME' in self.label.keys():
+            md['instrument_host_name'] = self.label['INSTRUMENT_HOST_NAME']
+        
         if 'INSTRUMENT_ID' in self.label.keys():
             md['instrument_name'] = self.label['INSTRUMENT_ID']
         elif 'INSTRUMENT_NAME' in self.label.keys():
@@ -505,6 +509,9 @@ class PDSDataFromLabel(MaserDataFromFile):
         md['publisher'] = 'NASA/PDS/PPI'
 
         return md
+
+    def __ne__(self, other):
+        return super().__ne__(other)
 
 
 class PDSDataTableColumnHeaderObject:
