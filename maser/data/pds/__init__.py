@@ -463,7 +463,10 @@ class PDSDataFromLabel(MaserDataFromFile):
         md['granule_gid'] = self.label['DATA_SET_ID']
 
         md['instrument_host_name'] = self.label['INSTRUMENT_HOST_NAME']
-        md['instrument_name'] = self.label['INSTRUMENT_ID']
+        if 'INSTRUMENT_ID' in self.label.keys():
+            md['instrument_name'] = self.label['INSTRUMENT_ID']
+        elif 'INSTRUMENT_NAME' in self.label.keys():
+            md['instrument_name'] = self.label['INSTRUMENT_NAME']
 
         targets = {'name': set(), 'class': set(), 'region': set()}
         if 'JUPITER' in self.label['TARGET_NAME']:
@@ -478,6 +481,14 @@ class PDSDataFromLabel(MaserDataFromFile):
             targets['name'].add('Earth')
             targets['class'].add('planet')
             targets['region'].add('magnetosphere')
+        if 'NEPTUNE' in self.label['TARGET_NAME']:
+            targets['name'].add('Neptune')
+            targets['class'].add('planet')
+            targets['region'].add('magnetosphere')
+        if 'URANUS' in self.label['TARGET_NAME']:
+            targets['name'].add('Uranus')
+            targets['class'].add('planet')
+            targets['region'].add('magnetosphere')
         md['target_name'] = '#'.join(targets['name'])
         md['target_class'] = '#'.join(targets['class'])
         md['target_region'] = '#'.join(targets['region'])
@@ -488,6 +499,10 @@ class PDSDataFromLabel(MaserDataFromFile):
         md['spectral_range_max'] = self.get_freq_axis(unit='Hz')[-1]
 
         md['creation_date'] = dateutil.parser.parse(self.label['PRODUCT_CREATION_TIME'], ignoretz=True)
+        md['modification_date'] = dateutil.parser.parse(self.label['PRODUCT_CREATION_TIME'], ignoretz=True)
+        md['release_date'] = dateutil.parser.parse(self.label['PRODUCT_CREATION_TIME'], ignoretz=True)
+
+        md['publisher'] = 'NASA/PDS/PPI'
 
         return md
 
