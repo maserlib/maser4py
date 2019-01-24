@@ -24,6 +24,7 @@ import struct
 import datetime
 from maser.data import MaserDataSweep
 from maser.data.pds import PDSDataFromLabel, PDSDataObject, PDSDataTableObject, PDSDataTimeSeriesObject
+import astropy.units as u
 
 import logging
 _module_logger = logging.getLogger('maser.data.pds.ppi.voyager.pra')
@@ -191,6 +192,13 @@ class PDSPPIVoyagerPRADataFromLabel(PDSDataFromLabel):
     def get_freq_axis(self, unit):
         pass
 
+    def get_epncore_meta(self):
+        meta = PDSDataFromLabel.get_epncore_meta(self)
+        dt = (float(self.label['TABLE']['SAMPLING_PARAMETER_INTERVAL']) *
+              u.Unit(self.label['TABLE']['SAMPLING_PARAMETER_UNIT'].lower())).to(u.second)
+        meta['time_sampling_step'] = dt.value
+        return meta
+
 
 class PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(PDSPPIVoyagerPRADataFromLabel):
 
@@ -219,13 +227,12 @@ class PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(PDSPPIVoyagerPRADataFromLabel)
     def _get_freq_axis(self):
         self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel._get_freq_axis()")
 
-        return numpy.arange(1326, -18, -19.2)
+        return numpy.arange(1326, -18, -19.2) * u.Unit('kHz')
 
     def get_freq_axis(self, unit="kHz"):
         self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_freq_axis()")
 
-        unit_conversion = {'HZ': 1e-3, 'KHZ': 1, 'MHZ': 1e3}
-        return self.frequency/unit_conversion[unit.upper()]
+        return self.frequency.to(u.Unit(unit)).value
 
     def get_single_sweep(self, index=0, **kwargs):
         self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_single_sweep()")
