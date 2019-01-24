@@ -499,8 +499,8 @@ class PDSDataFromLabel(MaserDataFromFile):
 
         md['dataproduct_type'] = 'ds'
 
-        md['spectral_range_min'] = self.get_freq_axis(unit='Hz')[0]
-        md['spectral_range_max'] = self.get_freq_axis(unit='Hz')[-1]
+        md['spectral_range_min'] = min(self.get_freq_axis(unit='Hz'))
+        md['spectral_range_max'] = max(self.get_freq_axis(unit='Hz'))
 
         if 'PRODUCT_CREATION_TIME' in self.label.keys():
             if self.label['PRODUCT_CREATION_TIME'] != 'N/A':
