@@ -466,7 +466,7 @@ class PDSDataFromLabel(MaserDataFromFile):
             md['instrument_host_name'] = self.label['SPACECRAFT_NAME']
         elif 'INSTRUMENT_HOST_NAME' in self.label.keys():
             md['instrument_host_name'] = self.label['INSTRUMENT_HOST_NAME']
-        
+
         if 'INSTRUMENT_ID' in self.label.keys():
             md['instrument_name'] = self.label['INSTRUMENT_ID']
         elif 'INSTRUMENT_NAME' in self.label.keys():
@@ -502,16 +502,15 @@ class PDSDataFromLabel(MaserDataFromFile):
         md['spectral_range_min'] = self.get_freq_axis(unit='Hz')[0]
         md['spectral_range_max'] = self.get_freq_axis(unit='Hz')[-1]
 
-        md['creation_date'] = dateutil.parser.parse(self.label['PRODUCT_CREATION_TIME'], ignoretz=True)
-        md['modification_date'] = dateutil.parser.parse(self.label['PRODUCT_CREATION_TIME'], ignoretz=True)
-        md['release_date'] = dateutil.parser.parse(self.label['PRODUCT_CREATION_TIME'], ignoretz=True)
+        if 'PRODUCT_CREATION_TIME' in self.label.keys():
+            if self.label['PRODUCT_CREATION_TIME'] != 'N/A':
+                md['creation_date'] = dateutil.parser.parse(self.label['PRODUCT_CREATION_TIME'], ignoretz=True)
+                md['modification_date'] = dateutil.parser.parse(self.label['PRODUCT_CREATION_TIME'], ignoretz=True)
+                md['release_date'] = dateutil.parser.parse(self.label['PRODUCT_CREATION_TIME'], ignoretz=True)
 
         md['publisher'] = 'NASA/PDS/PPI'
 
         return md
-
-    def __ne__(self, other):
-        return super().__ne__(other)
 
 
 class PDSDataTableColumnHeaderObject:
