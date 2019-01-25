@@ -24,7 +24,7 @@ import struct
 import dateutil.parser
 import os
 import numpy
-from maser.data.data import MaserDataFromFile, MaserError, MaserData
+from maser.data.data import MaserDataFromFile, MaserError
 
 
 class PDSLabelDict(dict):
@@ -733,5 +733,5 @@ class PDSDataTimeSeriesObject(PDSDataTableObject):
             print("### This is PDSDataTimeSeriesObject.__init__()")
 
         PDSDataTableObject.__init__(self, product, parent, obj_label, verbose=verbose, debug=debug)
-        self.sampling = {"interval": self.label['SAMPLING_PARAMETER_INTERVAL'],
-                         'unit': self.label['SAMPLING_PARAMETER_UNIT']}
+        self.time_sampling = {"interval": self.label['SAMPLING_PARAMETER_INTERVAL'],
+                              'unit': self.label['SAMPLING_PARAMETER_UNIT']}
