@@ -89,3 +89,10 @@ In this frequency range, the main radio sources are the Sun and the magnetized p
 
 * For more information about the MASER project: http://maser.lesia.obspm.fr/
 * For more information about MASER4PY: https://github.com/maserlib/maser4py
+
+Acknomledgements
+----------------
+
+The development of the MASER library is supported by Observatoire de Paris, CNRS (Centre National de la Recherche Scientique) and CNES (Centre National d'Etudes Spatiales). The project is also supported by Europlanet 2020 Research Infrastructure project, which received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 654208. The support from PADC (Paris Astronomical Data Centre) and CDPP (Centre de Données de la Physique des Plasmas) is also acknowledged.
+
+
