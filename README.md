@@ -93,6 +93,10 @@ In this frequency range, the main radio sources are the Sun and the magnetized p
 Acknomledgements
 ----------------
 
-The development of the MASER library is supported by Observatoire de Paris, CNRS (Centre National de la Recherche Scientique) and CNES (Centre National d'Etudes Spatiales). The project is also supported by Europlanet 2020 Research Infrastructure project, which received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 654208. The support from PADC (Paris Astronomical Data Centre) and CDPP (Centre de Données de la Physique des Plasmas) is also acknowledged.
+The development of the MASER library is supported by Observatoire de Paris, CNRS (Centre National de la Recherche Scientique) and CNES (Centre National d'Etudes Spatiales). The technical support from PADC (Paris Astronomical Data Centre) and CDPP (Centre de Données de la Physique des Plasmas) is also acknowledged.
+
+The project has also received support from the European Union through:
+* HELIO (Heliophysics Integrated Observatory), which received funding from Capacities Specific Programme of the European Commission's Seventh Framework Programme (FP7) under grant agreement No 238969;
+* EPN2020RI (Europlanet 2020 Research Infrastructure project), which received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 654208.
 
 
