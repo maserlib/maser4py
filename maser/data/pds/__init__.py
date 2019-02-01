@@ -23,7 +23,10 @@ from maser.data.pds.classes import PDSLabelDict
 from maser.data.pds.const import PDS_OBJECT_CLASSES
 
 
-def load_pds_from_label(file, verbose=False, debug=False, **kwargs):
+def load_pds_from_label(file=None, label_dict=None, verbose=False, debug=False, **kwargs):
 
-    label = PDSLabelDict(file, verbose=verbose, debug=debug)
+    if file is not None:
+        label = PDSLabelDict(file, verbose=verbose, debug=debug)
+    else:
+        label = label_dict
     return PDS_OBJECT_CLASSES[label['DATA_SET_ID']](file, label_dict=label, verbose=verbose, debug=debug, **kwargs)
