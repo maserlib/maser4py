@@ -19,14 +19,23 @@ __project__ = "MASER/PADC PDS"
 
 __all__ = ["load_pds_from_label"]
 
+from pathlib import Path
 from maser.data.pds.classes import PDSLabelDict
 from maser.data.pds.const import PDS_OBJECT_CLASSES
 
 
-def load_pds_from_label(file=None, label_dict=None, verbose=False, debug=False, **kwargs):
+def load_pds_from_label(input_var, verbose=False, debug=False, **kwargs):
 
-    if file is not None:
+    if isinstance(input_var, str):
+        file = input_var
+        label = PDSLabelDict(input_var, verbose=verbose, debug=debug)
+    elif isinstance(input_var, Path):
+        file = str(input_var)
         label = PDSLabelDict(file, verbose=verbose, debug=debug)
+    elif isinstance(input_var, PDSLabelDict):
+        label = input_var
+        file = label.file
     else:
-        label = label_dict
+        raise TypeError()
+
     return PDS_OBJECT_CLASSES[label['DATA_SET_ID']](file, label_dict=label, verbose=verbose, debug=debug, **kwargs)
