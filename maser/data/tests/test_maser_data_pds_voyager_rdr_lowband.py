@@ -4,7 +4,8 @@ from maser.data.tests import load_test_data, get_data_directory
 from maser.data import MaserDataFromFile
 from maser.data.pds.voyager.pra import PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel, \
     PDSPPIVoyagerPRADataFromLabel, PDSPPIVoyagerPRADataObject
-from maser.data.pds import PDSDataFromLabel, PDSLabelDict
+from maser.data.pds.classes import PDSDataFromLabel, PDSLabelDict
+from maser.data.pds import load_pds_from_label
 
 load_test_data("pds")
 root_data_path = get_data_directory() / 'pds'
@@ -12,12 +13,24 @@ root_data_path = get_data_directory() / 'pds'
 file = root_data_path / 'VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1' / 'PRA_I.LBL'
 ov1 = PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(str(file), load_data=False)
 ov1a = PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(str(file), load_data=True)
+ov1l = load_pds_from_label(str(file), load_data=False)
 
 file = root_data_path / 'VG1-S-PRA-3-RDR-LOWBAND-6SEC-V1' / 'PRA.LBL'
 ov3 = PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(str(file), load_data=True)
+ov3l = load_pds_from_label(str(file), load_data=False)
 
 file = root_data_path / 'VG2-N-PRA-3-RDR-LOWBAND-6SEC-V1' / 'VG2_NEP_PRA_6SEC.LBL'
 ov5 = PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(str(file), load_data=True)
+ov5l = load_pds_from_label(str(file), load_data=False)
+
+
+class LoadPDSFromLabel(unittest.TestCase):
+    """Test case for load_pds_from_label function"""
+
+    def test_loader(self):
+        self.assertIsInstance(ov1l, PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel)
+        self.assertIsInstance(ov3l, PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel)
+        self.assertIsInstance(ov5l, PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel)
 
 
 class PDSPPIVoyagerPRARDRLowBand6SecDataFromLabelVG1J(unittest.TestCase):
