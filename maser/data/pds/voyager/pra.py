@@ -238,7 +238,7 @@ class PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(PDSPPIVoyagerPRADataFromLabel)
     def get_freq_axis(self, unit="kHz"):
         self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_freq_axis()")
 
-        return self.frequency.to(u.Unit(unit)).value
+        return self.frequency.to(u.Unit(unit))
 
     def get_single_sweep(self, index=0, **kwargs):
         self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_single_sweep()")
@@ -266,6 +266,9 @@ class PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel(PDSPPIVoyagerPRADataFromLabel)
 
     def get_time_axis(self):
         self.logger.debug("### This is PDSPPIVoyagerPRARDRLowBand6SecDataFromLabel.get_time_axis()")
+
+        if self.time is None:
+            self.time = self._get_time_axis()
 
         return self.time
 
