@@ -10,7 +10,7 @@ import json
 import logging
 from tempfile import TemporaryDirectory
 
-from maser.utils.cdf import CDF
+from maser.utils.cdf import CDF, zAttr
 
 from ...toolbox import run_command, quote, move_safe
 from ..tools import get_cdftype, get_vattrs, get_cdftypename
@@ -101,7 +101,9 @@ class Validate():
         """Check the CDF content compared to the input mode file."""
         pass
 
-        def check(cdf, items):
+        def check(cdf, items,
+                  is_vattr=False,
+                  is_zvar=False):
             """
             Check CDF items.
 
@@ -116,6 +118,7 @@ class Validate():
                 istype = ("type" in item)
                 isentry = ("entries" in item)
                 hasvalue = ("hasvalue" in item)
+#               isexcluded = ("excludes" in item) # Not working yet
 
                 issize = ("size" in item)
                 isdims = ("dims" in item)
@@ -123,6 +126,32 @@ class Validate():
 
                 if name in cdf:
                     cdfitem = cdf[name]
+
+                    #print(cdf, name, cdf[name])
+                    if is_vattr:
+                        # TODO - Improve this part
+                        try:
+                            for idx in range(zAttr(self.cdf, name).max_idx()):
+                                if zAttr(self.cdf, name).has_entry(idx):
+                                    dtype = get_cdftypename(zAttr(self.cdf, name).type(idx))
+                                    if type(cdfitem) is str:
+                                        cdfitem = [cdfitem]
+                                    else:
+                                        cdfitem = [cdfitem[idx]]
+                                    break
+                        except:
+                            logger.warning("{0} has no entry, skipping!".format(name))
+                            continue
+
+                    elif is_zvar:
+                        # If zVariable, get data type
+                        dtype = get_cdftypename(cdfitem.type())
+                        cdfitem = list(cdfitem)
+                    else:
+                        # If global attribute, get first entry data type
+                        dtype = get_cdftypename(cdfitem.type(0))
+                        cdfitem = list(cdfitem)
+
                     nentry = len(cdfitem)
 
                     if hasvalue:
@@ -139,23 +168,23 @@ class Validate():
                             logger.warning(msg)
                             issues.append(msg)
                         else:
-                            for i in range(len(item["entries"])):
-                                if cdfitem[i] != item["entries"][i]:
+                            for i, entry in enumerate(item["entries"]):
+                                if cdfitem[i] != entry:
                                     msg = "--> \"{0}\" has a wrong entry value: ".format(name) + \
                                             "\"{0}\" found, but \"{1}\" expected!".format(
-                                               cdfitem[i], item["entries"][i])
+                                               cdfitem[i], entry)
                                     logging.warning(msg)
                                     issues.append(msg)
 
                     if istype:
                         logger.debug("Checking data type")
-                        cdftype = get_cdftype(item["type"])
-                        for j in range(len(cdfitem)):
-                            if cdfitem.type(j) != cdftype:
-                                msg = "--> \"{0}\" has the wrong data type:".format(name) + \
-                                       "\"{0}\" expected!".format(item["type"])
-                                logging.warning(msg)
-                                issues.append(msg)
+                        cdftype = get_cdftypename(get_cdftype(item["type"]))
+                        if dtype != cdftype:
+                            msg = "--> \"{0}\" has the wrong data type:".format(name) + \
+                                   "\"{0}\" found, but \"{1}\" expected!".format(
+                                dtype, cdftype)
+                            logging.warning(msg)
+                            issues.append(msg)
 
                     if issize:
                         logger.debug("Checking data size")
@@ -173,7 +202,7 @@ class Validate():
 
                     if isattrs:
                         logger.info("Checking variable attributes of \"{0}\"...".format(name))
-                        check(cdf[name].attrs, item["attributes"])
+                        check(cdf[name].attrs, item["attributes"], is_vattr=True)
                 else:
                     msg = "--> \"{0}\" required!".format(name)
                     logging.warning(msg)
@@ -197,10 +226,10 @@ class Validate():
         if "VARIABLEattributes" in mfile:
             logging.info("Checking VARIABLEattributes:")
             vattrs = get_vattrs(cdf)
-            issues.extend(check(vattrs, mfile["VARIABLEattributes"]))
+            issues.extend(check(vattrs, mfile["VARIABLEattributes"], is_vattr=True))
         if "zVariables" in mfile:
             logging.info("Checking zVariables:")
-            issues.extend(check(cdf, mfile["zVariables"]))
+            issues.extend(check(cdf, mfile["zVariables"], is_zvar=True))
 
         return issues
 

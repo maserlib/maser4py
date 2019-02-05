@@ -4820,6 +4820,3 @@ class zAttrList(AttrList):
             del self[new_name]
         self.new(new_name, master[name],
                  master.type(name) if hasattr(master, 'type') else None)
-
-
-# vim: set tw=79 :
