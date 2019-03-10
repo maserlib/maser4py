@@ -12,6 +12,8 @@ __version__ = "0.11"
 
 __all__ = ["VikingV4nData", "read_viking"]
 
+# TODO: skip 1st record? => no, not for data downloaded from webservice...
+
 import os
 import struct
 from maser.data.cdpp import CDPPDataFromFile

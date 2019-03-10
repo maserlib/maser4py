@@ -11,9 +11,13 @@ __institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
 __date__ = "14-NOV-2018"
 __project__ = "MASER/CDPP"
 
-__all__ = ["decode_ccsds_date", "CCSDSDate", "CCSDSDateCUC", "CCSDSDateCDS", "CCSDSDateCCS"]
+__all__ = ["decode_ccsds_date", "CCSDSDate", "CCSDSDateCUC", "CCSDSDateCDS", "CCSDSDateCCS",
+           "from_binary_coded_decimal", "to_binary_coded_decimal"]
 
 import datetime
+
+# TODO: implement BCD for CCS (but ISEE3-SBH doesn't follow the CCS standard)
+# TODO: fix MSB as descrided in the CCSDS standard - first bit read is least significant bit
 
 
 def decode_ccsds_date(p_field, t_field, epoch=None) -> 'CCSDSDate':
@@ -73,6 +77,15 @@ class CCSDSDate(object):
     or other equivalent modules.
 
     For more info on CCSDS time formats, refer to "TIME CODE FORMATS" CCSDS 301.0-B-3, Jan. 2002.
+    The following points are particularly important in the decoding:
+    * The `p_field` is encoded in _MSB (Most Significant Bit)_. This is interpreted as follows: when written as a string
+    of `0` and `1`, the left-most bit is the least significant bit, labelled as `bit 0` (see page 9 of the "TIME CODE
+    FORMATS" CCSDS document). The bits of the `p_field` byte should then be flipped before applying use standard
+    bit-wise operations.
+    * In CCS format, the values in the `t_field` are encoded in _Binary Coded Decimal (BCD)_. This means that the
+    hexadecimal dump values shows the numbers to be read. For instance, the BCD value of `1980` is `6528` as its
+    hexadecimal representation is `0x1980`. Note that some CDPP dataset, although using CCS time codes are not encoding
+    the number with BCD.
 
     Args:
         p_field (int): time code preamble code.
@@ -239,3 +252,11 @@ class CCSDSDateCCS(CCSDSDate):
             print("{}: {}".format("Warning", "Python datetime module doesn't handle sub-microsecond accuracy."))
 
         return dt + datetime.timedelta(microseconds=micro)
+
+
+def to_binary_coded_decimal(value=0) -> int:
+    return int("0x{}".format(value), 16)
+
+
+def from_binary_coded_decimal(value=0) -> int:
+    return int(hex(value)[2:])
