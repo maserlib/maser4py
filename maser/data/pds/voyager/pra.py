@@ -153,14 +153,15 @@ class PDSPPIVoyagerPRAHighRateTimeSeriesObject(PDSDataTimeSeriesObject):
 
 class PDSPPIVoyagerPRADataFromLabel(PDSDataFromLabel):
 
-    def __init__(self, file, label_dict=None, load_data=True, verbose=False, debug=False):
+    def __init__(self, file, label_dict=None, fmt_label_dict=None, load_data=True, verbose=False, debug=False):
 
         self.logger = logging.getLogger('maser.data.pds.ppi.voyager.pra.PDSPPIVoyagerPRADataFromLabel')
         if debug:
             self.logger.setLevel(logging.DEBUG)
         self.logger.debug('### This is PDSPPIVoyagerPRADataFromLabel.__init__()')
 
-        PDSDataFromLabel.__init__(self, file, label_dict, load_data, PDSPPIVoyagerPRADataObject, verbose, debug)
+        PDSDataFromLabel.__init__(self, file, label_dict, fmt_label_dict, load_data,
+                                  PDSPPIVoyagerPRADataObject, verbose, debug)
         self.frequency = self._get_freq_axis()
         if load_data:
             self.time = self._get_time_axis()

@@ -37,7 +37,7 @@ class PDSLabelDict(dict):
         Class for the list-form PDSLabel (internal class, not accessible from outside)
         """
 
-        def __init__(self, label_file, verbose=False, debug=False):
+        def __init__(self, label_file, fmt_label_dict=None, verbose=False, debug=False):
 
             if debug:
                 print("### This is PDSLabelDict._PDSLabelList.__init__()")
@@ -45,6 +45,10 @@ class PDSLabelDict(dict):
             list.__init__(self)
             self.debug = debug
             self.verbose = verbose
+            if fmt_label_dict is None:
+                self.fmt_files = {}
+            else:
+                self.fmt_files = fmt_label_dict
             self.file = label_file
             self.process = list()
             self._load_pds3_label_as_list()
@@ -97,7 +101,11 @@ class PDSLabelDict(dict):
 
                         # in case of external FMT file, nested call to this function with the FMT file
                         if cur_key == '^STRUCTURE':
-                            extra_file = os.path.join(os.path.dirname(input_file), cur_val.strip('"'))
+                            fmt_file_name = cur_val.strip('"')
+                            if fmt_file_name in self.fmt_files.keys():
+                                extra_file = self.fmt_files[fmt_file_name]
+                            else:
+                                extra_file = os.path.join(os.path.dirname(input_file), fmt_file_name)
                             if self.verbose:
                                 print("Inserting external Label from {}".format(extra_file))
                             self._load_pds3_label_as_list(extra_file)
@@ -183,7 +191,7 @@ class PDSLabelDict(dict):
 
             self.process.append('Added depth tag')
 
-    def __init__(self, label_file, verbose=False, debug=False):
+    def __init__(self, label_file, fmt_label_dict=None, verbose=False, debug=False):
 
         if debug:
             print("### This is PDSLabelDict.__init__()")
@@ -192,7 +200,11 @@ class PDSLabelDict(dict):
         self.debug = debug
         self.verbose = verbose
         self.file = label_file
-        label_list = self._PDSLabelList(self.file, self.verbose, self.debug)
+        if fmt_label_dict is None:
+            self.fmt_files = {}
+        else:
+            self.fmt_files = fmt_label_dict
+        label_list = self._PDSLabelList(self.file, self.fmt_files, self.verbose, self.debug)
         self.process = label_list.process
         self._label_list_to_dict(label_list)
 
@@ -286,7 +298,8 @@ class PDSDataFromLabel(MaserDataFromFile):
         get_last_sweep(self)
     """
 
-    def __init__(self, file, label_dict=None, load_data_input=True, data_object_class=PDSDataObject, verbose=False, debug=False):
+    def __init__(self, file, label_dict=None, fmt_label_dict=None, load_data_input=True,
+                 data_object_class=PDSDataObject, verbose=False, debug=False):
 
         if debug:
             print("### This is PDSDataFromLabel.__init__()")
@@ -297,14 +310,16 @@ class PDSDataFromLabel(MaserDataFromFile):
         self.debug = debug
         self.verbose = verbose
         self.label_file = file
+        self.format_labels = fmt_label_dict
         MaserDataFromFile.__init__(self, file, verbose, debug)
         self.PDSDataObject = data_object_class
         if label_dict is not None:
             self.label = label_dict
         else:
-            self.label = PDSLabelDict(self.label_file, verbose, debug)
+            self.label = PDSLabelDict(self.label_file, self.format_labels, verbose, debug)
         self.pointers = self._detect_pointers()
         self.objects = self._detect_data_object_type()
+        print(self.label)
         self.dataset_name = self.label['DATA_SET_ID'].strip('"')
         self._fix_object_label_entries()
 
