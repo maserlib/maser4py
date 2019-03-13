@@ -21,7 +21,8 @@ __ALL__ = ['PDSPPICassiniRPWSWBRFullResDataFromLabel']
 
 from maser.data.pds.cassini.rpws import iso_time_to_datetime
 from maser.data.padc.lesia.cassini.rpws import agc_dB, a123
-from maser.data.pds.classes import PDSDataFromLabel, PDSDataObject, PDSDataTableObject, PDSError, PDSDataTimeSeriesObject
+from maser.data.pds.classes import PDSDataFromLabel, PDSDataObject, PDSDataTableObject, \
+    PDSError, PDSDataTimeSeriesObject
 import numpy
 import datetime
 
@@ -217,12 +218,13 @@ class PDSPPICassiniRPWSWBRRowPrefixTable(PDSDataTableObject):
 
 class PDSPPICassiniRPWSWBRFullResDataFromLabel(PDSDataFromLabel):
 
-    def __init__(self, file, label_dict=None, load_data=True, verbose=False, debug=False):
+    def __init__(self, file, label_dict=None, fmt_label_dict=None, load_data=True, verbose=False, debug=False):
 
         if debug:
             print("### This is PDSPPICassiniRPWSWBRFullResDataFromLabel.__init__()")
 
-        PDSDataFromLabel.__init__(self, file, label_dict, load_data, PDSPPICassiniRPWSWBRDataObject, verbose, debug)
+        PDSDataFromLabel.__init__(self, file, label_dict, fmt_label_dict, load_data,
+                                  PDSPPICassiniRPWSWBRDataObject, verbose, debug)
         self._set_start_time()
         self._set_end_time()
 

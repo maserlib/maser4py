@@ -20,7 +20,8 @@ __project__ = "MASER/PDS PDS/Cassini/RPWS"
 __ALL__ = ['PDSPPICassiniRPWSHFRLowRateFullDataFromLabel']
 
 from . import scet_day_millisecond_to_datetime, iso_time_to_datetime
-from maser.data.pds.classes import PDSDataFromLabel, PDSDataObject, PDSDataTableObject, PDSError, PDSDataTimeSeriesObject
+from maser.data.pds.classes import PDSDataFromLabel, PDSDataObject, PDSDataTableObject, \
+    PDSError, PDSDataTimeSeriesObject
 from maser.data.data import MaserDataSweep
 import dateutil.parser
 
@@ -76,12 +77,13 @@ class PDSPPICassiniRPWSHFRLowRateFullSweep(MaserDataSweep):
 
 class PDSPPICassiniRPWSHFRLowRateFullDataFromLabel(PDSDataFromLabel):
 
-    def __init__(self, file, label_dict=None, load_data=True, verbose=False, debug=False):
+    def __init__(self, file, label_dict=None, fmt_label_dict=None, load_data=True, verbose=False, debug=False):
 
         if debug:
             print("### This is PDSPPICassiniRPWSHFRLowRateFullDataFromLabel.__init__()")
 
-        PDSDataFromLabel.__init__(self, file, label_dict, load_data, PDSPPICassiniRPWSHFRDataObject, verbose, debug)
+        PDSDataFromLabel.__init__(self, file, label_dict, fmt_label_dict, load_data,
+                                  PDSPPICassiniRPWSHFRDataObject, verbose, debug)
         self._set_start_time()
         self._set_end_time()
 
