@@ -13,7 +13,7 @@ import logging
 from shutil import move
 from tempfile import TemporaryDirectory
 
-from spacepy.pycdf import CDF, CDFError
+from maser.utils.cdf import CDF
 
 from ...toolbox import setup_logging, run_command, quote, move_safe
 from ..tools import get_cdftype, get_vattrs, get_cdftypename
@@ -82,7 +82,7 @@ class Validate():
                     cdf_env[key] = os.environ[key]
                 else:
                     logger.error("{0} is not defined!".format(key))
-                    raise CDFError
+                    raise ValidatorException
         return cdf_env
 
     def open_cdf(self, file):
@@ -92,9 +92,9 @@ class Validate():
         try:
             cdf = CDF(self.file)
             cdf.readonly(True)
-        except CDFError as e:
+        except ValidatorException as e:
             logger.error(e)
-            raise CDFError
+            raise ValidatorException
         else:
             self.cdf = cdf
 

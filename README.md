@@ -1,6 +1,6 @@
 maser4py: The Python 3 package for the MASER portal
 ###################################################
-X.Bonnin (LESIA, Obs. Paris, CNRS), 20-MAR-2017
+X.Bonnin (LESIA, Obs. Paris, CNRS), 19-DEC-2018
 
 About maser4py
 ==============
@@ -13,7 +13,10 @@ of the MASER portal (see section below).
 Installation
 ============
 
-Make sure that Python 3.4 (or higher) as well as pip and setuptools are already installed on your system.
+Prerequisites
+-------------
+
+Python 3.4, 3.5 or 3.6 must be available.
 
 The maser4py also requires the NASA CDF software to be run (visit http://cdf.gsfc.nasa.gov/ for more details). Especially the CDFLeapSeconds.txt file
 should be on the local disk and reachable from the $CDF_LEAPSECONDSTABLE env. variable. If it is not the case, maser4py offers tools to read and/or download
@@ -86,6 +89,3 @@ In this frequency range, the main radio sources are the Sun and the magnetized p
 
 * For more information about the MASER project: http://maser.lesia.obspm.fr/
 * For more information about MASER4PY: https://github.com/maserlib/maser4py
-
-
-

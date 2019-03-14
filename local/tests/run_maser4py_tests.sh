@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Publish the package on Pypi (https://pypi.python.org)
-# X.Bonnin, 20-MAR-2017
+# run pytest on maser4py module
 
 # get the script directory
 pushd . > /dev/null
@@ -14,13 +13,8 @@ cd "`dirname "${workdir}"`" > /dev/null
 workdir="`pwd`";
 popd  > /dev/null
 
+# Go to maser4py main dir
 cd $workdir/..
 
-# Create wheel file
-python setup.py bdist_wheel
-
-# Register on Pypi
-#twine register `ls dist/*.whl`
-
-# Upload
-#twine upload dist/*
+# run pytest
+pytest

@@ -19,19 +19,6 @@ __all__ = ["add_gattr",
 
 # ________________ HEADER _________________________
 
-# Mandatory
-__version__ = ""
-__author__ = "Xavier Bonnin"
-__date__ = "2016-09-30"
-
-# Optional
-__license__ = ""
-__credit__ = [""]
-__maintainer__ = ""
-__email__ = ""
-__project__ = "MASER"
-__institute__ = "LESIA, Observatoire de Paris, LESIA"
-__changes__ = ""
 
 
 # ________________ Global Variables _____________
@@ -61,7 +48,7 @@ def add_gattr(xlsx, attname, cdftype, entries,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb[GATT_SHEET_NAME]
 
     # Check if the gattr alreay exists
     max_row = ws.max_row + 1
@@ -119,7 +106,7 @@ def set_gattr_entries(xlsx, attname, new_entries,
         raise GattrException
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb[GATT_SHEET_NAME]
 
     # Get indices of row for the gattr
     rows = get_row(ws, attname)
@@ -155,7 +142,7 @@ def set_gattr_dtype(xlsx, attname, new_dtype,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb[GATT_SHEET_NAME]
 
     # Get indices of row for the gattr
     rows = get_row(ws, attname)
@@ -183,7 +170,7 @@ def add_gattr_entry(xlsx, attname, value,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb[GATT_SHEET_NAME]
 
     # Get indices of row for the gattr
     rows = get_row(ws, attname)
@@ -213,7 +200,7 @@ def rename_gattr(xlsx, old_attname, new_attname,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb[GATT_SHEET_NAME]
 
     # Get indices of row for the gattr
     rows = get_row(ws, old_attname)
@@ -242,7 +229,7 @@ def rm_gattr(xlsx, attname,
     wb = lwb(xlsx)
 
     # Get sheet for global attributes
-    ws = wb.get_sheet_by_name(GATT_SHEET_NAME)
+    ws = wb[GATT_SHEET_NAME]
 
     # Get indices of row for the gattr
     rows = get_row(ws, attname)

@@ -1,6 +1,21 @@
 CHANGELOG
 ====================
 
+0.7.1
+-----
+* Fix dependencies installation bug (in requirements.txt)
+* Change README.rst to README.md
+* Change CHANGELOG.rst to CHANGELOG.md
+* Change cdf import handling
+* Update read_wind_waves_file.py for python3 syntax
+
+0.7.0
+-----
+* Add cdf_compare function
+* Update maser command line interface call
+* Update obsolete openpyxl functions from the xlsx cdf converter
+* Use CHANGELOG.rst to get MASER version (in setup.py and program)
+
 0.6.1
 -----
 * Fix a bug in toolbox.py

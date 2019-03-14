@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .converter import skeletoncdf, SkeletonCDFException
-from .validator import Validate
-from .tools import get_cdftype, get_vattrs, \
+from maser.utils.cdf.cdf import const
+from maser.utils.cdf.cdf import *
+from maser.utils.cdf.converter import skeletoncdf, SkeletonCDFException
+from maser.utils.cdf.validator import Validate
+from maser.utils.cdf.tools import get_cdftype, get_vattrs, \
     get_cdftypename, get_numpttype
-import spacepy.pycdf as cdf
+from maser.utils.cdf.cdfcompare.cdf_compare import cdf_compare
