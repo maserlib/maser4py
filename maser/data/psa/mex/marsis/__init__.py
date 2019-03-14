@@ -11,7 +11,7 @@ class TimeYearDoyISO(TimeISO):
     - 'date': date
     """
 
-    name = 'yday_custom'  # Unique format name
+    name = 'ydoy'  # Unique format name
     subfmts = (('date_hms',
                 '%Y-%jT%H:%M:%S',
                 '{year:d}-{yday:03d}T{hour:02d}:{min:02d}:{sec:02d}'),
