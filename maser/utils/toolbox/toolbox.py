@@ -7,6 +7,8 @@
 # (Include here the modules to import, e.g. import sys)
 import sys
 import os
+import os.path as osp
+import re
 import logging
 import subprocess
 import urllib.request
@@ -16,7 +18,8 @@ import errno
 
 import tempfile
 
-__all__ = ["print_exception",
+__all__ = ["get_version",
+           "print_exception",
            "which",
            "truncate_str",
            "Singleton",
@@ -77,7 +80,22 @@ class Singleton(type):
 
 
 # ________________ Global Functions __________
-# (If required, define here gobal functions)
+# (If required, define here global functions)
+
+def get_version(changelog):
+    """Get latest version from the input CHANGELOG.md file."""
+    pattern = re.compile(r"(\d*)\.(\w*)\.(\w*)")
+    if osp.isfile(changelog):
+        with open(changelog, 'rt') as file:
+            for line in file:
+                if pattern.match(line):
+                    return line.strip()
+
+    print("WARNING: CHANGELOG.md not found or invalid, version unknown!")
+    return "unknown"
+
+
+
 def move_safe(src, dst,
               no_erase=False,
               tempdir=tempfile.gettempdir()):

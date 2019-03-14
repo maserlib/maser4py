@@ -6,17 +6,13 @@ Python module to read a Wind/Waves data file.
 @author: X.Bonnin (LESIA)
 """
 
-import sys
-import os
-import re
-from datetime import datetime
 import struct
 
 __author__ = "Xavier Bonnin"
 __date__ = "03-MAR-2013"
 __version__ = "1.00"
 
-__all__ = ["Waves_data"]
+__all__ = ["read_l2_hres"]
 
 
 class Waves_data:
@@ -42,7 +38,7 @@ def read_l2_hres(filepath):
     with open(filepath,'rb') as frb:
         while (True):
             try:
-                print "Reading sweep #%i" % (nsweep)
+                print("Reading sweep #%i" % (nsweep))
                 # Reading number of octets in the current sweep
                 block = frb.read(4)
                 if (len(block) == 0): break
@@ -68,19 +64,19 @@ def read_l2_hres(filepath):
                 block = frb.read(4)
                 loctets2 = struct.unpack('>i',block)[0]
                 if (loctets2 != loctets1):
-                    print "Error reading file!"
+                    print("Error reading file!")
                     return None
             except EOFError:
-                print "End of file reached"
+                print("End of file reached")
                 break
             else:
                 header.append(header_i)
                 data.append({"FREQ":freq,"VSPAL":Vspal,"VZPAL":Vzpal,"TSPAL":Tspal,"TZPAL":Tzpal})
                 nsweep+=1
 
-    return waves_data(header, data)
+    return Waves_data(header, data)
 
 if (__name__=="__main__"):
-    print "Python module to read Wind/Waves data file."
+    print("Python module to read Wind/Waves data file.")
 
 

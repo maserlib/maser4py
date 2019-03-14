@@ -19,19 +19,6 @@ __all__ = ["add_zvar",
 
 # ________________ HEADER _________________________
 
-# Mandatory
-__version__ = ""
-__author__ = "Xavier Bonnin"
-__date__ = "2016-10-20"
-
-# Optional
-__license__ = ""
-__credit__ = [""]
-__maintainer__ = ""
-__email__ = ""
-__project__ = "MASER, RPW"
-__institute__ = "LESIA, Observatoire de Paris, LESIA"
-__changes__ = ""
 
 
 # ________________ Global Variables _____________
@@ -71,7 +58,7 @@ def add_zvar(xlsx, entry,
     wb = lwb(xlsx)
 
     # Get sheet for zVars
-    ws = wb.get_sheet_by_name(ZVAR_SHEET_NAME)
+    ws = wb[ZVAR_SHEET_NAME]
 
     varname = entry[0]
     # Check if the zVariable already exists
@@ -120,7 +107,7 @@ def set_zvar_entry(xlsx, varname,
     wb = lwb(xlsx)
 
     # Get sheet for variable attributes
-    ws = wb.get_sheet_by_name(ZVAR_SHEET_NAME)
+    ws = wb[ZVAR_SHEET_NAME]
 
     # Get indices of row for the zvar
     row = get_row(ws, varname, column="A")
@@ -168,7 +155,7 @@ def rename_zvar(xlsx, old_varname, new_varname,
     wb = lwb(xlsx)
 
     # Get sheet for zVariables
-    ws = wb.get_sheet_by_name(ZVAR_SHEET_NAME)
+    ws = wb[ZVAR_SHEET_NAME]
 
     # Get indices of row for the zvar
     rows = get_row(ws, old_varname)
@@ -197,7 +184,7 @@ def rm_zvar(xlsx, varname,
     wb = lwb(xlsx)
 
     # Get sheet for zVariables
-    ws = wb.get_sheet_by_name(ZVAR_SHEET_NAME)
+    ws = wb[ZVAR_SHEET_NAME]
 
     # Get indices of row for the zvar
     rows = get_row(ws, varname)
