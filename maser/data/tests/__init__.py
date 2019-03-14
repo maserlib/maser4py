@@ -78,6 +78,14 @@ _test_data_files = {'cdpp': {'demeter': ['DMT_N1_1134_018401_20041105_235807_200
                     'radiojove': {'sps': ['161210000000.sps'],
                                   },
                     'pds': {'VG1_JUPITER/PRA_I': ['PRA_I.TAB'],
+                            'CO-V_E_J_S_SS-RPWS-2-REFDR-WBRFULL-V1': ['T2000366_09_8025KHZ4_WBRFR.LBL',
+                                                                      'T2000366_09_8025KHZ4_WBRFR.DAT',
+                                                                      'RPWS_SCLK_SCET.FMT',
+                                                                      'RPWS_WBR_WFR_ROW_PREFIX.FMT'],
+                            'CO-V_E_J_S_SS-RPWS-3-RDR-LRFULL-V1': ['T2000366_HFR0.LBL',
+                                                                   'T2000366_HFR0.DAT',
+                                                                   'RPWS_SCLK_SCET.FMT',
+                                                                   'LRFULL_TABLE.FMT'],
                             },
                     }
 
