@@ -17,14 +17,14 @@ __status__ = "Production"
 __date__ = "28-FEB-2018"
 __project__ = "MASER/PADC PDS"
 
-__all__ = ["PDSDataFromLabel", "PDSDataObject", "PDSDataTableObject", "PDSError", "PDSDataTimeSeriesObject",
+__all__ = ["PDSDataFromLabel", "PDSDataObject", "PDSDataATableObject", "PDSDataTableObject", "PDSError", "PDSDataTimeSeriesObject",
            "PDSLabelDict"]
 
-import struct
 import dateutil.parser
 import os
 import numpy
 from maser.data import MaserDataFromFile, MaserError
+from astropy.table import Table
 
 
 class PDSLabelDict(dict):
@@ -319,7 +319,6 @@ class PDSDataFromLabel(MaserDataFromFile):
             self.label = PDSLabelDict(self.label_file, self.format_labels, verbose, debug)
         self.pointers = self._detect_pointers()
         self.objects = self._detect_data_object_type()
-        print(self.label)
         self.dataset_name = self.label['DATA_SET_ID'].strip('"')
         self._fix_object_label_entries()
 
@@ -463,7 +462,7 @@ class PDSDataFromLabel(MaserDataFromFile):
     def get_last_sweep(self):
         return self.get_single_sweep(-1)
 
-    def get_freq_axis(self, unit):
+    def get_freq_axis(self, unit=None):
         pass
 
     def get_time_axis(self):
@@ -626,6 +625,72 @@ class PDSDataTableColumnHeaderObject:
         return '{}{}{}'.format(endianess, self.n_items, data_type)
 
 
+class PDSDataATableObject:
+
+    def __init__(self, product, parent, obj_label, verbose=False, debug=False):
+
+        if debug:
+            print("### This is PDSDataATableObject.__init__()")
+
+        self.verbose = verbose
+        self.debug = debug
+        self.product = product
+        self.parent = parent
+        self.label = obj_label
+        self.n_columns = int(obj_label['COLUMNS'])
+        self.n_rows = int(obj_label['ROWS'])
+        self.columns = list()
+        for col_label in obj_label['COLUMN']:
+            self.columns.append(PDSDataTableColumnHeaderObject(self.product, self, col_label,
+                                                               verbose=verbose, debug=debug))
+
+        self.table = Table()
+
+    def load_data(self):
+
+        from .const import PDS_UNITS
+
+        dt = []
+        void_index = 0
+
+        prev_stop_byte = 0
+        for cur_col in self.columns:
+
+            # adding void data columns when necessary
+            if prev_stop_byte != cur_col.start_byte:
+                dt.append(('void{}'.format(void_index), 'S{}'.format(cur_col.start_byte - prev_stop_byte)))
+                void_index += 1
+
+            if cur_col.np_data_type == numpy.str_:
+                dt.append((cur_col.name, '|S{}'.format(cur_col.n_items)))
+            else:
+                dt.append((cur_col.name, cur_col.struct_format))
+
+            prev_stop_byte = cur_col.start_byte + cur_col.bytes
+
+        self.table = Table(numpy.fromfile(self.parent.file, numpy.dtype(dt)))
+
+        # removing void data columns
+        for col_name in self.table.keys():
+            if col_name.startswith('void'):
+                self.table.remove_column(col_name)
+
+        # striping spaces in string columns
+        for col_name in self.table.keys():
+            if self.table[col_name].dtype.str.startswith('|S'):
+                self.table[col_name] = numpy.char.strip(self.table[col_name])
+
+        # bytes to unicode
+        for col_name in self.table.keys():
+            if self.table[col_name].dtype.str.startswith('|S'):
+                self.table[col_name] = numpy.char.decode(self.table[col_name])
+
+        # adding units when available:
+        for cur_col in self.columns:
+            if 'UNIT' in cur_col.label.keys():
+                self.table[cur_col.name].unit = PDS_UNITS[cur_col.label['UNIT']]
+
+
 class PDSDataTableObject(dict):
 
     def __init__(self, product, parent, obj_label, verbose=False, debug=False):
@@ -704,6 +769,8 @@ class PDSDataTableObject(dict):
                             cur_byte_start += cur_byte_length
 
     def _load_data_binary(self):
+
+        import struct
 
         if self.debug:
             print("### This is PDSDataTableObject._load_data_binary()")
