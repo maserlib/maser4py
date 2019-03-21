@@ -17,7 +17,7 @@ __all__ = ["decode_ccsds_date", "CCSDSDate", "CCSDSDateCUC", "CCSDSDateCDS", "CC
 import datetime
 
 # TODO: implement BCD for CCS (but ISEE3-SBH doesn't follow the CCS standard)
-# TODO: fix MSB as descrided in the CCSDS standard - first bit read is least significant bit
+# TODO: fix MSB as described in the CCSDS standard - first bit read is least significant bit
 
 
 def decode_ccsds_date(p_field, t_field, epoch=None) -> 'CCSDSDate':
