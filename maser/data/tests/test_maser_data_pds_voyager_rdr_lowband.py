@@ -153,8 +153,8 @@ class PDSPPIVoyagerPRARDRLowBand6SecDataFromLabelVG2N(unittest.TestCase):
         self.assertListEqual(list(freq_table5), list(ov5.frequency))
 
     def test_times(self):
-        self.assertEqual(ov5.start_time, datetime.datetime(1989, 8, 11, 0, 0, 3, 900000))
-        self.assertEqual(ov5.end_time, datetime.datetime(1989, 8, 31, 23, 59, 55, 900000))
+        self.assertEqual(ov5.start_time, datetime.datetime(1989, 8, 11, 0, 0))
+        self.assertEqual(ov5.end_time, datetime.datetime(1989, 8, 31, 0, 0))
         time_table5 = ov5.get_time_axis()
         self.assertEqual(len(time_table5), 288224)
         self.assertEqual(time_table5[0], datetime.datetime(1989, 8, 11, 0, 0, 3, 900000))
