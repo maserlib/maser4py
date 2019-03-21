@@ -77,7 +77,11 @@ _test_data_files = {'cdpp': {'demeter': ['DMT_N1_1134_018401_20041105_235807_200
                             },
                     'radiojove': {'sps': ['161210000000.sps'],
                                   },
-                    'pds': {'VG1_JUPITER/PRA_I': ['PRA_I.TAB'],
+                    'pds': {'VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1': ['PRA_I.TAB','PRA_I.LBL'],
+                            'VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1': ['T790306.DAT','T790306.LBL', 'PRADATA.FMT'],
+                            'VG1-S-PRA-3-RDR-LOWBAND-6SEC-V1': ['PRA.TAB','PRA.LBL'],
+                            'VG2-N-PRA-2-RDR-HIGHRATE-60MS-V1': ['C1065111.LBL', 'C1065111.DAT'],
+                            'VG2-N-PRA-3-RDR-LOWBAND-6SEC-V1': ['VG2_NEP_PRA_6SEC.LBL', 'VG2_NEP_PRA_6SEC.TAB'],
                             'CO-V_E_J_S_SS-RPWS-2-REFDR-WBRFULL-V1': ['T2000366_09_8025KHZ4_WBRFR.LBL',
                                                                       'T2000366_09_8025KHZ4_WBRFR.DAT',
                                                                       'RPWS_SCLK_SCET.FMT',
@@ -85,7 +89,8 @@ _test_data_files = {'cdpp': {'demeter': ['DMT_N1_1134_018401_20041105_235807_200
                             'CO-V_E_J_S_SS-RPWS-3-RDR-LRFULL-V1': ['T2000366_HFR0.LBL',
                                                                    'T2000366_HFR0.DAT',
                                                                    'RPWS_SCLK_SCET.FMT',
-                                                                   'LRFULL_TABLE.FMT'],
+                                                                   'LRFULL_TABLE.FMT',
+                                                                   'LRFC_DATA_QUALITY.FMT'],
                             },
                     }
 
