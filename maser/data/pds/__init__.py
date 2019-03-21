@@ -47,6 +47,9 @@ def load_pds_from_label(label_path=None, label_dict=None, fmt_label_dict=None, v
 
     from maser.data.pds.classes import PDSLabelDict
 
+    label = dict()
+    file = ''
+
     if label_path is not None or label_dict is not None:
 
         if isinstance(label_path, str):
