@@ -1,7 +1,7 @@
 import unittest
 import datetime
 from maser.data.data import *
-from maser.data.radiojove.radiojove_spx import *
+from maser.data.padc.radiojove.radiojove_spx import RadioJoveDataSPXFromFile
 
 
 class RadioJoveDataTest(unittest.TestCase):
@@ -9,11 +9,11 @@ class RadioJoveDataTest(unittest.TestCase):
     """Test case for RadioJoveData class"""
 
     def test_class(self):
-        o = RadioJoveDataFromFile('data/161210000000.sps')
+        o = RadioJoveDataSPXFromFile('data/161210000000.sps')
         self.assertIsInstance(o, MaserDataFromFile)
 
     def test_file_info(self):
-        o = RadioJoveDataFromFile('data/161210000000.sps')
+        o = RadioJoveDataSPXFromFile('data/161210000000.sps')
         self.assertIsInstance(o.file_info, dict)
         self.assertTrue(set(o.file_info.keys()) == {'bytes_per_step', 'data_length', 'prim_hdr_length',
                                                     'data_format', 'record_data_offset', 'name', 'size',
@@ -28,7 +28,7 @@ class RadioJoveDataTest(unittest.TestCase):
         self.assertTrue(o.file_info['lun'].closed)
 
     def test_notes(self):
-        o = RadioJoveDataFromFile('data/161210000000.sps')
+        o = RadioJoveDataSPXFromFile('data/161210000000.sps')
         self.assertIsInstance(o.notes, dict)
         self.assertEqual(o.notes['ANTENNATYPE'], 'unknown')
         self.assertIsInstance(o.notes['BANNER'], list)
@@ -49,7 +49,7 @@ class RadioJoveDataTest(unittest.TestCase):
         self.assertEqual(o.notes['free_text'], '')
 
     def test_header_sps(self):
-        o = RadioJoveDataFromFile('data/161210000000.sps')
+        o = RadioJoveDataSPXFromFile('data/161210000000.sps')
         self.assertIsInstance(o.header, dict)
         self.assertEqual(o.header['antenna_type'], 'unknown')
         self.assertEqual(o.header['author'], 'Dave Typinski')
