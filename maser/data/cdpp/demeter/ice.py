@@ -6,16 +6,17 @@ Python module to read a DEMETER S/C data from CDPP deep archive (http://cdpp-arc
 @author: B.Cecconi(LESIA)
 """
 
-import struct
-import numpy
-from maser.data import MaserError, MaserDataSweep
-from maser.data.cdpp import CDPPDataFromFile, CDPPFileFromWebServiceSync
-
 __author__ = "Baptiste Cecconi"
 __date__ = "30-MAR-2017"
 __version__ = "0.02"
 
 __all__ = ["CDPPDemeterN11134Data", "load_dmt_n1_1134_from_webservice", "read_dmt_n1_1134"]
+
+import struct
+import numpy
+from maser.data import MaserError, MaserDataSweep
+from maser.data.cdpp import CDPPDataFromFile, CDPPFileFromWebServiceSync
+from .const import *
 
 
 class CDPPDemeterN11134Sweep(MaserDataSweep):
@@ -193,7 +194,14 @@ class CDPPDemeterN11134Data(CDPPDataFromFile):
                     nsweep += 1
 
         name = 'DMT_N1_1134'
-        meta = {}
+        meta = {
+            "ORB_PARAM": DMT_ICE_N1_1134_ORB_PARAM_META,
+            "GEOMAG_PARAM": DMT_ICE_N1_1134_GEOMAG_PARAM_META,
+            "SOLAR_PARAM": DMT_ICE_N1_1134_SOLAR_PARAM_META,
+            "ATT_PARAM": DMT_ICE_N1_1134_ATT_PARAM_META,
+            "DATA_HEADER": DMT_ICE_N1_1134_DATA_HEADER_META,
+            "POWER_SPECTRA": DMT_ICE_N1_1134_POWER_SPECTRA_META,
+        }
         CDPPDataFromFile.__init__(self, file, header, data, name)
         self.meta = meta
         self.time = self.get_time_axis()
@@ -215,7 +223,7 @@ class CDPPDemeterN11134Data(CDPPDataFromFile):
 
         return self.time[index]
 
-    def get_single_sweep(self, cur_index):
+    def get_single_sweep(self, cur_index=0, **kwargs):
 
         if self.debug:
             print("This is {}.get_single_sweep()".format(__class__.__name__))
@@ -230,6 +238,14 @@ class CDPPDemeterN11134Data(CDPPDataFromFile):
         return numpy.linspace(self.header[cur_index]["BLOCK_4"]['LOWER_FREQ'],
                               self.header[cur_index]["BLOCK_4"]['UPPER_FREQ'],
                               num=self.header[cur_index]["BLOCK_4"]['NBF'])
+
+    def __len__(self):
+
+        if self.debug:
+            print("This is {}.__len__()".format(__class__.__name__))
+
+        return self.nsweep
+
 
 
 def load_dmt_n1_1134_from_webservice(file_name, user='cecconi', password=None, check_file=True,

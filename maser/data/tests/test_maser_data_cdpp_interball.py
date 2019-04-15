@@ -36,7 +36,9 @@ class CDPPInterballAuroralPOLRADRSPDataTest(unittest.TestCase):
         print("### Testing CDPPInterballAuroralPOLRADRSPData keys() method")
         a = load_polrad()
         expected_list = ['CCSDS_JULIAN_DAY_B3', 'CCSDS_PREAMBLE', 'SWEEP_DURATION', 'SESSION_NAME', 'ATTENUATION',
-                         'FIRST_FREQ', 'CCSDS_MILLISECONDS_OF_DAY', 'CCSDS_JULIAN_DAY_B2', 'STEPS', 'CHANNELS',
+                         'FIRST_FREQ', 'CCSDS_MILLISECONDS_OF_DAY_B0', 'CCSDS_MILLISECONDS_OF_DAY_B1',
+                         'CCSDS_MILLISECONDS_OF_DAY_B2', 'CCSDS_MILLISECONDS_OF_DAY_B3', 'CCSDS_JULIAN_DAY_B2',
+                         'STEPS', 'CHANNELS', 'T_Field', 'P_Field', 'CSSDS_CDS_LEVEL_2_EPOCH',
                          'CCSDS_JULIAN_DAY_B1', 'DATETIME', 'EY', 'EZ', 'EX']
         self.assertCountEqual(a.keys(), expected_list)
         self.assertSetEqual(set(a.keys()), set(expected_list))

@@ -23,7 +23,7 @@ import os
 import filecmp
 import getpass
 from .ccsds import decode_ccsds_date
-from maser.data.data import MaserDataFromFile, MaserError
+from maser.data import MaserDataFromFile, MaserError
 import socket
 hostname = socket.getfqdn()
 
@@ -112,7 +112,7 @@ class CDPPDataFromFile(MaserDataFromFile):
             dt.append(cur_date)
         return dt
 
-    def get_datetime_ccsds(self, p_field_key='P_Field', t_field_key='T_Field'):
+    def get_datetime_ccsds(self, p_field_key='P_Field', t_field_key='T_Field', epoch_key=None):
         """Method to retrieve the list of datetime per sweep (from CCSDS format)
         :return dt: list of datetime
         """
@@ -120,7 +120,11 @@ class CDPPDataFromFile(MaserDataFromFile):
         for cur_header_item in self.header:
             cur_p_field = cur_header_item[p_field_key]
             cur_t_field = cur_header_item[t_field_key]
-            dt.append(decode_ccsds_date(cur_p_field, cur_t_field).datetime)
+            if epoch_key is not None:
+                cur_epoch = cur_header_item[epoch_key]
+            else:
+                cur_epoch = None
+            dt.append(decode_ccsds_date(cur_p_field, cur_t_field, cur_epoch).datetime)
         return dt
 
     def get_datetime_ccsds_cds(self, keys=None):
@@ -141,9 +145,10 @@ class CDPPDataFromFile(MaserDataFromFile):
                     cur_header_tmp = cur_header_tmp[key_item]
                 cur_header = cur_header_tmp
 
-            days = cur_header["CCSDS_JULIAN_DAY_B1"] * 2**16 + \
-                   cur_header["CCSDS_JULIAN_DAY_B2"] * 2**8 + \
-                   cur_header["CCSDS_JULIAN_DAY_B3"]
+            days = \
+                cur_header["CCSDS_JULIAN_DAY_B1"] * 2**16 + \
+                cur_header["CCSDS_JULIAN_DAY_B2"] * 2**8 + \
+                cur_header["CCSDS_JULIAN_DAY_B3"]
             milli = cur_header["CCSDS_MILLISECONDS_OF_DAY"]
 
             dt.append(datetime.datetime(1950, 1, 1) + datetime.timedelta(days=days) +
@@ -399,10 +404,12 @@ class CDPPWebService:
         cdpp_files = []
         for item in cdpp_files_result[0]['objectLst']:
             cur_name = item['id']['id']
-            cur_start = datetime.datetime.fromtimestamp(item['startDateAsLong']//1000) + \
-                        datetime.timedelta(milliseconds=item['startDateAsLong']%1000)
-            cur_stop = datetime.datetime.fromtimestamp(item['stopDateAsLong']//1000) + \
-                       datetime.timedelta(milliseconds=item['stopDateAsLong']%1000)
+            cur_start = \
+                datetime.datetime.fromtimestamp(item['startDateAsLong'] // 1000) + \
+                datetime.timedelta(milliseconds=item['startDateAsLong'] % 1000)
+            cur_stop = \
+                datetime.datetime.fromtimestamp(item['stopDateAsLong'] // 1000) + \
+                datetime.timedelta(milliseconds=item['stopDateAsLong'] % 1000)
             cdpp_files.append({"name": cur_name, "start_time": cur_start, "stop_time": cur_stop})
         return cdpp_files
 
@@ -433,7 +440,7 @@ class CDPPWebService:
         for item in order_files:
             cdpp_order_file = "{}/userworkspace-rest/download/cdpp/userworkspace/file/{}/{}/?access_token={}"\
                 .format(self.cdpp_host, self.auth_data['user'], item, self.auth_token['access_token'])
-            order_basename = item.split['/'][-1]
+            order_basename = item.split('/')[-1]
             self._check_reconnect()
             self.file['name'] = os.path.join(dir_out, order_basename)
             self._set_lock_file_write()
