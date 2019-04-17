@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Python module cdf.converter.tools.xlsx.zvars."""
+"""Python module cdf.serializer.tools.xlsx.zvars."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
@@ -10,7 +10,8 @@ import logging
 
 from openpyxl import load_workbook as lwb
 
-from .gen import add_row, get_row, check_args
+from maser.utils.cdf.serializer.xlsx.gen import add_row, get_row, check_args
+from maser.utils.cdf.serializer.xlsx.vattrs import set_vattr_var
 
 __all__ = ["add_zvar",
             "set_zvar_entry",
@@ -145,12 +146,16 @@ def set_zvar_entry(xlsx, varname,
 
 @check_args(ZVAR_SHEET_NAME)
 def rename_zvar(xlsx, old_varname, new_varname,
-                 output=None, overwrite=False):
-    """rename_zvar.
-
+                zvar_only=False):
+    """
     Rename a variable from the input CDF Excel skeleton file.
     (By default a new file is created.)
 
+    :param xlsx: input Excel file to modify
+    :param old_varname: current name of the zvar
+    :param new_varname: new name of the zvar
+    :param zvar_only: only change name in the zVariables sheet (if False, then rename also in the VARIABLEattributes sheet)
+    :return:
     """
     wb = lwb(xlsx)
 
@@ -166,15 +171,19 @@ def rename_zvar(xlsx, old_varname, new_varname,
         return None
 
     for row in rows:
-        # Change gatt name
+        # Change zvar name
         ws.cell(row=row, column=1).value = new_varname
+
+    # Change associated var attributes too
+    if not zvar_only:
+        #Get sheet for var attributes
+        wb = set_vattr_var(wb, old_varname, new_varname)
 
     return wb
 
 
 @check_args(ZVAR_SHEET_NAME)
-def rm_zvar(xlsx, varname,
-             output=None, overwrite=False):
+def rm_zvar(xlsx, varname):
     """rm_zvar.
 
     Remove a variable from the input CDF Excel skeleton file.
@@ -216,7 +225,7 @@ def rm_zvar(xlsx, varname,
 
 def main():
     """Main program."""
-    logger.info("This is the cdf.converter.tools.xlsx.zvars module.")
+    logger.info("This is the cdf.serializer.tools.xlsx.zvars module.")
 
 # _________________ Main ____________________________
 if (__name__ == "__main__"):

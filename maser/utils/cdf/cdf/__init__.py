@@ -9,6 +9,4 @@ try:
     from spacepy.pycdf import CDF, zAttr
 except:
     logger.debug("spacepy not available, use local pycdf version!")
-    from .cdf import *
-
-# vim: set tw=79 :
+    from maser.utils.cdf.cdf.cdf import *

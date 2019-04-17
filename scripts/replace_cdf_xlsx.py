@@ -12,7 +12,7 @@ import argparse
 from pathlib import Path
 import json
 
-from maser.utils.cdf.converter.xlsx import set_gattr_entries, \
+from maser.utils.cdf.serializer.xlsx import set_gattr_entries, \
     add_gattr_entry, add_gattr, rm_gattr, set_vattr_entry, \
     rm_vattr, rename_gattr, set_gattr_dtype, rename_zvar, \
     set_zvar_entry, rm_zvar, add_zvar

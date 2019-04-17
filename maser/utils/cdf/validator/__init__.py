@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .validator import *
-from .subparser import *
+from maser.utils.cdf.validator.validator import *
+from maser.utils.cdf.validator.subparser import *

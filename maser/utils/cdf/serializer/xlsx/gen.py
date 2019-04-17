@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Python module cdf.converter.tools.xlsx.gen."""
+"""Python module cdf.serializer.tools.xlsx.gen."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
@@ -176,7 +176,7 @@ def get_row(worksheet, name, column="A"):
     the item row(s).
     It returns an empty list otherwise.
     """
-    # Check if the item alreay exists
+    # Check if the item already exists
     max_row = worksheet.max_row + 1
     rows = [i
         for i in range(1, max_row)
@@ -194,13 +194,13 @@ def get_item_list(worksheet, column="A"):
         if val not in items:
             items.append(worksheet["{0}{1}".format(column, i)].value)
 
-    # Return item names (wihtout first header row)
+    # Return item names (without first header row)
     return items[1:]
 
 
 def main():
     """Main program."""
-    logger.info("This is the cdf.converter.tools.xlsx.gen module.")
+    logger.info("This is the cdf.serializer.tools.xlsx.gen module.")
 
 # _________________ Main ____________________________
 if (__name__ == "__main__"):

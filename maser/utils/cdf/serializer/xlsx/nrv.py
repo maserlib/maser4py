@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Python module cdf.converter.tools.xlsx.nrv."""
+"""Python module cdf.serializer.tools.xlsx.nrv."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
@@ -222,7 +222,7 @@ def rm_nrv(xlsx, varname,
 
 def main():
     """Main program."""
-    logger.info("This is the cdf.converter.tools.xlsx.nrv module.")
+    logger.info("This is the cdf.serializer.tools.xlsx.nrv module.")
 
 # _________________ Main ____________________________
 if (__name__ == "__main__"):

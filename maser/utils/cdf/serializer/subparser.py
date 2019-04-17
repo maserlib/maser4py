@@ -19,7 +19,7 @@ import os
 # ________________ Global Functions __________
 # (If required, define here global functions)
 def add_skeletoncdf_subparser(subparser):
-    """cdf.converter script program."""
+    """cdf.serializer script program."""
     cdfconv_parser = subparser.add_parser('skeletoncdf',
                                     help='Convert CDF skeleton table into binary CDF')
     cdfconv_parser.add_argument('skeletons', nargs='+',

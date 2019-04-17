@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Python module cdf.converter.tools.xlsx.gattr."""
+"""Python module cdf.serializer.tools.xlsx.gattr."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
@@ -255,7 +255,7 @@ def rm_gattr(xlsx, attname,
 
 def main():
     """Main program."""
-    logger.info("This is the cdf.converter.tools.xlsx.gattrs module.")
+    logger.info("This is the cdf.serializer.tools.xlsx.gattrs module.")
 
 # _________________ Main ____________________________
 if (__name__ == "__main__"):

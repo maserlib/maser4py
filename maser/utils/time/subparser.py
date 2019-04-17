@@ -28,7 +28,7 @@ LS_FILE_DEF_PATH = os.path.join(LS_FILE_DEF_DIR, LS_FILENAME)
 # ________________ Global Functions __________
 # (If required, define here global functions)
 def add_leapsec_subparser(subparser):
-    """cdf.converter script program."""
+    """cdf.serializer script program."""
     leapsec_parser = subparser.add_parser('leapsec',
                                     help='Leapsecond handling tool')
     leapsec_parser.add_argument("-f", "--filepath",

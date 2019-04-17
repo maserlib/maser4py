@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 # Purpose:
-#   Bash script to test the maser.cdf.converter module
+#   Bash script to test the maser.cdf.serializer module
 #
 # Usage:
 #   bash test_cdfconverter.sh

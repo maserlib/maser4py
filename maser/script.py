@@ -13,7 +13,7 @@ from datetime import datetime
 
 from maser.settings import MASER_VERSION
 from maser.utils.toolbox import setup_logging
-from maser.utils.cdf.converter import skeletoncdf, SkeletonCDFException, add_skeletoncdf_subparser
+from maser.utils.cdf.serializer import skeletoncdf, SkeletonCDFException, add_skeletoncdf_subparser
 from maser.utils.cdf.cdfcompare import cdf_compare, add_cdfcompare_subparser
 from maser.utils.cdf.validator import cdfvalidator, ValidatorException, add_cdfvalidator_subparser
 from maser.utils.time import Lstable, add_leapsec_subparser

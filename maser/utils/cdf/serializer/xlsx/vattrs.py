@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Python module cdf.converter.tools.xlsx.vattrs."""
+"""Python module cdf.serializer.tools.xlsx.vattrs."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
@@ -12,7 +12,8 @@ from openpyxl import load_workbook as lwb
 
 from .gen import add_row, get_row, get_item_list, check_args
 
-__all__ = ["add_vattr",
+__all__ = [ "VATT_SHEET_NAME",
+            "add_vattr",
             "set_vattr_entry",
             "set_vattr_dtype",
             "set_vattr_var",
@@ -92,8 +93,7 @@ def add_var(xlsx, varname, entries,
 @check_args(VATT_SHEET_NAME)
 def add_vattr(xlsx, attname, cdftype, entry,
               varname=None,
-              output=None,
-              overwrite=False):
+              output=None):
     """Add a variable attribute into the input CDF Excel skeleton."""
     wb = lwb(xlsx)
 
@@ -127,8 +127,7 @@ def add_vattr(xlsx, attname, cdftype, entry,
 
 @check_args(VATT_SHEET_NAME)
 def set_vattr_entry(xlsx, attname, new_entry,
-                      varname=None,
-                      output=None, overwrite=False):
+                      varname=None):
     """set_vattr_entry.
 
     @author: X.Bonnin, LESIA, Obs. Paris, CNRS
@@ -316,8 +315,7 @@ def rm_var(xlsx, varname,
 
 
 @check_args(VATT_SHEET_NAME)
-def set_vattr_var(xlsx, old_varname, new_varname,
-                  output=None, overwrite=False):
+def set_vattr_var(xlsx, old_varname, new_varname):
     """Rename a variable name in the variable attribute sheet."""
     wb = lwb(xlsx)
 
@@ -341,7 +339,7 @@ def set_vattr_var(xlsx, old_varname, new_varname,
 
 def main():
     """Main program."""
-    logger.info("This is the cdf.converter.tools.xlsx.vattrs module.")
+    logger.info("This is the cdf.serializer.tools.xlsx.vattrs module.")
 
 # _________________ Main ____________________________
 if (__name__ == "__main__"):
