@@ -13,7 +13,7 @@ from openpyxl import load_workbook as lwb
 from .gen import add_row, get_row, get_item_list, check_args
 
 __all__ = ["add_vattr",
-            "set_vattr_entries",
+            "set_vattr_entry",
             "set_vattr_dtype",
             "set_vattr_var",
             "rm_vattr",
@@ -126,10 +126,10 @@ def add_vattr(xlsx, attname, cdftype, entry,
 
 
 @check_args(VATT_SHEET_NAME)
-def set_vattr_entries(xlsx, attname, new_entry,
+def set_vattr_entry(xlsx, attname, new_entry,
                       varname=None,
                       output=None, overwrite=False):
-    """set_vattr_entries.
+    """set_vattr_entry.
 
     @author: X.Bonnin, LESIA, Obs. Paris, CNRS
 

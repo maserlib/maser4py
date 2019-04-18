@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Python module template."""
+"""Python module containing the skeletoncdf subparser."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
