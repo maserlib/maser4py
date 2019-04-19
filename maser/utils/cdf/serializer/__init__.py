@@ -3,4 +3,6 @@
 
 from maser.utils.cdf.serializer.exceptions import *
 from maser.utils.cdf.serializer.subparser import add_skeletoncdf_subparser
+from maser.utils.cdf.serializer.skeletoncdf import *
 from maser.utils.cdf.serializer.skeleton import *
+from maser.utils.cdf.serializer.set_skeleton import *

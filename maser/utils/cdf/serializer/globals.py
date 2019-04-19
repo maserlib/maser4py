@@ -9,7 +9,9 @@ SHEETS = {
         "CDF NAME",
         "DATA ENCODING",
         "MAJORITY",
-        "FORMAT"
+        "FORMAT",
+        "CDF_COMPRESSION",
+        "CDF_CHECKSUM",
     ],
     "GLOBALattributes": [
         "Attribute Name",
@@ -24,20 +26,16 @@ SHEETS = {
         "Dims",
         "Sizes",
         "Record Variance",
-        "Dimension Variances"
+        "Dimension Variances",
+        "VAR_COMPRESSION",
+        "VAR_SPARESERECORDS",
+        "VAR_PADVALUE",
     ],
     "VARIABLEattributes": [
         "Variable Name",
         "Attribute Name",
         "Data Type",
         "Value"
-    ],
-    "Options": [
-        "CDF_COMPRESSION",
-        "CDF_CHECKSUM",
-        "VAR_COMPRESSION",
-        "VAR_SPARESERECORDS",
-        "VAR_PADVALUE"
     ],
     "NRV": [
         "Variable Name",
@@ -50,5 +48,11 @@ HEADER = "header"
 GATTRS = "GLOBALattributes"
 VATTRS = "VARIABLEattributes"
 ZVARS = "zVariables"
-OPTS = "Options"
+RVARS = "variables"
 NRV = "NRV"
+END = "end"
+
+NEW_ZVAR = "!VariableDataNumberRecordDimension"
+NEW_VATTRS = "!AttributeData"
+NO_NRV = "!RVvalueswerenotrequested."
+NEW_NRV = "!NRVvaluesfollow..."

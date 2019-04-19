@@ -87,12 +87,11 @@ def main():
                 logger.info("Executing skeletoncdf for {0}... [{1}/{2}]".format(skt, i + 1, nskt))
                 try:
                     cdf = skeletoncdf(skt,
-                                      from_xlsx=args.excel_format,
+                                      excel_format=args.excel_format,
                                       output_dir=args.output_dir[0],
                                       overwrite=args.overwrite,
                                       exe=args.skeletoncdf[0],
-                                      ignore_none=args.ignore_none,
-                                      auto_pad=args.auto_pad)
+                                      auto_pad=not args.no_auto_pad)
                 except SkeletonCDFException as strerror:
                     logger.error("SkeletonCDF error -- {0}".format(strerror))
                     cdf = None
