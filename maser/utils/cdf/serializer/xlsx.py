@@ -54,16 +54,16 @@ class Skt2xlsx:
         """
 
         if not output_path:
-            xlsx = os.path.splitext(self.skeleton.file)[0] + ".set_skeleton"
+            xlsx = os.path.splitext(self.skeleton.file)[0] + ".xlsx"
         elif os.path.isdir(output_path):
             xlsx = os.path.join(output_path,
                                os.path.basename(
-                                   os.path.splitext(self.skeleton.file)[0] + ".set_skeleton"
+                                   os.path.splitext(self.skeleton.file)[0] + ".xlsx"
                                ))
         else:
-            xlsx = os.path.splitext(output_path)[0] + ".set_skeleton"
+            xlsx = output_path
 
-        if not (overwrite) and (os.path.isfile(xlsx)):
+        if not overwrite and os.path.isfile(xlsx):
             logger.warning("%s already exits!", xlsx)
             return xlsx
 
@@ -138,7 +138,6 @@ class Skt2xlsx:
                     entry = " ".join(entry)
                 else:
                     entry = entries[col]
-
                 _ = zvars_sheet.cell(column=j+1, row=row_idx, value="{0}".format(
                     entry))
             row_idx +=1
@@ -214,7 +213,7 @@ class Xlsx2skt:
             logger.error("Cannot find Excel file called %s!", xlsx_file)
             raise FileNotFoundError
 
-        if os.path.splitext(xlsx_file)[1] != ".set_skeleton":
+        if os.path.splitext(xlsx_file)[1] != ".xlsx":
             logger.error("Invalid input Excel format!")
             raise InvalidFile
 

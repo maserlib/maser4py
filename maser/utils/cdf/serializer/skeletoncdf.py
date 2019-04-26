@@ -39,24 +39,24 @@ def skeletoncdf(input_skt,
                 output_dir=os.getcwd(),
                 output_cdf=None,
                 overwrite=False,
-                excel_format=False,
-                auto_pad=True,
-                exe=None):
+                auto_pad=False,
+                exe=None,
+                no_cdf=False):
     """
     Make a CDF Master binary file from a ASCII
-    skeleton table using the skeletoncdf program.
+    skeleton table using the skeletoncdf program of the NASA CDF software.
 
     If the "excel_format" keyword is True, then
     convert first the input Excel skeleton file into a valid CDF skeleton
     table.
 
 
-    :param input_skt:
+    :param input_skt: Path of the input skeleton table file
     :param output_dir: Path of the output directory
-    :param overwrite:
-    :param excel_format:
-    :param auto_pad:
-    :param exe:
+    :param overwrite: If True, overwrite existing output file
+    :param auto_pad: Automatically define !VAR_PADVALUE if set to True
+    :param exe: Path of the skeletoncdf program executable
+    :param no_cdf: If True, generate the skeleton table only. Only works with excel_format keyword
     :return:
     """
     # If output_dir does not provide then use current one
@@ -67,23 +67,32 @@ def skeletoncdf(input_skt,
                     output_dir))
         os.mkdir(output_dir)
 
-    if excel_format:
+    # If the input file is an Excel 2007 format file...
+    basename, extension = os.path.splitext(input_skt)
+
+    if extension == ".xlsx":
+
         input_xlsx = input_skt
-        logger.info("Converting {0} into skeleton table...".format(input_xlsx))
+        logger.info("First converting {0} into valid skeleton table...".format(input_xlsx))
         skeleton = Skeleton.from_xlsx(input_skt, auto_pad=auto_pad)
         input_skt = skeleton.to_txt(output_path=output_dir,
                         overwrite=overwrite)
+
+        # If conversion has failed...
         if input_skt is None:
             input_skt = os.path.splitext(input_xlsx)[0] + ".skt"
             logger.error(
                 "OUTPUT \"{0}\" HAS NOT BEEN SAVED!".format(input_skt))
             return None
 
+    if no_cdf:
+        return input_skt
+
     # Set output_cdf file path
     if output_cdf is None:
-        output_cdf = osp.splitext(input_skt)[0] + ".cdf"
-    else:
-        output_cdf = osp.join(output_dir, os.path.basename(output_cdf))
+        output_cdf = osp.basename(osp.splitext(input_skt)[0]) + ".cdf"
+
+    output_cdf = osp.join(output_dir, os.path.basename(output_cdf))
 
     # Initialize command line
     cmd = []

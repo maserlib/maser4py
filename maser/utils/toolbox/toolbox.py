@@ -234,10 +234,13 @@ def run_command(cmd, env=None,
 
 
 def setup_logging(filename=None,
-                  quiet=False, verbose=False, debug=False):
+                  quiet=False, verbose=True, debug=False):
     """Method to set up logging."""
     if debug:
         logging.basicConfig(level=logging.DEBUG,
+                            format='%(levelname)-8s: %(message)s')
+    elif quiet:
+        logging.basicConfig(level=logging.CRITICAL + 10,
                             format='%(levelname)-8s: %(message)s')
     elif verbose:
         logging.basicConfig(level=logging.INFO,
@@ -246,12 +249,13 @@ def setup_logging(filename=None,
         logging.basicConfig(level=logging.ERROR,
                             format='%(levelname)-8s: %(message)s')
 
-    if quiet:
+
+    if debug:
+        logging.root.handlers[0].setLevel(logging.DEBUG)
+    elif quiet:
         logging.root.handlers[0].setLevel(logging.CRITICAL + 10)
     elif verbose:
         logging.root.handlers[0].setLevel(logging.INFO)
-    elif debug:
-        logging.root.handlers[0].setLevel(logging.DEBUG)
     else:
         logging.root.handlers[0].setLevel(logging.ERROR)
 

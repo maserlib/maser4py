@@ -50,20 +50,25 @@
 
   "{{ zvar }}"   {{ val["Data Type"] }}  {{ val["Number Elements"] }}  {{ val["Dims"] }}    {% if val["Sizes"] %}{{ val["Sizes"] }}{% endif %}   {{ val["Record Variance"] }}    {% if val["Sizes"] %}{{ val["Dimension Variances"] }}{% endif %}
 
-! VAR_COMPRESSION: {{ val["VAR_COMPRESSION"] }}
-! VAR_PADVALUE: {{ val["VAR_PADVALUE"] }}
+
+  ! VAR_COMPRESSION: {{ val["VAR_COMPRESSION"] }}
+  ! (Valid compression: None, GZIP.1-9, RLE.0, HUFF.0, AHUFF.0)
+  ! VAR_SPARSERECORDS: {{ val["VAR_SPARSERECORDS"] }}
+  ! (Valid sparserecords: None, sRecords.PAD, sRecords.PREV)
+  ! VAR_PADVALUE: {{ val["VAR_PADVALUE"] }}
 
   ! Attribute    Data
   ! Name         Type   Value
   ! --------     ----   -----
 
-    {% for vatt, entry in vattrs[zvar].items() %}"{{ vatt }}"   {{ entry["Data Type"] }}  {% if entry["Data Type"] == "CDF_CHAR" %}{ "{{ entry["Value"] }}" }{% else %}{ {{ entry["Value"] }} }{% endif %}
-    {% endfor %} .
+    {% for key, val in vattrs.items() %}{% if key == zvar %}{% for vattr, entry in val.items() %}
+    "{{ vattr }}"   {{ entry["Data Type"] }}  {% if entry["Data Type"] == "CDF_CHAR" %}{ "{{ entry["Value"] }}" }{% else %}{ {{ entry["Value"] }} }{% endif %}
+    {% endfor %}{% endif %}{% endfor %} .
 
 {% if val["NRV"] %}
   ! NRV values follow...
 
-    {% for entry in val["NRV"] %}[ {{ entry["Index"] }} ] = { "{{ entry["Value"] }}" }
+    {% for entry in val["NRV"] %}[ {{ entry["Index"]}} ] = {% if val["Data Type"] == "CDF_CHAR" %}{ "{{ entry["Value"] }}" }{% else %}{ {{ entry["Value"] }} }{% endif %}
     {% endfor %}
 {% else %}
   ! RV values were not requested.

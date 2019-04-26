@@ -10,7 +10,7 @@ Contains exceptions for the cdf module.
 """
 
 __all__ = ["InvalidFile", "InvalidSkeleton",
-           "InvalidEntry","SkeletonCDFException"]
+           "InvalidEntry", "CDFSerializerError"]
 
 class InvalidFile(Exception):
     pass
@@ -21,5 +21,5 @@ class InvalidSkeleton(Exception):
 class InvalidEntry(Exception):
     pass
 
-class SkeletonCDFException(Exception):
+class CDFSerializerError(Exception):
     pass

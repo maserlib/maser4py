@@ -68,13 +68,14 @@ class Skt2txt:
         # Setup jinja2 environment
         jenv = Environment(loader=FileSystemLoader(str(JINJA_TEMPLATE_DIR)))
 
-        # Load MDOR template
+        # Load skeleton table template
         template = jenv.get_template(str(SKT_TEMPLATE))
 
         # Build the Skeleton template render
         self.render = template.render(
             gen_time=NOW.strftime(IN_FTIME),
-            name=skt_name, version=MASER_VERSION,
+            name=skt_name,
+            version=MASER_VERSION,
             file=os.path.basename(file),
             header=self.skeleton.header,
             gattrs=self.reform_gattr(self.skeleton.gattrs),
@@ -92,7 +93,6 @@ class Skt2txt:
         :return:
         """
 
-        # TODO - Make sure that the expected fields are written in the output file
         new_gattr = dict()
         for gattr, entries in gattrs.items():
             for i, entry in enumerate(entries):
@@ -123,7 +123,7 @@ class Skt2txt:
         :param vattrs: list of v. attributes
         :return:
         """
-        # TODO - Make sure that the expected fields are written in the output file
+
         for zvar, entries in vattrs.items():
             for vatt, entry in entries.items():
                 value = ""
@@ -270,19 +270,60 @@ class Txt2skt:
             elif self.section == ZVARS:
                 # Retrieve value of the VAR_COMPRESSION parameter
                 if "!VAR_COMPRESSION:" in row_c:
-                    self.skeleton.zvars[zvar]["VAR_COMPRESSION"] = row.strip().split(":")[1]
+                    value = row.strip().split(":")
+                    nval = len(value)
+                    if nval == 2:
+                        value = value[1]
+                    elif nval > 2:
+                        value = ":".join(value[1:])
+                    else:
+                        logger.error("VAR_COMPRESSION seems to be badly formatted!")
+                        raise InvalidFile
+
+                    self.skeleton.zvars[zvar]["VAR_COMPRESSION"] = value
                 # Retrieve value of the VAR_PADVALUE parameter
                 elif "!VAR_PADVALUE:" in row_c:
-                    self.skeleton.zvars[zvar]["VAR_PADVALUE"] = row.strip().split(":")[1]
-                # New zvariable defintion sub-section has been found
+                    value = row.strip().split(":")
+                    nval = len(value)
+                    if nval == 2:
+                        value = value[1]
+                    elif nval > 2:
+                        value = ":".join(value[1:])
+                    else:
+                        logger.error("VAR_PADVALUE seems to be badly formatted!")
+                        raise InvalidFile
+                    self.skeleton.zvars[zvar]["VAR_PADVALUE"] = value
+                # Retrieve value of the VAR_SPARSERECORDS parameter
+                elif "!VAR_SPARSERECORDS:" in row_c:
+                    value = row.strip().split(":")
+                    nval = len(value)
+                    if nval == 2:
+                        value = value[1]
+                    elif nval > 2:
+                        value = ":".join(value[1:])
+                    else:
+                        logger.error("VAR_SPARSERECORDS seems to be badly formatted!")
+                        raise InvalidFile
+                    self.skeleton.zvars[zvar]["VAR_SPARSERECORDS"] = value
                 elif row_c == NEW_ZVAR:
-                    # New zvariable definition
+                    # New zvariable defintion sub-section has been found
                     new_nrv = False
                     new_zvar = True
-                elif new_zvar and row_c.startswith('"'):
+                    zvar = None
+                    self.row = ""
+                elif (new_zvar and row_c.startswith('"') and
+                      not (row_c.endswith('F') or row_c.endswith('T'))):
+                    # variable definition is on several lines
+                    # store these lines in self.row
+                    self.row += " " + row
+                elif new_zvar and (row_c.endswith('F') or row_c.endswith('T')):
+                    if not self.row:
+                        self.row = row
+                    else:
+                        self.row += " " + row
                     # Extract line containing zvariable structure (name, data type, num elem, dims, sizes
                     # rec. variance and dim variances)
-                    zvar_desc = self._extract_zvar(row)
+                    zvar_desc = self._extract_zvar()
                     zvar = zvar_desc["Variable Name"]
 
                     # Initialize the zvars dictionary in Skeleton object for the given zvar
@@ -306,13 +347,17 @@ class Txt2skt:
                     # variable attribute definition is on several lines
                     # store these lines in self.row
                     self.row += " " + row
+                elif new_vattrs and row_c.startswith('"') and row_c.endswith('"'):
+                    # variable attribute definition is on several lines
+                    # store these lines in self.row
+                    self.row += " " + row
                 elif ((new_vattrs and row_c.endswith("}")) or
                     (new_vattrs and row_c.endswith("}."))):
                     # End of the variable attribute definition, extract fields inside the row
                     if not self.row:
                         self.row = row
                     else:
-                        self.row += row
+                        self.row += " " + row
                     vatt_desc = self._extract_attr()
 
                     # And store them into the vattrs dictionary in Skeleton object
@@ -410,7 +455,13 @@ class Txt2skt:
             row = row[:-1]
 
         items = row.split()
-        attname = items[0][1:-1]
+
+        # Remove possible quotes at the start/end
+        if items[0].startswith('"') and items[0].endswith('"'):
+            attname = items[0][1:-1]
+        else:
+            attname = items[0]
+
         # If { is the first character, then it is a variable attribute
         if items[2].startswith("{"):
             entry = None
@@ -464,26 +515,26 @@ class Txt2skt:
         if value.startswith("{"):
             value = re.findall('\{ "([\S ]*)" \}', value)
 
-        return dict(zip(SHEETS[NRV], [zvar, index, value]))
+        return dict(zip(SHEETS[NRV], [zvar, index, value[0]]))
 
 
-    def _extract_zvar(self, row):
+    def _extract_zvar(self):
         """
         Extract a zvar definition
 
         :param row:
         :return:
         """
-
+        row = self.row
         items = row.split()
         name = items[0][1:-1]
         dtype = items[1]
         elem = items[2]
         dims = items[3]
         if dims == "0":
-            sizes = [None]
+            sizes = None
             recvar = items[4]
-            dimvar = [None]
+            dimvar = None
         else:
             i = 4
             sizes = []
