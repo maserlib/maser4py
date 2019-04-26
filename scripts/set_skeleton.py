@@ -14,9 +14,8 @@ from pathlib import Path
 import json
 import logging
 
-from maser.utils.cdf.serializer.exceptions import InvalidFile
+from maser.utils.toolbox import setup_logging
 from maser.utils.cdf.serializer import Skeleton
-from maser.utils.cdf.serializer.globals import SHEETS, GATTRS, VATTRS, ZVARS, NRV
 
 # ________________ HEADER _________________________
 
@@ -266,6 +265,8 @@ def main():
     outdir = args.output_dir[0]
     overwrite = args.overwrite
 
+    setup_logging(verbose=True)
+
     if not outdir.is_dir():
         os.mkdir(outdir)
         print(f"--> {outdir} output directory created.")
@@ -293,11 +294,9 @@ def main():
         for key, val in jdata.items():
             try:
                 func = getattr(sys.modules[__name__], key)
-            except:
-                print('No method found for "{0}", skipping'.format(key))
-            else:
                 skeleton = func(skeleton, val)
-
+            except Exception as e:
+                print(e)
 
         print(f"--> Saving into {output}")
         if extension == ".skt":

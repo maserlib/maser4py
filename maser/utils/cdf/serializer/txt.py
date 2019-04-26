@@ -81,7 +81,7 @@ class Skt2txt:
             gattrs=self.reform_gattr(self.skeleton.gattrs),
             zvars=self.skeleton.zvars,
             vattrs=self.reform_vattr(self.skeleton.vattrs),
-            vattrList=self.skeleton.cdf_items[VATTRS]
+            vattrList=self.skeleton.vattrList
     )
 
     def reform_gattr(self, gattrs, length=48):

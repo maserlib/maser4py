@@ -111,7 +111,7 @@ class Skeleton():
         for entry in header:
             for field in SHEETS[HEADER]:
                 if field not in entry:
-                    logger.error("{0} field is missing, aborting!".format(field))
+                    logger.error("{0} field is missing!".format(field))
                     return False
 
         return True
@@ -126,7 +126,7 @@ class Skeleton():
         for entry in entries:
             for field in SHEETS[GATTRS]:
                 if field not in entry:
-                    logger.error("{0} field is missing, aborting!".format(field))
+                    logger.error("{0} field is missing!".format(field))
                     return False
 
         return True
@@ -140,7 +140,7 @@ class Skeleton():
         """
         for field in SHEETS[ZVARS]:
             if field not in entry:
-                logger.error("{0} field is missing, aborting!".format(field))
+                logger.error("{0} field is missing!".format(field))
                 return False
 
         return True
@@ -156,7 +156,7 @@ class Skeleton():
         for key, val in entry.items():
             for field in SHEETS[VATTRS]:
                 if field not in val:
-                    logger.error("{0} field is missing, aborting!".format(field))
+                    logger.error("{0} field is missing!".format(field))
                     return False
 
         return True
@@ -172,7 +172,7 @@ class Skeleton():
 
         for key, val in entry.items():
             if key not in SHEETS[HEADER]:
-                logger.warning("Unknown field: {0}: skipping!".format(key))
+                logger.warning("Unknown field: {0}!".format(key))
                 continue
             self.header[key] = val
 
@@ -187,6 +187,7 @@ class Skeleton():
         :param append: If True, then append input entries to the existing one
         """
 
+        logger.info("Adding g.attribute {0}".format(attname))
         if attname in self.gattrs and append:
             # Check that all the expected fields are in the input entries
             if not self.is_valid_gatt(entries):
@@ -217,6 +218,7 @@ class Skeleton():
         :param auto_add: If g.attribute does not exist, then add it with the input entries
         :return:
         """
+        logger.info("Updating g.attribute {0}".format(attname))
         # Check if the attribute already exists
         if attname not in self.gattrs:
             if not auto_add:
@@ -235,7 +237,7 @@ class Skeleton():
         for i, entry in enumerate(entries):
             for key, val in entry.items():
                 if key not in SHEETS[GATTRS]:
-                    logger.warning("Unknown field: {0}, skipping!".format(key))
+                    logger.warning("Unknown field: {0}!".format(key))
                     continue
                 self.gattrs[attname][i][key] = val
 
@@ -247,6 +249,7 @@ class Skeleton():
         :param new_attname:
         :return:
         """
+        logger.info("Renaming g.attribute {0} into {1}".format(old_attname, new_attname))
         # Check if the zVariable already exists
         if old_attname not in self.gattrs:
             logger.error(
@@ -271,6 +274,7 @@ class Skeleton():
         :param attname:
         :return:
         """
+        logger.info("Removing g.attribute {0}".format(attname))
         if attname in self.gattrs:
             del self.gattrs[attname]
 
@@ -284,7 +288,7 @@ class Skeleton():
         :param varname: If provided, contains a list of zvariable for which the v.attribute must be added. If not provided v.attribute is added for all the variables.
         :return:
         """
-
+        logger.info("Adding v.attribute {0}".format(attname))
         if attname in self.vattrList:
             logger.warning("{0} already exists!".format(attname))
         else:
@@ -315,7 +319,7 @@ class Skeleton():
         :param varname: If provided, contains a list of zvariable for which the v.attribute must be set. If not provided v.attribute is set for all the variables.
         :return:
         """
-
+        logger.info("Updating v.attribute {0}".format(attname))
         # Check if the attribute already exists
         if attname not in self.vattrList:
             logger.error(
@@ -337,7 +341,7 @@ class Skeleton():
             for var in varname:
                 for key, val in entry.items():
                     if key not in SHEETS[VATTRS]:
-                        logger.warning("Unknown field: {0}, skipping!".format(key))
+                        logger.warning("Unknown field: {0}!".format(key))
                         continue
                     self.vattrs[var][attname][key] = val
 
@@ -351,6 +355,7 @@ class Skeleton():
         :param varname: If provided, rename only for the given zVariables in the varname list. Else rename all.
         :return:
         """
+        logger.info("Renaming v.attribute {0} into {1}".format(old_attname, new_attname))
         # Check if the zVariable already exists
         if old_attname not in self.vattrList:
             logger.error(
@@ -387,6 +392,7 @@ class Skeleton():
         :param varname: if provided, only remove the v.attribute for the given list of zVariable in the varname input. Else remove all.
         :return:
         """
+        logger.info("Removing v.attribute {0}".format(attname))
         if attname in self.vattrList:
             del self.vattrList[attname]
 
@@ -414,7 +420,7 @@ class Skeleton():
         :param vattrs: dictionnary containing variable attribute(s) to load for this zvariable
         :return:
         """
-
+        logger.info("Adding zvariable {0}".format(varname))
         # Check if the zVariable already exists
         if varname in self.zvars:
             logger.warning(
@@ -434,11 +440,15 @@ class Skeleton():
                 self.vattrs[varname] = vattrs
 
     def set_zvar(self, varname, entry, vattrs=None):
-        """set_zvar.
+        """
         Update zvariable entry into the Skeleton object.
 
+        :param varname:
+        :param entry:
+        :param vattrs:
+        :return:
         """
-
+        logger.info("Updating zvariable {0}".format(varname))
         # Check if the zVariable already exists
         if varname not in self.zvars:
             logger.error(
@@ -463,7 +473,7 @@ class Skeleton():
 
                 for key, val in vattrs.items():
                     if key not in SHEETS[VATTRS]:
-                        logger.warning("Unknown field: {0}, skipping!".format(key))
+                        logger.warning("Unknown field: {0}!".format(key))
                         continue
                     self.vattrs[varname][key] = val
 
@@ -476,6 +486,7 @@ class Skeleton():
         :param new_varname:
         :return:
         """
+        logger.info("Renaming zvariable {0} into {1}".format(old_varname, new_varname))
         # Check if the zVariable already exists
         if old_varname not in self.zvars:
             logger.error(
@@ -498,7 +509,7 @@ class Skeleton():
         :param varname: name of the zVariable to remove
         :return:
         """
-
+        logger.info("Removing zvariable {0}".format(varname))
         if varname in self.zvars:
             del self.zvars[varname]
 
