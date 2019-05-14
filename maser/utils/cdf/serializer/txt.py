@@ -18,8 +18,7 @@ import re
 import logging
 from datetime import datetime
 from copy import deepcopy
-
-from jinja2 import Environment, FileSystemLoader
+import tempfile
 
 from maser.settings import MASER_VERSION
 from maser.utils.cdf.serializer.exceptions import InvalidFile
@@ -35,8 +34,7 @@ __all__ = ["Skt2txt", "Txt2skt"]
 # (define here the global variables)
 logger = logging.getLogger(__name__)
 
-
-SKT_TEMPLATE = "skeleton.skt-tpl"
+TEMPDIR = tempfile.TemporaryDirectory().name
 
 IN_FTIME = "%Y-%m-%dT%H:%M:%S"
 NOW = datetime.now()
