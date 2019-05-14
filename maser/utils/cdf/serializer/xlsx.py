@@ -17,6 +17,7 @@ into an Excel format file (skt_editor).
 import os
 import logging
 from collections import OrderedDict
+from copy import deepcopy
 
 from openpyxl import Workbook, load_workbook
 
@@ -28,7 +29,7 @@ __all__ = ["Skt2xlsx", "Xlsx2skt"]
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 # ________________ Class Definition __________
 # (If required, define here classes)
@@ -38,7 +39,7 @@ class Skt2xlsx:
     def __init__(self, skeleton,
                  auto_pad=True):
         """__init__ method."""
-        self.skeleton = skeleton
+        self.skeleton = deepcopy(skeleton)
         self.wb = None
         self.auto_pad = auto_pad
 
@@ -173,7 +174,7 @@ class Skt2xlsx:
 
         row_idx = 2
         for zvar, fields in self.skeleton.zvars.items():
-            if fields["NRV"]:
+            if 'NRV' in fields:
                 for i, entries in enumerate(fields["NRV"]):
                     for j, col in enumerate(SHEETS[NRV]):
                         if entries[col] is None:

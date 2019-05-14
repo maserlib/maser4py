@@ -25,7 +25,7 @@ __all__ = ["Skeleton"]
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 
@@ -100,64 +100,75 @@ class Skeleton():
                                               overwrite=overwrite)
 
 
-    def is_valid_header(self, header):
+    def is_valid_header(self, header, ignore=[]):
         """
         Check that the input is a valid cdf header.
 
         :param header: header dictionary
+        :param ignore: List of field(s) to ignore
         :return: True if the header is valid
         """
 
         for entry in header:
             for field in SHEETS[HEADER]:
+                if field in ignore:
+                    continue
                 if field not in entry:
-                    logger.error("{0} field is missing!".format(field))
+                    logger.warning("{0} field is missing!".format(field))
                     return False
 
         return True
 
-    def is_valid_gatt(self, entries):
+    def is_valid_gatt(self, entries, ignore=[]):
         """
-        Check that the input is a valid gattrs entry.
+        Check that the input gattr entries are valid.
 
-        :param entries:
+        :param entries: Entries to check
+        :param ignore: list of field(s) to ignore
         :return: True if it is valid
         """
         for entry in entries:
             for field in SHEETS[GATTRS]:
+                if field in ignore:
+                    continue
                 if field not in entry:
-                    logger.error("{0} field is missing!".format(field))
+                    logger.warning("{0} field is missing!".format(field))
                     return False
 
         return True
 
-    def is_valid_zvar(self, entry):
+    def is_valid_zvar(self, entry, ignore=[]):
         """
         Check that the input is a valid zvars entry.
 
-        :param entry:
+        :param entry: entry to check
+        :param ignore: list of field(s) to ignore
         :return: True if it is valid
         """
         for field in SHEETS[ZVARS]:
+            if field in ignore:
+                continue
             if field not in entry:
-                logger.error("{0} field is missing!".format(field))
+                logger.warning("{0} field is missing!".format(field))
                 return False
 
         return True
 
-    def is_valid_vattrs(self, entry):
+    def is_valid_vattrs(self, entry, ignore=[]):
         """
         Check that the input is a valid vattrs.
 
-        :param entry:
+        :param entry: entry to check
+        :param ignore: list of field(s) to ignore
         :return: True if it is valid
         """
 
-        for key, val in entry.items():
-            for field in SHEETS[VATTRS]:
-                if field not in val:
-                    logger.error("{0} field is missing!".format(field))
-                    return False
+        for field in SHEETS[VATTRS]:
+            if field in ignore:
+                continue
+            if field not in entry :
+                logger.warning("{0} field is missing!".format(field))
+                return False
 
         return True
 
@@ -169,12 +180,13 @@ class Skeleton():
         :param entry: dictionary containing header field(s) to udpate
         :return:
         """
-
         for key, val in entry.items():
             if key not in SHEETS[HEADER]:
                 logger.warning("Unknown field: {0}!".format(key))
                 continue
             self.header[key] = val
+
+        return True
 
     def add_gattr(self, attname, entries,
                   append=False):
@@ -184,62 +196,81 @@ class Skeleton():
 
         :param attname: name of the g. attribute to add
         :param entries: List containing the entries for the g.attribute
-        :param append: If True, then append input entries to the existing one
+        :param append: If True, then append input entries to the existing one(s)
         """
 
-        logger.info("Adding g.attribute {0}".format(attname))
+        logger.info("Adding entries for g.attribute {0}".format(attname))
         if attname in self.gattrs and append:
             # Check that all the expected fields are in the input entries
-            if not self.is_valid_gatt(entries):
+            if not self.is_valid_gatt(entries,
+                                      ignore=["Entry Number",
+                                              "Attribute Name",
+                                              "Data Type"]):
                 raise InvalidEntry
 
             # Get number of entries
             nentry = len(self.gattrs[attname])
             for i, entry in enumerate(entries):
+                entry["Attribute Name"] = attname
+                entry["Data Type"] = self.gattrs[attname][0]["Data Type"]
                 entry["Entry Number"] = str(nentry + 1)
                 self.gattrs[attname].append(entry)
 
+            return True
+
         elif attname in self.gattrs:
             logger.warning("{0} already exists!".format(attname))
+            return False
         else:
             # Check that all the expected fields are in the input entries
             if not self.is_valid_gatt(entries):
                 raise InvalidEntry
 
             self.gattrs[attname] = entries
+            self.header["ngattr"] += 1
+            return True
 
-
-    def set_gattr(self, attname, entries, auto_add=False):
+    def set_gattr(self, attname, new_entry, add=False):
         """
-        Update entries for a given g.attribute in the Skeleton object.
+        Update an entry for a given g.attribute in the Skeleton object.
 
         :param attname: name of the g.attribute to update
-        :param entries: new entries
-        :param auto_add: If g.attribute does not exist, then add it with the input entries
+        :param new_entry: new entry values provided as a dictionary
+        :param add: If g.attribute does not exist, then add it with the input entries
         :return:
         """
         logger.info("Updating g.attribute {0}".format(attname))
         # Check if the attribute already exists
         if attname not in self.gattrs:
-            if not auto_add:
-                logger.error(
-                    "{0} g.attribute does not exist!".format(
+            logger.warning(
+                "{0} g.attribute does not exist!".format(
                     attname))
-                raise IOError
+            if not add:
+                return False
             else:
-                self.add_gattr(attname, entries)
-                return True
+                return self.add_gattr(attname, [new_entry])
 
-        if len(entries) > len(self.gattrs[attname]):
-            logger.error("Number of input entries is inconsistent!")
+        # Check if the Entry Number is provided in the new_entry dictionary
+        if "Entry Number" not in new_entry:
+            logger.error("No Entry Number provided!")
             raise InvalidEntry
 
-        for i, entry in enumerate(entries):
-            for key, val in entry.items():
-                if key not in SHEETS[GATTRS]:
-                    logger.warning("Unknown field: {0}!".format(key))
-                    continue
-                self.gattrs[attname][i][key] = val
+        # Loop over self.gattrs[attname] to look for the entry number to update
+        has_entry = False
+        for i, entry in enumerate(self.gattrs[attname]):
+            # If found, then retrieve the new entry values and save them into self.gattrs[attname]
+            if self.gattrs[attname][i]["Entry Number"] == new_entry["Entry Number"]:
+                for key, val in new_entry.items():
+                    if key not in SHEETS[GATTRS]:
+                        logger.warning("Unknown field: {0}!".format(key))
+                        continue
+                    self.gattrs[attname][i][key] = new_entry[key]
+                    has_entry = True
+
+        if has_entry == False:
+            logger.warning("Entry Number {0} not found!".format(new_entry["Entry Number"]))
+
+        return has_entry
 
     def rename_gattr(self, old_attname, new_attname):
         """
@@ -255,16 +286,13 @@ class Skeleton():
             logger.error(
                            "{0} g.attribute does not exist!".format(
                                old_attname))
-            raise IOError
+            return False
         else:
             self.gattrs[new_attname] = self.gattrs[old_attname]
+            for i, entry in enumerate(self.gattrs[new_attname]):
+                self.gattrs[new_attname][i]["Attribute Name"] = new_attname
             del self.gattrs[old_attname]
-
-            if old_attname in self.vattrs:
-                self.gattrs[new_attname] = self.gattrs[old_attname]
-                del self.gattrs[old_attname]
-
-
+            return True
 
     def rm_gattr(self, attname):
         """
@@ -277,11 +305,12 @@ class Skeleton():
         logger.info("Removing g.attribute {0}".format(attname))
         if attname in self.gattrs:
             del self.gattrs[attname]
+            self.header["ngattr"] -= 1
 
 
     def add_vattr(self, attname, entry, varname=None):
         """
-        Add a variable attribute into the Skeleton object.
+        Add entries for a variable attribute into the Skeleton object.
 
         :param attname: name of the v. attribute to add
         :param entry: List containing the entry for the v.attribute
@@ -291,13 +320,16 @@ class Skeleton():
         logger.info("Adding v.attribute {0}".format(attname))
         if attname in self.vattrList:
             logger.warning("{0} already exists!".format(attname))
+            return False
         else:
             # Check that all the expected fields are in the input entries
             if not self.is_valid_vattrs(entry):
                 raise InvalidEntry
 
             self.vattrList.append(attname)
+            self.header["nvattr"] +=1
 
+            # If varname not provided, then add variable attribute for all variables
             if not varname:
                 varname = self.vattrs.keys()
             else:
@@ -309,6 +341,7 @@ class Skeleton():
             for zvar in varname:
                 self.vattrs[zvar][attname] = entry
 
+            return True
 
     def set_vattr(self, attname, entry, varname=None):
         """
@@ -325,11 +358,8 @@ class Skeleton():
             logger.error(
                 "{0} v.attribute does not exist!".format(
                     attname))
-            raise IOError
+            return False
         else:
-            if not self.is_valid_vattrs(entry):
-                raise InvalidEntry
-
             if not varname:
                 varname = self.vattrs.keys()
             else:
@@ -361,7 +391,7 @@ class Skeleton():
             logger.error(
                            "{0} v.attribute does not exist!".format(
                                old_attname))
-            raise IOError
+            return False
         else:
             self.vattrList[new_attname] = self.vattrList[old_attname]
             del self.vattrList[old_attname]
@@ -384,6 +414,8 @@ class Skeleton():
                 self.vattrs[var][new_attname] = self.vattrs[var][old_attname]
                 del self.vattrs[var][old_attname]
 
+        return True
+
     def rm_vattr(self, attname, varname=None):
         """
         Remove a variable attr. from the Skeleton object.
@@ -395,6 +427,7 @@ class Skeleton():
         logger.info("Removing v.attribute {0}".format(attname))
         if attname in self.vattrList:
             del self.vattrList[attname]
+            self.header["nvattr"] -= 1
 
         if not varname:
             varname = self.vattrs.keys()
@@ -415,9 +448,9 @@ class Skeleton():
         Add a zVariable into the Skeleton object.
 
         ;param varname: name of the zVariable to add
-        :param entry: list with fields to add [variable name, data type, number elements,
+        :param entry: dictionary with fields to add [variable name, data type, number elements,
                     dims, sizes, record variance, Dimension variances]. If dims=0, sizes and record variance must be None
-        :param vattrs: dictionnary containing variable attribute(s) to load for this zvariable
+        :param vattrs: dictionnary containing variable attribute(s) to load for this zvariable. V.attributes can be also provided in the entry using the "Variable attributes" dictionary keyword.
         :return:
         """
         logger.info("Adding zvariable {0}".format(varname))
@@ -426,18 +459,28 @@ class Skeleton():
             logger.warning(
                            "{0} variable already exists!".format(
                                                         varname))
+            return False
         else:
             # Check content
             if not self.is_valid_zvar(entry):
                 raise InvalidEntry
             # Add the zvariable
             self.zvars[varname] = entry
+            self.header["nzvar"] += 1
 
+            # if entry contains the "Variable Attributes" keyword, then extract it to get vattrs
+            if "Variable Attribute" in entry:
+                vattrs = entry["Variable Attributes"]
+
+            # if Variable attributes are provided for this zVariable, then add them.
             if vattrs:
-                if not self.is_valid_vattr(vattrs):
-                    raise InvalidEntry
+                for vattname, value in vattrs.items():
+                    if vattname not in self.vattrList:
+                        self.vattrList.append(vattname)
 
-                self.vattrs[varname] = vattrs
+                    self.vattrs[varname] = vattrs
+
+        return True
 
     def set_zvar(self, varname, entry, vattrs=None):
         """
@@ -454,7 +497,7 @@ class Skeleton():
             logger.error(
                            "{0} variable does not exist!".format(
                                                         varname))
-            raise IOError
+            return False
         else:
             # update the zvariable
 
@@ -477,6 +520,7 @@ class Skeleton():
                         continue
                     self.vattrs[varname][key] = val
 
+        return True
 
     def rename_zvar(self, old_varname, new_varname):
         """
@@ -492,7 +536,7 @@ class Skeleton():
             logger.error(
                            "{0} variable does not exist!".format(
                                old_varname))
-            raise IOError
+            return False
         else:
             self.zvars[new_varname] = self.zvars[old_varname]
             del self.zvars[old_varname]
@@ -501,6 +545,8 @@ class Skeleton():
             if old_varname in self.vattrs:
                 self.vattrs[new_varname] = self.vattrs[old_varname]
                 del self.vattrs[old_varname]
+
+            return True
 
     def rm_zvar(self, varname):
         """
@@ -517,10 +563,10 @@ class Skeleton():
         if varname in self.vattrs:
             del self.vattrs[varname]
 
-
+        self.header["nzvar"] -= 1
+        return True
 
 # ________________ Global Functions __________
-
 
 
 # _________________ Main ____________________________

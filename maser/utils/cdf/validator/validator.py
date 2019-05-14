@@ -11,10 +11,9 @@ import logging
 from tempfile import TemporaryDirectory
 
 from maser.utils.cdf import CDF, zAttr
-
-from ...toolbox import run_command, quote, move_safe
-from ..tools import get_cdftype, get_vattrs, get_cdftypename
-from ....settings import SUPPORT_DIR
+from maser.utils.toolbox import run_command, quote, move_safe
+from maser.utils.cdf.tools import get_cdftype, get_vattrs, get_cdftypename
+from maser.settings import SUPPORT_DIR
 
 __all__ = ["Validate", "cdfvalidator", "ValidatorException"]
 
@@ -24,13 +23,19 @@ __all__ = ["Validate", "cdfvalidator", "ValidatorException"]
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 CDF_ENV = {"CDF_LEAPSECONDSTABLE": None,
            "CDF_BIN": None}
 
 ISTP_MOD_FILE = os.path.join(SUPPORT_DIR, "cdf",
                              "validator_model_istp.json")
+
+# Possible values for Issue class types
+ISSUE_TYPES = ["zvar", "gatt", "vatt"]
+
+# Possible values for Issue class checks
+ISSUE_CHECKS = ["isitem", "hasvalue", "isentry", "istype", "issize", "isdims", "isattrs"]
 
 
 # ________________ Class Definition __________
@@ -41,7 +46,142 @@ class ValidatorException(Exception):
     pass
 
 
-class Validate():
+class Issue:
+    """Issue class."""
+    def __init__(self):
+        self.counter = 0
+        self.reset()
+
+    def append(self, name, type, msg, passed, check,
+               num=None):
+        """
+        Append a new issue element
+
+        :param name: name of the CDF item
+        :param type: type of the CDF item ("zvar", "gatt", "vatt")
+        :param msg: message returned by the check process
+        :param passed: True if the check has succeeded, False else.
+        :param check: Name of the check ("hasvalue", "isentry", "istype", "isdims", "issizes", "isattrs")
+        ;param num: Force num value for the issue entry (not recommended)
+        :return:
+        """
+        self.counter += 1
+        if not num:
+            self.num.append(self.counter)
+        else:
+            self.num.append(num)
+        self.name.append(name)
+        if type in ISSUE_TYPES:
+            self.type.append(type)
+        else:
+            logger.warning("Input Issue type is not valid!")
+        self.msg.append(msg)
+        self.passed.append(passed)
+        if check in ISSUE_CHECKS:
+            self.check.append(check)
+        else:
+            logger.warning("Input Issue check is not valid!")
+
+    def extend(self, issues):
+        """
+        Add issues to Issue object
+
+        :param issues:
+        :return:
+        """
+
+        for issue in self.iterator(issues):
+            self.append(issue[1], issue[2], issue[3], issue[4], issue[5])
+
+    def is_passed(self):
+        """
+        Check if issues are successfully passed or not
+
+        :return: return True if all issues have been passed successfully, else False
+        """
+        return False not in self.passed
+
+
+    def __len__(self):
+        """Return number of issue elements."""
+        return len(self.num)
+
+    def reset(self):
+        """
+        Reset Issue object.
+
+        :return:
+        """
+        self.num = []
+        self.name = []
+        self.type = []
+        self.msg = []
+        self.passed = []
+        self.check = []
+        self.counter = 0
+
+    def iterator(self, issues=None):
+        """Iterator for Issue class."""
+
+        if not issues:
+            issues = self
+
+        for i, num in enumerate(issues.num):
+            yield num, issues.name[i], \
+                  issues.type[i], issues.msg[i], \
+                  issues.passed[i], issues.check[i]
+
+    def to_dict(self):
+        """
+        Convert issues into dictionary.
+
+        :return:
+        """
+        # Generate dictionary from Issue object
+        issue_dict = dict()
+        for i, num in enumerate(self.num):
+            issue_dict[num] = {
+                "name": self.name[i],
+                "type": self.type[i],
+                "msg": self.msg[i],
+                "check": self.check[i],
+                "passed": self.passed[i],
+            }
+        return issue_dict
+
+    def to_json(self, output_file,
+                overwrite=False,
+                comment=""):
+        """
+        Write issues into an output json format file.
+
+        :param output_file: Name of the output JSON file
+        :param overwrite: If True then overwrite existing file
+        :return: Issue dictionary
+        """
+
+        if os.path.isfile(output_file):
+            if overwrite:
+                os.remove(output_file)
+            else:
+                logger.warning("{0} already exists, aborting!".format(output_file))
+                return None
+
+        issue_dict = self.to_dict()
+        with open(output_file, 'w') as fw:
+            json.dump(issue_dict, fw)
+
+        if os.path.isfile(output_file):
+            logger.info("{0} saved".format(output_file))
+            return issue_dict
+        else:
+            logger.warning("Saving {0} has failed!".format(output_file))
+            return None
+
+
+
+
+class Validate:
     """Class that provides tools to validate a CDF format file."""
 
     def __init__(self,cdf_file,
@@ -52,6 +192,7 @@ class Validate():
         self.cdf = None
         self.open_cdf(cdf_file)
         self.cdf_env = self._init_cdfenv(cdf_env=cdf_env)
+        self.issues = Issue()
 
     def _init_cdfenv(self, cdf_env=CDF_ENV):
         """Initialize instance."""
@@ -66,7 +207,12 @@ class Validate():
         return cdf_env
 
     def open_cdf(self, file):
-        """Open the input cdf file."""
+        """
+        Open the input cdf file.
+
+        :param file:
+        :return:
+        """
         logger.info("Opening {0}".format(file))
         self.file = file
         try:
@@ -88,33 +234,46 @@ class Validate():
         Istp compliant.
 
         Check that the input CDF is compliant with
-            ISTP guidelines
+        ISTP guidelines
+
+        :return:
         """
-        issues = []
+        issues = Issue()
 
         issues.extend(self.is_model_compliant(ISTP_MOD_FILE))
         issues.extend(self.is_istp_fillval())
 
+        self.issues.extend(issues)
+
         return issues
 
     def is_model_compliant(self, model_file):
-        """Check the CDF content compared to the input mode file."""
+        """
+        Check the CDF content against a model given as an input JSON file.
+
+        :param model_file: input json file path
+        :return:
+        """
         pass
 
         def check(cdf, items,
                   is_vattr=False,
                   is_zvar=False):
             """
-            Check CDF items.
-
             Check items of a given CDF
             GLOBALattributes, VARIABLEattributes, zVariables
+
+            :param cdf: CDF to check
+            :param items: List of CDF items to check
+            :param is_vattr:
+            :param is_zvar:
+            :return:
             """
-            issues = []
+            issues = Issue()
 
             for item in items:
                 name = item['name']
-                logger.info("Checking \"{0}\"".format(name))
+                logger.info('Checking "{0}"'.format(name))
                 istype = ("type" in item)
                 isentry = ("entries" in item)
                 hasvalue = ("hasvalue" in item)
@@ -123,6 +282,13 @@ class Validate():
                 issize = ("size" in item)
                 isdims = ("dims" in item)
                 isattrs = ("attributes" in item)
+
+                if is_vattr:
+                    issue_type = "vatt"
+                elif is_zvar:
+                    issue_type = "zvar"
+                else:
+                    issue_type = "gatt"
 
                 if name in cdf:
                     cdfitem = cdf[name]
@@ -140,7 +306,10 @@ class Validate():
                                         cdfitem = [cdfitem[idx]]
                                     break
                         except:
-                            logger.warning("{0} has no entry, skipping!".format(name))
+                            msg = "{0} has no entry, skipping!".format(name)
+                            logfunc = logger.warning
+                            passed = False
+                            issues.append(name, issue_type, msg, passed, 'isitem')
                             continue
 
                     elif is_zvar:
@@ -154,63 +323,108 @@ class Validate():
 
                     nentry = len(cdfitem)
 
-                    if hasvalue:
-                        logger.debug("Checking value existence...")
-                        if nentry == 0 or len(cdfitem[0].strip()) == 0:
-                            msg = "--> \"{0}\" has no entry value!".format(name)
-                            logger.warning(msg)
-                            issues.append(msg)
+                    # Store the item existence checking
+                    passed = True
+                    msg = "{0} CDF item found".format(name)
+                    logfunc = logger.info
+                    issues.append(name, issue_type, msg, passed, 'isitem')
+                    logfunc(msg)
 
+                    # Check if item has a value
+                    if hasvalue:
+                        logger.info("Checking value existence...")
+                        if nentry == 0 or len(cdfitem[0].strip()) == 0:
+                            msg = '"{0}" has no entry value!'.format(name)
+                            logfunc = logger.warning
+                            passed = False
+                        else:
+                            msg = '"{0}" has entry values'.format(name)
+                            logfunc = logger.info
+                            passed = True
+                        issues.append(name, issue_type, msg, passed, 'hasvalue')
+                        logfunc(msg)
+
+                    # Check if item has entries
                     if isentry:
-                        logger.debug("Checking attribute entries...")
+                        logger.info("Checking attribute entries...")
                         if nentry < len(item["entries"]):
-                            msg = "--> \"{0}\" has missing entries!".format(name)
+                            msg = "\"{0}\" has missing entries!".format(name)
                             logger.warning(msg)
-                            issues.append(msg)
+                            issues.append(name, issue_type, msg, False, 'isentry')
                         else:
                             for i, entry in enumerate(item["entries"]):
                                 if cdfitem[i] != entry:
-                                    msg = "--> \"{0}\" has a wrong entry value: ".format(name) + \
-                                            "\"{0}\" found, but \"{1}\" expected!".format(
+                                    msg = '"{0}" has a wrong entry value: '.format(name) + \
+                                            '"{0}" found, but "{1}" expected!'.format(
                                                cdfitem[i], entry)
-                                    logging.warning(msg)
-                                    issues.append(msg)
+                                    logfunc = logger.warning
+                                    passed = False
+                                else:
+                                    passed = True
+                                    msg = '"{0}" atttribute entry found'.format(entry)
+                                    logfunc = logger.info
+                                issues.append(name, issue_type, msg, passed, 'isentry')
+                                logfunc(msg)
 
                     if istype:
-                        logger.debug("Checking data type")
+                        logger.info("Checking data type")
                         cdftype = get_cdftypename(get_cdftype(item["type"]))
                         if dtype != cdftype:
-                            msg = "--> \"{0}\" has the wrong data type:".format(name) + \
-                                   "\"{0}\" found, but \"{1}\" expected!".format(
+                            msg = '"{0}\" has the wrong data type: '.format(name) + \
+                                   '"{0}" found, but "{1}" expected!'.format(
                                 dtype, cdftype)
-                            logging.warning(msg)
-                            issues.append(msg)
+                            logfunc = logger.warning
+                            passed = False
+                        else:
+                            passed = True
+                            logfunc = logger.info
+                            msg = '"{0}" data type found'.format(dtype)
+                        issues.append(name, issue_type, msg, passed, 'istype')
+                        logfunc(msg)
 
                     if issize:
-                        logger.debug("Checking data size")
+                        logger.info("Checking data size")
                         if cdfitem.shape != item["size"]:
-                            msg = "--> \"{0}\" has the wrong size!".format(name)
-                            logging.warning(msg)
-                            issues.append(msg)
+                            msg = '"{0}" has the wrong sizes: '.format(name) + \
+                                   '"{0}" found, but "{1}" expected!'.format(
+                                       cdfitem.shape, item["size"])
+                            passed = False
+                            logfunc = logger.warning
+                        else:
+                            passed = True
+                            msg = '"{0}" sizes found'.format(item["size"])
+                            logfunc = logger.info
+                        issues.append(name, issue_type, msg, passed, 'issize')
+                        logfunc(msg)
+
 
                     if isdims:
                         if len(cdfitem) != item["dims"]:
-                            logger.debug("Checking data dimension(s)")
-                            msg = "--> \"{0}\" has the wrong dims size!".format(name)
-                            logging.warning(msg)
-                            issues.append(msg)
+                            logger.info("Checking data dimension(s)")
+                            msg = '"{0}" has the wrong dims: '.format(name) + \
+                                   '"{0}" found, but "{1}" expected!'.format(
+                                       len(cdfitem), item["dims"])
+                            logfunc = logger.warning
+                            passed = False
+                        else:
+                            passed = True
+                            msg = '"{0}" dims found!'.format(item["dims"])
+                            logfunc = logger.info
+                        issues.append(name, issue_type, msg, passed, 'isdims')
+                        logfunc(msg)
 
                     if isattrs:
-                        logger.info("Checking variable attributes of \"{0}\"...".format(name))
+                        logger.info('Checking variable attributes of "{0}"...'.format(name))
                         check(cdf[name].attrs, item["attributes"], is_vattr=True)
                 else:
-                    msg = "--> \"{0}\" required!".format(name)
+                    msg = '"{0}" required!'.format(name)
                     logging.warning(msg)
-                    issues.append(msg)
+                    passed = False
+                    issues.append(name, issue_type, msg, passed, 'isitem')
 
             return issues
 
-        issues = []
+        issues = Issue()
 
         # Retrieve CDF
         cdf = self.cdf
@@ -279,7 +493,7 @@ class Validate():
     def cdfconvert(self, src, dst,
                    args=None, program=None,
                    overwrite=False):
-        """Run the cdfconvert program in the GSFC CDF distribution."""
+        """Run the cdfconvert program in the NASA CDF distribution."""
         cmd = []
 
         if program is None:
@@ -303,8 +517,8 @@ class Validate():
 
         return run_command(cmd)
 
-    def cdfvalidator(self, file, program=None):
-        """Run the cdfvalidate program in the GSFC CDF distribution."""
+    def cdfvalidate(self, file, program=None):
+        """Run the cdfvalidate program in the NASA CDF distribution."""
         cmd = []
 
         if program is None:
@@ -378,6 +592,15 @@ class Validate():
                 issues.append(msg)
 
         return issues
+
+    def flush_issues(self):
+        """
+        Reset issue object
+
+        :return:
+        """
+        self.issues.reset()
+
 
 
 # ________________ Global Functions __________

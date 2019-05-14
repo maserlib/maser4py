@@ -27,7 +27,7 @@ __all__ = ["skeletontable"]
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 # ________________ Class Definition __________
 # (If required, define here classes)

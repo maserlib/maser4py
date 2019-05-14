@@ -14,7 +14,6 @@ from pathlib import Path
 import json
 import logging
 
-from maser.utils.toolbox import setup_logging
 from maser.utils.cdf.serializer import Skeleton
 
 # ________________ HEADER _________________________
@@ -39,7 +38,8 @@ __changes__ = {"0.1.0": "First release",
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 CURDIR = os.curdir
 
@@ -151,7 +151,7 @@ def set_gattr(skeleton, gattrs):
     :return: updated skeleton
     """
     for gattr in gattrs:
-        skeleton.set_gattr(gattr["Attribute Name"], gattr, auto_add=True)
+        skeleton.set_gattr(gattr["Attribute Name"], gattr, add=True)
     return skeleton
 
 
@@ -169,7 +169,8 @@ def add_vattr(skeleton, vattrs):
             varname = vattr["Variable Name"]
         else:
             varname = None
-        skeleton.add_vattr(vattr["Attribute Name"], vattr, varname=varname)
+        skeleton.add_vattr(vattr["Attribute Name"], vattr,
+                           varname=[varname])
     return skeleton
 
 
@@ -186,7 +187,8 @@ def rm_vattr(skeleton, vattrs):
             varname = vattr["Variable Name"]
         else:
             varname = None
-        skeleton.rm_vattr(vattr["Attribute Name"], varname=varname)
+        skeleton.rm_vattr(vattr["Attribute Name"],
+                          varname=[varname])
     return skeleton
 
 def rename_vattr(skeleton, vattrs):
@@ -202,7 +204,8 @@ def rename_vattr(skeleton, vattrs):
             varname = vattr["Variable Name"]
         else:
             varname = None
-        skeleton.rename_vattr(vattr["Attribute Name"], vattr["New Attribute Name"], varname=varname)
+        skeleton.rename_vattr(vattr["Attribute Name"], vattr["New Attribute Name"],
+                              varname=[varname])
     return skeleton
 
 
@@ -219,7 +222,7 @@ def set_vattr(skeleton, vattrs):
             varname = vattr["Variable Name"]
         else:
             varname = None
-        skeleton.set_vattr(vattr["Attribute Name"], vattr, varname=varname)
+        skeleton.set_vattr(vattr["Attribute Name"], vattr, varname=[varname])
     return skeleton
 
 def reform_gattr(gattr):
@@ -247,8 +250,8 @@ def reform_gattr(gattr):
 def main():
     """Main program."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("json_file", nargs=1, type=Path,
-                        help="JSON file containing the CDF "
+    parser.add_argument("setting", nargs=1, type=str,
+                        help="JSON file or stream containing the CDF "
                         "header/attributes/zvariables to set")
     parser.add_argument("skeleton_files", type=Path, nargs='+',
                         help="CDF skeleton file(s) to update. Can be .skt or .xlsx format file(s).")
@@ -265,14 +268,15 @@ def main():
     outdir = args.output_dir[0]
     overwrite = args.overwrite
 
-    setup_logging(verbose=True)
-
     if not outdir.is_dir():
         os.mkdir(outdir)
-        print(f"--> {outdir} output directory created.")
+        print(f"{outdir} output directory created.")
 
-    with open(str(args.json_file[0]), "r") as jfile:
-        jdata = json.load(jfile)
+    if os.path.isfile(args.setting[0]):
+        with open(str(args.setting[0]), "r") as jfile:
+            jdata = json.load(jfile)
+    else:
+        jdata = json.loads(args.setting[0])
 
     # Loop on input Excel files
     output = None
@@ -281,16 +285,18 @@ def main():
         if outdir is not None:
             output = outdir / file.name
 
-        print(f"--> Processing {file}")
+        print(f"Processing {file}")
 
-        # Instanciate the Skeleton class
+        # Instantiate the Skeleton class
         basename, extension = os.path.splitext(file)
 
+        # Load skeleton content (Excel or skeleton table text file are accepted as input)
         if extension == ".skt":
             skeleton = Skeleton.from_txt(file)
         elif extension == ".xlsx":
             skeleton = Skeleton.from_xlsx(file)
 
+        # Update the skeleton object content
         for key, val in jdata.items():
             try:
                 func = getattr(sys.modules[__name__], key)
@@ -298,7 +304,6 @@ def main():
             except Exception as e:
                 print(e)
 
-        print(f"--> Saving into {output}")
         if extension == ".skt":
             skeleton.to_txt(output, overwrite=overwrite)
         elif extension == ".xlsx":

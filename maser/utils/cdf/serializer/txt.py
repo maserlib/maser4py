@@ -17,6 +17,7 @@ import os
 import re
 import logging
 from datetime import datetime
+from copy import deepcopy
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -32,7 +33,7 @@ __all__ = ["Skt2txt", "Txt2skt"]
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 SKT_TEMPLATE = "skeleton.skt-tpl"
@@ -53,7 +54,7 @@ class Skt2txt:
                  ignore_none=True,
                  auto_pad=True):
         """__init__ method."""
-        self.skeleton = skeleton
+        self.skeleton = deepcopy(skeleton)
         self.render = None
         self.ignore = ignore_none
         self.auto_pad = auto_pad

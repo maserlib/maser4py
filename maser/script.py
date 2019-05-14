@@ -67,10 +67,11 @@ def main():
 
     # Setup the logging
     setup_logging(
+        logger=logger,
         filename=args.log_file[0],
         quiet=args.quiet,
-        verbose=(not args.quiet),
-        debug=args.debug)
+        debug=args.debug,
+    )
 
     if args.version:
         print("This is MASER4PY V{0}".format(MASER_VERSION))
