@@ -10,6 +10,8 @@ import json
 import logging
 from tempfile import TemporaryDirectory
 
+import numpy
+
 from maser.utils.cdf import CDF, zAttr
 from maser.utils.toolbox import run_command, quote, move_safe
 from maser.utils.cdf.tools import get_cdftype, get_vattrs, get_cdftypename
@@ -279,7 +281,7 @@ class Validate:
                 hasvalue = ("hasvalue" in item)
 #               isexcluded = ("excludes" in item) # Not working yet
 
-                issize = ("size" in item)
+                issizes = ("sizes" in item)
                 isdims = ("dims" in item)
                 isattrs = ("attributes" in item)
 
@@ -300,10 +302,8 @@ class Validate:
                             for idx in range(zAttr(self.cdf, name).max_idx()):
                                 if zAttr(self.cdf, name).has_entry(idx):
                                     dtype = get_cdftypename(zAttr(self.cdf, name).type(idx))
-                                    if type(cdfitem) is str:
-                                        cdfitem = [cdfitem]
-                                    else:
-                                        cdfitem = [cdfitem[idx]]
+                                    if not isinstance(cdfitem, str):
+                                        cdfitem = cdfitem[idx]
                                     break
                         except:
                             msg = "{0} has no entry, skipping!".format(name)
@@ -315,11 +315,9 @@ class Validate:
                     elif is_zvar:
                         # If zVariable, get data type
                         dtype = get_cdftypename(cdfitem.type())
-                        cdfitem = list(cdfitem)
                     else:
                         # If global attribute, get first entry data type
                         dtype = get_cdftypename(cdfitem.type(0))
-                        cdfitem = list(cdfitem)
 
                     nentry = len(cdfitem)
 
@@ -344,28 +342,6 @@ class Validate:
                         issues.append(name, issue_type, msg, passed, 'hasvalue')
                         logfunc(msg)
 
-                    # Check if item has entries
-                    if isentry:
-                        logger.info("Checking attribute entries...")
-                        if nentry < len(item["entries"]):
-                            msg = "\"{0}\" has missing entries!".format(name)
-                            logger.warning(msg)
-                            issues.append(name, issue_type, msg, False, 'isentry')
-                        else:
-                            for i, entry in enumerate(item["entries"]):
-                                if cdfitem[i] != entry:
-                                    msg = '"{0}" has a wrong entry value: '.format(name) + \
-                                            '"{0}" found, but "{1}" expected!'.format(
-                                               cdfitem[i], entry)
-                                    logfunc = logger.warning
-                                    passed = False
-                                else:
-                                    passed = True
-                                    msg = '"{0}" atttribute entry found'.format(entry)
-                                    logfunc = logger.info
-                                issues.append(name, issue_type, msg, passed, 'isentry')
-                                logfunc(msg)
-
                     if istype:
                         logger.info("Checking data type")
                         cdftype = get_cdftypename(get_cdftype(item["type"]))
@@ -382,25 +358,24 @@ class Validate:
                         issues.append(name, issue_type, msg, passed, 'istype')
                         logfunc(msg)
 
-                    if issize:
+                    if issizes:
                         logger.info("Checking data size")
-                        if cdfitem.shape != item["size"]:
+                        if list(cdfitem.shape[1:]) != list(item["sizes"]):
                             msg = '"{0}" has the wrong sizes: '.format(name) + \
                                    '"{0}" found, but "{1}" expected!'.format(
-                                       cdfitem.shape, item["size"])
+                                       cdfitem.shape[1:], item["sizes"])
                             passed = False
                             logfunc = logger.warning
                         else:
                             passed = True
-                            msg = '"{0}" sizes found'.format(item["size"])
+                            msg = '"{0}" sizes found'.format(item["sizes"])
                             logfunc = logger.info
                         issues.append(name, issue_type, msg, passed, 'issize')
                         logfunc(msg)
 
-
                     if isdims:
-                        if len(cdfitem) != item["dims"]:
-                            logger.info("Checking data dimension(s)")
+                        logger.info("Checking data dimension(s)")
+                        if len(cdfitem.dv()) != item["dims"]:
                             msg = '"{0}" has the wrong dims: '.format(name) + \
                                    '"{0}" found, but "{1}" expected!'.format(
                                        len(cdfitem), item["dims"])
@@ -412,6 +387,31 @@ class Validate:
                             logfunc = logger.info
                         issues.append(name, issue_type, msg, passed, 'isdims')
                         logfunc(msg)
+
+                    # Check if item has entries
+                    if isentry:
+                        logger.info("Checking attribute entries...")
+                        if nentry < len(item["entries"]):
+                            msg = "\"{0}\" has missing entries!".format(name)
+                            logger.warning(msg)
+                            issues.append(name, issue_type, msg, False, 'isentry')
+                        else:
+                            # To avoid error in case where cdfitem is a String (for vattr)
+                            if isinstance(cdfitem, str):
+                                cdfitem = [cdfitem]
+                            for i, entry in enumerate(item["entries"]):
+                                if cdfitem[i] != entry:
+                                    msg = '"{0}" has a wrong entry value: '.format(name) + \
+                                            '"{0}" found, but "{1}" expected!'.format(
+                                                cdfitem[i], entry)
+                                    logfunc = logger.warning
+                                    passed = False
+                                else:
+                                    passed = True
+                                    msg = '"{0}" atttribute entry found'.format(entry)
+                                    logfunc = logger.info
+                                issues.append(name, issue_type, msg, passed, 'isentry')
+                                logfunc(msg)
 
                     if isattrs:
                         logger.info('Checking variable attributes of "{0}"...'.format(name))

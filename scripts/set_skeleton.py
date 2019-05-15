@@ -274,9 +274,9 @@ def main():
 
     if os.path.isfile(args.setting[0]):
         with open(str(args.setting[0]), "r") as jfile:
-            jdata = json.load(jfile)
+            jdata = json.load(jfile)["update"]
     else:
-        jdata = json.loads(args.setting[0])
+        jdata = json.loads(args.setting[0])["update"]
 
     # Loop on input Excel files
     output = None
@@ -302,7 +302,7 @@ def main():
                 func = getattr(sys.modules[__name__], key)
                 skeleton = func(skeleton, val)
             except Exception as e:
-                print(e)
+                print("ERROR: {0}".format(e))
 
         if extension == ".skt":
             skeleton.to_txt(output, overwrite=overwrite)

@@ -135,10 +135,11 @@ class Skt2xlsx:
             for j, col in enumerate(SHEETS[ZVARS]):
                 if entries[col] is None:
                     entry = " "
-                elif type(entries[col]) is list:
-                    entry = " ".join(entry)
+                elif isinstance(entries[col], list):
+                    entry = " ".join(entries[col])
                 else:
                     entry = entries[col]
+
                 _ = zvars_sheet.cell(column=j+1, row=row_idx, value="{0}".format(
                     entry))
             row_idx +=1
@@ -179,7 +180,7 @@ class Skt2xlsx:
                     for j, col in enumerate(SHEETS[NRV]):
                         if entries[col] is None:
                             entry[col] = " "
-                        elif type(entries[col]) is list:
+                        elif isinstance(entries[col], list):
                             entry = " ".join(entries[col])
                         else:
                             entry = entries[col]

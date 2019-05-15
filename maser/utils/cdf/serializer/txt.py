@@ -516,7 +516,10 @@ class Txt2skt:
         if value.startswith("{"):
             value = re.findall('\{ "([\S ]*)" \}', value)
 
-        return dict(zip(SHEETS[NRV], [zvar, index, value[0]]))
+        if isinstance(value, list):
+            value = "".join(value).strip()
+
+        return dict(zip(SHEETS[NRV], [zvar, index.strip(), value]))
 
 
     def _extract_zvar(self):

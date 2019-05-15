@@ -308,40 +308,47 @@ class Skeleton():
             self.header["ngattr"] -= 1
 
 
-    def add_vattr(self, attname, entry, varname=None):
+    def add_vattr(self, attname, entry, varname=None, add=False):
         """
         Add entries for a variable attribute into the Skeleton object.
 
         :param attname: name of the v. attribute to add
         :param entry: List containing the entry for the v.attribute
         :param varname: If provided, contains a list of zvariable for which the v.attribute must be added. If not provided v.attribute is added for all the variables.
+        :add: If True, add vattr entry to zvariable(s)
         :return:
         """
-        logger.info("Adding v.attribute {0}".format(attname))
-        if attname in self.vattrList:
-            logger.warning("{0} already exists!".format(attname))
-            return False
-        else:
-            # Check that all the expected fields are in the input entries
-            if not self.is_valid_vattrs(entry):
-                raise InvalidEntry
-
+        if attname not in self.vattrList:
             self.vattrList.append(attname)
             self.header["nvattr"] +=1
 
-            # If varname not provided, then add variable attribute for all variables
-            if not varname:
-                varname = self.vattrs.keys()
-            else:
-                for var in varname:
-                    if var not in self.vattrs:
-                        logger.error("{0} not found!".format(var))
+        # Add Attribute Name value if not provided
+        if 'Attribute Name' not in entry:
+            entry['Attribute Name'] = attname
+
+        # Check that all the expected fields are in the input entries
+        if not self.is_valid_vattrs(entry,
+                                    ignore=["Variable Name"]):
+            raise InvalidEntry
+
+        # If varname not provided, then add variable attribute for all variables
+        if not varname:
+            varname = self.vattrs.keys()
+        else:
+            for var in varname:
+                if var not in self.vattrs:
+                    if not add:
+                        logger.error("{0} not found in vattrs!".format(var))
                         raise InvalidEntry
+                    else:
+                        self.vattrs[var] = dict()
 
-            for zvar in varname:
-                self.vattrs[zvar][attname] = entry
+        for zvar in varname:
+            logger.info("Adding v.attribute {0} for {1}".format(attname, zvar))
+            entry['Variable Name'] = zvar
+            self.vattrs[zvar][attname] = entry
 
-            return True
+        return True
 
     def set_vattr(self, attname, entry, varname=None):
         """
@@ -360,6 +367,11 @@ class Skeleton():
                     attname))
             return False
         else:
+
+            # Variable name can be also provided in the entry
+            if 'Variable Name' in entry:
+                varname = [entry['Variable Name']]
+
             if not varname:
                 varname = self.vattrs.keys()
             else:
@@ -474,11 +486,8 @@ class Skeleton():
 
             # if Variable attributes are provided for this zVariable, then add them.
             if vattrs:
-                for vattname, value in vattrs.items():
-                    if vattname not in self.vattrList:
-                        self.vattrList.append(vattname)
-
-                    self.vattrs[varname] = vattrs
+                for vattname, vattentry in vattrs.items():
+                    self.add_vattr(vattname, vattentry, varname=[varname], add=True)
 
         return True
 
@@ -506,6 +515,10 @@ class Skeleton():
                     self.zvars[varname][field] = entry[field]
                 else:
                     continue
+
+            # if entry contains the "Variable Attributes" keyword, then extract it to get vattrs
+            if "Variable Attribute" in entry:
+                vattrs = entry["Variable Attributes"]
 
             if vattrs:
                 if varname not in self.vattrs:
@@ -539,6 +552,7 @@ class Skeleton():
             return False
         else:
             self.zvars[new_varname] = self.zvars[old_varname]
+            self.zvars[new_varname]['Variable Name'] = new_varname
             del self.zvars[old_varname]
 
             # Also rename in for the associated v.attribute(s)
