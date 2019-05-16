@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__file__)
 
 try:
-    from spacepy.pycdf import CDF, zAttr
+    from spacepy.pycdf import *
 except:
     logger.debug("spacepy not available, use local pycdf version!")
     from maser.utils.cdf.cdf.cdf import *

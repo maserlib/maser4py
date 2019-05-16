@@ -76,7 +76,7 @@ Copyright 2010-2013 Los Alamos National Security, LLC.
 """
 
 __contact__ = 'Jon Niehof, jniehof@lanl.gov'
-__all__ = ["CDF", "zAttr"]
+__all__ = ["CDF", "zAttr", "zAttrList"]
 
 
 try:

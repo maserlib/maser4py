@@ -12,7 +12,7 @@ from tempfile import TemporaryDirectory
 
 import numpy
 
-from maser.utils.cdf import CDF, zAttr
+from maser.utils.cdf import CDF, zAttr, zAttrList
 from maser.utils.toolbox import run_command, quote, move_safe
 from maser.utils.cdf.tools import get_cdftype, get_vattrs, get_cdftypename
 from maser.settings import SUPPORT_DIR
@@ -50,39 +50,49 @@ class ValidatorException(Exception):
 
 class Issue:
     """Issue class."""
-    def __init__(self):
+    def __init__(self, issues=None):
         self.counter = 0
         self.reset()
+        if issues:
+            self.extend(issues)
 
-    def append(self, name, type, msg, passed, check,
+    def append(self, name, itype, check, msg, passed,
+               varname="",
                num=None):
         """
         Append a new issue element
 
-        :param name: name of the CDF item
-        :param type: type of the CDF item ("zvar", "gatt", "vatt")
-        :param msg: message returned by the check process
-        :param passed: True if the check has succeeded, False else.
-        :param check: Name of the check ("hasvalue", "isentry", "istype", "isdims", "issizes", "isattrs")
-        ;param num: Force num value for the issue entry (not recommended)
+        :param name: Name of the issue
+        :param itype: type of the issue
+        :param check: check method of the issue
+        :param msg: resulting message of the issue
+        :param passed: if issue has succeeded is True, else False
+        :param varname: Optional attribute for zvar name (in case vatt issue)
+        :param num: gives issue number (if not provided, use counter)
         :return:
         """
-        self.counter += 1
+
+        if itype not in ISSUE_TYPES:
+            logger.warning("Input Issue type ({0}) is not valid!".format(itype))
+            return None
+
+        if check not in ISSUE_CHECKS:
+            logger.warning("Input Issue check ({0}) is not valid!".format(check))
+            print(name, itype, check, msg, passed)
+            x=input()
+            return None
+
         if not num:
             self.num.append(self.counter)
         else:
             self.num.append(num)
         self.name.append(name)
-        if type in ISSUE_TYPES:
-            self.type.append(type)
-        else:
-            logger.warning("Input Issue type is not valid!")
+        self.type.append(itype)
         self.msg.append(msg)
         self.passed.append(passed)
-        if check in ISSUE_CHECKS:
-            self.check.append(check)
-        else:
-            logger.warning("Input Issue check is not valid!")
+        self.check.append(check)
+        self.varname.append(varname)
+        self.counter += 1
 
     def extend(self, issues):
         """
@@ -92,8 +102,21 @@ class Issue:
         :return:
         """
 
-        for issue in self.iterator(issues):
-            self.append(issue[1], issue[2], issue[3], issue[4], issue[5])
+        if Issue.is_valid(issues):
+            for issue in issues:
+                self.append(issue[1], issue[2], issue[3], issue[4], issue[5], issue[6])
+        else:
+            logger.warning("Input argument is not valid Issue object!")
+
+    @staticmethod
+    def is_valid(issue):
+        """
+        Check if input is a valid Issue object
+
+        :param issue: input to verify
+        :return: True if is input is a valid Issue object, False otherwise
+        """
+        return isinstance(issue, Issue)
 
     def is_passed(self):
         """
@@ -103,10 +126,16 @@ class Issue:
         """
         return False not in self.passed
 
-
     def __len__(self):
         """Return number of issue elements."""
         return len(self.num)
+
+    def __str__(self):
+        """Return string with list of issues"""
+        string = ""
+        for issue in self:
+            string += str(issue) + "\n"
+        return string
 
     def reset(self):
         """
@@ -117,21 +146,23 @@ class Issue:
         self.num = []
         self.name = []
         self.type = []
+        self.check = []
         self.msg = []
         self.passed = []
-        self.check = []
+        self.varname = []
         self.counter = 0
 
-    def iterator(self, issues=None):
+    def __iter__(self, issues=None):
         """Iterator for Issue class."""
 
         if not issues:
             issues = self
 
-        for i, num in enumerate(issues.num):
-            yield num, issues.name[i], \
-                  issues.type[i], issues.msg[i], \
-                  issues.passed[i], issues.check[i]
+        for i in range(0, len(issues)):
+            yield issues.num[i], issues.name[i], \
+                  issues.type[i], issues.check[i], \
+                  issues.msg[i], issues.passed[i], \
+                  issues.varname[i]
 
     def to_dict(self):
         """
@@ -141,14 +172,16 @@ class Issue:
         """
         # Generate dictionary from Issue object
         issue_dict = dict()
-        for i, num in enumerate(self.num):
-            issue_dict[num] = {
-                "name": self.name[i],
-                "type": self.type[i],
-                "msg": self.msg[i],
-                "check": self.check[i],
-                "passed": self.passed[i],
+        for issue in self:
+            issue_dict[issue[0]] = {
+                "name": issue[1],
+                "type": issue[2],
+                "check": issue[3],
+                "msg": issue[4],
+                "passed": issue[5],
             }
+            if issue[6]:
+                issue_dict[issue[0]]["varname"] = issue[6]
         return issue_dict
 
     def to_json(self, output_file,
@@ -259,16 +292,17 @@ class Validate:
         pass
 
         def check(cdf, items,
-                  is_vattr=False,
-                  is_zvar=False):
+                  is_vattr=None,
+                  is_gattr=None,
+                  varname=""):
             """
             Check items of a given CDF
             GLOBALattributes, VARIABLEattributes, zVariables
 
-            :param cdf: CDF to check
+            :param cdf: CDF object to check
             :param items: List of CDF items to check
-            :param is_vattr:
-            :param is_zvar:
+            :param vattr: Check variable attributes
+            :param gattr: Check global attributes
             :return:
             """
             issues = Issue()
@@ -279,59 +313,67 @@ class Validate:
                 istype = ("type" in item)
                 isentry = ("entries" in item)
                 hasvalue = ("hasvalue" in item)
-#               isexcluded = ("excludes" in item) # Not working yet
+                isexcluded = ("excludes" in item)
 
                 issizes = ("sizes" in item)
                 isdims = ("dims" in item)
                 isattrs = ("attributes" in item)
 
+                if isexcluded and varname in item['excludes']:
+                    logger.info("Checking {0} for {1} is ignored".format(name, varname))
+                    return issues
+
                 if is_vattr:
                     issue_type = "vatt"
-                elif is_zvar:
-                    issue_type = "zvar"
-                else:
+                    try:
+                        entries = self.cdf[varname].attrs
+                    except:
+                        entries = []
+                elif is_gattr:
                     issue_type = "gatt"
+                    entries = self.cdf.attrs
+                else:
+                    issue_type = "zvar"
+                    entries = cdf
 
-                if name in cdf:
-                    cdfitem = cdf[name]
+                if name in entries:
+                    cdfitem = entries[name]
 
-                    #print(cdf, name, cdf[name])
+                    # If variable attribute...
                     if is_vattr:
-                        # TODO - Improve this part
-                        try:
-                            for idx in range(zAttr(self.cdf, name).max_idx()):
-                                if zAttr(self.cdf, name).has_entry(idx):
-                                    dtype = get_cdftypename(zAttr(self.cdf, name).type(idx))
-                                    if not isinstance(cdfitem, str):
-                                        cdfitem = cdfitem[idx]
-                                    break
-                        except:
-                            msg = "{0} has no entry, skipping!".format(name)
-                            logfunc = logger.warning
-                            passed = False
-                            issues.append(name, issue_type, msg, passed, 'isitem')
-                            continue
+                        # Get corresponding zAttr object
+                        zattr = zAttr(cdf, name)
 
-                    elif is_zvar:
-                        # If zVariable, get data type
-                        dtype = get_cdftypename(cdfitem.type())
+                        # Get number of entries
+                        nentry = len(zattr)
+                        # Get data type (from the max_idx to make sure)
+                        dtype = get_cdftypename(zattr.type(zattr.max_idx()))
+                    # If global attribute...
+                    elif is_gattr:
+                        # Get number of entries
+                        nentry = len(cdfitem)
+
+                        # Get data type (from the max_idx to make sure)
+                        dtype = get_cdftypename(cdfitem.type(cdfitem.max_idx()))
+                    # If zvariable...
                     else:
-                        # If global attribute, get first entry data type
-                        dtype = get_cdftypename(cdfitem.type(0))
+                        # If zVariable, get data type ...
+                        dtype = get_cdftypename(cdfitem.type())
+                        # and entry number
+                        nentry = len(cdfitem)
 
-                    nentry = len(cdfitem)
 
                     # Store the item existence checking
                     passed = True
                     msg = "{0} CDF item found".format(name)
                     logfunc = logger.info
-                    issues.append(name, issue_type, msg, passed, 'isitem')
+                    issues.append(name, issue_type, 'isitem', msg, passed, varname=varname)
                     logfunc(msg)
 
                     # Check if item has a value
                     if hasvalue:
                         logger.info("Checking value existence...")
-                        if nentry == 0 or len(cdfitem[0].strip()) == 0:
+                        if nentry == 0:
                             msg = '"{0}" has no entry value!'.format(name)
                             logfunc = logger.warning
                             passed = False
@@ -339,7 +381,7 @@ class Validate:
                             msg = '"{0}" has entry values'.format(name)
                             logfunc = logger.info
                             passed = True
-                        issues.append(name, issue_type, msg, passed, 'hasvalue')
+                        issues.append(name, issue_type, 'hasvalue', msg, passed, varname=varname)
                         logfunc(msg)
 
                     if istype:
@@ -355,7 +397,8 @@ class Validate:
                             passed = True
                             logfunc = logger.info
                             msg = '"{0}" data type found'.format(dtype)
-                        issues.append(name, issue_type, msg, passed, 'istype')
+
+                        issues.append(name, issue_type, 'istype', msg, passed, varname=varname)
                         logfunc(msg)
 
                     if issizes:
@@ -370,7 +413,7 @@ class Validate:
                             passed = True
                             msg = '"{0}" sizes found'.format(item["sizes"])
                             logfunc = logger.info
-                        issues.append(name, issue_type, msg, passed, 'issize')
+                        issues.append(name, issue_type, 'issize', msg, passed, varname=varname)
                         logfunc(msg)
 
                     if isdims:
@@ -385,16 +428,16 @@ class Validate:
                             passed = True
                             msg = '"{0}" dims found!'.format(item["dims"])
                             logfunc = logger.info
-                        issues.append(name, issue_type, msg, passed, 'isdims')
+                        issues.append(name, issue_type, 'isdims', msg, passed, varname=varname)
                         logfunc(msg)
 
                     # Check if item has entries
                     if isentry:
                         logger.info("Checking attribute entries...")
                         if nentry < len(item["entries"]):
-                            msg = "\"{0}\" has missing entries!".format(name)
+                            msg = '"{0}" has missing entries!'.format(name)
                             logger.warning(msg)
-                            issues.append(name, issue_type, msg, False, 'isentry')
+                            issues.append(name, issue_type, 'isentry', msg, False, varname=varname)
                         else:
                             # To avoid error in case where cdfitem is a String (for vattr)
                             if isinstance(cdfitem, str):
@@ -410,24 +453,21 @@ class Validate:
                                     passed = True
                                     msg = '"{0}" atttribute entry found'.format(entry)
                                     logfunc = logger.info
-                                issues.append(name, issue_type, msg, passed, 'isentry')
+                                issues.append(name, issue_type, 'isentry', msg, passed, varname=varname)
                                 logfunc(msg)
 
                     if isattrs:
                         logger.info('Checking variable attributes of "{0}"...'.format(name))
-                        check(cdf[name].attrs, item["attributes"], is_vattr=True)
+                        check(cdf, item["attributes"], is_vattr=True, varname=name)
                 else:
                     msg = '"{0}" required!'.format(name)
                     logging.warning(msg)
                     passed = False
-                    issues.append(name, issue_type, msg, passed, 'isitem')
+                    issues.append(name, issue_type, 'isitem', msg, passed, varname=varname)
 
             return issues
 
         issues = Issue()
-
-        # Retrieve CDF
-        cdf = self.cdf
 
         # Read JSON format model file
         logger.info("Loading " + model_file)
@@ -436,14 +476,19 @@ class Validate:
 
         if "GLOBALattributes" in mfile:
             logging.info("Checking GLOBALattributes:")
-            issues.extend(check(cdf.attrs, mfile["GLOBALattributes"]))
+            issues.extend(check(self.cdf, mfile["GLOBALattributes"],
+                                is_gattr=True))
         if "VARIABLEattributes" in mfile:
-            logging.info("Checking VARIABLEattributes:")
-            vattrs = get_vattrs(cdf)
-            issues.extend(check(vattrs, mfile["VARIABLEattributes"], is_vattr=True))
+            #vattrs = get_vattrs(cdf)
+            # Loop over all zVariables
+            for zvar in self.cdf.keys():
+                logging.info("Checking VARIABLEattributes for {0}".format(zvar))
+                issues.extend(check(self.cdf, mfile["VARIABLEattributes"],
+                                    is_vattr=True,
+                                    varname=zvar))
         if "zVariables" in mfile:
             logging.info("Checking zVariables:")
-            issues.extend(check(cdf, mfile["zVariables"], is_zvar=True))
+            issues.extend(check(self.cdf, mfile["zVariables"]))
 
         return issues
 
@@ -454,7 +499,7 @@ class Validate:
         Check if the FILLVAL variable attribute values
         are ISTP compliant
         """
-        issues = []
+        issues = Issue()
 
         if zvarnames is None:
             zvarnames = [key for key in self.cdf]
@@ -478,12 +523,15 @@ class Validate:
                         msg += ("%s found, but %s expected!" %
                                 (quote(fillval), quote(istpfillval[zvtype])))
                         logging.warning(msg)
-                        issues.append(msg)
+                        issues.append("FILLVAL", "vatt", "isentry", msg, False, varname=zvar)
+                    else:
+                        msg = "FILLVAL found in {0}".format(zvname)
+                        issues.append("FILLVAL", "vatt", "isentry", msg, True, varname=zvar)
                 else:
                     msg = ("%s has no FILLVAL attribute!"
                            % (quote(zvname)))
                     logging.warning(msg)
-                    issues.append(msg)
+                    issues.append("FILLVAL", "vatt", "isentry", msg, False, varname=zvar)
             else:
                 logger.warning("%s not found in %s!",
                                quote(zvar), self.cdf_file)
@@ -553,7 +601,7 @@ class Validate:
         Check  the values of a zVariable
         comparing to the its VALIMIN/VALIDMAX attributes
         """
-        issues = []
+        issues = Issue()
 
         cdf = self.cdf
 
@@ -584,12 +632,12 @@ class Validate:
             if rec.min() < validmin:
                 msg = ("[%i]: Record value(s) lesser than VALIDMIN!") % (i)
                 logger.warning(msg)
-                issues.append(msg)
+                issues.append("VALIDMIN", 'vatt', 'isentry', msg, False, varname=zvarname)
 
             if rec.max() > validmax:
                 msg = ("[%i]: Record value(s) greater than VALIDMAX!") % (i)
                 logger.warning(msg)
-                issues.append(msg)
+                issues.append("VALIDMAX", 'vatt', 'isentry', msg, False, varname=zvarname)
 
         return issues
 
