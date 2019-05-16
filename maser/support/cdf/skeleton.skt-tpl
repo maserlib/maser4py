@@ -68,7 +68,7 @@
 {% if val["NRV"] %}
   ! NRV values follow...
 
-    {% for entry in val["NRV"] %}[ {{ entry["Index"]}} ] = {% if val["Data Type"] == "CDF_CHAR" %}{ "{{ entry["Value"] }}" }{% else %}{ {{ entry["Value"] }} }{% endif %}
+    {% for entry in val["NRV"] %}[ {{ entry["Index"]}} ] = {% if val["Data Type"] == "CDF_CHAR" %}{ "{{ entry["Value"] }}" }{% else %} {{ entry["Value"] }} {% endif %}
     {% endfor %}
 {% else %}
   ! RV values were not requested.

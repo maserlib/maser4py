@@ -31,6 +31,8 @@ def get_cdftype(dtype):
     return const.__dict__[dtype].value
 
 
+
+
 def get_cdftypename(dtype=None):
     """
         Return the CDF type name of a given cdf cdf type
