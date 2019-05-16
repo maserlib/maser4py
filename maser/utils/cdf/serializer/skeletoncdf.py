@@ -41,7 +41,8 @@ def skeletoncdf(input_skt,
                 overwrite=False,
                 auto_pad=False,
                 exe=None,
-                no_cdf=False):
+                no_cdf=False,
+                from_xlsx=False):
     """
     Make a CDF Master binary file from a ASCII
     skeleton table using the skeletoncdf program of the NASA CDF software.
@@ -56,8 +57,9 @@ def skeletoncdf(input_skt,
     :param overwrite: If True, overwrite existing output file
     :param auto_pad: Automatically define !VAR_PADVALUE if set to True
     :param exe: Path of the skeletoncdf program executable
-    :param no_cdf: If True, generate the skeleton table only. Only works with excel_format keyword
-    :return:
+    :param no_cdf: Generate the skeleton table only. Only works with from_xlsx keyword
+    :param from_xlsx:
+    :return: Path to the output binary CDF
     """
     # If output_dir does not provide then use current one
     # If provided, but does not exist, then create it

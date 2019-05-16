@@ -14,6 +14,11 @@ Program to parse an input CDF skeleton table file.
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
 import logging
+import tempfile
+
+from maser.utils.cdf import CDF
+from maser.utils.cdf.serializer.skeletoncdf import skeletoncdf
+from maser.utils.cdf.serializer.skeletontable import skeletontable
 
 from maser.utils.cdf.serializer.exceptions import InvalidEntry
 from maser.utils.cdf.serializer.txt import Skt2txt, Txt2skt
@@ -27,51 +32,40 @@ __all__ = ["Skeleton"]
 # (define here the global variables)
 logger = logging.getLogger(__name__)
 
-
+TEMPDIR = tempfile.TemporaryDirectory().name
 
 # ________________ Class Definition __________
 # (If required, define here classes)
 class Skeleton():
 
-    def __init__(self):
+    def __init__(self, file, readonly=False):
         """
         Init method of the Skeleton class.
 
-        :param skeleton_file:
+        :param file: Input skeleton file
+        :param readonly: If True, CDF readonly mode
+        """
+        self.skeleton_file = file
+        self.cdf = self._skt_to_cdf(readonly=readonly)
+
+    def __del__(self):
+        """Delete skeleton object"""
+        self.close()
+
+    def _skt_to_cdf(self, readonly=False):
+        """
+        Convert input skeleton table file into pycdf.CDF object
+
+        :param readonly: If True, CDF readonly mode
+        :return: pycdf.CDF object
         """
 
-        self.file = None
-        self.cdf_items = dict()
-        self.header = dict()
-        self.gattrs = dict()
-        self.vattrs = dict()
-        self.vattrList = []
-        self.zvars = dict()
-        self.xlsx = False
+        # Generate a binary CDF
+        self.cdf_file = skeletoncdf(self.skeleton_file, output_dir=TEMPDIR)
+        cdf = CDF(self.cdf_file)
+        cdf.readonly(readonly)
 
-    @staticmethod
-    def from_txt(txt_file):
-        """
-        Create a Skeleton instance from the input text file.
-
-        :param txt_file:
-        :return: an instance of Skeleton
-        """
-
-        skeleton = Skeleton()
-        return Txt2skt(skeleton).parse_txt(txt_file)
-
-    @staticmethod
-    def from_xlsx(xlsx_file, auto_pad=True):
-        """
-        Create a Skeleton instance from the input Excel file.
-
-        :param xlsx_file: input Excel file to convert to Skeleton object
-        :param auto_pad: If True assigns automatic value to VAR_PADVALUE
-        :return: an instance of Skeleton
-        """
-        skeleton = Skeleton()
-        return Xlsx2skt(skeleton).parse_xlsx(xlsx_file, auto_pad=auto_pad)
+        return cdf
 
     def to_txt(self, output_path=None,
                overwrite=False):
@@ -83,8 +77,9 @@ class Skeleton():
         :return: Path of the output file
         """
 
-        return Skt2txt(self).write_txt(output_path=output_path,
-                                              overwrite=overwrite)
+        return skeletontable(self.cdf_file,
+                             output_skt=output_path,
+                             overwrite=overwrite)
 
     def to_xlsx(self, output_path=None,
                overwrite=False):
@@ -99,6 +94,12 @@ class Skeleton():
         return Skt2xlsx(self).write_xlsx(output_path=output_path,
                                               overwrite=overwrite)
 
+    def close(self):
+        """
+        Close the open CDF
+        :return:
+        """
+        self.cdf.close()
 
     def is_valid_header(self, header, ignore=[]):
         """
