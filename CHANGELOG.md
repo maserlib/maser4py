@@ -1,6 +1,10 @@
 CHANGELOG
 ====================
 
+0.8.1
+-----
+* Fix bug when releasing 0.8.0
+
 0.8.0
 -----
 * Update the cdf_validator tool
