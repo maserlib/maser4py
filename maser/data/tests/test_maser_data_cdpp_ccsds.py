@@ -2,8 +2,7 @@ import unittest
 import datetime
 import datetime
 
-from maser.data.cdpp.ccsds import decode_ccsds_date, CCSDSDateCCS, CCSDSDateCDS, CCSDSDateCUC, \
-    from_binary_coded_decimal, to_binary_coded_decimal
+from maser.data.cdpp.ccsds import decode_ccsds_date, CCSDSDateCCS, CCSDSDateCDS, CCSDSDateCUC
 
 
 class CCSDSDateTest(unittest.TestCase):
@@ -176,12 +175,3 @@ class CCSDSDateTest(unittest.TestCase):
         self.assertEqual(dt, datetime.datetime(2018, 11, 13, 16, 59, 00, 112232))  # rounding issue
 
 
-class CCSDSConversionBCD(unittest.TestCase):
-    """Class to test Binary Coded Decimal conversion
-    """
-
-    def test_from_bcd(self):
-        self.assertEqual(1980, from_binary_coded_decimal(6528))
-
-    def test_to_bcd(self):
-        self.assertEqual(6528, to_binary_coded_decimal(1980))
