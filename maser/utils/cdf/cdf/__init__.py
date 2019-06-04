@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .cdf import *
+import logging
 
-# vim: set tw=79 :
+logger = logging.getLogger(__file__)
+
+try:
+    from spacepy.pycdf import *
+except:
+    logger.debug("spacepy not available, use local pycdf version!")
+    from maser.utils.cdf.cdf.cdf import *

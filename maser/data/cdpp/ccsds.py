@@ -11,12 +11,16 @@ __institute__ = "LESIA, Observatoire de Paris, PSL Research University, CNRS."
 __date__ = "14-NOV-2018"
 __project__ = "MASER/CDPP"
 
-__all__ = ["decode_ccsds_date", "CCSDSDate", "CCSDSDateCUC", "CCSDSDateCDS", "CCSDSDateCCS"]
+__all__ = ["decode_ccsds_date", "CCSDSDate", "CCSDSDateCUC", "CCSDSDateCDS", "CCSDSDateCCS",
+           "from_binary_coded_decimal", "to_binary_coded_decimal"]
 
 import datetime
 
+# TODO: implement BCD for CCS (but ISEE3-SBH doesn't follow the CCS standard)
+# TODO: fix MSB as described in the CCSDS standard - first bit read is least significant bit
 
-def decode_ccsds_date(p_field, t_field) -> 'CCSDSDate':
+
+def decode_ccsds_date(p_field, t_field, epoch=None) -> 'CCSDSDate':
     """Decode a CCSDS time format into a CCSDSDate derived object.
 
     A CCSDS Date is composed of 2 fields: a time specification field (`t_field`) and a time code
@@ -35,13 +39,13 @@ def decode_ccsds_date(p_field, t_field) -> 'CCSDSDate':
     :return: CCSDSDate derived object
     """
 
-    time_code_id = int((p_field & 14)/2)
+    time_code_id = int((p_field & 14)//2)
     if time_code_id == 1:
         return CCSDSDateCUC(p_field, t_field)  # This is CCSDS CUC level 1 format
     elif time_code_id == 2:
         raise NotImplementedError('CCSDS CUC level 2')  # This is CCSDS CUC level 2 format
     elif time_code_id == 4:
-        return CCSDSDateCDS(p_field, t_field)  # This is CCSDS CDS format
+        return CCSDSDateCDS(p_field, t_field, epoch)  # This is CCSDS CDS format (could be level 1 or 2)
     elif time_code_id == 5:
         return CCSDSDateCCS(p_field, t_field)  # This is CCSDS CCS format
     elif time_code_id == 6:
@@ -67,10 +71,21 @@ class CCSDSDate(object):
     * _Level 3_: No Interpretation Except for Recognition of Increasing Time Value
     * _Level 4_: No Interpretation
 
-    This module currently deals only with Level 1 time code formats. This module doesn't deal with ASCII formatted time
-    formats, for this use `datetime`, `dateutil`, or other equivalent modules.
+    This module can currently decode CUC Level 1, CDS level 1 and 2, and CCS time code formats.
+
+    This module doesn't deal with ASCII formatted time formats, in this case, use `datetime`, `dateutil`,
+    or other equivalent modules.
 
     For more info on CCSDS time formats, refer to "TIME CODE FORMATS" CCSDS 301.0-B-3, Jan. 2002.
+    The following points are particularly important in the decoding:
+    * The `p_field` is encoded in _MSB (Most Significant Bit)_. This is interpreted as follows: when written as a string
+    of `0` and `1`, the left-most bit is the least significant bit, labelled as `bit 0` (see page 9 of the "TIME CODE
+    FORMATS" CCSDS document). The bits of the `p_field` byte should then be flipped before applying use standard
+    bit-wise operations.
+    * In CCS format, the values in the `t_field` are encoded in _Binary Coded Decimal (BCD)_. This means that the
+    hexadecimal dump values shows the numbers to be read. For instance, the BCD value of `1980` is `6528` as its
+    hexadecimal representation is `0x1980`. Note that some CDPP dataset, although using CCS time codes are not encoding
+    the number with BCD.
 
     Args:
         p_field (int): time code preamble code.
@@ -156,7 +171,7 @@ class CCSDSDateCUC(CCSDSDate):
 class CCSDSDateCDS(CCSDSDate):
     """Class for CCSDS CDS (Level 1) time format object.
     """
-    def __init__(self, p_field, t_field):
+    def __init__(self, p_field, t_field, epoch=None):
         CCSDSDate.__init__(self, p_field, t_field)
 
         if self.P_field & 16 == 0:
@@ -166,7 +181,7 @@ class CCSDSDateCDS(CCSDSDate):
         else:
             self.epoch_type = "AGENCY_DEFINED"
             self.time_code_level = 2
-            raise NotImplemented('AGENCY_DEFINED epoch not implemented')
+            self.time_epoch = epoch
 
         self._n_bytes_day = int(((self.P_field & 32) / 32) + 2)
         self._n_bytes_millisecond = 4
@@ -237,3 +252,11 @@ class CCSDSDateCCS(CCSDSDate):
             print("{}: {}".format("Warning", "Python datetime module doesn't handle sub-microsecond accuracy."))
 
         return dt + datetime.timedelta(microseconds=micro)
+
+
+def to_binary_coded_decimal(value=0) -> int:
+    return int("0x{}".format(value), 16)
+
+
+def from_binary_coded_decimal(value=0) -> int:
+    return int(hex(value)[2:])

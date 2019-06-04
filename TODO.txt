@@ -1,2 +1,2 @@
-* BUG -- Avoid the "/Users/xbonnin/Work/Software/Library/CDF/current-dist/CDFLeapSeconds.txt already exists!" message when running "leapsec -S" from prompt
 * FEATURE -- Update solo/rpw module to handle all of the science data
+# FEATURE -- Add "regex" checking capability in cdf_validator for item values.

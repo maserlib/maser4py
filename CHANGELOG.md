@@ -1,6 +1,14 @@
 CHANGELOG
 ====================
 
+0.8.0
+-----
+* Update the cdf_validator tool
+* Update the skeletoncdf tool
+* Add skeletontable command
+* Update CDPP data object
+* Update unit tests for data modules
+
 0.7.1
 -----
 * Fix dependencies installation bug (in requirements.txt)

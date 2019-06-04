@@ -76,7 +76,7 @@ Copyright 2010-2013 Los Alamos National Security, LLC.
 """
 
 __contact__ = 'Jon Niehof, jniehof@lanl.gov'
-__all__ = ["CDF", "zAttr"]
+__all__ = ["CDF", "zAttr", "zAttrList"]
 
 
 try:
@@ -4820,6 +4820,3 @@ class zAttrList(AttrList):
             del self[new_name]
         self.new(new_name, master[name],
                  master.type(name) if hasattr(master, 'type') else None)
-
-
-# vim: set tw=79 :
