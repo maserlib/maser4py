@@ -1,4 +1,5 @@
-from maser.data.pds import *
+#! /usr/bin/env python
+# -*- coding: latin-1 -*-
 
 """
 Python module to work with PDS Data
