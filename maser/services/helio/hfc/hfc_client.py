@@ -123,7 +123,7 @@ def previous_date(date,only_date=False,
 
     date_obs = date.strftime(SQL_TFORMAT)
     LIMIT=1
-    if (kwargs.has_key("WHERE")):
+    if "WHERE" in kwargs:
         kwargs["WHERE"]+=" AND (DATE_OBS < \"%s\")" % (date_obs)
     else:
         kwargs["WHERE"]="(DATE_OBS < \"%s\")" % (date_obs)
@@ -156,7 +156,7 @@ def next_date(date,only_date=False,
 
     date_obs = date.strftime(SQL_TFORMAT)
     LIMIT=1
-    if (kwargs.has_key("WHERE")):
+    if "WHERE" in kwargs:
         kwargs["WHERE"]+=" AND (DATE_OBS > \"%s\")" % (date_obs)
     else:
         kwargs["WHERE"]="(DATE_OBS > \"%s\")" % (date_obs)
@@ -221,10 +221,15 @@ def get_methods(wsdl=HFC_WSDL):
     client = suds.client.Client(wsdl)
     return str(client)
 
-# Method to query the HFC using the Helio Query Interface
 def query(**kwargs):
+    """
+    Method to query the HFC using the Helio Query Interface
 
-    if not (kwargs.has_key("FROM")):
+    :param kwargs: input keywords containing query fields
+    :return: votable stream
+    """
+
+    if "FROM" not in kwargs:
         print("You must provide at least the FROM input keyword!")
         return None
 

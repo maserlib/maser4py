@@ -1,10 +1,8 @@
 #! /bin/env python
 
-import sys, os
-import PIL
+
 import numpy as np
 from scipy import ndimage, misc
-from copy import copy
 
 
 def poly_area(x,y):

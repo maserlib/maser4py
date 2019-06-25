@@ -1,5 +1,9 @@
 astropy
+matplotlib
+scipy
 numpy
+suds-py3
+Pillow
 openpyxl
 pytz
 python-dateutil
