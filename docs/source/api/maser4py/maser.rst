@@ -6,22 +6,34 @@ Subpackages
 
 .. toctree::
 
-    maser.data
-    maser.services
-    maser.utils
+   maser.data
+   maser.services
+   maser.utils
 
 Submodules
 ----------
 
-.. toctree::
+maser.script module
+-------------------
 
-   maser.maser
-   maser.settings
+.. automodule:: maser.script
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+maser.settings module
+---------------------
+
+.. automodule:: maser.settings
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------
 
 .. automodule:: maser
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

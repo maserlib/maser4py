@@ -1,21 +1,21 @@
-maser.data.solo.rpw.tds package
+maser.data.cdpp.demeter package
 ===============================
 
 Submodules
 ----------
 
-maser.data.solo.rpw.tds.plotting module
----------------------------------------
+maser.data.cdpp.demeter.const module
+------------------------------------
 
-.. automodule:: maser.data.solo.rpw.tds.plotting
+.. automodule:: maser.data.cdpp.demeter.const
    :members:
    :undoc-members:
    :show-inheritance:
 
-maser.data.solo.rpw.tds.tds module
+maser.data.cdpp.demeter.ice module
 ----------------------------------
 
-.. automodule:: maser.data.solo.rpw.tds.tds
+.. automodule:: maser.data.cdpp.demeter.ice
    :members:
    :undoc-members:
    :show-inheritance:
@@ -24,7 +24,7 @@ maser.data.solo.rpw.tds.tds module
 Module contents
 ---------------
 
-.. automodule:: maser.data.solo.rpw.tds
+.. automodule:: maser.data.cdpp.demeter
    :members:
    :undoc-members:
    :show-inheritance:

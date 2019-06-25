@@ -4,14 +4,19 @@ maser.utils.toolbox package
 Submodules
 ----------
 
-.. toctree::
+maser.utils.toolbox.toolbox module
+----------------------------------
 
-   maser.utils.toolbox.toolbox
+.. automodule:: maser.utils.toolbox.toolbox
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------
 
 .. automodule:: maser.utils.toolbox
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

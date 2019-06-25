@@ -1,17 +1,17 @@
-maser.data.solo package
-=======================
+maser.data.pds.ppi package
+==========================
 
 Subpackages
 -----------
 
 .. toctree::
 
-   maser.data.solo.rpw
+   maser.data.pds.ppi.voyager
 
 Module contents
 ---------------
 
-.. automodule:: maser.data.solo
+.. automodule:: maser.data.pds.ppi
    :members:
    :undoc-members:
    :show-inheritance:

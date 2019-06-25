@@ -1,4 +1,4 @@
-maser.data.solo package
+maser.data.padc package
 =======================
 
 Subpackages
@@ -6,12 +6,13 @@ Subpackages
 
 .. toctree::
 
-   maser.data.solo.rpw
+   maser.data.padc.lesia
+   maser.data.padc.radiojove
 
 Module contents
 ---------------
 
-.. automodule:: maser.data.solo
+.. automodule:: maser.data.padc
    :members:
    :undoc-members:
    :show-inheritance:

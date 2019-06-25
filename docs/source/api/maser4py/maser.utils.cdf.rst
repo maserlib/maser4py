@@ -6,23 +6,35 @@ Subpackages
 
 .. toctree::
 
-    maser.utils.cdf.converter
-    maser.utils.cdf.validator
+   maser.utils.cdf.cdf
+   maser.utils.cdf.cdfcompare
+   maser.utils.cdf.serializer
+   maser.utils.cdf.validator
 
 Submodules
 ----------
 
-.. toctree::
+maser.utils.cdf.installer module
+--------------------------------
 
-   maser.utils.cdf.cdf
-   maser.utils.cdf.const
-   maser.utils.cdf.leapsec
-   maser.utils.cdf.tools
+.. automodule:: maser.utils.cdf.installer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+maser.utils.cdf.tools module
+----------------------------
+
+.. automodule:: maser.utils.cdf.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------
 
 .. automodule:: maser.utils.cdf
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

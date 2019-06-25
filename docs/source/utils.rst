@@ -1,69 +1,67 @@
 Utilities
 #########
 
+The utils/ module of MASER4PY provides utilities to deal with data in MASER.
+
+
 The *cdf* module
 *****************
 
 The *cdf* module contains the following tools:
 
-- *converter*, to convert CDF skeleton files (in Excel or ASCII format) into master CDF binary files
-- *validator*, to validate the content of CDF files from a given model.
-- *leapsec*, to deal with leap seconds using the CDFLeapSeconds.txt of the NASA CDF software.
+- *cdf*, a backup of the spacepy.pycdf module (https://pythonhosted.org/SpacePy/pycdf.html), only used in the case where spacepy package is not installed in the system.
+- *cdfcompare*, a tool to compare two CDF
+- *serializer*, to convert CDF skeleton files (in Excel or ASCII format) into master CDF binary files
+- *validator*, to validate the content of a CDF file from a given data model.
 
 For more information about the CDF format, please visit http://cdf.gsfc.nasa.gov/.
 
-The *cdf.converter* tool
-========================
+cdf.cdfcompare
+==========================
 
-*converter* contains the following classes:
+The *cdf.cdfcompare* module can be used to compare the content of two CDFs.
 
-- *Xlsx2skt*, convert an Excel 2007 format file into a CDF skeleton table in the ASCII format. The organization of the Excel file shall follow some rules defined in the present document (see the section "Excel file format definition" below)
-- *Skt2cdf*, convert a CDF skeleton table in ASCII format into a CDF master binary file. This module calls the "skeletoncdf" program from the NASA CDF software distribution.
 
-*converter* contains also the additional methods and classes:
 
-- *toos.xlsx, which provides methods to handle/modify the CDF skeletons in Excel 2007 format (e.g., add/rm/edit global attributes, etc.)
+cdf.serializer
+==========================
 
-Both classes can be imported from Python or called directly from a terminal using the dedicated command line interface.
+The *cdf.serializer* module allows users to convert CDF between the following formats:
 
-The Xlsx2skt class
-------------------
+- Skeleton table (ASCII)
+- Binary CDF ("Master")
+- Excel 2007 format (.xlsx)
 
-To import the Xlsx2skt class from Python, enter:
+Module can be imported in Python programs or called directly from a terminal using the dedicated command line interface.
 
-.. code-block:: python
-
-  from maser.utils.cdf.converter import Xlsx2skt
-
-Excel file format definition
+Excel format description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This section describes the organization of the input skeleton file in Excel format.
+This section describes the structure of the Excel format file that can be used by the cdf.serializer module.
 
 Note that:
 
-* xlsx2skt supports the Excel 2007 format only (i.e., .xlsx).
+* Only the Excel 2007 format is supported (i.e., .xlsx).
 * Only zVariables are supported
 
 .. warning::
 
-  Make sure to respect the letter case, since the xlsx2skt parser is case sensitive!
+  Make sure to respect the letter case!
 
-The input Excel file shall contain the following sheets:
+The Excel file shall contain the following sheets:
 
 - header
 - GLOBALattributes
 - zVariables
 - VARIABLEattributes
-- Options
 - NRV
 
-The first row of each sheet shall be used to provide the name of the columns.
+The first row of each sheet must be used to provide the name of the columns.
 
 *header* sheet
 """"""""""""""
 
-The "header" sheet shall contain the following columns:
+The "header" sheet must contain the following columns:
 
 CDF_NAME
   Name of the CDF master file (without the extension)
@@ -74,6 +72,10 @@ MAJORITY
 FORMAT
   Indicates if the data are saved in a single ("SINGLE") or
   on multiple ("MULTIPLE") CDF files
+CDF_COMPRESSION
+  Type of compression applied to the CDF
+CDF_CHECKSUM
+  Checksum applied to the CDF
 
 *GLOBALattributes* sheet
 """"""""""""""""""""""""
@@ -108,6 +110,12 @@ Record Variance
   Indicates if the variable values can change ("T") or not ("F") from a record to another.
 Dimension Variances
   Indicates how the variable values vary over each dimension.
+VAR_COMPRESSION
+  Compression algorithm applied to the variable.
+VAR_SPARESERECORDS
+  Spare record of the variable.
+VAR_PADVALUE
+  Pad value of the variable.
 
 *VARIABLEattributes* sheet
 """"""""""""""""""""""""""
@@ -123,23 +131,6 @@ Data Type
 Value
   Value of the variable attribute
 
-*Options* sheet
-"""""""""""""""
-
-The "Options" sheet shall contain the following columns:
-
-CDF_COMPRESSION
-  Type of compression of the CDF file ("None" or empty field indicates no compression)
-CDF_CHECKSUM
-  Checksum algorithm of the CDF file ("None" or empty field indicates no checksumming)
-VAR_COMPRESSION
-  Type of compression of each CDF variable ("None" or empty field indicates no compression)
-VAR_SPARSERECORDS
-  value of sparese records ("None" or empty field indicates no sparese value)
-VAR_PADVALUE
-  padvalue to provide to each variable. This option only works in the
-  case where all of the CDF variables has the same data type.
-  In the other cases, users should use the --Auto_pad input keyword.
 
 *NRV* sheet
 """""""""""
@@ -156,89 +147,72 @@ Value
 Command line interface
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To display the help of the module, enter:
+*skeletontable* sub-command
+"""""""""""""""""""""""""""
+
+The *skeletontable* sub-command allows to convert CDF from binary CDF to skeleton table by calling the skeletontable NASA CDF software program.
+
+An option also permits to export skeleton table into Excel 2007 format file (.xlsx).
+
+To display the help, enter:
 
 ::
 
-  xlsx2skt --help
+  maser skeletontable --help
 
-The full calling sequence is:
+Examples
+^^^^^^^^
+
+Convert all input CDFs named "input_*.cdf" into skeleton tables. Output files will be saved into the /tmp/cdf/build folder. Output files will have the same names than input CDFs but with the extension ".skt".
 
 ::
 
-  xlsx2skt [-h] [-O] [-V] [-Q] [-A] [-I] [-s [skeleton]] xlsx_file
+   maser skeletontable "input_*.cdf" --output_dir /tmp/cdf/build
 
-Input keyword list:
 
--h, -help                 Display the module help
--s, --skeleton  skeleton
-          Name of the output skeleton table in ASCII format.
-          If not provided, use the name of the input file replacing the extension by '.skt'.
--o, --output_dir  Path of the output directory. If not provided, use the directory of the input file.
--A, --Auto_pad        If provided, the module will automatically set the pad values
-          (i.e, \!VAR_PADVALUE) for each CDF variable
--I, --Ignore_none   If provided, the module will skip rows
-          for which the Attribute/Variable name columns are empty.
-          By default, the module returns an error if a empty Attribute/Variable name value is encountered.
--O, --Overwrite       Overwrite existing output ASCII skeleton table
--V, --Verbose         Talkative mode
+Convert the input binary CDF named "input1.cdf" into skeleton table. Output files will be saved into the /tmp/cdf/build folder. Output file will have the same name than input CDF but with the extension ".skt". An export file in Excel 2007 format (input1.xlsx) will also be saved.
 
-Example
-^^^^^^^
+::
 
-To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.
+   maser skeletontable "input1.cdf" --output_dir /tmp/cdf/build --to-xlsx
+
+*skeletoncdf* sub-command
+"""""""""""""""""""""""""""
+
+The *skeletoncdf* sub-command allows to convert CDF from skeleton table to binary CDF by calling the skeletoncdf NASA CDF software program.
+
+An option also permits to use Excel 2007 format file (.xlsx) as an input to the *skeletoncdf* sub-command.
+
+To display the help, enter:
+
+::
+
+  maser skeletoncdf --help
+
+
+
+Examples
+^^^^^^^^
+
+Convert all input skeleton tables named "input_*.skt" into binary CDFs. Output files will be saved into the /tmp/cdf/build folder. Output files will have the same names than input files but with the extension ".cdf".
+
+::
+
+   maser skeletoncdf "input_*.skt" --output_dir /tmp/cdf/build
+
+
+Convert the input Excel format file named "input1.xlsx" into skeleton table and binary CDF. Output files will be saved into the /tmp/cdf/build folder. Output files will have the same name than input CDF but with the extension ".skt". An export file in Excel 2007 format (.xlsx) will also be saved.
+
+::
+
+   maser skeletoncdf "input1.xlsx" --output_dir /tmp/cdf/build
+
+If the conversion from Excel to ASCII skeleton table is required only, then add the --no-cdf input keyword to the command line to not create the binary CDF.
 
 Limitations & Known Issues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. warning::
-
-  Values provided in the "Options" sheet is valid for all of CDF file and variables. The module does not allow to set (yet) the values for each variable individually. **THUS, WE STRONGLY RECOMMEND TO USE THE --Auto_pad INPUT KEYWORD (then edit the resulting skeleton table to modify the !VAR_PADVALUE if required).**
-
-
-The *Skt2cdf* class
--------------------
-
-To import the Skt2cdf class from Python, enter:
-
-.. code-block:: python
-
-  from maser.utils.cdf.cdfconverter import Skt2cdf
-
-Command line interface
-----------------------
-
-To display the help of the module, enter:
-
-::
-
-  skt2cdf --help
-
-The full calling sequence is:
-
-::
-
-  skt2cdf [-h] [-O] [-V] [-Q] [-s [executable]] [-c [output_cdf]] skeleton
-
-Input keywords:
-
-  -h, -help             Display the module help
-  -c, --cdf  output_cdf Name of the output CDF master binary file.
-              If not provided, use the name of the input file replacing the extension by '.cdf'.
-  -o, --output_dir          Path of the output directory. If not provided, use the directory of the input file.
-  -s, --skeletoncdf executable
-              Path of the NASA GSFC CDF "skeletoncdf" executable.
-              If not provided, the program will search for the
-              executable in the $PATH env. variable.
-  -O, --Overwrite         Overwrite existing output ASCII skeleton table
-  -V, --Verbose           Talkative mode
-  -Q, --Quiet                 Quiet mode
-
-
-Example
-^^^^^^^
-
-To test the cdfconverter program, use the dedicated scripts/test_cdfconverter.sh bash script.
+TBW
 
 
 The *cdf.validator* tool
