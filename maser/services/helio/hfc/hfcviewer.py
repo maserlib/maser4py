@@ -13,21 +13,16 @@ __maintainer__ = "Xavier BONNIN"
 __email__ = "xavier.bonnin@obspm.fr"
 __project__ = "HELIO"
 
-import re
-import argparse
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
-from scipy.misc import fromimage
 import numpy as np
-try:
-    from Tkinter import *
-except ImportError: # py3k
-    from tkinter import *
+from tkinter import *
+from tkinter import messagebox
 
-import hfc_client
-from improlib import auto_contrast, chain2image
+from maser.services.helio.hfc import hfc_client
+from maser.services.helio.hfc.improlib import auto_contrast, chain2image
 
 ## Constant arguments
 
@@ -86,6 +81,12 @@ class Viewer(Frame):
 
     def __init__(self, master=None, **kwargs):
 
+        # Remove inputs from maser
+        kwargs.pop("version", False)
+        kwargs.pop("log_file", False)
+        kwargs.pop("debug", False)
+        kwargs.pop("quiet", False)
+        kwargs.pop("maser", False)
 
         self.master=master
         self._date = StringVar()
@@ -193,7 +194,7 @@ class Viewer(Frame):
         # a tk.DrawingArea
         self._canvas = FigureCanvasTkAgg(self._fig, master=iframe)
         self._canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-        toolbar = NavigationToolbar2TkAgg( self._canvas, iframe )
+        toolbar = NavigationToolbar2Tk( self._canvas, iframe )
         toolbar.update()
 
         # the option menu frame
@@ -289,7 +290,7 @@ class Viewer(Frame):
             else:
                 return 9
         else:
-            tkMessageBox.showerror("ERROR","UNKNOWN OBSERVATORY/INSTRUMENT!")
+            messagebox.showerror("ERROR","UNKNOWN OBSERVATORY/INSTRUMENT!")
             return
 
     def __id2obs(self,id):
@@ -324,7 +325,7 @@ class Viewer(Frame):
             observatory = "Meudon" ; instrument = "Spectroheliograph" ; wavename = "CAII K3"
             self._obs_table=PP_HFC_TABLE
         else:
-            tkMessageBox.showerror("ERROR","UNKNOWN OBSERVATORY ID %i!" % (id))
+            messagebox.showerror("ERROR","UNKNOWN OBSERVATORY ID %i!" % (id))
             return None, None, None
         return observatory, instrument, telescope, wavename
 
@@ -337,7 +338,7 @@ class Viewer(Frame):
     def __set_date(self):
         date_obs = self._date.get()
         if (re.search(DATE_PATTERN,date_obs) is None):
-            tkMessageBox.showerror("ERROR","INPUT DATE FORMAT IS INCORRECT!")
+            messagebox.showerror("ERROR","INPUT DATE FORMAT IS INCORRECT!")
             return False
 
         obs, inst, tel, wav = self.__id2obs(self._obsid.get())
@@ -359,13 +360,13 @@ class Viewer(Frame):
         self.obs_data = self.__query_hfc(method=method,wsdl=wsdl,
                                          WHAT=WHAT,WHERE=WHERE,
                                          LIMIT=1,ORDER_BY=ORDER,
-            FROM=FROM)
+                                         FROM=FROM)
         if (self.obs_data is None):
-            tkMessageBox.showerror("ERROR","Querying HFC has failed!")
+            messagebox.showerror("ERROR","Querying HFC has failed!")
             return
         if (len(self.obs_data.tabledata) == 0):
             self.obs_data = None
-            tkMessageBox.showwarning("WARNING","No data found in the HFC!")
+            messagebox.showwarning("WARNING","No data found in the HFC!")
             return
 
         self._date.set(self.obs_data.tabledata[0]['DATE_OBS'])
@@ -379,7 +380,7 @@ class Viewer(Frame):
         print("Loading previous date...")
         date_obs = self._date.get()
         if (re.search(DATE_PATTERN,date_obs) is None):
-            tkMessageBox.showerror("ERROR","INPUT DATE FORMAT IS INCORRECT!")
+            messagebox.showerror("ERROR","INPUT DATE FORMAT IS INCORRECT!")
             return False
 
         obs, inst, tel, wav = self.__id2obs(self._obsid.get())
@@ -403,11 +404,11 @@ class Viewer(Frame):
                                          LIMIT=1,ORDER_BY=ORDER,
             FROM=FROM)
         if (self.obs_data is None):
-            tkMessageBox.showerror("ERROR","QUERYING HFC HAS FAILED!")
+            messagebox.showerror("ERROR","QUERYING HFC HAS FAILED!")
             return
         if (len(self.obs_data.tabledata) == 0):
             self.obs_data=None
-            tkMessageBox.showwarning("WARNING","NO DATA FOUND IN THE HFC!")
+            messagebox.showwarning("WARNING","NO DATA FOUND IN THE HFC!")
             return
         self._date.set(self.obs_data.tabledata[0]['DATE_OBS'])
         self.ar_data=None ; self.ch_data=None ; self.sp_data=None
@@ -419,7 +420,7 @@ class Viewer(Frame):
         print("Loading next date...")
         date_obs = self._date.get()
         if (re.search(DATE_PATTERN,date_obs) is None):
-            tkMessageBox.showerror("ERROR","INPUT DATE FORMAT IS INCORRECT!")
+            messagebox.showerror("ERROR","INPUT DATE FORMAT IS INCORRECT!")
             return False
 
         obs, inst, tel, wav = self.__id2obs(self._obsid.get())
@@ -441,13 +442,13 @@ class Viewer(Frame):
         self.obs_data = self.__query_hfc(method=method,wsdl=wsdl,
                                          WHAT=WHAT,WHERE=WHERE,
                                          LIMIT=1,ORDER_BY=ORDER,
-            FROM=FROM)
+                                         FROM=FROM)
         if (self.obs_data is None):
-            tkMessageBox.showerror("ERROR","QUERYING HFC HAS FAILED!")
+            messagebox.showerror("ERROR","QUERYING HFC HAS FAILED!")
             return
         if (len(self.obs_data.tabledata) == 0):
             self.obs_data=None
-            tkMessageBox.showwarning("WARNING","NO DATA FOUND IN THE HFC!")
+            messagebox.showwarning("WARNING","NO DATA FOUND IN THE HFC!")
             return
         self._date.set(self.obs_data.tabledata[0]['DATE_OBS'])
         self.ar_data=None ; self.ch_data=None ; self.sp_data=None
@@ -457,7 +458,7 @@ class Viewer(Frame):
 
     def __load_qclk(self):
         if (self.obs_data is None):
-            tkMessageBox.showwarning("WARNING","EMPTY DATA SET!")
+            messagebox.showwarning("WARNING","EMPTY DATA SET!")
             return False
         data = self.obs_data.tabledata[0]
         self.qclk_url = data["QCLK_URL"] + "/" + data["QCLK_FNAME"]
@@ -495,11 +496,11 @@ class Viewer(Frame):
         ysun = cdelt2*(ysun - crpix2) # in arcsec
 
         if (image is None):
-            #tkMessageBox.showwarning("WARNING","NO QUICKLOOK IMAGE FOUND!")
+            #messagebox.showwarning("WARNING","NO QUICKLOOK IMAGE FOUND!")
             print("WARNING: NO QUICKLOOK IMAGE FOUND!")
             self._plt.plot(xsun,ysun) # If no image --> plot solar radius contour
         else:
-            image = fromimage(image)
+            image = Image.open(image)
             image = np.flipud(image)
             enhanced_image = auto_contrast(image,low=0.,high=1.0) #TODO: Ajouter une bar pour l'intensite
             self._plt.imshow(enhanced_image,
@@ -549,7 +550,7 @@ class Viewer(Frame):
         elif (feat == "fi"):
             feat_data = self.fi_data
         else:
-            tkMessageBox.showwarning("WARNING","UNKNOWN FEATURE!")
+            messagebox.showwarning("WARNING","UNKNOWN FEATURE!")
             return False
 
         if (feat_data is None):
@@ -593,13 +594,13 @@ class Viewer(Frame):
     def __load_feat(self,feature):
         feat = feature.lower()
         if not (FEATURE_TABLE.has_key(feat)):
-            tkMessageBox.showwarning("WARNING","UNKNOWN FEATURE!")
+            messagebox.showwarning("WARNING","UNKNOWN FEATURE!")
             return None
         feat_table=FEATURE_TABLE[feat]
 
         date_obs = self._date.get()
         if (re.search(DATE_PATTERN,date_obs) is None):
-            tkMessageBox.showerror("ERROR","INPUT DATE FORMAT IS INCORRECT!")
+            messagebox.showerror("ERROR","INPUT DATE FORMAT IS INCORRECT!")
             return False
         date_obs = datetime.strptime(date_obs,HQI_TFORMAT)
         starttime = date_obs - timedelta(hours=1)
@@ -614,13 +615,13 @@ class Viewer(Frame):
         feat_data = self.__query_hfc(method=method,wsdl=wsdl,
                                      WHAT=WHAT,WHERE=WHERE,FROM=FROM)
         if (feat_data is None):
-            tkMessageBox.showerror("ERROR","QUERYING HFC HAS FAILED!")
+            messagebox.showerror("ERROR","QUERYING HFC HAS FAILED!")
             return None
         if (len(feat_data.tabledata) == 0):
             msg = "NO %s DATA FOUND \n" % (feat.upper())
             msg+= "AROUND THIS DATE \n"
             msg+= "IN THE HFC!"
-            #tkMessageBox.showwarning("WARNING", msg)
+            #messagebox.showwarning("WARNING", msg)
             print(msg)
             return None
 
@@ -668,7 +669,7 @@ class Viewer(Frame):
         msg += "\n"
         msg += "Any feedback is welcome, please send your "
         msg += "comments to xavier dot bonnin at obspm dot fr."
-        tkMessageBox.showinfo("HFC Viewer",msg)
+        messagebox.showinfo("HFC Viewer",msg)
         return
 
 
@@ -682,33 +683,4 @@ def main(**kwargs):
     root.mainloop()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(add_help=True)
-    parser.add_argument('-d', '--date', nargs='?',
-                        default=DATE,
-                        help="Date of observation")
-    parser.add_argument('-o', '--observatory', nargs='?',
-                        default=OBSERVATORY,
-                        help="Name of the observatory")
-    parser.add_argument('-i', '--instrument', nargs='?',
-                        default=INSTRUMENT,
-                        help="Name of the instrument")
-    parser.add_argument('-t', '--telescope', nargs='?',
-                        default=TELESCOPE,
-                        help="Name of the telescope")
-    parser.add_argument('-w', '--wavename', nargs='?',
-                        default=WAVENAME,
-                        help="Name of the wavename")
-    parser.add_argument('-u', '--url_wsdl', nargs='?',
-                        default=URL_WSDL,
-                        help="Url of the wsdl file to load")
-    parser.add_argument('-x', '--xsize', nargs='?',
-                        help="Window width on screen in pixels")
-    parser.add_argument('-y', '--ysize', nargs='?',
-                        help="Window heigth on screen in pixels")
-    parser.add_argument('-Q', '--Quiet', action='store_true',
-                        help="Quiet mode")
-    parser.add_argument('-D', '--Dev', action='store_true',
-                        help="Run the development version of the hfcViewer")
-    args = parser.parse_args()
-
-    main(**args.__dict__)
+    print(__file__)
