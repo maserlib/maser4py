@@ -1,17 +1,17 @@
-maser.data.solo package
-=======================
+maser.data.psa package
+======================
 
 Subpackages
 -----------
 
 .. toctree::
 
-   maser.data.solo.rpw
+   maser.data.psa.mex
 
 Module contents
 ---------------
 
-.. automodule:: maser.data.solo
+.. automodule:: maser.data.psa
    :members:
    :undoc-members:
    :show-inheritance:

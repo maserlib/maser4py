@@ -1,4 +1,4 @@
-maser.data.solo package
+maser.data.wind package
 =======================
 
 Subpackages
@@ -6,12 +6,12 @@ Subpackages
 
 .. toctree::
 
-   maser.data.solo.rpw
+   maser.data.wind.waves
 
 Module contents
 ---------------
 
-.. automodule:: maser.data.solo
+.. automodule:: maser.data.wind
    :members:
    :undoc-members:
    :show-inheritance:

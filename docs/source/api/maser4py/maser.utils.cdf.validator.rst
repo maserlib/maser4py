@@ -4,14 +4,27 @@ maser.utils.cdf.validator package
 Submodules
 ----------
 
-.. toctree::
+maser.utils.cdf.validator.subparser module
+------------------------------------------
 
-   maser.utils.cdf.validator.validator
+.. automodule:: maser.utils.cdf.validator.subparser
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+maser.utils.cdf.validator.validator module
+------------------------------------------
+
+.. automodule:: maser.utils.cdf.validator.validator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------
 
 .. automodule:: maser.utils.cdf.validator
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

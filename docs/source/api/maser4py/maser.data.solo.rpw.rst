@@ -6,24 +6,50 @@ Subpackages
 
 .. toctree::
 
-    maser.data.solo.rpw.lfr
-    maser.data.solo.rpw.tds
-    maser.data.solo.rpw.utils
+   maser.data.solo.rpw.lfr
+   maser.data.solo.rpw.tds
+   maser.data.solo.rpw.utils
 
 Submodules
 ----------
 
-.. toctree::
+maser.data.solo.rpw.exception module
+------------------------------------
 
-   maser.data.solo.rpw.exception
-   maser.data.solo.rpw.globals
-   maser.data.solo.rpw.rpw
-   maser.data.solo.rpw.tools
+.. automodule:: maser.data.solo.rpw.exception
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+maser.data.solo.rpw.globals module
+----------------------------------
+
+.. automodule:: maser.data.solo.rpw.globals
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+maser.data.solo.rpw.rpw module
+------------------------------
+
+.. automodule:: maser.data.solo.rpw.rpw
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+maser.data.solo.rpw.tools module
+--------------------------------
+
+.. automodule:: maser.data.solo.rpw.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------
 
 .. automodule:: maser.data.solo.rpw
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:
