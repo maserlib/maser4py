@@ -15,7 +15,7 @@ cd "`dirname "${workdir}"`" > /dev/null
 workdir="`pwd`";
 popd  > /dev/null
 
-# go to maser4py doc build dir
+# go to maser4py docs build dir
 cd $workdir/../doc/build
 
 # make zip package file
