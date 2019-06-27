@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'maser4py'
-copyright = u'2017, X.Bonnin, B.Cecconi, Q.N.Nguyen'
+copyright = u'2019, X.Bonnin, B.Cecconi, Q.N.Nguyen'
 author = u'X.Bonnin, B.Cecconi, Q.N.Nguyen'
 
 # The version info for the project you're documenting, acts as replacement for
