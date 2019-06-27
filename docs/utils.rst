@@ -10,8 +10,8 @@ The *cdf* module
 The *cdf* module contains the following tools:
 
 - *cdf*, a backup of the spacepy.pycdf module (https://pythonhosted.org/SpacePy/pycdf.html), only used in the case where spacepy package is not installed in the system.
-- *cdfcompare*, a tool to compare two CDF
-- *serializer*, to convert CDF skeleton files (in Excel or ASCII format) into master CDF binary files
+- *cdfcompare*, a tool to compare two CDFs
+- *serializer*, to convert skeleton CDF files (in Excel or ASCII format) into master CDF binary files
 - *validator*, to validate the content of a CDF file from a given data model.
 
 For more information about the CDF format, please visit http://cdf.gsfc.nasa.gov/.
@@ -273,27 +273,26 @@ To display the help of the module, enter:
 
 ::
 
-  cdfvalid --help
+  cdf_validator --help
 
 The full calling sequence is:
 
 ::
 
-  cdfvalid [--help] [--Verbose] [--Quiet] [--log_file [log_file]] \
-  [--ISTP] [--CDFValidate [executable]] [--model_file [model_file]] skeleton
+    maser cdf_validator [-h] [-m MODEL_FILE] [-c CDFVALIDATE_BIN] [-I] [-C] cdf_file
 
-Input keywords:
+positional arguments:
+  cdf_file              Path of the CDF format file to validate
 
--h, -help       Display the module help
--l, --log_file      Path of the output log file.
--I, --ISTP          Perform the ISTP compliance validation test
--m, --model_file        Path to the input model file in JSON format
-                  (see "Model validation test" section for more information).
--C, --CDFValidate executable       Path of the NASA GSFC CDF "CDFValidate" executable.
-                               If it is not provided, the module will
-                               search in the directories defined in %%$PATH%%.
--Q, --Quiet         Quiet mode
--V, --Verbose     Talkative mode
+optional arguments:
+  -h, --help            show this help message and exit
+  -m MODEL_FILE, --model-file MODEL_FILE
+                        Path to the model file in JSON format
+  -c CDFVALIDATE_BIN, --cdfvalidate-bin CDFVALIDATE_BIN
+                        Path of the cdfvalidate NASA CDF tool executable
+  -I, --istp            Check the ISTP guidelines compliance
+  -C, --run-cdfvalidate
+                        Run the cdfvalidate NASA CDF tool
 
 Example
 ^^^^^^^
@@ -322,6 +321,7 @@ It should return something like:
   INFO    : --> DEPEND_0
   WARNING : DEPEND_0 required!
   INFO    : Closing /tmp/cdfconverter_example.cdf
+
 
 The *time* module
 *****************
@@ -399,13 +399,13 @@ To display the help of the module, enter:
 
 ::
 
-  leapsec --help
+  maser leapsec --help
 
 The full calling sequence is:
 
 ::
 
-  leapsec [-h] [-D] [-O] [-S] [-f FILEPATH] [-d DATE]
+  maser leapsec [-h] [-D] [-O] [-S] [-f FILEPATH] [-d DATE]
 
 Input keywords:
 

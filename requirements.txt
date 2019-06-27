@@ -7,6 +7,4 @@ Pillow
 openpyxl
 pytz
 python-dateutil
-Sphinx
-sphinx_rtd_theme
 jinja2

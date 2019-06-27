@@ -1,0 +1,4 @@
+matplotlib
+scipy
+Sphinx
+sphinx_rtd_theme
