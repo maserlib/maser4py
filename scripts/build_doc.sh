@@ -27,7 +27,7 @@ currentdir=`pwd`
 cd $docdir
 
 # Build docs
-sphinx-build source build
+sphinx-build . build
 
 # Build api docs
 sphinx-apidoc -o build ../maser

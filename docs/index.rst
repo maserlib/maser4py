@@ -72,11 +72,11 @@ Details
 .. toctree::
    :maxdepth: 2
 
-   source/install
-   source/data
-   source/services
-   source/utils
-   source/appendices
+   install
+   data
+   services
+   utils
+   appendices
 
 Support
 =======

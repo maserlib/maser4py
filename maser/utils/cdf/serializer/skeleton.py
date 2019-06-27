@@ -459,7 +459,7 @@ class Skeleton():
         """
         Add a zVariable into the Skeleton object.
 
-        ;param varname: name of the zVariable to add
+        :param varname: name of the zVariable to add
         :param entry: dictionary with fields to add [variable name, data type, number elements,
                     dims, sizes, record variance, Dimension variances]. If dims=0, sizes and record variance must be None
         :param vattrs: dictionnary containing variable attribute(s) to load for this zvariable. V.attributes can be also provided in the entry using the "Variable attributes" dictionary keyword.
