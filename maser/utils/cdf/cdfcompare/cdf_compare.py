@@ -103,6 +103,9 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
     cdf1 = CDF(cdf_file1)
     cdf2 = CDF(cdf_file2)
 
+    dict_result = {}
+
+
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
     # *°*°*  COMPARE GLOBAL ATTRIBUTES  *°*°*
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
@@ -173,11 +176,13 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
                         logger.debug("   File2 : %s", val2)
 
                         DiffValueAttr[com_att] = [val1, val2]
-
-            gAttrs['Value'] = DiffValueAttr
+            if DiffValueAttr:
+                gAttrs['Value'] = DiffValueAttr
             logger.warning("*°*°* gAttrs *°*°*")
-            logger.warning(gAttrs["Value"])
-    dict_result = {'gAttrs': gAttrs}
+            logger.warning(DiffValueAttr)
+
+    if gAttrs:
+        dict_result['gAttrs'] = gAttrs
 
     # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
     # *°*°*  COMPARE zVARIABLES  *°*°*
@@ -319,7 +324,8 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
         if len(diff_zvar_values) != 0:
             zVars['Diff_Val'] = diff_zvar_values
 
-        dict_result = {'gAttrs': gAttrs, 'zVars': zVars}
+        if zVars:
+            dict_result['zVars'] = zVars
 
         if len(NotMatch_vAttr) != 0:
             vAttrs['NotMatched'] = NotMatch_vAttr
@@ -342,9 +348,8 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
         # if forced_ignored_zvar != []:
         #     logger.warning("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
 
-    if dict_result != {}:
-        logger.warning("*°*°* FINAL RESULT *°*°*")
-        logger.warning(dict_result)
+    logger.warning("*°*°* FINAL RESULT *°*°*")
+    logger.warning(dict_result)
 
     return dict_result
 
