@@ -48,7 +48,7 @@
 ! Name        Type     Elements   Dims    Sizes    Variance     Variances
 ! --------    ----     --------   ----    -----    --------     ---------
 
-  "{{ zvar }}"   {{ val["Data Type"] }}  {{ val["Number Elements"] }}  {{ val["Dims"] }}    {% if val["Sizes"] %}{{ val["Sizes"] }}{% endif %}   {{ val["Record Variance"] }}    {% if val["Sizes"] %}{{ val["Dimension Variances"] }}{% endif %}
+  "{{ zvar }}"   {{ val["Data Type"] }}  {{ val["Number Elements"] }}  {{ val["Dims"] }}    {% if val["Sizes"] %}{{ " ".join(val["Sizes"]) }}{% endif %}   {{ val["Record Variance"] }}    {% if val["Sizes"] %}{{ " ".join(val["Dimension Variances"]) }}{% endif %}
 
 
   ! VAR_COMPRESSION: {{ val["VAR_COMPRESSION"] }}
