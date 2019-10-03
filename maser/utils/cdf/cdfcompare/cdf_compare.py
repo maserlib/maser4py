@@ -293,8 +293,9 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
                       key_diff_dict=v_att_key_diff_dict,
                       value_diff_dict=v_att_value_diff_dict)
 
-    vAttrs['Value'] = v_att_value_diff_dict
-    logger.debug("vAttrs['Value'] : %s", vAttrs['Value'])
+    if v_att_value_diff_dict:
+        vAttrs['Value'] = v_att_value_diff_dict
+        logger.debug("vAttrs['Value'] : %s", vAttrs['Value'])
 
     if z_var_shape_diff_dict:
         zVars['Shape'] = z_var_shape_diff_dict
