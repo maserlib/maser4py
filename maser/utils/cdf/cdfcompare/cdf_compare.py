@@ -61,7 +61,7 @@ def delete_key(dict, key_to_remove):
     if key_to_remove in dict:
         del dict[key_to_remove]
     else:
-        logger.warning("Key to remove '%s' does not exist !", key_to_remove)
+        logger.debug("Key to remove '%s' does not exist !", key_to_remove)
     return dict
 
 
@@ -120,17 +120,17 @@ def compare_global_attributes(global_att1, global_att2, list_ignore_gatt):
     l2 = len(not_match_attribute[1])
 
     if list_ignore_gatt != []:
-        logger.warning("%s Global Attributes to be ignored for comparison : %s", len(list_ignore_gatt),
+        logger.debug("%s Global Attributes to be ignored for comparison : %s", len(list_ignore_gatt),
                        list_ignore_gatt)
     if l1 != 0 or l2 != 0:
-        logger.warning("Global attributes: different")
-        logger.warning('File 1 : %s%s', str(len(global_att1)), ' global attributes')
+        logger.debug("Global attributes: different")
+        logger.debug('File 1 : %s%s', str(len(global_att1)), ' global attributes')
         logger.debug("File1's Global Attributes List : %s", list_global_att1)
-        logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
+        logger.debug('File 2 : %s%s', str(len(global_att2)), ' global attributes')
         logger.debug("File2's Global Attributes List : %s", list_global_att2)
-        logger.warning("Not matched global attributes")
-        logger.warning("   File1 : %s - %s", len(not_match_attribute[0]), not_match_attribute[0])
-        logger.warning("   File2 : %s - %s", len(not_match_attribute[1]), not_match_attribute[1])
+        logger.debug("Not matched global attributes")
+        logger.debug("   File1 : %s - %s", len(not_match_attribute[0]), not_match_attribute[0])
+        logger.debug("   File2 : %s - %s", len(not_match_attribute[1]), not_match_attribute[1])
 
         gAttrs['NotMatched'] = not_match_attribute
         # Remove not matched keys from the 2 dictionaries
@@ -151,7 +151,7 @@ def compare_global_attributes(global_att1, global_att2, list_ignore_gatt):
         checking = global_att1 == global_att2
         if checking == False:
             # Not equal !!
-            logger.warning("Global attributes value: different")
+            logger.debug("Global attributes value: different")
             common_att = sorted(list(global_att1.keys()))
 
             DiffValueAttr = {}
@@ -169,7 +169,7 @@ def compare_global_attributes(global_att1, global_att2, list_ignore_gatt):
                         DiffValueAttr[com_att] = [val1, val2]
             if DiffValueAttr:
                 gAttrs['Value'] = DiffValueAttr
-            logger.warning("gAttrs:  %s", pformat(DiffValueAttr))
+            logger.debug("gAttrs:  %s", pformat(DiffValueAttr))
 
     return gAttrs
 
@@ -180,7 +180,7 @@ def compare_z_var(field1, field2, key, shape_diff_dict={}, value_diff_dict={}):
     data2 = field2[...]
 
     if data1.shape != data2.shape:
-        logger.warning("%s - array shape is different: %s | %s", key, field1.shape, field2.shape)
+        logger.debug("%s - array shape is different: %s | %s", key, field1.shape, field2.shape)
         shape_diff_dict[key] = [data1.shape, data2.shape]
 
     else:
@@ -190,7 +190,7 @@ def compare_z_var(field1, field2, key, shape_diff_dict={}, value_diff_dict={}):
 
         # zVariable's key : check for different values
         if fields_are_different:
-            logger.warning("Different values for zVariable '%s' : %s | %s", key, field1, field2)
+            logger.debug("Different values for zVariable '%s' : %s | %s", key, field1, field2)
             value_diff_dict[key] = [data1[differences_mask], data2[differences_mask]]
 
     return shape_diff_dict, value_diff_dict
@@ -200,7 +200,7 @@ def compare_v_att(field1, field2, key, key_diff_dict={}, value_diff_dict={}, lis
     v_att_keys_diff = list_differences(field1.attrs, field2.attrs)
 
     if list_ignore_vatt != []:
-        logger.warning("%s Variable Attributes to be ignored for comparison : %s", len(list_ignore_vatt),
+        logger.debug("%s Variable Attributes to be ignored for comparison : %s", len(list_ignore_vatt),
                        list_ignore_vatt)
         for item1 in list_ignore_vatt:
             if item1 in v_att_keys_diff[0]:
@@ -210,7 +210,7 @@ def compare_v_att(field1, field2, key, key_diff_dict={}, value_diff_dict={}, lis
                 (v_att_keys_diff[1]).remove(item2)
 
     if len(v_att_keys_diff[0]) != 0 or len(v_att_keys_diff[1]) != 0:
-        logger.warning("Different Variable Attribute's keys of the zVariable '%s' : %s", key, tab_diff)
+        logger.debug("Different Variable Attribute's keys of the zVariable '%s' : %s", key, tab_diff)
         key_diff_dict[key] = v_att_keys_diff
 
     common_v_att_keys = get_matched_vAttrKey(field1, field2)
@@ -227,7 +227,7 @@ def compare_v_att(field1, field2, key, key_diff_dict={}, value_diff_dict={}, lis
         if vAttrsList1[check_item] == vAttrsList2[check_item]:
             logger.info("%s : equal", check_item)
         else:
-            logger.warning("%s : not equal", check_item)
+            logger.debug("%s : not equal", check_item)
             DiffValue_vAttr[check_item] = [vAttrsList1[check_item], vAttrsList2[check_item]]
             value_diff_dict[key] = DiffValue_vAttr
             logger.debug("vAttrs['Value'] : %s", value_diff_dict)
@@ -241,10 +241,10 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
 
     # Ignored zVariables for comparison
     if list_ignore_zvar != []:
-        logger.warning("%s zVariables to be ignored for comparison : %s", len(list_ignore_zvar), list_ignore_zvar)
+        logger.debug("%s zVariables to be ignored for comparison : %s", len(list_ignore_zvar), list_ignore_zvar)
 
     if len(cdf_keys1) != len(cdf_keys2):
-        logger.warning("Zvariables: different")
+        logger.debug("Zvariables: different")
 
     # ***** Not matched keys *****
     list_diff1, list_diff2 = list_differences(cdf_keys1, cdf_keys2)
@@ -258,9 +258,9 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
 
             zVars['Keys'] = [list_diff1, list_diff2]
 
-            logger.warning("NOT MATCHED zVARIABLES :")
+            logger.debug("NOT MATCHED zVARIABLES :")
             for idx, diff_list in enumerate(zVars['NotMatched']):
-                logger.warning("   File %d : %d - %s", idx + 1, len(diff_list), diff_list)
+                logger.debug("   File %d : %d - %s", idx + 1, len(diff_list), diff_list)
         # ***** Matched keys *****
         same_keys = set(cdf_keys1) & set(cdf_keys2)
 
@@ -311,8 +311,8 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
 
 # Comparing 2 CDF files data
 def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], list_ignore_vatt=[]):
-    logger.warning(' CDF file 1 : %s', cdf_file1)
-    logger.warning(' CDF file 2 : %s', cdf_file2)
+    logger.debug(' CDF file 1 : %s', cdf_file1)
+    logger.debug(' CDF file 2 : %s', cdf_file2)
     checking_file_exist(cdf_file1)
     checking_file_exist(cdf_file2)
 
@@ -342,15 +342,15 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
     cdf2.close()
 
     for key, value in dict_result.items():
-        logger.warning("*°*°* %s *°*°*", key)
+        logger.debug("*°*°* %s *°*°*", key)
         for key1, value1 in dict_result[key].items():
-            logger.warning("     *°* %s : %s", key1, value1)
+            logger.debug("     *°* %s : %s", key1, value1)
 
     # Case of we need to force to ignore some zVariables
     # if forced_ignored_zvar != []:
-    #     logger.warning("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
+    #     logger.debug("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
 
-    logger.warning("Final result: %s", pformat(dict_result))
+    logger.debug("Final result: %s", pformat(dict_result))
     return dict_result
 
 
@@ -406,5 +406,4 @@ if __name__ == '__main__':
                              list_ignore_gatt=list_ignore_gatt,
                              list_ignore_zvar=list_ignore_zvar,
                              list_ignore_vatt=list_ignore_vatt)
-        logger.debug("")
-        logger.debug("Result : %s", result)
+        logger.warning("Final result : %s", pformat(result))
