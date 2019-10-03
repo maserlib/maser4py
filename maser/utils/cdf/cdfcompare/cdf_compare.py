@@ -7,6 +7,7 @@ import logging
 import os
 import os.path
 import sys
+from pprint import pformat
 
 import numpy as np
 from maser.utils.cdf import CDF
@@ -35,9 +36,15 @@ def get_keys_and_attributes(cdf_filepath):
         return list(cdf_file.keys()), cdf_file.attrs.copy()
 
 
-# Finding not matched values
-def returnNotMatches(a, b):
-    return [[x for x in a if x not in b], [x for x in b if x not in a]]
+def list_differences(a, b):
+    """
+    Find list differences
+
+    :param a: first list
+    :param b: second list
+    :return: a tuple containing the differences
+    """
+    return [x for x in a if x not in b], [x for x in b if x not in a]
 
 
 # Listing all items
@@ -59,13 +66,22 @@ def delete_key(dict, key_to_remove):
 
 
 # Getting a given vAttr's not matched keys
-def get_not_matched_vAttrKey(field1, field2):
-    vAttrsList1 = field1.attrs  # class 'spacepy.cdf.zAttrList'
-    listA1 = sorted([attr_key for attr_key in vAttrsList1])
-    vAttrsList2 = field2.attrs
-    listA2 = sorted([attr_key for attr_key in vAttrsList2])
-    if listA1 != listA2:
-        result = returnNotMatches(listA1, listA2)
+def get_v_att_keys_diff(field1, field2):
+    """
+    get the differences between v_att keys of field 1 and field 2
+
+    :param field1:
+    :param field2:
+    :return:
+    """
+
+    # convert v_att (class 'spacepy.cdf.zAttrList') of cdf files to sorted lists
+
+    list_a1 = sorted([attr_key for attr_key in field1.attrs])
+
+    list_a2 = sorted([attr_key for attr_key in field2.attrs])
+    if list_a1 != list_a2:
+        result = list_differences(list_a1, list_a2)
     else:
         result = []
 
@@ -74,43 +90,22 @@ def get_not_matched_vAttrKey(field1, field2):
 
 # Getting a given vAttr's matched keys
 def get_matched_vAttrKey(field1, field2):
-    vAttrsList1 = field1.attrs  # class 'spacepy.cdf.zAttrList'
-    listA1 = sorted([attr_key for attr_key in vAttrsList1])
-    vAttrsList2 = field2.attrs
-    listA2 = sorted([attr_key for attr_key in vAttrsList2])
+    set_a1 = set([attr_key for attr_key in field1.attrs])
 
-    not_match = get_not_matched_vAttrKey(field1, field2)
-    if not_match != []:
-        notmatch_list = not_match[0] + not_match[1]
-    else:
-        notmatch_list = []
-    all_items = listA1 + listA2
-    all_items_list = sorted(list(set(all_items)))
-    uniq_items = [x for x in all_items_list if x not in notmatch_list]
-    return uniq_items
+    set_a2 = set([attr_key for attr_key in field2.attrs])
+
+    return set_a1 & set_a2
 
 
-# Comparing 2 CDF files data
-def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], list_ignore_vatt=[]):
-    logger.warning(' CDF file 1 : %s', cdf_file1)
-    logger.warning(' CDF file 2 : %s', cdf_file2)
-    checking_file_exist(cdf_file1)
-    checking_file_exist(cdf_file2)
+def compare_global_attributes(global_att1, global_att2, list_ignore_gatt):
+    """
 
-    d1, global_att1 = get_keys_and_attributes(cdf_file1)
-    d2, global_att2 = get_keys_and_attributes(cdf_file2)
+    Compare global attributes
 
-    cdf1 = CDF(cdf_file1)
-    cdf2 = CDF(cdf_file2)
+    :return: the global attribute differences
+    """
 
-    dict_result = {}
-
-
-    # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
-    # *°*°*  COMPARE GLOBAL ATTRIBUTES  *°*°*
-    # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
-
-    # Initialize the Global Attributes dictionary
+    # initialize the Global Attributes dictionary
     gAttrs = {}
 
     list_global_att1 = sorted(list(global_att1.keys()))
@@ -119,35 +114,33 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
     if list_ignore_gatt != []:
         list_global_att1 = [n for n in list_global_att1 if n not in list_ignore_gatt]
         list_global_att2 = [n for n in list_global_att2 if n not in list_ignore_gatt]
-    notmathattribute = returnNotMatches(list_global_att1, list_global_att2)
+    not_match_attribute = list_differences(list_global_att1, list_global_att2)
 
-    l1 = len(notmathattribute[0])
-    l2 = len(notmathattribute[1])
+    l1 = len(not_match_attribute[0])
+    l2 = len(not_match_attribute[1])
 
     if list_ignore_gatt != []:
         logger.warning("%s Global Attributes to be ignored for comparison : %s", len(list_ignore_gatt),
                        list_ignore_gatt)
     if l1 != 0 or l2 != 0:
-        logger.warning("****************************************")
-        logger.warning("WARNING : GLOBAL ATTRIBUTES DIFFERENT !!!")
-        logger.warning("****************************************")
+        logger.warning("Global attributes: different")
         logger.warning('File 1 : %s%s', str(len(global_att1)), ' global attributes')
         logger.debug("File1's Global Attributes List : %s", list_global_att1)
         logger.warning('File 2 : %s%s', str(len(global_att2)), ' global attributes')
         logger.debug("File2's Global Attributes List : %s", list_global_att2)
-        logger.warning("NOT MATCHED GLOBAL ATTRIBUTES :")
-        logger.warning("   File1 : %s - %s", len(notmathattribute[0]), notmathattribute[0])
-        logger.warning("   File2 : %s - %s", len(notmathattribute[1]), notmathattribute[1])
+        logger.warning("Not matched global attributes")
+        logger.warning("   File1 : %s - %s", len(not_match_attribute[0]), not_match_attribute[0])
+        logger.warning("   File2 : %s - %s", len(not_match_attribute[1]), not_match_attribute[1])
 
-        gAttrs['NotMatched'] = notmathattribute
+        gAttrs['NotMatched'] = not_match_attribute
         # Remove not matched keys from the 2 dictionaries
-        notmatch1 = notmathattribute[0]
-        notmatch2 = notmathattribute[1]
+        not_match1 = not_match_attribute[0]
+        not_match2 = not_match_attribute[1]
 
-        for key_to_remove in notmatch1:
+        for key_to_remove in not_match1:
             global_att1 = delete_key(global_att1, key_to_remove)
 
-        for key_to_remove in notmatch2:
+        for key_to_remove in not_match2:
             global_att2 = delete_key(global_att2, key_to_remove)
 
     # Compare Global Attributes's value
@@ -158,9 +151,7 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
         checking = global_att1 == global_att2
         if checking == False:
             # Not equal !!
-            logger.warning("************************************************")
-            logger.warning("WARNING : GLOBAL ATTRIBUTES' VALUE DIFFERENT !!!")
-            logger.warning("************************************************")
+            logger.warning("Global attributes value: different")
             common_att = sorted(list(global_att1.keys()))
 
             DiffValueAttr = {}
@@ -178,179 +169,188 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
                         DiffValueAttr[com_att] = [val1, val2]
             if DiffValueAttr:
                 gAttrs['Value'] = DiffValueAttr
-            logger.warning("*°*°* gAttrs *°*°*")
-            logger.warning(DiffValueAttr)
+            logger.warning("gAttrs:  %s", pformat(DiffValueAttr))
 
-    if gAttrs:
-        dict_result['gAttrs'] = gAttrs
+    return gAttrs
 
-    # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
-    # *°*°*  COMPARE zVARIABLES  *°*°*
-    # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
 
-    zVars = {}  # Data
+def compare_z_var(field1, field2, key, shape_diff_dict={}, value_diff_dict={}):
+    # check if fields have the same shape
+    data1 = field1[...]
+    data2 = field2[...]
+
+    if data1.shape != data2.shape:
+        logger.warning("%s - array shape is different: %s | %s", key, field1.shape, field2.shape)
+        shape_diff_dict[key] = [data1.shape, data2.shape]
+
+    else:
+        differences_mask = data1 != data2
+
+        fields_are_different = np.any(differences_mask)
+
+        # zVariable's key : check for different values
+        if fields_are_different:
+            logger.warning("Different values for zVariable '%s' : %s | %s", key, field1, field2)
+            value_diff_dict[key] = [data1[differences_mask], data2[differences_mask]]
+
+    return shape_diff_dict, value_diff_dict
+
+
+def compare_v_att(field1, field2, key, key_diff_dict={}, value_diff_dict={}, list_ignore_vatt=[]):
+    v_att_keys_diff = list_differences(field1.attrs, field2.attrs)
+
+    if list_ignore_vatt != []:
+        logger.warning("%s Variable Attributes to be ignored for comparison : %s", len(list_ignore_vatt),
+                       list_ignore_vatt)
+        for item1 in list_ignore_vatt:
+            if item1 in v_att_keys_diff[0]:
+                (v_att_keys_diff[0]).remove(item1)
+        for item2 in list_ignore_vatt:
+            if item2 in v_att_keys_diff[1]:
+                (v_att_keys_diff[1]).remove(item2)
+
+    if len(v_att_keys_diff[0]) != 0 or len(v_att_keys_diff[1]) != 0:
+        logger.warning("Different Variable Attribute's keys of the zVariable '%s' : %s", key, tab_diff)
+        key_diff_dict[key] = v_att_keys_diff
+
+    common_v_att_keys = get_matched_vAttrKey(field1, field2)
+    logger.info("Identical Variable Attribute's key : %s", common_v_att_keys)
+
+    vAttrsList1 = field1.attrs
+    vAttrsList2 = field2.attrs
+
+    DiffValue_vAttr = {}
+
+    for check_item in common_v_att_keys:
+        logger.debug("%s : %s  |  %s", check_item, vAttrsList1[check_item], vAttrsList2[check_item])
+
+        if vAttrsList1[check_item] == vAttrsList2[check_item]:
+            logger.info("%s : equal", check_item)
+        else:
+            logger.warning("%s : not equal", check_item)
+            DiffValue_vAttr[check_item] = [vAttrsList1[check_item], vAttrsList2[check_item]]
+            value_diff_dict[key] = DiffValue_vAttr
+            logger.debug("vAttrs['Value'] : %s", value_diff_dict)
+
+    return key_diff_dict, value_diff_dict
+
+
+def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ignore_vatt=[]):
+    zVars = {}  # store data differences
+    vAttrs = {}  # store attribute differences
 
     # Ignored zVariables for comparison
     if list_ignore_zvar != []:
         logger.warning("%s zVariables to be ignored for comparison : %s", len(list_ignore_zvar), list_ignore_zvar)
 
-    if len(d1) != len(d2):
-        logger.warning("**********************************")
-        logger.warning("WARNING : zVARIABLES DIFFERENT !!!")
-        logger.warning("**********************************")
+    if len(cdf_keys1) != len(cdf_keys2):
+        logger.warning("Zvariables: different")
 
     # ***** Not matched keys *****
-    notmathkeys = returnNotMatches(d1, d2)
+    list_diff1, list_diff2 = list_differences(cdf_keys1, cdf_keys2)
 
-    if d1 == d2:
-        logger.info("****************************************")
-        logger.info("       zVARIABLES : IDENTICAL !!!")
-        logger.info("****************************************")
+    if cdf_keys1 == cdf_keys2:
+        logger.info("Zvariables keys: identical")
+        same_keys = cdf_keys1
+        ordered_common_keys = sorted(list(same_keys))
     else:
-        if (notmathkeys[0] != []) or (notmathkeys[1] != []):
+        if (list_diff1 != []) or (list_diff2 != []):
+
+            zVars['Keys'] = [list_diff1, list_diff2]
+
             logger.warning("NOT MATCHED zVARIABLES :")
-            i = 0
-            while i < 2:
-                logger.warning("   File %d : %d - %s", i + 1, len(notmathkeys[i]), notmathkeys[i])
-                i += 1
-
-            zVars['NotMatched'] = [notmathkeys[0], notmathkeys[1]]
-            dict_result['zVars'] = zVars
-
+            for idx, diff_list in enumerate(zVars['NotMatched']):
+                logger.warning("   File %d : %d - %s", idx + 1, len(diff_list), diff_list)
         # ***** Matched keys *****
-        same_keys = set(d1) & set(d2)
-        logger.info("MATCHED zVARIABLES : %d", len(same_keys))
-        logger.info("    %s", same_keys)
+        same_keys = set(cdf_keys1) & set(cdf_keys2)
 
         # ***** Alphabetical order *****
-        order_same_keys = sorted(list(same_keys))
-        n_same_keys = len(order_same_keys)
+        ordered_common_keys = sorted(list(same_keys))
 
-        j = 1
+    logger.info("MATCHED zVARIABLES : %d", len(ordered_common_keys))
+    logger.info("    %s", ordered_common_keys)
 
-        diff_array = {}  # For different dimensions
-        diff_data = []  # For different data
+    # prepare the dicts to store z_var and v_att diff
+    v_att_key_diff_dict = {}
+    v_att_value_diff_dict = {}
+    z_var_shape_diff_dict = {}
+    z_var_value_diff_dict = {}
 
-        diff_zvar_values = []  # For zVariable key which has different values
+    for key in ordered_common_keys:
+        if (key in list_ignore_zvar):
+            continue
 
-        NotMatch_vAttr = {}
-        vAttrs = {}
-        Value_vAttr = {}
+        # Raw values comparison : It's really necessary for time values like "Epoch"
+        #   cdf1.raw_var(key) => 549441617029459008
+        #   cdf1[key] => 2017-05-30 18:39:07.845459
+        field1 = cdf1.raw_var(key)
+        field2 = cdf2.raw_var(key)
 
-        # forced_ignored_zvar = []
+        compare_z_var(field1, field2, key, shape_diff_dict=z_var_shape_diff_dict, value_diff_dict=z_var_value_diff_dict)
 
-        for key in order_same_keys:
-            if (key in list_ignore_zvar):
-                continue
+        compare_v_att(field1, field2, key,
+                      list_ignore_vatt=list_ignore_vatt,
+                      key_diff_dict=v_att_key_diff_dict,
+                      value_diff_dict=v_att_value_diff_dict)
 
-            # Raw values comparison : It's really necessary for time values like "Epoch"
-            #   cdf1.raw_var(key) => 549441617029459008
-            #   cdf1[key] => 2017-05-30 18:39:07.845459
-            field1 = cdf1.raw_var(key)
-            field2 = cdf2.raw_var(key)
+    vAttrs['Value'] = v_att_value_diff_dict
+    logger.debug("vAttrs['Value'] : %s", vAttrs['Value'])
 
-            # *°*°*°*°*°*°*°*°*°*°*°*°*
-            # *°* Compare zVariables *°*
-            # *°*°*°*°*°*°*°*°*°*°*°*°*
+    if z_var_shape_diff_dict:
+        zVars['Shape'] = z_var_shape_diff_dict
+    if z_var_value_diff_dict:
+        zVars['Value'] = z_var_value_diff_dict
 
-            if len(field1) != len(field2):
-                logger.warning("%s:     %s      %s", key, np.array(field1.shape), np.array(field2.shape))
-                diff_array[key] = [field1.shape, field2.shape]
-                j += 1
+    if v_att_key_diff_dict:
+        vAttrs['Keys'] = v_att_key_diff_dict
+    if v_att_value_diff_dict:
+        vAttrs['Value'] = v_att_value_diff_dict
 
-            else:
-                arraycheck2 = field1[...] == field2[...]
-                uniq_val = np.unique(arraycheck2)  # [], [False  True], [ True], [ False]
+    return zVars, vAttrs
 
-                # zVariable's key : Different values
-                if False in uniq_val:
-                    logger.warning("Different values for zVariable '%s' : %s | %s", key, field1, field2)
-                    diff_zvar_values.append(key)
 
-            # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
-            # *°* Compare Variable Attributes *°*
-            # *°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*°*
+# Comparing 2 CDF files data
+def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], list_ignore_vatt=[]):
+    logger.warning(' CDF file 1 : %s', cdf_file1)
+    logger.warning(' CDF file 2 : %s', cdf_file2)
+    checking_file_exist(cdf_file1)
+    checking_file_exist(cdf_file2)
 
-            # Ignored zVariables for comparison
-            if list_ignore_vatt != []:
-                logger.warning("%s Variable Attributes to be ignored for comparison : %s", len(list_ignore_vatt),
-                               list_ignore_vatt)
+    cdf_keys1, global_att1 = get_keys_and_attributes(cdf_file1)
+    cdf_keys2, global_att2 = get_keys_and_attributes(cdf_file2)
 
-            tab_diff = get_not_matched_vAttrKey(field1, field2)
+    cdf1 = CDF(cdf_file1)
+    cdf2 = CDF(cdf_file2)
 
-            # Case of ACQUISITION_TIME_LABEL ACQUISITION_TIME_UNITS BAND_LABEL CHANNEL_LABEL FRONT_END_LABEL RPW_STATUS_LABEL
-            #         TEMPERATURE_LABEL ...
-            # if tab_diff == []:
-            #     forced_ignored_zvar.append(key)
-            #     continue
+    dict_result = {}
 
-            if list_ignore_vatt != []:
-                for item1 in list_ignore_vatt:
-                    if item1 in tab_diff[0]:
-                        (tab_diff[0]).remove(item1)
-                for item2 in list_ignore_vatt:
-                    if item2 in tab_diff[1]:
-                        (tab_diff[1]).remove(item2)
+    gAttrs = compare_global_attributes(global_att1, global_att2, list_ignore_gatt)
 
-            if len(tab_diff) != 0:
-                if tab_diff[0] != [] or tab_diff[1] != []:
-                    logger.warning("Different Variable Attribute's keys of the zVariable '%s' : %s", key, tab_diff)
-                    NotMatch_vAttr[key] = tab_diff
+    if gAttrs:
+        dict_result['gAttrs'] = gAttrs
 
-            uniq_items_vAtt = get_matched_vAttrKey(field1, field2)
-            logger.info("Identical Variable Attribute's key : %s", uniq_items_vAtt)
+    zVars, vAttrs = compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2,
+                                 list_ignore_zvar=list_ignore_zvar, list_ignore_vatt=list_ignore_vatt)
 
-            vAttrsList1 = field1.attrs
-            vAttrsList2 = field2.attrs
+    if zVars:
+        dict_result['zVars'] = zVars
 
-            DiffValue_vAttr = {}
+    if vAttrs:
+        dict_result['vAttrs'] = vAttrs
 
-            for check_item in uniq_items_vAtt:
-                logger.debug("%s : %s  |  %s", check_item, vAttrsList1[check_item], vAttrsList2[check_item])
+    cdf1.close()
+    cdf2.close()
 
-                if vAttrsList1[check_item] == vAttrsList2[check_item]:
-                    logger.info("%s : equal", check_item)
-                else:
-                    logger.warning("%s : not equal", check_item)
-                    DiffValue_vAttr[check_item] = [vAttrsList1[check_item], vAttrsList2[check_item]]
-                    Value_vAttr[key] = DiffValue_vAttr
-                    vAttrs['Value'] = Value_vAttr
-                    logger.debug("vAttrs['Value'] : %s", vAttrs['Value'])
+    for key, value in dict_result.items():
+        logger.warning("*°*°* %s *°*°*", key)
+        for key1, value1 in dict_result[key].items():
+            logger.warning("     *°* %s : %s", key1, value1)
 
-        if len(diff_array) != 0:
-            zVars['Size'] = diff_array
-        if len(diff_data) != 0:
-            zVars['Value'] = diff_data
-        if len(diff_zvar_values) != 0:
-            zVars['Diff_Val'] = diff_zvar_values
+    # Case of we need to force to ignore some zVariables
+    # if forced_ignored_zvar != []:
+    #     logger.warning("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
 
-        if zVars:
-            dict_result['zVars'] = zVars
-
-        if len(NotMatch_vAttr) != 0:
-            vAttrs['NotMatched'] = NotMatch_vAttr
-            dict_result['vAttrs'] = vAttrs
-            logger.debug("Not Matched Variable Attributes : %s", NotMatch_vAttr.keys())
-        if len(Value_vAttr) != 0:
-            vAttrs['Value'] = Value_vAttr
-            dict_result['vAttrs'] = vAttrs
-            logger.debug("Variable Attribute's value different : %s", NotMatch_vAttr)
-
-        cdf1.close()
-        cdf2.close()
-
-        for key, value in dict_result.items():
-            logger.warning("*°*°* %s *°*°*", key)
-            for key1, value1 in dict_result[key].items():
-                logger.warning("     *°* %s : %s", key1, value1)
-
-        # Case of we need to force to ignore some zVariables 
-        # if forced_ignored_zvar != []:
-        #     logger.warning("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
-
-    logger.warning("*°*°* FINAL RESULT *°*°*")
-    logger.warning(dict_result)
-
+    logger.warning("Final result: %s", pformat(dict_result))
     return dict_result
 
 
