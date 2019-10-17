@@ -259,7 +259,7 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
             zVars['Keys'] = [list_diff1, list_diff2]
 
             logger.debug("NOT MATCHED zVARIABLES :")
-            for idx, diff_list in enumerate(zVars['NotMatched']):
+            for idx, diff_list in enumerate(zVars['Keys']):
                 logger.debug("   File %d : %d - %s", idx + 1, len(diff_list), diff_list)
         # ***** Matched keys *****
         same_keys = set(cdf_keys1) & set(cdf_keys2)
