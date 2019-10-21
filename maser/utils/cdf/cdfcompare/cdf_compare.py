@@ -351,15 +351,11 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
     # if forced_ignored_zvar != []:
     #     logger.debug("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
 
-    logger.debug("Final result: %s", pformat(dict_result))
+    logger.debug("Return value: %s", pformat(dict_result))
     return dict_result
 
 
-# *°*°*°*°*°*°*°*°
-#  Main program
-# *°*°*°*°*°*°*°*°
-
-if __name__ == '__main__':
+def main(cdf_file1, cdf_file2):
     if len(sys.argv) >= 3:
 
         list_argv = sys.argv
@@ -403,8 +399,16 @@ if __name__ == '__main__':
         else:
             logger.info("No variable attributes to be ignored")
 
-        result = cdf_compare(sys.argv[1], sys.argv[2],
+        result = cdf_compare(cdf_file1, cdf_file2,
                              list_ignore_gatt=list_ignore_gatt,
                              list_ignore_zvar=list_ignore_zvar,
                              list_ignore_vatt=list_ignore_vatt)
-        logger.warning("Final result : %s", pformat(result))
+        logger.warning("Final result : %s", result)
+
+
+# *°*°*°*°*°*°*°*°
+#  Main program
+# *°*°*°*°*°*°*°*°
+
+if __name__ == '__main__':
+    main(sys.argv[1], sys.argv[2])
