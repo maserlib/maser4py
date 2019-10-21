@@ -210,7 +210,7 @@ def compare_v_att(field1, field2, key, key_diff_dict={}, value_diff_dict={}, lis
                 (v_att_keys_diff[1]).remove(item2)
 
     if len(v_att_keys_diff[0]) != 0 or len(v_att_keys_diff[1]) != 0:
-        logger.debug("Different Variable Attribute's keys of the zVariable '%s' : %s", key, tab_diff)
+        logger.debug("Different Variable Attribute's keys of the zVariable '%s' : %s", key, v_att_keys_diff)
         key_diff_dict[key] = v_att_keys_diff
 
     common_v_att_keys = get_matched_vAttrKey(field1, field2)
