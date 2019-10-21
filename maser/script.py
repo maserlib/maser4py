@@ -171,7 +171,11 @@ def main():
         # cdf_compare sub-command
         elif 'cdf_compare' in args.maser:
             try:
-                result = cdf_compare(args.cdf_filepath1[0], args.cdf_filepath2[0])
+                result = cdf_compare(args.cdf_filepath1, args.cdf_filepath2,
+                                     list_ignore_gatt=args.ignore_gatt,
+                                     list_ignore_zvar=args.ignore_zvar,
+                                     list_ignore_vatt=args.ignore_vatt)
+                logger.warning("Final result : %s", result)
             finally:
                 if result is None:
                     logger.error('CDF_COMPARE : Faillure !!!')
