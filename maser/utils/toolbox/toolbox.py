@@ -270,6 +270,27 @@ def setup_logging(filename=None,
     return logger
 
 
+def setup_loggers(filename=None,
+                  quiet=False, debug=False,
+                  stream=logging.StreamHandler()):
+    """
+    Setup all the existing loggers
+
+    :param filename:
+    :param quiet:
+    :param debug:
+    :param stream:
+    :return:
+    """
+    # loop over existing loggers
+    for name in logging.root.manager.loggerDict:
+        logger = logging.getLogger(name)
+        setup_logging(filename=filename,
+                      quiet=quiet, debug=debug,
+                      logger=logger,
+                      stream=stream)
+
+
 def truncate_str(string, max_length,
                  gap=DEF_INDENT,
                  min_length=3):

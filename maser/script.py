@@ -68,8 +68,7 @@ def main():
     args = parser.parse_args()
 
     # Setup the logging
-    setup_logging(
-        logger=logger,
+    setup_loggers(
         filename=args.log_file[0],
         quiet=args.quiet,
         debug=args.debug,
