@@ -291,6 +291,12 @@ def setup_loggers(filename=None,
                       logger=logger,
                       stream=stream)
 
+        print(f'test logger {name}')
+        logger.debug('debug message')
+        logger.info('info message')
+        logger.warning('warn message')
+        logger.error('error message')
+
 
 def truncate_str(string, max_length,
                  gap=DEF_INDENT,
