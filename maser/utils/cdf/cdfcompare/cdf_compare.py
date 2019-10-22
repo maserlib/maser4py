@@ -12,7 +12,6 @@ from pprint import pformat
 import numpy as np
 from maser.utils.cdf import CDF
 
-logging.basicConfig(level=logging.WARNING, format='%(levelname)s : %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -214,7 +213,7 @@ def compare_v_att(field1, field2, key, key_diff_dict={}, value_diff_dict={}, lis
         key_diff_dict[key] = v_att_keys_diff
 
     common_v_att_keys = get_matched_vAttrKey(field1, field2)
-    logger.info("Identical Variable Attribute's key : %s", common_v_att_keys)
+    logger.debug("Identical Variable Attribute's key : %s", common_v_att_keys)
 
     vAttrsList1 = field1.attrs
     vAttrsList2 = field2.attrs
@@ -225,7 +224,7 @@ def compare_v_att(field1, field2, key, key_diff_dict={}, value_diff_dict={}, lis
         logger.debug("%s : %s  |  %s", check_item, vAttrsList1[check_item], vAttrsList2[check_item])
 
         if vAttrsList1[check_item] == vAttrsList2[check_item]:
-            logger.info("%s : equal", check_item)
+            logger.debug("%s : equal", check_item)
         else:
             logger.debug("%s : not equal", check_item)
             DiffValue_vAttr[check_item] = [vAttrsList1[check_item], vAttrsList2[check_item]]
@@ -250,7 +249,7 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
     list_diff1, list_diff2 = list_differences(cdf_keys1, cdf_keys2)
 
     if cdf_keys1 == cdf_keys2:
-        logger.info("Zvariables keys: identical")
+        logger.debug("Zvariables keys: identical")
         same_keys = cdf_keys1
         ordered_common_keys = sorted(list(same_keys))
     else:
@@ -267,8 +266,8 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
         # ***** Alphabetical order *****
         ordered_common_keys = sorted(list(same_keys))
 
-    logger.info("MATCHED zVARIABLES : %d", len(ordered_common_keys))
-    logger.info("    %s", ordered_common_keys)
+    logger.debug("MATCHED zVARIABLES : %d", len(ordered_common_keys))
+    logger.debug("    %s", ordered_common_keys)
 
     # prepare the dicts to store z_var and v_att diff
     v_att_key_diff_dict = {}
@@ -373,7 +372,7 @@ def main(cdf_file1, cdf_file2):
                     break
             logger.warning("Ignored global attributes list : %s", list_ignore_gatt)
         else:
-            logger.info("No global attributes to be ignored")
+            logger.debug("No global attributes to be ignored")
 
         if "--ignore_zvar" in (list_argv):
             ind_ignore_zvar = (list_argv).index("--ignore_zvar")
@@ -385,7 +384,7 @@ def main(cdf_file1, cdf_file2):
                     break
             logger.warning("Ignored zVariables list : %s", list_ignore_zvar)
         else:
-            logger.info("No zVariables to be ignored")
+            logger.debug("No zVariables to be ignored")
 
         if "--ignore_vatt" in (list_argv):
             ind_ignore_vatt = (list_argv).index("--ignore_vatt")
@@ -397,13 +396,13 @@ def main(cdf_file1, cdf_file2):
                     break
             logger.warning("Ignored variable attributes list : %s", list_ignore_vatt)
         else:
-            logger.info("No variable attributes to be ignored")
+            logger.debug("No variable attributes to be ignored")
 
         result = cdf_compare(cdf_file1, cdf_file2,
                              list_ignore_gatt=list_ignore_gatt,
                              list_ignore_zvar=list_ignore_zvar,
                              list_ignore_vatt=list_ignore_vatt)
-        logger.warning("Final result : %s", result)
+        logger.info("Final result : %s", result)
 
 
 # *°*°*°*°*°*°*°*°
