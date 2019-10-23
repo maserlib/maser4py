@@ -20,6 +20,7 @@ from maser.utils.cdf.cdfcompare import cdf_compare, add_cdfcompare_subparser
 from maser.utils.cdf.validator import cdfvalidator, ValidatorException, add_cdfvalidator_subparser
 from maser.utils.time import Lstable, add_leapsec_subparser
 from maser.services.helio.hfc import hfcviewer, add_hfcviewer_subparser
+from pprint import pformat
 
 # ________________ HEADER _________________________
 
@@ -69,7 +70,6 @@ def main():
 
     # Setup the logging
     setup_logging(
-        logger=logger,
         filename=args.log_file[0],
         quiet=args.quiet,
         debug=args.debug,
@@ -170,11 +170,22 @@ def main():
                 # leapsec sub-command
         # cdf_compare sub-command
         elif 'cdf_compare' in args.maser:
+            result = None
             try:
-                result = cdf_compare(args.cdf_filepath1[0], args.cdf_filepath2[0])
+                result = cdf_compare(args.cdf_filepath1, args.cdf_filepath2,
+                                     list_ignore_gatt=args.ignore_gatt,
+                                     list_ignore_zvar=args.ignore_zvar,
+                                     list_ignore_vatt=args.ignore_vatt)
+                if result:
+                    logger.info("CDF compare final result :\n %s", pformat(result, width=1000))
+                else:
+                    logger.info("CDF compare final result : no differences")
+
+            except Exception as err:
+                logger.error("cdf_compare error -- {0}, aborting!".format(err))
             finally:
                 if result is None:
-                    logger.error('CDF_COMPARE : Faillure !!!')
+                    logger.error('CDF compare : Failure !')
                     sys.exit(-1)
         elif 'cdf_validator' in args.maser:
             cdfvalidator(args.cdf_file[0],
