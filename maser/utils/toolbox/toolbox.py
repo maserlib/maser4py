@@ -25,7 +25,6 @@ __all__ = ["get_version",
            "Singleton",
            "download_data",
            "setup_logging",
-           "setup_loggers",
            "quote", "uniq",
            "insert_char",
            "run_command",
@@ -234,28 +233,50 @@ def run_command(cmd, env=None,
     return res
 
 
+def set_level(logger_or_handler, quiet=False, debug=False):
+    if debug:
+        logger_or_handler.setLevel(logging.DEBUG)
+    elif quiet:
+        logger_or_handler.setLevel(logging.CRITICAL + 10)
+    else:
+        logger_or_handler.setLevel(logging.INFO)
+
+
+def set_handler_config(handler, quiet=False, debug=False, formatter=None):
+    set_level(handler, quiet=quiet, debug=debug)
+    if formatter:
+        handler.setFormatter(formatter)
+
+
 def setup_logging(filename=None,
                   quiet=False, debug=False,
                   logger=logging.root,
-                  stream=logging.StreamHandler()):
+                  stream=None):
     """Method to set up logging."""
 
-    formatter = logging.Formatter('%(levelname)-8s: %(message)s',
-                                  datefmt='%Y-%m-%d %H:%M:%S')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                                  datefmt='%Y-%m-%d/%H:%M:%S')
 
 
-    # get or create stream handler
-    sh = stream
-    if debug:
-        sh.setLevel(logging.DEBUG)
-    elif quiet:
-        sh.setLevel(logging.CRITICAL + 10)
+    # set the logger log-level
+    set_level(logger, quiet=quiet, debug=debug)
+
+    # if no handler is provided
+    if stream is None:
+        # and no handler already exists
+        if not logger.handlers:
+            # set a default stream handler
+            logger.addHandler(logging.StreamHandler())
     else:
-        sh.setLevel(logging.INFO)
-    sh.setFormatter(formatter)
-    logger.addHandler(sh)
+        # add the given stream handler
+        logger.addHandler(stream)
 
-    # create file handler
+    # loop over existing handlers and set the config
+    for handler in logger.handlers:
+        set_handler_config(handler, quiet=quiet, debug=debug, formatter=formatter)
+
+
+    # create the file handler
     if filename:
         fh = logging.FileHandler(filename, delay=True)
         fh.setFormatter(logging.Formatter('%(asctime)s %(name)-\
@@ -269,33 +290,6 @@ def setup_logging(filename=None,
         logger.addHandler(fh)
 
     return logger
-
-
-def setup_loggers(filename=None,
-                  quiet=False, debug=False,
-                  stream=logging.StreamHandler()):
-    """
-    Setup all the existing loggers
-
-    :param filename:
-    :param quiet:
-    :param debug:
-    :param stream:
-    :return:
-    """
-    # loop over existing loggers
-    for name in logging.root.manager.loggerDict:
-        logger = logging.getLogger(name)
-        setup_logging(filename=filename,
-                      quiet=quiet, debug=debug,
-                      logger=logger,
-                      stream=stream)
-
-        print(f'test logger {name}')
-        logger.debug('debug message')
-        logger.info('info message')
-        logger.warning('warn message')
-        logger.error('error message')
 
 
 def truncate_str(string, max_length,

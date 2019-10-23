@@ -12,7 +12,7 @@ import logging
 from datetime import datetime
 
 from maser.settings import MASER_VERSION
-from maser.utils.toolbox import setup_loggers
+from maser.utils.toolbox import setup_logging
 from maser.utils.cdf.serializer import skeletoncdf, skeletontable, \
     add_skeletoncdf_subparser, add_skeletontable_subparser
 from maser.utils.cdf.serializer.exceptions import CDFSerializerError
@@ -68,7 +68,7 @@ def main():
     args = parser.parse_args()
 
     # Setup the logging
-    setup_loggers(
+    setup_logging(
         filename=args.log_file[0],
         quiet=args.quiet,
         debug=args.debug,
