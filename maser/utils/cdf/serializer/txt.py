@@ -72,6 +72,7 @@ class Skt2txt:
         # Load skeleton table template
         template = jenv.get_template(str(SKT_TEMPLATE))
 
+
         # Build the Skeleton template render
         self.render = template.render(
             gen_time=NOW.strftime(IN_FTIME),
@@ -390,7 +391,7 @@ class Txt2skt:
                 elif row_c == NEW_NRV:
                     new_vattrs = False
                     new_nrv = True
-                elif new_nrv and row_c.startswith("["):
+                elif new_nrv and "=" in row_c:
                     fields = self._extract_nrv(zvar, row)
                     self.skeleton.zvars[zvar][NRV].append(fields)
                 # Skip comment/empty line
