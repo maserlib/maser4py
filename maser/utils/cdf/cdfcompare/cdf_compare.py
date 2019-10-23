@@ -168,7 +168,7 @@ def compare_global_attributes(global_att1, global_att2, list_ignore_gatt):
                         DiffValueAttr[com_att] = [val1, val2]
             if DiffValueAttr:
                 gAttrs['Value'] = DiffValueAttr
-            logger.debug("gAttrs:  %s", pformat(DiffValueAttr))
+            logger.debug("gAttrs:  %s", pformat(DiffValueAttr, width=1000))
 
     return gAttrs
 
@@ -350,7 +350,7 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
     # if forced_ignored_zvar != []:
     #     logger.debug("Forced ignored zVariables (Particular case) : %s", forced_ignored_zvar)
 
-    logger.debug("Return value: %s", pformat(dict_result))
+    logger.debug("Return value: %s", pformat(dict_result, width=1000))
     return dict_result
 
 
@@ -402,7 +402,7 @@ def main(cdf_file1, cdf_file2):
                              list_ignore_gatt=list_ignore_gatt,
                              list_ignore_zvar=list_ignore_zvar,
                              list_ignore_vatt=list_ignore_vatt)
-        logger.info("Final result : %s", result)
+        logger.info("Final result : %s", pformat(result, width=1000))
 
 
 # *°*°*°*°*°*°*°*°

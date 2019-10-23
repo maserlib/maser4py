@@ -20,6 +20,7 @@ from maser.utils.cdf.cdfcompare import cdf_compare, add_cdfcompare_subparser
 from maser.utils.cdf.validator import cdfvalidator, ValidatorException, add_cdfvalidator_subparser
 from maser.utils.time import Lstable, add_leapsec_subparser
 from maser.services.helio.hfc import hfcviewer, add_hfcviewer_subparser
+from pprint import pformat
 
 # ________________ HEADER _________________________
 
@@ -175,9 +176,16 @@ def main():
                                      list_ignore_gatt=args.ignore_gatt,
                                      list_ignore_zvar=args.ignore_zvar,
                                      list_ignore_vatt=args.ignore_vatt)
+                if result:
+                    logger.info("CDF compare final result :\n %s", pformat(result, width=1000))
+                else:
+                    logger.info("CDF compare final result : no differences")
+
+            except Exception as err:
+                logger.error("cdf_compare error -- {0}, aborting!".format(err))
             finally:
                 if result is None:
-                    logger.error('CDF_COMPARE : Faillure !!!')
+                    logger.error('CDF compare : Failure !')
                     sys.exit(-1)
         elif 'cdf_validator' in args.maser:
             cdfvalidator(args.cdf_file[0],
