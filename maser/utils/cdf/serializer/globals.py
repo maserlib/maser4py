@@ -52,6 +52,7 @@ RVARS = "variables"
 NRV = "NRV"
 END = "end"
 
+NEW_HEADER = "!VariablesG.AttributesV.AttributesRecordsDimsSizes"
 NEW_ZVAR = "!VariableDataNumberRecordDimension"
 NEW_VATTRS = "!AttributeData"
 NO_NRV = "!RVvalueswerenotrequested."

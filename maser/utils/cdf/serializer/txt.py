@@ -26,7 +26,7 @@ from maser.utils.cdf.serializer.exceptions import InvalidFile
 from maser.utils.cdf.serializer.globals import JINJA_TEMPLATE_DIR
 from maser.utils.cdf.serializer.globals import SHEETS, HEADER, GATTRS, ZVARS, \
     RVARS, VATTRS, NRV, END
-from maser.utils.cdf.serializer.globals import NEW_ZVAR, NEW_VATTRS, NO_NRV, NEW_NRV
+from maser.utils.cdf.serializer.globals import NEW_HEADER, NEW_ZVAR, NEW_VATTRS, NO_NRV, NEW_NRV
 
 
 __all__ = ["Skt2txt", "Txt2skt"]
@@ -71,6 +71,7 @@ class Skt2txt:
 
         # Load skeleton table template
         template = jenv.get_template(str(SKT_TEMPLATE))
+
 
         # Build the Skeleton template render
         self.render = template.render(
@@ -203,27 +204,42 @@ class Txt2skt:
         else:
             self.file = txt_file
 
+        zvar = None
+        new_header = False
         new_zvar = False
         new_vattrs = False
         new_nrv = False
         gattname = None
         for row in self.txt_iterator():
-            cols = row.split()
+            cols = [col for col in re.split('\[|\]| |\'|\n',row) if col]
             ncols = len(cols)
             # Get "compressed" row, i.e., without any empty space
-            row_c = "".join(row.split())
+            row_c = "".join(cols)
+
             logger.debug(row_c)
+
             # Enter into the header section
             if self.section == HEADER:
+
+                if row_c == NEW_HEADER:
+                    new_header = True
+                    continue
+                elif row_c.startswith("!-"):
+                    continue
+                elif new_header:
+                    self.skeleton.header["nzvar"] = cols[0].split("/")[1]
+                    self.skeleton.header["ngattr"] = cols[1]
+                    self.skeleton.header["nvattr"] = cols[2]
+                    new_header = False
+                    continue
+
                 for field in SHEETS[HEADER]:
                     if field in row:
-                        self.skeleton.header[field] = row.strip().split(":")[1]
+                        self.skeleton.header[field] = row.strip().split(":")[1].strip()
+                        break
                     elif row.startswith("!") or ncols == 0:
                         continue
-                    elif ncols == 5:
-                        self.skeleton.header["nzvar"] = cols[0].split("/")[1]
-                        self.skeleton.header["ngattr"] = cols[1]
-                        self.skeleton.header["nvattr"] = cols[2]
+
 
             # Enter into the global attribute definition section
             elif self.section == GATTRS:
@@ -233,7 +249,6 @@ class Txt2skt:
                 else:
                     # If it is a global attribute definition row...
                     self.row += " " + row
-
 
                 if row_c.endswith('}') or row_c.endswith('}.'):
                     # If gattname already defined, it means that it is a new entry
@@ -269,6 +284,7 @@ class Txt2skt:
 
             # Enter into the zVariable definition section
             elif self.section == ZVARS:
+
                 # Retrieve value of the VAR_COMPRESSION parameter
                 if "!VAR_COMPRESSION:" in row_c:
                     value = row.strip().split(":")
@@ -307,7 +323,7 @@ class Txt2skt:
                         raise InvalidFile
                     self.skeleton.zvars[zvar]["VAR_SPARSERECORDS"] = value
                 elif row_c == NEW_ZVAR:
-                    # New zvariable defintion sub-section has been found
+                    # New zvariable definition sub-section has been found
                     new_nrv = False
                     new_zvar = True
                     zvar = None
@@ -375,7 +391,7 @@ class Txt2skt:
                 elif row_c == NEW_NRV:
                     new_vattrs = False
                     new_nrv = True
-                elif new_nrv and row_c.startswith("["):
+                elif new_nrv and "=" in row_c:
                     fields = self._extract_nrv(zvar, row)
                     self.skeleton.zvars[zvar][NRV].append(fields)
                 # Skip comment/empty line

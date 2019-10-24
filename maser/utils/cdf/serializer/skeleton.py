@@ -208,6 +208,7 @@ class Skeleton():
                                               "Data Type"]):
                 raise InvalidEntry
 
+
             # Get number of entries
             nentry = len(self.gattrs[attname])
             for i, entry in enumerate(entries):
@@ -227,7 +228,7 @@ class Skeleton():
                 raise InvalidEntry
 
             self.gattrs[attname] = entries
-            self.header["ngattr"] += 1
+            self.header["ngattr"] = str(int(self.header["ngattr"]) + 1)
             return True
 
     def set_gattr(self, attname, new_entry, add=False):

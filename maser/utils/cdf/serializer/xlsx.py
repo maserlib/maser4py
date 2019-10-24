@@ -330,7 +330,10 @@ class Xlsx2skt:
 
             fields = dict()
             for col in SHEETS[ZVARS]:
-                fields[col] = sheets[ZVARS][col][i]
+                if col == 'Sizes':
+                    fields[col] = [sheets[ZVARS][col][i]]
+                else:
+                    fields[col] = sheets[ZVARS][col][i]
 
             if auto_pad:
                 fields["VAR_PADVALUE"] = assign_pad(sheets[ZVARS]["Data Type"][i])
