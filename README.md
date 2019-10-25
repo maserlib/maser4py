@@ -6,8 +6,9 @@ About maser4py
 
 maser4py python package contains modules to
 deal with services, data and tools provided in the framework
-of the MASER portal (see section below).
+of the MASER portal (http://maser.lesia.obspm.fr).
 
+maser4py use manual is available in https://maser.readthedocs.io/en/latest/. 
 
 Installation
 ============
