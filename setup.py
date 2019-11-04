@@ -14,7 +14,7 @@ import subprocess
 
 from setuptools import find_packages
 from setuptools import setup
-from doc.utils import APIDoc
+from docs.utils import APIDoc
 
 # --------------------------------------------------------------------------------------------------------------
 # Global variables:
@@ -72,7 +72,7 @@ setup(
     description="Python 3 module for the MASER portal",
     long_description=open(osp.join(ROOT_DIRECTORY, "README.md")).read(),
     author="MASER team",
-    license="GPL",
+    license="GPL-V3",
     packages=packages,
     cmdclass=cmdclass,
     entry_points={

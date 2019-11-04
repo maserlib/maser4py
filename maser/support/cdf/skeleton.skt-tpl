@@ -1,0 +1,78 @@
+!Skeleton table for the "{{ name }}" CDF.
+!Generated: {{ gen_time }}
+!Skeleton table created by MASER4PY V{{ version }}
+!Skeleton table created from {{ file }}
+
+
+#header
+
+                CDF NAME: {{ header["CDF NAME"] }}
+                DATA ENCODING: {{ header["DATA ENCODING"] }}
+                MAJORITY: {{ header["MAJORITY"] }}
+                FORMAT: {{ header["FORMAT"] }}
+
+! Variables     G.Attributes     V.Attributes     Records     Dims     Sizes
+! ---------     ------------     ------------     -------     ----     -----
+    0/{{ header["nzvar"] }}            {{ header["ngattr"] }}               {{ header["nvattr"] }}              0/z       0
+
+!CDF_COMPRESSION: {{ header["CDF_COMPRESSION"] }}
+!CDF_CHECKSUM: {{ header["CDF_CHECKSUM"] }}
+
+
+#GLOBALattributes
+
+! Attribute    Entry        Data
+! Name         Number       Type   Value
+! ---------    ------       ----   -----
+
+{% for key, val in gattrs.items() %}
+
+    "{{ key }}"{% for entry in val %}
+           {{ entry["Entry Number"] }}:  {{ entry["Data Type"] }}    { "{{ entry["Value"] }}" }
+    {% endfor %} .
+{% endfor %}
+
+#VARIABLEattributes
+
+{% for vattr in vattrList %}
+  "{{ vattr }}"{% endfor %}
+
+#variables
+
+!No rVariables.
+
+#zVariables
+
+{% for zvar, val in zvars.items() %}
+! Variable    Data     Number                      Record       Dimension
+! Name        Type     Elements   Dims    Sizes    Variance     Variances
+! --------    ----     --------   ----    -----    --------     ---------
+
+  "{{ zvar }}"   {{ val["Data Type"] }}  {{ val["Number Elements"] }}  {{ val["Dims"] }}    {% if val["Sizes"] %}{{ " ".join(val["Sizes"]) }}{% endif %}   {{ val["Record Variance"] }}    {% if val["Sizes"] %}{{ " ".join(val["Dimension Variances"]) }}{% endif %}
+
+
+  ! VAR_COMPRESSION: {{ val["VAR_COMPRESSION"] }}
+  ! (Valid compression: None, GZIP.1-9, RLE.0, HUFF.0, AHUFF.0)
+  ! VAR_SPARSERECORDS: {{ val["VAR_SPARSERECORDS"] }}
+  ! (Valid sparserecords: None, sRecords.PAD, sRecords.PREV)
+  ! VAR_PADVALUE: {{ val["VAR_PADVALUE"] }}
+
+  ! Attribute    Data
+  ! Name         Type   Value
+  ! --------     ----   -----
+
+    {% for key, val in vattrs.items() %}{% if key == zvar %}{% for vattr, entry in val.items() %}
+    "{{ vattr }}"   {{ entry["Data Type"] }}  {% if entry["Data Type"] == "CDF_CHAR" %}{ "{{ entry["Value"] }}" }{% else %}{ {{ entry["Value"] }} }{% endif %}
+    {% endfor %}{% endif %}{% endfor %} .
+
+{% if val["NRV"] %}
+  ! NRV values follow...
+
+    {% for entry in val["NRV"] %}[ {{ entry["Index"]}} ] = {% if val["Data Type"] == "CDF_CHAR" %}{ "{{ entry["Value"] }}" }{% else %} {{ entry["Value"] }} {% endif %}
+    {% endfor %}
+{% else %}
+  ! RV values were not requested.
+{% endif %}
+{% endfor %}
+
+#end

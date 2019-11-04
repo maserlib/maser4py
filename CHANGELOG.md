@@ -1,6 +1,25 @@
 CHANGELOG
 ====================
 
+0.8.2
+-----
+* cdf_compare is now correctly called from the maser command line.
+* Rework of logger usage in cdf_compare.
+* zVar NRV values are now correctly written in output skeleton table file.
+* Size of zvars with more than 1 digit are now correctly written into the output skeleton table file.
+
+0.8.1
+-----
+* Fix bug when releasing 0.8.0
+
+0.8.0
+-----
+* Update the cdf_validator tool
+* Update the skeletoncdf tool
+* Add skeletontable command
+* Update CDPP data object
+* Update unit tests for data modules
+
 0.7.1
 -----
 * Fix dependencies installation bug (in requirements.txt)

@@ -1,8 +1,10 @@
 astropy
+matplotlib
 scipy
 numpy
+suds-py3
+Pillow
 openpyxl
 pytz
 python-dateutil
-Sphinx
-sphinx_rtd_theme
+jinja2

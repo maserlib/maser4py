@@ -6,8 +6,9 @@ About maser4py
 
 maser4py python package contains modules to
 deal with services, data and tools provided in the framework
-of the MASER portal (see section below).
+of the MASER portal (http://maser.lesia.obspm.fr).
 
+maser4py use manual is available in https://maser.readthedocs.io/en/latest/. 
 
 Installation
 ============
@@ -88,3 +89,14 @@ In this frequency range, the main radio sources are the Sun and the magnetized p
 
 * For more information about the MASER project: http://maser.lesia.obspm.fr/
 * For more information about MASER4PY: https://github.com/maserlib/maser4py
+
+Acknowledgements
+----------------
+
+The development of the MASER library is supported by Observatoire de Paris, CNRS (Centre National de la Recherche Scientique) and CNES (Centre National d'Etudes Spatiales). The technical support from PADC (Paris Astronomical Data Centre) and CDPP (Centre de Données de la Physique des Plasmas) is also acknowledged.
+
+The project has also received support from the European Union through:
+* HELIO (Heliophysics Integrated Observatory), which received funding from Capacities Specific Programme of the European Commission's Seventh Framework Programme (FP7) under grant agreement No 238969;
+* EPN2020RI (Europlanet 2020 Research Infrastructure project), which received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 654208.
+
+

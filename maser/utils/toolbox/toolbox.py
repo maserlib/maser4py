@@ -48,7 +48,7 @@ __change__ = {"version": "change"}
 
 # ________________ Global Variables _____________
 # (define here the global variables)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 DEF_INDENT = " " * 16
 
@@ -113,27 +113,27 @@ def move_safe(src, dst,
         shutil.copytree(src, target)
         is_item = os.path.isdir
     except shutil.Error as e:
-        logger.error('Directory not copied. Error: %s'.format(e))
+        LOGGER.error('Directory not copied. Error: %s'.format(e))
     except OSError as e:
         if e.errno == errno.ENOTDIR:
             shutil.copyfile(src, dst)
             is_item = os.path.isfile
         else:
-            logger.error("{0} is not a valid directory!".format(dst))
+            LOGGER.error("{0} is not a valid directory!".format(dst))
             raise FileNotFoundError(
                 errno.ENOENT, os.strerror(errno.ENOENT), src)
 
     # Check that file/directory has been correctly copied before removing the
     # original
     if not is_item(target):
-        logger.error(
+        LOGGER.error(
             "{0} has not been moved correctly, aborting!".format(src))
         raise FileNotFoundError(
             errno.ENOENT, os.strerror(errno.ENOENT), src)
 
     if no_erase:
         move_safe(src, tempdir)
-        logger.info("{0} moved in {1}".format(src, tempdir))
+        LOGGER.info("{0} moved in {1}".format(src, tempdir))
 
     return target
 
@@ -188,7 +188,7 @@ def print_exception(message=None, exit=True):
         mess = trace
 
     # show error in the logger
-    logger.error(mess)
+    LOGGER.error(mess)
 
     if exit:
         sys.exit(1)
@@ -214,9 +214,9 @@ def quote(string, unquote=False):
 def run_command(cmd, env=None,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                shell=False):
+                shell=False,
+                logger=LOGGER):
     """Run a command with subprocess."""
-    logger = logging.getLogger(__name__)
 
     try:
         logger.info(" ".join(cmd))
@@ -233,28 +233,50 @@ def run_command(cmd, env=None,
     return res
 
 
-def setup_logging(filename=None,
-                  quiet=False, verbose=False, debug=False):
-    """Method to set up logging."""
+def set_level(logger_or_handler, quiet=False, debug=False):
     if debug:
-        logging.basicConfig(level=logging.DEBUG,
-                            format='%(levelname)-8s: %(message)s')
-    elif verbose:
-        logging.basicConfig(level=logging.INFO,
-                            format='%(levelname)-8s: %(message)s')
+        logger_or_handler.setLevel(logging.DEBUG)
+    elif quiet:
+        logger_or_handler.setLevel(logging.CRITICAL + 10)
     else:
-        logging.basicConfig(level=logging.ERROR,
-                            format='%(levelname)-8s: %(message)s')
+        logger_or_handler.setLevel(logging.INFO)
 
-    if quiet:
-        logging.root.handlers[0].setLevel(logging.CRITICAL + 10)
-    elif verbose:
-        logging.root.handlers[0].setLevel(logging.INFO)
-    elif debug:
-        logging.root.handlers[0].setLevel(logging.DEBUG)
+
+def set_handler_config(handler, quiet=False, debug=False, formatter=None):
+    set_level(handler, quiet=quiet, debug=debug)
+    if formatter:
+        handler.setFormatter(formatter)
+
+
+def setup_logging(filename=None,
+                  quiet=False, debug=False,
+                  logger=logging.root,
+                  stream=None):
+    """Method to set up logging."""
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                                  datefmt='%Y-%m-%d/%H:%M:%S')
+
+
+    # set the logger log-level
+    set_level(logger, quiet=quiet, debug=debug)
+
+    # if no handler is provided
+    if stream is None:
+        # and no handler already exists
+        if not logger.handlers:
+            # set a default stream handler
+            logger.addHandler(logging.StreamHandler())
     else:
-        logging.root.handlers[0].setLevel(logging.ERROR)
+        # add the given stream handler
+        logger.addHandler(stream)
 
+    # loop over existing handlers and set the config
+    for handler in logger.handlers:
+        set_handler_config(handler, quiet=quiet, debug=debug, formatter=formatter)
+
+
+    # create the file handler
     if filename:
         fh = logging.FileHandler(filename, delay=True)
         fh.setFormatter(logging.Formatter('%(asctime)s %(name)-\
@@ -265,7 +287,9 @@ def setup_logging(filename=None,
         else:
             fh.setLevel(logging.INFO)
 
-        logging.root.addHandler(fh)
+        logger.addHandler(fh)
+
+    return logger
 
 
 def truncate_str(string, max_length,

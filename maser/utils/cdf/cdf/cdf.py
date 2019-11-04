@@ -76,7 +76,7 @@ Copyright 2010-2013 Los Alamos National Security, LLC.
 """
 
 __contact__ = 'Jon Niehof, jniehof@lanl.gov'
-__all__ = ["CDF", "zAttr"]
+__all__ = ["CDF", "zAttr", "zAttrList"]
 
 
 try:
@@ -98,7 +98,7 @@ class Library(object):
     Calling the C library directly requires knowledge of
     :mod:`ctypes`.
 
-    Instantiating this object loads the C library, see :doc:`/pycdf` docs
+    Instantiating this object loads the C library, see :docs:`/pycdf` docs
     for details.
 
     .. autosummary::
@@ -1718,7 +1718,7 @@ class CDF(collections.MutableMapping):
         ==========
         args : various, see :py:mod:`ctypes`.
             Passed directly to the CDF library interface. Useful
-            constants are defined in the :doc:`const <pycdf_const>`
+            constants are defined in the :docs:`const <pycdf_const>`
             module of this package.
 
         Returns
@@ -2292,7 +2292,7 @@ class Var(collections.MutableSequence):
     *regardless of the majority stored in the CDF*, pycdf will always present
     the data in the native Python majority, row-major order, also known as
     C order. This is the default order in `NumPy
-    <http://docs.scipy.org/doc/numpy/reference/arrays.ndarray.html
+    <http://docs.scipy.org/docs/numpy/reference/arrays.ndarray.html
     #internal-memory-layout-of-an-ndarray>`_.
     However, packages that render image data may expect it in column-major
     order. If the axes seem 'swapped' this is likely the reason.
