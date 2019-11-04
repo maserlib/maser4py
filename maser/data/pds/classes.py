@@ -192,6 +192,26 @@ class PDSLabelDict(dict):
             self.process.append('Added depth tag')
 
     def __init__(self, label_file, fmt_label_dict=None, verbose=False, debug=False):
+        """This class is used to store PDS3 label information in a Dictionary structure.
+
+        It takes a PDS3 label file as the main input. If extra label files (such as .FMT files) are required to decode
+        the data, the `fmt_label_dict` parameter is used to pass a dictionary containing the series of FMT label files,
+        with the FMT name as keys and the FMT label file as values.
+
+        Example:
+        ```fmt_files = {
+            'LRFULL_TABLE': '../FMT/LRFULL_TABLE.FMT',
+            'RPWS_SCLK_SCET': '../FMT/RPWS_SCLK_SCET.FMT',
+            'LRFC_DATA_QUALITY': '../FMT/LRFC_DATA_QUALITY.FMT'
+            }
+        lbl = PDSLabelDict('T2000366_HFR0.LBL', fmt_label_dict=fmt_files)
+        ```
+
+        :param label_file (str): Input PDS3 label file
+        :param fmt_label_dict (dict): Extra FMT label files dictionary
+        :param verbose (bool): Verbose flag (default: False)
+        :param debug (bool): Debug flag (default: False)
+        """
 
         if debug:
             print("### This is PDSLabelDict.__init__()")
