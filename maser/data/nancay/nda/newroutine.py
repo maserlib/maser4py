@@ -133,7 +133,8 @@ class NDANewRoutineData(NDADataFromFile):
 
         header['nbchan'] = nbchan
         header['cube_size'] = 4 * (8 + header['nbchan'] * (header['nfreq'] + 2))
-        header['magic_word'] = 0x7F800000
+        header['magic_word_head'] = 0x7F800000
+        header['magic_word_corr'] = 0xFF800001
         header['record_fmt'] = record_fmt
 
         return header
