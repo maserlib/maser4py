@@ -113,12 +113,14 @@ class NDAJunonData(NDADataFromFile):
         if desc['stream_10G'] == 1:
 
             desc['cube_size'] = 4 * (8 + desc['nbchan']*(desc['nfreq']+2))
-            desc['magic_word'] = 0x7F800000
+            desc['magic_word_head'] = 0x7F800000
+            desc['magic_word_corr'] = 0xFF800001
 
         if desc['stream_10G'] == 2:
 
             desc['cube_size'] = 2048
-            desc['magic_word'] = 0xFF800000
+            desc['magic_word_head'] = 0xFF800000
+            desc['magic_word_corr'] = 0xFF800001
 
         return desc
 

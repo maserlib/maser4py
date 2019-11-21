@@ -2,31 +2,31 @@
 # -*- coding: latin-1 -*-
 
 """
-Python module to read Nancay/NDA/NewRoutine data from SRN/NDA.
+Python module to read Nancay/NDA/Mefisto data from SRN/NDA.
 @author: B.Cecconi(LESIA)
 """
 
 __author__ = "Baptiste Cecconi"
-__date__ = "03-OCT-2017"
-__version__ = "0.10"
+__date__ = "21-NOV-2019"
+__version__ = "0.01"
 
-__all__ = ["NDANewRoutineData", "NDANewRoutineError", "NDANewRoutineECube", "read_srn_nda_new_routine"]
+__all__ = ["NDAMefistoData", "NDAMefistoError", "NDAMefistoECube", "read_srn_nda_mefisto"]
 
 import struct
 import os
 from ..nda import NDAError, NDADataFromFile, NDADataECube
 
 
-class NDANewRoutineError(NDAError):
+class NDAMefistoError(NDAError):
     pass
 
 
-class NDANewRoutineData(NDADataFromFile):
+class NDAMefistoData(NDADataFromFile):
 
     def __init__(self, file, debug=False):
         header = {}
         data = []
-        name = "SRN/NDA NewRoutine Dataset"
+        name = "SRN/NDA Mefisto Dataset"
         # meta = {}
         NDADataFromFile.__init__(self, file, header, data, name)
         self.file_handle = open(self.file, 'rb')
@@ -40,7 +40,7 @@ class NDANewRoutineData(NDADataFromFile):
 
         ifrq_min = 0
         ifrq_max = 0
-        for i in range(2048):
+        for i in range(512):
             if self.header['freq'][i] < 10:
                 ifrq_min = i + 1
             if self.header['freq'][i] <= 40:
@@ -59,7 +59,7 @@ class NDANewRoutineData(NDADataFromFile):
         meta = dict()
         meta['obsty_id'] = 'srn'
         meta['instr_id'] = 'nda'
-        meta['recvr_id'] = 'newroutine'
+        meta['recvr_id'] = 'mefisto'
         meta['freq_min'] = float(self.header['freq'][ifrq_min])  # MHz
         meta['freq_max'] = float(self.header['freq'][ifrq_max])  # MHz
         meta['freq_len'] = ifrq_max - ifrq_min + 1
@@ -73,43 +73,43 @@ class NDANewRoutineData(NDADataFromFile):
         elif self.file_info['format'] == 'CDF':
             return 'application/x-cdf'
         else:
-            raise NDANewRoutineError("Wrong file format")
+            raise NDAMefistoError("Wrong file format")
 
     def __len__(self):
         if self.file_info['format'] == 'DAT':
             return (self.get_file_size()-self.file_info['header_size'])//self.file_info['record_size']
         else:
-            raise NDANewRoutineError("NDA/NewRoutine: Format {} not implemented yet".format(self.file_info['format']))
+            raise NDAMefistoError("NDA/Mefisto: Format {} not implemented yet".format(self.file_info['format']))
 
     def detect_format(self):
         if self.file.endswith('.dat'):
             self.file_info['format'] = 'DAT'
-            self.file_info['record_size'] = 32832
-            self.file_info['header_size'] = 16660
+            self.file_info['record_size'] = 8256
+            self.file_info['header_size'] = 4372
             self.file_info['data_offset_in_file'] = self.file_info['record_size']
         elif self.file.endswith('.cdf'):
             self.file_info['format'] = 'CDF'
         else:
-            raise NDANewRoutineError('NDA/NewRoutine: Unknown file Extension')
+            raise NDAMefistoError('NDA/Mefisto: Unknown file Extension')
 
     def set_filedate(self):
         if self.file_info['format'] == 'DAT':
             self.file_info['filedate'] = ((os.path.basename(self.file).split('.'))[0])[1:9]
         else:
-            raise NDANewRoutineError("NDA/NewRoutine: Format {} not implemented yet".format(self.file_info['format']))
+            raise NDAMefistoError("NDA/Mefisto: Format {} not implemented yet".format(self.file_info['format']))
 
     def header_from_file(self):
         if self.file_info['format'] == 'DAT':
             return self.header_from_dat()
         else:
-            raise NDANewRoutineError("NDA/NewRoutine: Format {} not implemented yet".format(self.file_info['format']))
+            raise NDAMefistoError("NDA/Mefisto: Format {} not implemented yet".format(self.file_info['format']))
 
     def header_from_dat(self):
 
         f = self.file_handle
         self.file_info['header_raw'] = f.read(self.file_info['header_size'])
 
-        hdr_fmt = '<68I1l2048f2048l'
+        hdr_fmt = '<68I1l512f512l'
         hdr_val = struct.unpack(hdr_fmt, self.file_info['header_raw'])
 
         header = dict()
@@ -119,8 +119,8 @@ class NDANewRoutineData(NDADataFromFile):
         header['acc'] = hdr_val[3]  # accumulating factor
         header['subband'] = hdr_val[4:68]  # selected sub-bands
         header['nfreq'] = hdr_val[68]  # Number of FFT points
-        header['freq'] = hdr_val[69:2117]  # frequency values
-        header['ifrq'] = hdr_val[2117:4165]  # frequency indices
+        header['freq'] = hdr_val[69:581]  # frequency values
+        header['ifrq'] = hdr_val[2117:1093]  # frequency indices
 
         sel_chan = [int(ii) for ii in
                     list('{:032b}'.format(header['sel_prod0'])[::-1] +
@@ -129,12 +129,12 @@ class NDANewRoutineData(NDADataFromFile):
 
         record_fmt = '<8I'
         for iichan in range(0, nbchan):
-            record_fmt = '{}{}'.format(record_fmt, '2I2048f')
+            record_fmt = '{}{}'.format(record_fmt, '2I512f')
 
         header['nbchan'] = nbchan
         header['cube_size'] = 4 * (8 + header['nbchan'] * (header['nfreq'] + 2))
         header['magic_word_head'] = 0x7F800000
-        header['magic_word_corr'] = 0xFF800001
+        header['magic_word_corr'] = 0x7F800001
         header['record_fmt'] = record_fmt
 
         return header
@@ -146,7 +146,7 @@ class NDANewRoutineData(NDADataFromFile):
         return self.get_single_ecube(-1, load_data)
 
     def get_single_ecube(self, index_input=0, load_data=True):
-        return NDANewRoutineECube(self, index_input, load_data)
+        return NDAMefistoECube(self, index_input, load_data)
 
     def get_freq_axis(self):
         return self.header['freq']
@@ -155,15 +155,15 @@ class NDANewRoutineData(NDADataFromFile):
         return [self.get_single_ecube(item, load_data=False).get_datetime() for item in range(len(self))]
 
 
-class NDANewRoutineECube(NDADataECube):
+class NDAMefistoECube(NDADataECube):
     pass
 
 
-def read_srn_nda_new_routine(file_path):
+def read_srn_nda_mefisto(file_path):
     """
 
     :param file_path:
     :return:
     """
 
-    return NDANewRoutineData(file_path)
+    return NDAMefistoData(file_path)
