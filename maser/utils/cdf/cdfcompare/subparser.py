@@ -32,6 +32,9 @@ def add_cdfcompare_subparser(subparser):
     cdfcompare_parser.add_argument('--ignore_vatt', nargs="+",
                                    default=[],
                                    help="Global attributes to ignore")
+    cdfcompare_parser.add_argument('--precision', nargs="+",
+                                   default=[],
+                                   help="zVariable precision settings")
 
     # _________________ Main ____________________________
 # if __name__ == "__main__":
