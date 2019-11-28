@@ -175,7 +175,9 @@ def main():
                 result = cdf_compare(args.cdf_filepath1, args.cdf_filepath2,
                                      list_ignore_gatt=args.ignore_gatt,
                                      list_ignore_zvar=args.ignore_zvar,
-                                     list_ignore_vatt=args.ignore_vatt)
+                                     list_ignore_vatt=args.ignore_vatt,
+                                     list_numerical_precision=args.precision)
+
                 if result:
                     logger.info("CDF compare final result :\n %s", pformat(result, width=1000))
                 else:
