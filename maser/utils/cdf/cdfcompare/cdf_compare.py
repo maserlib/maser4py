@@ -173,10 +173,22 @@ def compare_global_attributes(global_att1, global_att2, list_ignore_gatt):
     return gAttrs
 
 
-def compare_z_var(field1, field2, key, shape_diff_dict={}, value_diff_dict={}):
+def precision_dict_from_list(precision_list):
+    precision_dict = {}
+    for key_value in precision_list:
+        key, value = key_value.split(':')
+        precision_dict[key] = float(value)
+    return precision_dict
+
+def compare_z_var(field1, field2, key, list_numerical_precision=[], shape_diff_dict={}, value_diff_dict={}):
     # check if fields have the same shape
     data1 = field1[...]
     data2 = field2[...]
+
+    res = False
+    dict_numerical_precision = {}
+    if len(list_numerical_precision) != 0:
+        dict_numerical_precision = precision_dict_from_list(list_numerical_precision)
 
     if data1.shape != data2.shape:
         logger.debug("%s - array shape is different: %s | %s", key, field1.shape, field2.shape)
@@ -184,13 +196,20 @@ def compare_z_var(field1, field2, key, shape_diff_dict={}, value_diff_dict={}):
 
     else:
         differences_mask = data1 != data2
-
         fields_are_different = np.any(differences_mask)
 
         # zVariable's key : check for different values
         if fields_are_different:
-            logger.debug("Different values for zVariable '%s' : %s | %s", key, field1, field2)
-            value_diff_dict[key] = [data1[differences_mask], data2[differences_mask]]
+            if key in dict_numerical_precision.keys():
+                tab_diff = np.isclose(data1, data2, atol=dict_numerical_precision[key])
+                res = np.all(tab_diff)
+                if not res:
+                    logger.debug("Different values for zVariable '%s' : %s | %s", key, field1, field2)
+                    value_diff_dict[key] = [data1[differences_mask], data2[differences_mask]]
+
+            else:
+                logger.debug("Different values for zVariable '%s' : %s | %s", key, field1, field2)
+                value_diff_dict[key] = [data1[differences_mask], data2[differences_mask]]
 
     return shape_diff_dict, value_diff_dict
 
@@ -234,7 +253,7 @@ def compare_v_att(field1, field2, key, key_diff_dict={}, value_diff_dict={}, lis
     return key_diff_dict, value_diff_dict
 
 
-def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ignore_vatt=[]):
+def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ignore_vatt=[], list_numerical_precision=[]):
     zVars = {}  # store data differences
     vAttrs = {}  # store attribute differences
 
@@ -285,7 +304,8 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
         field1 = cdf1.raw_var(key)
         field2 = cdf2.raw_var(key)
 
-        compare_z_var(field1, field2, key, shape_diff_dict=z_var_shape_diff_dict, value_diff_dict=z_var_value_diff_dict)
+        compare_z_var(field1, field2, key, list_numerical_precision=list_numerical_precision,
+                      shape_diff_dict=z_var_shape_diff_dict, value_diff_dict=z_var_value_diff_dict)
 
         compare_v_att(field1, field2, key,
                       list_ignore_vatt=list_ignore_vatt,
@@ -310,7 +330,7 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
 
 
 # Comparing 2 CDF files data
-def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], list_ignore_vatt=[]):
+def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], list_ignore_vatt=[], list_numerical_precision=[]):
     logger.debug(' CDF file 1 : %s', cdf_file1)
     logger.debug(' CDF file 2 : %s', cdf_file2)
     checking_file_exist(cdf_file1)
@@ -330,7 +350,8 @@ def cdf_compare(cdf_file1, cdf_file2, list_ignore_gatt=[], list_ignore_zvar=[], 
         dict_result['gAttrs'] = gAttrs
 
     zVars, vAttrs = compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2,
-                                 list_ignore_zvar=list_ignore_zvar, list_ignore_vatt=list_ignore_vatt)
+                                 list_ignore_zvar=list_ignore_zvar, list_ignore_vatt=list_ignore_vatt,
+                                 list_numerical_precision=list_numerical_precision)
 
     if zVars:
         dict_result['zVars'] = zVars
@@ -361,12 +382,13 @@ def main(cdf_file1, cdf_file2):
         list_ignore_gatt = []
         list_ignore_zvar = []
         list_ignore_vatt = []
+        list_numerical_precision = []
 
         if "--ignore_gatt" in (list_argv):
             ind_ignore_gatt = (list_argv).index("--ignore_gatt")
             list_ignore_gatt = []
             for item in list_argv[ind_ignore_gatt + 1:]:
-                if item.startswith("--ignore_") == False:
+                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
                     list_ignore_gatt.append(item)
                 else:
                     break
@@ -378,7 +400,7 @@ def main(cdf_file1, cdf_file2):
             ind_ignore_zvar = (list_argv).index("--ignore_zvar")
             list_ignore_zvar = []
             for item in list_argv[ind_ignore_zvar + 1:]:
-                if item.startswith("--ignore_") == False:
+                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
                     list_ignore_zvar.append(item)
                 else:
                     break
@@ -390,7 +412,7 @@ def main(cdf_file1, cdf_file2):
             ind_ignore_vatt = (list_argv).index("--ignore_vatt")
             list_ignore_vatt = []
             for item in list_argv[ind_ignore_vatt + 1:]:
-                if item.startswith("--ignore_") == False:
+                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
                     list_ignore_vatt.append(item)
                 else:
                     break
@@ -398,10 +420,23 @@ def main(cdf_file1, cdf_file2):
         else:
             logger.debug("No variable attributes to be ignored")
 
+        if "--precision" in (list_argv):
+            ind_precision_zvar = (list_argv).index("--precision")
+            list_numerical_precision = []
+            for item in list_argv[ind_precision_zvar + 1:]:
+                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
+                    list_numerical_precision.append(item)
+                else:
+                    break
+            logger.warning("Numerical precision list : %s", list_numerical_precision)
+        else:
+            logger.debug("No zVariable precision set")
+
         result = cdf_compare(cdf_file1, cdf_file2,
                              list_ignore_gatt=list_ignore_gatt,
                              list_ignore_zvar=list_ignore_zvar,
-                             list_ignore_vatt=list_ignore_vatt)
+                             list_ignore_vatt=list_ignore_vatt,
+                             list_numerical_precision=list_numerical_precision)
         logger.info("Final result : %s", pformat(result, width=1000))
 
 
