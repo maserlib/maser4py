@@ -180,15 +180,12 @@ def precision_dict_from_list(precision_list):
         precision_dict[key] = float(value)
     return precision_dict
 
-def compare_z_var(field1, field2, key, list_numerical_precision=[], shape_diff_dict={}, value_diff_dict={}):
+def compare_z_var(field1, field2, key, dict_numerical_precision={}, shape_diff_dict={}, value_diff_dict={}):
     # check if fields have the same shape
     data1 = field1[...]
     data2 = field2[...]
 
     res = False
-    dict_numerical_precision = {}
-    if len(list_numerical_precision) != 0:
-        dict_numerical_precision = precision_dict_from_list(list_numerical_precision)
 
     if data1.shape != data2.shape:
         logger.debug("%s - array shape is different: %s | %s", key, field1.shape, field2.shape)
@@ -304,7 +301,12 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
         field1 = cdf1.raw_var(key)
         field2 = cdf2.raw_var(key)
 
-        compare_z_var(field1, field2, key, list_numerical_precision=list_numerical_precision,
+        if len(list_numerical_precision) != 0:
+            dict_numerical_precision = precision_dict_from_list(list_numerical_precision)
+        else:
+            dict_numerical_precision = {}
+
+        compare_z_var(field1, field2, key, dict_numerical_precision=dict_numerical_precision,
                       shape_diff_dict=z_var_shape_diff_dict, value_diff_dict=z_var_value_diff_dict)
 
         compare_v_att(field1, field2, key,
