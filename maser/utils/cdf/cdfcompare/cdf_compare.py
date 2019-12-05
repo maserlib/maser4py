@@ -301,10 +301,9 @@ def compare_data(cdf1, cdf2, cdf_keys1, cdf_keys2, list_ignore_zvar=[], list_ign
         field1 = cdf1.raw_var(key)
         field2 = cdf2.raw_var(key)
 
+        dict_numerical_precision = {}
         if len(list_numerical_precision) != 0:
             dict_numerical_precision = precision_dict_from_list(list_numerical_precision)
-        else:
-            dict_numerical_precision = {}
 
         compare_z_var(field1, field2, key, dict_numerical_precision=dict_numerical_precision,
                       shape_diff_dict=z_var_shape_diff_dict, value_diff_dict=z_var_value_diff_dict)
