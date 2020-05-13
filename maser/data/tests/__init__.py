@@ -74,6 +74,7 @@ _test_data_files = {'cdpp': {'demeter': ['DMT_N1_1134_018401_20041105_235807_200
                     'nda': {'routine': ['J160131.RT1', 'srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf'],
                             'newroutine': ['J20170101_022612_Rou.dat'],
                             'junon': ['20180223_034242_extract1.dat'],
+                            'mefisto': ['S20130118_155927_20130118_160030_Spectro.dat']
                             },
                     'radiojove': {'sps': ['161210000000.sps'],
                                   },

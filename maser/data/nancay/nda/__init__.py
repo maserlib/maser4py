@@ -100,12 +100,12 @@ class NDADataECube(MaserDataSweep):
 
     def check_magic(self):
 
-        if self.data['magic'] != 0x7F800000:
+        if self.data['magic'] != self.parent.header['magic_word_head']:
             raise NDAError('[{}:{}] Wrong eCube Magic Word (Header) [0x{:08X}]'
                            .format(self.parent.get_file_name(), self.index, self.data['magic']))
 
         for i in range(self.parent.header['nbchan']):
-            if self.data['corr'][i]['magic'] != 0xFF800001:
+            if self.data['corr'][i]['magic'] != self.parent.header['magic_word_corr']:
                 raise NDAError('[{}:{}] Wrong eCube Magic Word (Corr[{}]) [0x{:08X}]'
                                .format(self.parent.get_file_name(), self.index,
                                        i, self.data['corr'][i]['magic']))
