@@ -31,7 +31,8 @@ import sys
 from ...data import MaserDataSweep, MaserData
 from ..nda import NDAError
 from ..nda import NDADataFromFile
-from maser.utils.cdf import cdf
+#from spacepy import pycdf as cdf
+from maser.utils import cdf
 import dateutil.parser
 
 # import sunpy.sun
