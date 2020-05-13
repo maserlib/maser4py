@@ -12,17 +12,28 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import os
-import sys
 import sphinx_rtd_theme
+import os
+import re
+import sys
+
+def get_version(changelog):
+    """Get latest version from the input CHANGELOG.md file."""
+
+    pattern = re.compile(r"(\d*)\.(\w*)\.(\w*)")
+    if os.path.isfile(changelog):
+        with open(changelog, 'rt') as file:
+            for line in file:
+                if pattern.match(line):
+                    return line.strip()
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
-
 sys.path.insert(0, os.path.abspath('../.'))
-from maser.settings import MASER_VERSION
+
+MASER_VERSION = get_version(os.path.abspath('../CHANGELOG.md'))
 
 # -- General configuration ------------------------------------------------
 
