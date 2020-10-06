@@ -44,7 +44,6 @@ ROW_LENGTH_MAX = 79
 DEF_INDENT = " " * 16
 
 
-
 # ________________ Class Definition __________
 # (If required, define here classes)
 class Skt2txt:
@@ -72,7 +71,6 @@ class Skt2txt:
         # Load skeleton table template
         template = jenv.get_template(str(SKT_TEMPLATE))
 
-
         # Build the Skeleton template render
         self.render = template.render(
             gen_time=NOW.strftime(IN_FTIME),
@@ -84,7 +82,7 @@ class Skt2txt:
             zvars=self.skeleton.zvars,
             vattrs=self.reform_vattr(self.skeleton.vattrs),
             vattrList=self.skeleton.vattrList
-    )
+        )
 
     def reform_gattr(self, gattrs, length=48):
         """
@@ -105,7 +103,7 @@ class Skt2txt:
                 elif entry["Data Type"] != "CDF_CHAR":
                     continue
                 else:
-                    for char in entry["Value"]:
+                    for char in str(entry["Value"]):
                         value += char
                         counter += 1
                         if counter > length:
@@ -115,7 +113,6 @@ class Skt2txt:
                 gattrs[gattr][i]["Value"] = value
 
         return gattrs
-
 
     def reform_vattr(self, vattrs, length=60):
         """
@@ -155,7 +152,8 @@ class Skt2txt:
         elif os.path.isdir(output_path):
             txt = os.path.join(output_path,
                                os.path.basename(
-                                   os.path.splitext(self.skeleton.file)[0] + ".skt"
+                                   os.path.splitext(self.skeleton.file)[
+                                       0] + ".skt"
                                ))
         else:
             txt = os.path.splitext(output_path)[0] + ".skt"
@@ -179,6 +177,7 @@ class Skt2txt:
         else:
             logger.error("{0} has not been saved correctly!".format(txt))
             return None
+
 
 class Txt2skt:
     """Class to convert a CDF skeleton table file into a Skeleton object."""
@@ -211,7 +210,7 @@ class Txt2skt:
         new_nrv = False
         gattname = None
         for row in self.txt_iterator():
-            cols = [col for col in re.split('\[|\]| |\'|\n',row) if col]
+            cols = [col for col in re.split('\[|\]| |\'|\n', row) if col]
             ncols = len(cols)
             # Get "compressed" row, i.e., without any empty space
             row_c = "".join(cols)
@@ -235,11 +234,11 @@ class Txt2skt:
 
                 for field in SHEETS[HEADER]:
                     if field in row:
-                        self.skeleton.header[field] = row.strip().split(":")[1].strip()
+                        self.skeleton.header[field] = row.strip().split(":")[
+                            1].strip()
                         break
                     elif row.startswith("!") or ncols == 0:
                         continue
-
 
             # Enter into the global attribute definition section
             elif self.section == GATTRS:
@@ -252,18 +251,22 @@ class Txt2skt:
 
                 if row_c.endswith('}') or row_c.endswith('}.'):
                     # If gattname already defined, it means that it is a new entry
-                    # Then append the name of g. attribute for the field extraction
+                    # Then append the name of g. attribute for the field
+                    # extraction
                     if gattname:
                         self.row = '"{0}" '.format(gattname) + self.row
                     # Extract field for the current g.attribute entry
                     gatt_desc = self._extract_attr()
                     # Store the g.attribute fields into self.skeleton.gattrs
                     if gatt_desc["Attribute Name"] in self.skeleton.gattrs:
-                        self.skeleton.gattrs[gatt_desc["Attribute Name"]].append(gatt_desc)
+                        self.skeleton.gattrs[
+                            gatt_desc["Attribute Name"]].append(gatt_desc)
                     else:
-                        self.skeleton.gattrs[gatt_desc["Attribute Name"]] = [gatt_desc]
+                        self.skeleton.gattrs[
+                            gatt_desc["Attribute Name"]] = [gatt_desc]
 
-                    # Define gatt_desc["Attribute Name"] as the current gattname
+                    # Define gatt_desc["Attribute Name"] as the current
+                    # gattname
                     gattname = gatt_desc["Attribute Name"]
 
                     self.row = ""
@@ -294,7 +297,8 @@ class Txt2skt:
                     elif nval > 2:
                         value = ":".join(value[1:])
                     else:
-                        logger.error("VAR_COMPRESSION seems to be badly formatted!")
+                        logger.error(
+                            "VAR_COMPRESSION seems to be badly formatted!")
                         raise InvalidFile
 
                     self.skeleton.zvars[zvar]["VAR_COMPRESSION"] = value
@@ -307,7 +311,8 @@ class Txt2skt:
                     elif nval > 2:
                         value = ":".join(value[1:])
                     else:
-                        logger.error("VAR_PADVALUE seems to be badly formatted!")
+                        logger.error(
+                            "VAR_PADVALUE seems to be badly formatted!")
                         raise InvalidFile
                     self.skeleton.zvars[zvar]["VAR_PADVALUE"] = value
                 # Retrieve value of the VAR_SPARSERECORDS parameter
@@ -319,7 +324,8 @@ class Txt2skt:
                     elif nval > 2:
                         value = ":".join(value[1:])
                     else:
-                        logger.error("VAR_SPARSERECORDS seems to be badly formatted!")
+                        logger.error(
+                            "VAR_SPARSERECORDS seems to be badly formatted!")
                         raise InvalidFile
                     self.skeleton.zvars[zvar]["VAR_SPARSERECORDS"] = value
                 elif row_c == NEW_ZVAR:
@@ -343,7 +349,8 @@ class Txt2skt:
                     zvar_desc = self._extract_zvar()
                     zvar = zvar_desc["Variable Name"]
 
-                    # Initialize the zvars dictionary in Skeleton object for the given zvar
+                    # Initialize the zvars dictionary in Skeleton object for
+                    # the given zvar
                     self.skeleton.zvars[zvar] = dict()
                     self.skeleton.zvars[zvar][NRV] = []
 
@@ -354,10 +361,12 @@ class Txt2skt:
                         else:
                             self.skeleton.zvars[zvar][key] = None
                 elif new_zvar and row_c == NEW_VATTRS:
-                    # New variable attribute definitions found for the current zvariable
+                    # New variable attribute definitions found for the current
+                    # zvariable
                     new_zvar = False
                     new_vattrs = True
-                    # Initialize the vattrs dictionary in Skeleton object for the given zvariable
+                    # Initialize the vattrs dictionary in Skeleton object for
+                    # the given zvariable
                     self.skeleton.vattrs[zvar] = dict()
                     self.row = ""
                 elif new_vattrs and row_c.startswith('"') and row_c.endswith('"-'):
@@ -369,22 +378,25 @@ class Txt2skt:
                     # store these lines in self.row
                     self.row += " " + row
                 elif ((new_vattrs and row_c.endswith("}")) or
-                    (new_vattrs and row_c.endswith("}."))):
-                    # End of the variable attribute definition, extract fields inside the row
+                      (new_vattrs and row_c.endswith("}."))):
+                    # End of the variable attribute definition, extract fields
+                    # inside the row
                     if not self.row:
                         self.row = row
                     else:
                         self.row += " " + row
                     vatt_desc = self._extract_attr()
 
-                    # And store them into the vattrs dictionary in Skeleton object
+                    # And store them into the vattrs dictionary in Skeleton
+                    # object
                     if vatt_desc["Attribute Name"] in self.skeleton.vattrs[zvar]:
                         logger.error("{0} is defined twice for {1} variable!".format(
                             vatt_desc["Attribute Name"],
                             zvar
                         ))
                     else:
-                        self.skeleton.vattrs[zvar][vatt_desc["Attribute Name"]] = vatt_desc
+                        self.skeleton.vattrs[zvar][
+                            vatt_desc["Attribute Name"]] = vatt_desc
                     self.row = ""
                 elif row_c == NO_NRV:
                     new_vattrs = False
@@ -514,7 +526,6 @@ class Txt2skt:
         else:
             return dict(zip(SHEETS[GATTRS], [attname, entry, dtype, value[0]]))
 
-
     def _extract_nrv(self, zvar, row):
         """
         Extract a nrv entry
@@ -537,7 +548,6 @@ class Txt2skt:
 
         return dict(zip(SHEETS[NRV], [zvar, index.strip(), value]))
 
-
     def _extract_zvar(self):
         """
         Extract a zvar definition
@@ -558,20 +568,19 @@ class Txt2skt:
         else:
             i = 4
             sizes = []
-            for j in range(i,i+int(dims),1):
+            for j in range(i, i + int(dims), 1):
                 sizes.append(items[j])
             i = j + 1
             recvar = items[i]
             i += 1
             dimvar = []
-            for j in range(i,i+int(dims)):
+            for j in range(i, i + int(dims)):
                 dimvar.append(items[j])
 
-        x=[name, dtype, elem, dims, sizes, recvar, dimvar]
+        x = [name, dtype, elem, dims, sizes, recvar, dimvar]
 
         return dict(zip(SHEETS[ZVARS][:8], x))
 # ________________ Global Functions __________
-
 
 
 # _________________ Main ____________________________

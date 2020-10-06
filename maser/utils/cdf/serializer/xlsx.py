@@ -33,6 +33,8 @@ logger = logging.getLogger(__name__)
 
 # ________________ Class Definition __________
 # (If required, define here classes)
+
+
 class Skt2xlsx:
     """Class to convert a Skeleton object into a Excel 2007 format file."""
 
@@ -43,9 +45,8 @@ class Skt2xlsx:
         self.wb = None
         self.auto_pad = auto_pad
 
-
     def write_xlsx(self, output_path=None,
-                  overwrite=False):
+                   overwrite=False):
         """
         Write the Excel 2007 format file.
 
@@ -58,9 +59,10 @@ class Skt2xlsx:
             xlsx = os.path.splitext(self.skeleton.file)[0] + ".xlsx"
         elif os.path.isdir(output_path):
             xlsx = os.path.join(output_path,
-                               os.path.basename(
-                                   os.path.splitext(self.skeleton.file)[0] + ".xlsx"
-                               ))
+                                os.path.basename(
+                                    os.path.splitext(self.skeleton.file)[
+                                        0] + ".xlsx"
+                                ))
         else:
             xlsx = output_path
 
@@ -99,17 +101,19 @@ class Skt2xlsx:
             if key not in SHEETS[HEADER]:
                 continue
             # Make header of header in first row
-            _ = header_sheet.cell(column=col_idx, row=1, value="{0}".format(key))
+            _ = header_sheet.cell(column=col_idx, row=1,
+                                  value="{0}".format(key))
             # Add values in the second row
-            _ = header_sheet.cell(column=col_idx, row=2, value="{0}".format(val))
-            col_idx +=1
+            _ = header_sheet.cell(column=col_idx, row=2,
+                                  value="{0}".format(val))
+            col_idx += 1
 
         # Create GLOBALattributes sheet
         gattrs_sheet = wb.create_sheet(title=GATTRS)
 
         # Make header of GLOBALatttributes in first row
         for i, key in enumerate(SHEETS[GATTRS]):
-            _ = gattrs_sheet.cell(column=i+1, row=1, value="{0}".format(key))
+            _ = gattrs_sheet.cell(column=i + 1, row=1, value="{0}".format(key))
 
         # Fill sheet with gattrs values
         row_idx = 2
@@ -118,16 +122,16 @@ class Skt2xlsx:
                 for j, col in enumerate(SHEETS[GATTRS]):
                     if entry[col] is None:
                         entry[col] = " "
-                    _ = gattrs_sheet.cell(column=j+1, row=row_idx, value="{0}".format(
-                    entry[col]))
-                row_idx +=1
+                    _ = gattrs_sheet.cell(column=j + 1, row=row_idx, value="{0}".format(
+                        entry[col]))
+                row_idx += 1
 
         # Create zVariables sheet
         zvars_sheet = wb.create_sheet(title=ZVARS)
 
         # Make header of zVariables in first row
         for i, key in enumerate(SHEETS[ZVARS]):
-            _ = zvars_sheet.cell(column=i+1, row=1, value="{0}".format(key))
+            _ = zvars_sheet.cell(column=i + 1, row=1, value="{0}".format(key))
 
         # Fill sheet with zvars values
         row_idx = 2
@@ -140,17 +144,16 @@ class Skt2xlsx:
                 else:
                     entry = entries[col]
 
-                _ = zvars_sheet.cell(column=j+1, row=row_idx, value="{0}".format(
+                _ = zvars_sheet.cell(column=j + 1, row=row_idx, value="{0}".format(
                     entry))
-            row_idx +=1
-
+            row_idx += 1
 
         # Create VARIABLEattributes sheet
         vattrs_sheet = wb.create_sheet(title=VATTRS)
 
         # Make header of VARIABLEattributes in first row
         for i, key in enumerate(SHEETS[VATTRS]):
-            _ = vattrs_sheet.cell(column=i+1, row=1, value="{0}".format(key))
+            _ = vattrs_sheet.cell(column=i + 1, row=1, value="{0}".format(key))
 
         # Fill sheet with vattrs values
         row_idx = 2
@@ -162,16 +165,16 @@ class Skt2xlsx:
                 for j, col in enumerate(SHEETS[VATTRS][1:]):
                     if entry[col] is None:
                         entry[col] = " "
-                    _ = vattrs_sheet.cell(column=j+2, row=row_idx, value="{0}".format(
+                    _ = vattrs_sheet.cell(column=j + 2, row=row_idx, value="{0}".format(
                         entry[col]))
-                row_idx +=1
+                row_idx += 1
 
         # Create NRV sheet
         nrv_sheet = wb.create_sheet(title=NRV)
 
         # Make header of NRV in first row
         for i, key in enumerate(SHEETS[NRV]):
-            _ = nrv_sheet.cell(column=i+1, row=1, value="{0}".format(key))
+            _ = nrv_sheet.cell(column=i + 1, row=1, value="{0}".format(key))
 
         row_idx = 2
         for zvar, fields in self.skeleton.zvars.items():
@@ -185,9 +188,9 @@ class Skt2xlsx:
                         else:
                             entry = entries[col]
 
-                        _ = nrv_sheet.cell(column=j+1, row=row_idx, value="{0}".format(
+                        _ = nrv_sheet.cell(column=j + 1, row=row_idx, value="{0}".format(
                             entry))
-                    row_idx +=1
+                    row_idx += 1
 
         self.wb = wb
 # ________________ Global Functions __________
@@ -201,7 +204,6 @@ class Xlsx2skt:
         self.file = None
         self.skeleton = skeleton
         self.cdf_items = dict()
-
 
     def parse_xlsx(self, xlsx_file, auto_pad=True):
         """
@@ -250,7 +252,8 @@ class Xlsx2skt:
                         # Check that file header contains expected columns
                         for col in SHEETS[shtn]:
                             if col not in header:
-                                logger.error("Missing %s column in the input Excel file!", col)
+                                logger.error(
+                                    "Missing %s column in the input Excel file!", col)
                                 raise InvalidFile
 
                     # Then, get cell values for each column
@@ -336,7 +339,8 @@ class Xlsx2skt:
                     fields[col] = sheets[ZVARS][col][i]
 
             if auto_pad:
-                fields["VAR_PADVALUE"] = assign_pad(sheets[ZVARS]["Data Type"][i])
+                fields["VAR_PADVALUE"] = assign_pad(
+                    sheets[ZVARS]["Data Type"][i])
 
             zvars[zvar] = fields
 
@@ -360,7 +364,6 @@ class Xlsx2skt:
 
                     vattrs[zvar][sheets[VATTRS]["Attribute Name"][j]] = fields
 
-
         # Store results into self.skeleton
         self.skeleton.header = header
         self.skeleton.gattrs = gattrs
@@ -372,6 +375,8 @@ class Xlsx2skt:
         self.skeleton.vattrList = self.cdf_items[VATTRS]
 
 # ________________ Global Functions __________
+
+
 def assign_pad(data_type):
     """VAR_PADVALUE auto assign.
 
