@@ -55,7 +55,7 @@ def main():
 
     # Add maser subparsers
     subparsers = parser.add_subparsers(dest="maser",
-                                          description='maser sub-commands')
+                                       description='maser sub-commands')
 
     # Initializing subparsers
     add_skeletoncdf_subparser(subparsers)
@@ -87,7 +87,8 @@ def main():
             bad_skt = []
             # Loop over the input skeleton files
             for i, skt in enumerate(skeletons):
-                logger.info("Executing skeletoncdf for {0}... [{1}/{2}]".format(skt, i + 1, nskt))
+                logger.info(
+                    "Executing skeletoncdf for {0}... [{1}/{2}]".format(skt, i + 1, nskt))
                 try:
                     cdf = skeletoncdf(skt,
                                       output_dir=args.output_dir[0],
@@ -96,23 +97,25 @@ def main():
                                       auto_pad=not args.no_auto_pad,
                                       no_cdf=args.no_cdf)
                 except CDFSerializerError as strerror:
-                    logger.error("SkeletonCDF error -- {0}".format(strerror))
+                    logger.exception("SkeletonCDF error has occurred!")
                     cdf = None
                 except ValueError as strerror:
-                    logger.error("Value error -- {0}".format(strerror))
+                    logger.exception("Value error has occurred!")
                     cdf = None
                 except:
-                    logger.error(sys.exc_info()[0])
+                    logger.exception('skeletoncdf has failed!')
                     cdf = None
                 finally:
                     if cdf is None:
                         bad_skt.append(skt)
-                        logger.error("Converting {0} has failed, aborting!".format(skt))
+                        logger.error(
+                            "Converting {0} has failed, aborting!".format(skt))
                         if not args.force:
                             sys.exit(-1)
 
             if len(bad_skt) > 0:
-                logger.warning("Following files have not been converted correctly:")
+                logger.warning(
+                    "Following files have not been converted correctly:")
                 for bad in bad_skt:
                     logger.warning(bad)
         elif 'skeletontable' in args.maser:
@@ -123,7 +126,8 @@ def main():
             bad_cdf = []
             # Loop over the input CDF files
             for i, cdf in enumerate(cdfs):
-                logger.info("Executing skeletontable for {0}... [{1}/{2}]".format(cdf, i + 1, ncdf))
+                logger.info(
+                    "Executing skeletontable for {0}... [{1}/{2}]".format(cdf, i + 1, ncdf))
                 skt = skeletontable(cdf,
                                     to_xlsx=args.to_xlsx,
                                     output_dir=args.output_dir[0],
@@ -143,12 +147,14 @@ def main():
                 finally:
                     if cdf is None:
                         bad_cdf.append(cdf)
-                        logger.error("Converting {0} has failed, aborting!".format(cdf))
+                        logger.error(
+                            "Converting {0} has failed, aborting!".format(cdf))
                         if not args.force:
                             sys.exit(-1)
 
             if len(bad_cdf) > 0:
-                logger.warning("Following files have not been converted correctly:")
+                logger.warning(
+                    "Following files have not been converted correctly:")
                 for bad in bad_cdf:
                     logger.warning(bad)
         # leapsec sub-command
@@ -177,7 +183,8 @@ def main():
                                      list_ignore_zvar=args.ignore_zvar,
                                      list_ignore_vatt=args.ignore_vatt)
                 if result:
-                    logger.info("CDF compare final result :\n %s", pformat(result, width=1000))
+                    logger.info("CDF compare final result :\n %s",
+                                pformat(result, width=1000))
                 else:
                     logger.info("CDF compare final result : no differences")
 
@@ -200,7 +207,8 @@ def main():
                              cdfvalidate_bin=args.cdfvalidate_bin[0],
                              run_cdf_validate=args.run_cdfvalidate)
             except ValidatorException as strerror:
-                logger.error("cdf_validator error -- {0}, aborting!".format(strerror))
+                logger.error(
+                    "cdf_validator error -- {0}, aborting!".format(strerror))
                 sys.exit(-1)
             except:
                 logger.error("cannot run cdf_validator, aborting!")
