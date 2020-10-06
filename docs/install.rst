@@ -28,17 +28,17 @@ maser4py has been tested on the following Operating Systems:
 How to install maser4py?
 ========================
 
-From pip
---------
+Using pip
+----------
 
 If the pip tool is installed on your system, just enter:
 
 .. code-block:: bash
 
-    pip install maser
+    pip install maser4py
 
-From Github
------------
+From source code
+-----------------
 
 1. To get MASER4PY source files from Github, enter:
 
@@ -54,7 +54,7 @@ If everything goes right, you should have a new local "maser4py" directory creat
 
 .. code-block:: bash
 
-    pip3 install -r requirements.txt
+    pip install -r requirements.txt
 
 3. To install the package on your system, enter the following
 command :

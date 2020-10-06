@@ -84,10 +84,10 @@ Support
 The maser4py is developed at the LESIA (http://www.lesia.obspm.fr/) by:
 
 * Xavier Bonnin - xavier dot bonnin at obspm dot fr
-* Quynh Nhu Nguyen - quynh-nhu dot nguyen at obspm dot fr
 * Baptiste Cecconi - baptiste dot cecconi at obspm dot fr
-* Alan Loh - alan dot loh at obspm dot fr
 * Sonny Lion - sonny dot lion at obspm dot fr
+* Alan Loh - alan dot loh at obspm dot fr
+* Quynh Nhu Nguyen - quynh-nhu dot nguyen at obspm dot fr
 
 Indices and tables
 ==================
