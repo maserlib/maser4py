@@ -6,10 +6,10 @@ The *wind* module
 
 The *Wind* module provides methods to deal with the Wind NASA mission data.
 
-The *waves* submodule
-=====================
+.. The *waves* submodule
+.. =====================
 
-To be done
+.. To be done
 
 
 The *solo* module
@@ -17,10 +17,10 @@ The *solo* module
 
 The *solo* module provides methods to deal with the Solar Orbiter ESA mission data.
 
-The *solo* submodule
-====================
+.. The *solo* submodule
+.. ====================
 
-To be done
+.. To be done
 
 
 The *cdpp* module
@@ -28,30 +28,30 @@ The *cdpp* module
 
 The *CDPP* module provides classes and methods to deal with the CDPP deep archive data.
 
-The *interball* submodule
-=========================
+.. The *interball* submodule
+.. =========================
 
-To be done
+.. To be done
 
-The *isee3* submodule
-=====================
+.. The *isee3* submodule
+.. =====================
 
-To be done
+.. To be done
 
-The *ulysses* submodule
-=======================
+.. The *ulysses* submodule
+.. =======================
 
-To be done
+.. To be done
 
-The *viking* submodule
-======================
+.. The *viking* submodule
+.. ======================
 
-To be done
+.. To be done
 
-The *wind* submodule
-====================
+.. The *wind* submodule
+.. ====================
 
-To be done
+.. To be done
 
 The *cassini* module
 ********************
