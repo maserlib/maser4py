@@ -1,6 +1,8 @@
 maser4py: The Python 3 package for the MASER portal
 ###################################################
 
+[![Documentation Status](https://readthedocs.org/projects/maser/badge/?version=latest)](https://maser.readthedocs.io/en/latest/?badge=latest)
+
 About maser4py
 ==============
 
@@ -8,7 +10,7 @@ maser4py python package contains modules to
 deal with services, data and tools provided in the framework
 of the MASER portal (http://maser.lesia.obspm.fr).
 
-maser4py use manual is available in https://maser.readthedocs.io/en/latest/. 
+maser4py use manual is available in https://maser.readthedocs.io/en/latest/.
 
 Installation
 ============
@@ -72,7 +74,7 @@ The maser4py directory contains the following items:
 
     MANIFEST.in files to be included to the package installation (used by   tup.py)
 
-    README.rst current file
+    README.md current file
 
     requirements.txt list of python package dependencies and versions
 
@@ -98,5 +100,3 @@ The development of the MASER library is supported by Observatoire de Paris, CNRS
 The project has also received support from the European Union through:
 * HELIO (Heliophysics Integrated Observatory), which received funding from Capacities Specific Programme of the European Commission's Seventh Framework Programme (FP7) under grant agreement No 238969;
 * EPN2020RI (Europlanet 2020 Research Infrastructure project), which received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 654208.
-
-
