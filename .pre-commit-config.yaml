@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.1.0
+    hooks:
+      # check config files are parsable
+      - id: check-xml
+      - id: check-toml
+      - id: check-json
+      - id: check-yaml
+      # check merge errors
+      - id: check-merge-conflict
+      # code quality
+      - id: end-of-file-fixer
+      - id: fix-encoding-pragma
+      - id: mixed-line-ending
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+      - id: double-quote-string-fixer
