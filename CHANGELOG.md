@@ -1,6 +1,10 @@
 CHANGELOG
 ====================
 
+0.8.3
+-----
+* Hotfix in utils/cdf serializer
+
 0.8.2
 -----
 * cdf_compare is now correctly called from the maser command line.
