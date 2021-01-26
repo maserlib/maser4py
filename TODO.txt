@@ -1,2 +1,0 @@
-* FEATURE -- Update solo/rpw module to handle all of the science data
-# FEATURE -- Add "regex" checking capability in cdf_validator for item values.
