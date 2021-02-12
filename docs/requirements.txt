@@ -1,4 +1,6 @@
 matplotlib
+openpyxl
 scipy
-Sphinx
+spacepy==0.2.2
+sphinx==3.3.1
 sphinx_rtd_theme
