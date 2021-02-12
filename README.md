@@ -1,36 +1,26 @@
-maser4py - The Python package for low frequency radioastronomer
-================================================================
+[![Python version](https://img.shields.io/pypi/pyversions/maser4py)](https://img.shields.io/pypi/pyversions/maser4py)
+[![PyPI version](https://badge.fury.io/py/maser4py.svg)](https://img.shields.io/pypi/pyversions/maser4py)
+[![license](https://img.shields.io/pypi/l/maser4py)](https://pypi.python.org/pypi/maser4py)
+[![Documentation Status](https://readthedocs.org/projects/maser/badge/?version=latest)](https://maser.readthedocs.io)
 
-<div align="center">
+About maser4py
+==============
 
-<a href="https://img.shields.io/pypi/pyversions/maser4py">
-    <img src="https://img.shields.io/pypi/pyversions/maser4py alt="Python version" height="18">
-</a>
-<a href="https://img.shields.io/pypi/pyversions/maser4py">
-    <img src="https://badge.fury.io/py/maser4py.svg" alt="PyPI version" height="18">
-</a>
-<a href="https://pypi.python.org/pypi/maser4py">
-  <img src="https://img.shields.io/pypi/l/maser4py" alt="license" />
-</a>
-<a href='https://maser.readthedocs.io'>
-  <img src='https://readthedocs.org/projects/maser/badge/?version=latest' alt='Documentation Status' />
-</a>
+**maser4py** python package offers tools for radioastronomy at low frequency.
 
-</div>
-
-#About maser4py
-
-maser4py python package contains modules to
-deal with services, data and tools provided in the framework
+It contains modules to deal with services, data and tools provided in the framework
 of the MASER portal (http://maser.lesia.obspm.fr).
 
 Read maser4py [documentation][maser4py readthedocs] for more information.
 
 [maser4py readthedocs]: https://maser.readthedocs.io/en/latest
 
-#Installation
+Installation
+==============
 
-##Prerequisites
+Prerequisites
+--------------
+
 
 Python 3 must be available (tested with 3.6 and 3.8).
 
@@ -38,13 +28,15 @@ The maser4py also requires the NASA CDF software to be run (visit http://cdf.gsf
 should be on the local disk and reachable from the $CDF_LEAPSECONDSTABLE env. variable. If it is not the case, maser4py offers tools to read and/or download
 this file from the NASA Web site (see user manual for more details).
 
-##Using pip
+Using pip
+----------
 
 From a terminal, enter:
 
    pip install maser4py
 
-##Using source
+Using source
+-------------
 
 From a terminal, enter:
 
@@ -59,14 +51,16 @@ Then,
     python3 setup.py install
 
 
-#Usage
+Usage
+======
 
 From Python, enter "import maser".
 The module also offers specific command line interfaces.
 
 For more details, see the maser4py user manual.
 
-#Content
+Content
+=========
 
 The maser4py directory contains the following items:
 
@@ -94,7 +88,8 @@ The maser4py directory contains the following items:
 
     setup.py maser4py package setup file
 
-#About MASER project
+About MASER project
+====================
 
 The MASER (Measuring, Analyzing & Simulating Emissions in the Radio range) portal is offering access to a series of tools and databases linked to low frequency radioastronomy (a few kilohertz to a few tens of megahertz). Radio measurements in this spectral range are done with ground based observatories (for frequencies above the terrestrial ionosphere cutoff at 10 MHz) or from space based platforms (at low frequencies).
 
@@ -103,7 +98,8 @@ In this frequency range, the main radio sources are the Sun and the magnetized p
 * For more information about the MASER project: http://maser.lesia.obspm.fr/
 * For more information about MASER4PY: https://github.com/maserlib/maser4py
 
-#Acknowledgements
+Acknowledgements
+==================
 
 The development of the MASER library is supported by Observatoire de Paris, CNRS (Centre National de la Recherche Scientique) and CNES (Centre National d'Etudes Spatiales). The technical support from PADC (Paris Astronomical Data Centre) and CDPP (Centre de Données de la Physique des Plasmas) is also acknowledged.
 
