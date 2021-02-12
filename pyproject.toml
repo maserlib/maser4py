@@ -19,12 +19,14 @@ astropy = "*"
 matplotlib = "*"
 scipy = "*"
 numpy = "*"
+toml = "*"
 suds-py3 = "*"
 Pillow = "*"
 openpyxl = "*"
 pytz = "*"
 python-dateutil = "*"
 jinja2 = "*"
+spacepy = "0.2.2"
 pytest = {version = "^5.2", optional = true}
 pytest-cov = {version = "2.10.1", optional = true}
 pytest-timeout = {version = "^1.4", optional = true}
@@ -38,6 +40,9 @@ pre-commit = "^2.8"
 
 [tool.poetry.extras]
 tests = ["pytest", "pytest-cov", "pytest-timeout"]
+
+[[tool.poetry.packages]]
+include = "maser"
 
 [tool.black]
 include = '\.pyi?$'
@@ -54,6 +59,10 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.poetry.scripts]
+maser = 'maser.script:main'
+
 
 [build-system]
 requires = ["poetry>=1.1.4", "setuptools"]
