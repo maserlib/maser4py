@@ -1,4 +1,3 @@
-[![Python version](https://img.shields.io/pypi/pyversions/maser4py)](https://img.shields.io/pypi/pyversions/maser4py)
 [![PyPI version](https://badge.fury.io/py/maser4py.svg)](https://img.shields.io/pypi/pyversions/maser4py)
 [![license](https://img.shields.io/pypi/l/maser4py)](https://pypi.python.org/pypi/maser4py)
 [![Documentation Status](https://readthedocs.org/projects/maser/badge/?version=latest)](https://maser.readthedocs.io)
