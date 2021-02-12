@@ -196,6 +196,8 @@ def compare_z_var(field1, field2, key, dict_numerical_precision={}, shape_diff_d
 
     res = False
 
+    res = False
+
     if data1.shape != data2.shape:
         logger.debug('%s - array shape is different: %s | %s', key, field1.shape, field2.shape)
         shape_diff_dict[key] = [data1.shape, data2.shape]
@@ -429,6 +431,18 @@ def main(cdf_file1, cdf_file2):
             logger.warning('Ignored variable attributes list : %s', list_ignore_vatt)
         else:
             logger.debug('No variable attributes to be ignored')
+
+        if "--precision" in (list_argv):
+            ind_precision_zvar = (list_argv).index("--precision")
+            list_numerical_precision = []
+            for item in list_argv[ind_precision_zvar + 1:]:
+                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
+                    list_numerical_precision.append(item)
+                else:
+                    break
+            logger.warning("Numerical precision list : %s", list_numerical_precision)
+        else:
+            logger.debug("No zVariable precision set")
 
         if "--precision" in (list_argv):
             ind_precision_zvar = (list_argv).index("--precision")
