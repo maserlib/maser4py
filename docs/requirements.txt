@@ -1,4 +1,5 @@
 matplotlib
+numpy
 openpyxl
 scipy
 spacepy==0.2.2
