@@ -18,39 +18,39 @@ import errno
 
 import tempfile
 
-__all__ = ["get_version",
-           "print_exception",
-           "which",
-           "truncate_str",
-           "Singleton",
-           "download_data",
-           "setup_logging",
-           "quote", "uniq",
-           "insert_char",
-           "run_command",
-           "move_safe"]
+__all__ = ['get_version',
+           'print_exception',
+           'which',
+           'truncate_str',
+           'Singleton',
+           'download_data',
+           'setup_logging',
+           'quote', 'uniq',
+           'insert_char',
+           'run_command',
+           'move_safe']
 
 # ________________ HEADER _________________________
 
-# Mandatory
-__version__ = ""
-__author__ = ""
-__date__ = ""
-
-# Optional
-__institute__ = ""
-__project__ = ""
-__license__ = ""
-__credit__ = [""]
-__maintainer__ = ""
-__email__ = ""
-__change__ = {"version": "change"}
+# # Mandatory
+# __version__ = ""
+# __author__ = ""
+# __date__ = ""
+#
+# # Optional
+# __institute__ = ""
+# __project__ = ""
+# __license__ = ""
+# __credit__ = [""]
+# __maintainer__ = ""
+# __email__ = ""
+# __change__ = {"version": "change"}
 
 # ________________ Global Variables _____________
 # (define here the global variables)
 LOGGER = logging.getLogger(__name__)
 
-DEF_INDENT = " " * 16
+DEF_INDENT = ' ' * 16
 
 # ________________ Class Definition __________
 # (If required, define here classes)
@@ -71,7 +71,7 @@ class Singleton(type):
         Check that an instance is already
         stored before creating a new one.
         """
-        if hasattr(cls, "instance"):
+        if hasattr(cls, 'instance'):
             return cls.instance
 
         cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
@@ -84,15 +84,15 @@ class Singleton(type):
 
 def get_version(changelog):
     """Get latest version from the input CHANGELOG.md file."""
-    pattern = re.compile(r"(\d*)\.(\w*)\.(\w*)")
+    pattern = re.compile(r'(\d*)\.(\w*)\.(\w*)')
     if osp.isfile(changelog):
         with open(changelog, 'rt') as file:
             for line in file:
                 if pattern.match(line):
                     return line.strip()
 
-    print("WARNING: CHANGELOG.md not found or invalid, version unknown!")
-    return "unknown"
+    print('WARNING: CHANGELOG.md not found or invalid, version unknown!')
+    return 'unknown'
 
 
 
@@ -119,7 +119,7 @@ def move_safe(src, dst,
             shutil.copyfile(src, dst)
             is_item = os.path.isfile
         else:
-            LOGGER.error("{0} is not a valid directory!".format(dst))
+            LOGGER.error('{0} is not a valid directory!'.format(dst))
             raise FileNotFoundError(
                 errno.ENOENT, os.strerror(errno.ENOENT), src)
 
@@ -127,19 +127,19 @@ def move_safe(src, dst,
     # original
     if not is_item(target):
         LOGGER.error(
-            "{0} has not been moved correctly, aborting!".format(src))
+            '{0} has not been moved correctly, aborting!'.format(src))
         raise FileNotFoundError(
             errno.ENOENT, os.strerror(errno.ENOENT), src)
 
     if no_erase:
         move_safe(src, tempdir)
-        LOGGER.info("{0} moved in {1}".format(src, tempdir))
+        LOGGER.info('{0} moved in {1}'.format(src, tempdir))
 
     return target
 
 
 def download_data(url,
-                  encoding="utf-8",
+                  encoding='utf-8',
                   target_file=None,
                   binary=False):
     """Download the data from the given url.
@@ -182,7 +182,7 @@ def print_exception(message=None, exit=True):
     # if not message provided, get the traceback of errors to be a little more
     # useful for the developer
     if message is not None:
-        mess = "\n".join([trace, message])
+        mess = '\n'.join([trace, message])
     else:
         # else use message provided by developer
         mess = trace
@@ -219,7 +219,7 @@ def run_command(cmd, env=None,
     """Run a command with subprocess."""
 
     try:
-        logger.info(" ".join(cmd))
+        logger.info(' '.join(cmd))
         res = subprocess.Popen(cmd, env=env, shell=shell,
                                stdout=stdout,
                                stderr=stderr)
@@ -228,7 +228,7 @@ def run_command(cmd, env=None,
     except OSError as e:
         logger.error(e)
     except subprocess.TimeoutExpired as e:
-        logger.error("TIME OUT EXPIRED:  %i SEC.", e.timeout)
+        logger.error('TIME OUT EXPIRED:  %i SEC.', e.timeout)
 
     return res
 
@@ -297,7 +297,7 @@ def truncate_str(string, max_length,
                  min_length=3):
     """Truncate a too long CDF_CHAR value."""
     nstr = len(string)
-    new_string = ""
+    new_string = ''
     for i, val_c in enumerate(string):
         if i > nstr - min_length:
             new_string += string[i:]
@@ -319,7 +319,7 @@ def uniq(seq, not_none=False):
         return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-def which(program, path="PATH"):
+def which(program, path='PATH'):
     """Run which function."""
     def is_exe(fpath):
         """Run is_exe function."""
@@ -341,5 +341,5 @@ def which(program, path="PATH"):
 
 
 # _________________ Main ____________________________
-if __name__ == "__main__":
-    print("toolbox for maser package")
+if __name__ == '__main__':
+    print('toolbox for maser package')

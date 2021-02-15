@@ -14,30 +14,56 @@
 # X.Bonnin, 07-DEC-2015
 
 
-if [ $# = 1 ]; then
-    docdir=$1
-else
-    pushd `dirname $0` > /dev/null
-    scriptpath=`pwd`
-    popd > /dev/null
-    docdir=$scriptpath/../doc
-fi
+pushd . > /dev/null
+workdir="${BASH_SOURCE[0]:-$0}";
+while([ -h "${workdir}" ]); do
+    cd "`dirname "${workdir}"`"
+    workdir="$(readlink "`basename "${workdir}"`")";
+done
+cd "`dirname "${workdir}"`" > /dev/null
+workdir="`pwd`";
+popd  > /dev/null
 
-currentdir=`pwd`
+docdir=${1:-$workdir/../docs}
+
+# Create a virtualenv for publishing
+venv_dir="/tmp/maser4py_build_doc__`date +%Y%m%dT%H%M%s`"
+cmd="python3 -m venv $venv_dir"
+echo $cmd && eval $cmd
+source $venv_dir/bin/activate
+
 cd $docdir
 
+# Update pip
+cmd="pip install pip -U"
+echo $cmd && eval $cmd
+
+# Install poetry
+cmd="pip install -r requirements.txt"
+echo $cmd && eval $cmd
+
 # Build docs
-sphinx-build . build
+#cmd="sphinx-build -c $docdir src build"
+#echo $cmd && eval $cmd
 
 # Build api docs
-sphinx-apidoc -o build ../maser
+cmd="sphinx-apidoc -o build/apidoc ../maser"
+echo $cmd && eval $cmd
 
-# Create pdf version
-make latexpdf
+# Create html & pdf version
+cmd="sphinx-build -c $docdir -b html src build/latex"
+echo $cmd && eval $cmd
+cmd="sphinx-build -c $docdir -b latex src build/latex"
+echo $cmd && eval $cmd
+
+cmd="cd $docdir/build/latex && make"
+echo $cmd && eval $cmd
 
 cd $currentdir
 
+# Close virtualenv
+deactivate
 
-
-
-
+# Delete virtualenv
+echo "Deleting ${venv_dir}"
+rm -rf $venv_dir

@@ -1,24 +1,25 @@
 #! /usr/bin/env python3
-# -*- coding:Utf8 -*-
+# -*- coding: utf-8 -*-
 
 """maser main settings module."""
 
 import os
 
-from maser.utils.toolbox import get_version
+__all__ = ['ROOT_DIRECTORY',
+       'MASER_VERSION',
+           'MASER_LIB_DIR',
+           'DATA_DIR',
+           'SERVICE_DIR',
+           'UTILS_DIR',
+           'SUPPORT_DIR']
 
 ROOT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
-MASER_LIB_DIR = os.path.dirname(__file__)
-DATA_DIR = os.path.join(MASER_LIB_DIR, "data")
-SERVICE_DIR = os.path.join(MASER_LIB_DIR, "services")
-UTILS_DIR = os.path.join(MASER_LIB_DIR, "utils")
-SUPPORT_DIR = os.path.join(MASER_LIB_DIR, "support")
+from maser.version import __version__
+MASER_VERSION = __version__
 
-if os.path.isfile(os.path.join(ROOT_DIRECTORY, "CHANGELOG.md")):
-    MASER_VERSION = get_version(os.path.join(ROOT_DIRECTORY, "CHANGELOG.md"))
-elif os.path.isfile(os.path.join(ROOT_DIRECTORY, "..", "CHANGELOG.md")):
-    MASER_VERSION = get_version(os.path.join(ROOT_DIRECTORY, "..", "CHANGELOG.md"))
-else:
-    print("WARNING: CHANGELOG.md not found or invalid, version unknown!")
-    MASER_VERSION = "unknown"
+MASER_LIB_DIR = os.path.dirname(__file__)
+DATA_DIR = os.path.join(MASER_LIB_DIR, 'data')
+SERVICE_DIR = os.path.join(MASER_LIB_DIR, 'services')
+UTILS_DIR = os.path.join(MASER_LIB_DIR, 'utils')
+SUPPORT_DIR = os.path.join(MASER_LIB_DIR, 'support')
