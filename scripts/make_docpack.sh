@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Prepare .zip package containg the maser4py HTML documentation ready to
-# be uploade on the http://pythonhosted.org/maser4py web site.
+# be uploaded on the http://pythonhosted.org/maser4py web site.
 # X.Bonnin (LESIA, CNRS)
 
 # get current script directory

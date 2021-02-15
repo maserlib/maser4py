@@ -17,10 +17,11 @@ import os
 import re
 import sys
 
+
 def get_version(changelog):
     """Get latest version from the input CHANGELOG.md file."""
 
-    pattern = re.compile(r"(\d*)\.(\w*)\.(\w*)")
+    pattern = re.compile(r'(\d*)\.(\w*)\.(\w*)')
     if os.path.isfile(changelog):
         with open(changelog, 'rt') as file:
             for line in file:
@@ -68,8 +69,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'maser4py'
-copyright = u'2019, X.Bonnin, B.Cecconi, Q.N.Nguyen'
-author = u'X.Bonnin, B.Cecconi, Q.N.Nguyen'
+copyright = u'2019, MASER Team'
+author = u'MASER Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -225,25 +226,25 @@ htmlhelp_basename = 'maser4pydoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
 
-# Latex figure (float) alignment
-#'figure_align': 'htbp',
+    # Latex figure (float) alignment
+    #'figure_align': 'htbp',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'maser4py.tex', u'maser4py Documentation',
-   u'X.Bonnin, B.Cecconi, Q.N.Nguyen', 'manual'),
+    (master_doc, 'maser4py.tex', u'maser4py Documentation',
+     u'MASER Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -286,9 +287,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'maser4py', u'maser4py Documentation',
-   author, 'maser4py', 'One line description of project.',
-   'Miscellaneous'),
+    (master_doc, 'maser4py', u'maser4py Documentation',
+     author, 'maser4py', 'One line description of project.',
+     'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.

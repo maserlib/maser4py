@@ -1,6 +1,14 @@
 CHANGELOG
 ====================
 
+0.9.0
+-----
+* Add the numerical precision option for cdf_compare
+* Correctly handle NRV scalar value in cdf_compare
+* Update setup environment (add pyproject.toml)
+* Update dev. environment (pre-commit)
+* Minor improvement in codes
+
 0.8.3
 -----
 * Hotfix in utils/cdf serializer
