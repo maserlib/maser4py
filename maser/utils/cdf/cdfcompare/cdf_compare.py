@@ -191,8 +191,7 @@ def compare_z_var(field1, field2, key, dict_numerical_precision={}, shape_diff_d
         data2 = field2[...]
     else:
         # Make sure to have numpy ndarray for data2
-        data2 = np.ndarray((1,), dtype=type(field2[...]))
-        data2[0] = field2[...]
+        data2 = np.ndarray(field2[...], dtype=type(field2[...]))
 
     res = False
 
@@ -400,7 +399,7 @@ def main(cdf_file1, cdf_file2):
             ind_ignore_gatt = (list_argv).index('--ignore_gatt')
             list_ignore_gatt = []
             for item in list_argv[ind_ignore_gatt + 1:]:
-                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
+                if (item.startswith('--ignore_') == False and item.startswith('--precision') == False):
                     list_ignore_gatt.append(item)
                 else:
                     break
@@ -412,7 +411,7 @@ def main(cdf_file1, cdf_file2):
             ind_ignore_zvar = (list_argv).index('--ignore_zvar')
             list_ignore_zvar = []
             for item in list_argv[ind_ignore_zvar + 1:]:
-                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
+                if (item.startswith('--ignore_') == False and item.startswith('--precision') == False):
                     list_ignore_zvar.append(item)
                 else:
                     break
@@ -424,7 +423,7 @@ def main(cdf_file1, cdf_file2):
             ind_ignore_vatt = (list_argv).index('--ignore_vatt')
             list_ignore_vatt = []
             for item in list_argv[ind_ignore_vatt + 1:]:
-                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
+                if (item.startswith('--ignore_') == False and item.startswith('--precision') == False):
                     list_ignore_vatt.append(item)
                 else:
                     break
@@ -432,36 +431,36 @@ def main(cdf_file1, cdf_file2):
         else:
             logger.debug('No variable attributes to be ignored')
 
-        if "--precision" in (list_argv):
-            ind_precision_zvar = (list_argv).index("--precision")
+        if '--precision' in (list_argv):
+            ind_precision_zvar = (list_argv).index('--precision')
             list_numerical_precision = []
             for item in list_argv[ind_precision_zvar + 1:]:
-                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
+                if (item.startswith('--ignore_') == False and item.startswith('--precision') == False):
                     list_numerical_precision.append(item)
                 else:
                     break
-            logger.warning("Numerical precision list : %s", list_numerical_precision)
+            logger.warning('Numerical precision list : %s', list_numerical_precision)
         else:
-            logger.debug("No zVariable precision set")
+            logger.debug('No zVariable precision set')
 
-        if "--precision" in (list_argv):
-            ind_precision_zvar = (list_argv).index("--precision")
+        if '--precision' in (list_argv):
+            ind_precision_zvar = (list_argv).index('--precision')
             list_numerical_precision = []
             for item in list_argv[ind_precision_zvar + 1:]:
-                if (item.startswith("--ignore_") == False and item.startswith("--precision") == False):
+                if (item.startswith('--ignore_') == False and item.startswith('--precision') == False):
                     list_numerical_precision.append(item)
                 else:
                     break
-            logger.warning("Numerical precision list : %s", list_numerical_precision)
+            logger.warning('Numerical precision list : %s', list_numerical_precision)
         else:
-            logger.debug("No zVariable precision set")
+            logger.debug('No zVariable precision set')
 
         result = cdf_compare(cdf_file1, cdf_file2,
                              list_ignore_gatt=list_ignore_gatt,
                              list_ignore_zvar=list_ignore_zvar,
                              list_ignore_vatt=list_ignore_vatt,
                              list_numerical_precision=list_numerical_precision)
-        logger.info("Final result : %s", pformat(result, width=1000))
+        logger.info('Final result : %s', pformat(result, width=1000))
 
 
 # *°*°*°*°*°*°*°*°
