@@ -72,11 +72,11 @@ Details
 .. toctree::
    :maxdepth: 2
 
-   install
-   data
-   services
-   utils
-   appendices
+   install<sections/1-install.rst>
+   data<sections/2-data.rst>
+   services<sections/3-services.rst>
+   utils<sections/4-utils.rst>
+   appendices<sections/5-appendices.rst>
 
 Support
 =======

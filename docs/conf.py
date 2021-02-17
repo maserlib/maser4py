@@ -69,7 +69,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'maser4py'
-copyright = u'2019, MASER Team'
+copyright = u'2021, MASER Team'
 author = u'MASER Team'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -96,7 +96,9 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+# This pattern also affects html_static_path and html_extra_path.
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

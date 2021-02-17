@@ -43,20 +43,20 @@ cmd="pip install -r requirements.txt"
 echo $cmd && eval $cmd
 
 # Build docs
-#cmd="sphinx-build -c $docdir src build"
+#cmd="sphinx-build -c $docdir sections build"
 #echo $cmd && eval $cmd
 
 # Build api docs
-cmd="sphinx-apidoc -o build/apidoc ../maser"
+cmd="sphinx-apidoc -o _build/apidoc ../maser"
 echo $cmd && eval $cmd
 
 # Create html & pdf version
-cmd="sphinx-build -c $docdir -b html src build/latex"
+cmd="sphinx-build -c $docdir -b html . _build/html"
 echo $cmd && eval $cmd
-cmd="sphinx-build -c $docdir -b latex src build/latex"
+cmd="sphinx-build -c $docdir -b latex . _build/latex"
 echo $cmd && eval $cmd
 
-cmd="cd $docdir/build/latex && make"
+cmd="cd $docdir/_build/latex && make"
 echo $cmd && eval $cmd
 
 cd $currentdir
