@@ -100,7 +100,7 @@ def move_safe(src, dst,
               no_erase=False,
               tempdir=tempfile.gettempdir()):
     """
-    Safely move a src file or a directory into a dst directory.
+    Safely move a sections file or a directory into a dst directory.
 
     If no_erase keyword is True, then do no delete the original file/folder
     but move it to a tempdir in case of.

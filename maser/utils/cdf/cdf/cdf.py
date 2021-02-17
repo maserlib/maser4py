@@ -76,7 +76,7 @@ Copyright 2010-2013 Los Alamos National Security, LLC.
 """
 
 __contact__ = 'Jon Niehof, jniehof@lanl.gov'
-__all__ = ["CDF", "zAttr", "zAttrList"]
+__all__ = ['CDF', 'zAttr', 'zAttrList']
 
 
 try:
@@ -477,8 +477,8 @@ class Library(object):
                     cand = []
                     for d in os.listdir(cdfdist):
                         if d[0:3].lower() == 'cdf':
-                            # checking src in case BUILT but not INSTALLED
-                            for subdir in ['lib', os.path.join('src', 'lib')]:
+                            # checking sections in case BUILT but not INSTALLED
+                            for subdir in ['lib', os.path.join('sections', 'lib')]:
                                 libdir = os.path.join(cdfdist, d, subdir)
                                 if os.path.isdir(libdir):
                                     cand.append(libdir)
@@ -1566,7 +1566,7 @@ class CDF(collections.MutableMapping):
         except KeyError as e:
             expected = str(
                 key
-            ) + ": NO_SUCH_VAR: Named variable not found in this CDF."
+            ) + ': NO_SUCH_VAR: Named variable not found in this CDF.'
             if expected in e.args:
                 return False
             raise
@@ -4547,7 +4547,7 @@ class AttrList(collections.MutableMapping):
             Attribute list is populated entirely from this dictionary;
             all existing attributes are deleted.
         """
-        warnings.warn("from_dict is deprecated and will be removed. Use clone.",
+        warnings.warn('from_dict is deprecated and will be removed. Use clone.',
                       DeprecationWarning)
         for k in in_dict:
             self[k] = in_dict[k]
