@@ -1,9 +1,7 @@
 tmp
 local/*
 *.zip
-doc/build
-!doc/build/latex/maser4py.pdf
-maser4py_docpack.zip
+doc/_build
 
 # PyCharm cache
 \.idea/

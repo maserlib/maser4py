@@ -19,7 +19,7 @@ from maser.utils.cdf.serializer.exceptions import CDFSerializerError
 from maser.utils.cdf.cdfcompare import cdf_compare, add_cdfcompare_subparser
 from maser.utils.cdf.validator import cdfvalidator, ValidatorException, add_cdfvalidator_subparser
 from maser.utils.time import Lstable, add_leapsec_subparser
-from maser.services.helio.hfc import hfcviewer, add_hfcviewer_subparser
+#from maser.services.helio.hfc import hfcviewer, add_hfcviewer_subparser
 from pprint import pformat
 
 # ________________ HEADER _________________________
@@ -63,7 +63,7 @@ def main():
     add_leapsec_subparser(subparsers)
     add_cdfcompare_subparser(subparsers)
     add_cdfvalidator_subparser(subparsers)
-    add_hfcviewer_subparser(subparsers)
+#    add_hfcviewer_subparser(subparsers)
 
     # Parse args
     args = parser.parse_args()
@@ -215,8 +215,8 @@ def main():
             except:
                 logger.error('cannot run cdf_validator, aborting!')
                 sys.exit(-1)
-        elif 'hfcviewer' in args.maser:
-            hfcviewer(**args.__dict__)
+#        elif 'hfcviewer' in args.maser:
+            #hfcviewer(**args.__dict__)
         else:
             print('Unknown maser sub-command')
             parser.print_help()

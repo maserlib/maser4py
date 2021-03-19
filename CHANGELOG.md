@@ -7,6 +7,7 @@ CHANGELOG
 * Correctly handle NRV scalar value in cdf_compare
 * Update setup environment (add pyproject.toml)
 * Update dev. environment (pre-commit)
+* Remove services/helio and data/solo modules
 * Minor improvement in codes
 
 0.8.3

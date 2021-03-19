@@ -27,8 +27,6 @@ The maser4py package is organized as follows:
 
    maser/
       services/
-         helio/
-            Module to use some of the HELIO Virtual Observatory services (http://www.helio-vo.eu/)
       data/
          cassini/
             Module to handle the CASSINI mission data
@@ -44,8 +42,6 @@ The maser4py package is organized as follows:
             Module to handle the ESA PSA data (https://archives.esac.esa.int/psa/)
          radiojove/
             Module to handle the Radiojove project data (http://www.radiojove.org/)
-         solo/
-            Module related to the Solar Orbiter mission data (in progress)
          wind/
             Module related to the Wind mission data
       utils/

@@ -21,6 +21,11 @@ cdf.cdfcompare
 
 The *cdf.cdfcompare* module can be used to compare the content of two CDFs.
 
+To get the full list of input parameters, print the help message from command line:
+
+.. code-block:: bash
+
+    maser cdf_compare --help
 
 
 cdf.serializer
@@ -34,8 +39,55 @@ The *cdf.serializer* module allows users to convert CDF between the following fo
 
 Module can be imported in Python programs or called directly from a terminal using the dedicated command line interface.
 
-Excel format description
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. important::
+
+    The conversions between skeleton table and binary CDF are performed calling the *skeletontable* and *skeletoncdf* programs from the NASA CDF software (visit https://cdf.gsfc.nasa.gov/ for more details).
+
+Converting a binary CDF to a skeleton table
+--------------------------------------------
+
+The *skeletontable* sub-command allows to convert CDF from binary CDF to skeleton table by calling the skeletontable NASA CDF software program.
+
+An option also permits to export skeleton table into Excel 2007 format file (.xlsx).
+
+To display the help, enter:
+
+.. code-block:: bash
+
+  maser skeletontable --help
+
+Examples
+"""""""""
+
+Convert all input CDFs named "input_*.cdf" into skeleton tables. Output files will be saved into the /tmp/cdf/build folder. Output files will have the same names than input CDFs but with the extension ".skt".
+
+.. code-block:: bash
+
+   maser skeletontable "input_*.cdf" --output_dir /tmp/cdf/build
+
+
+Convert the input binary CDF named "input1.cdf" into skeleton table. Output files will be saved into the /tmp/cdf/build folder. Output file will have the same name than input CDF but with the extension ".skt". An export file in Excel 2007 format (input1.xlsx) will also be saved.
+
+.. code-block:: bash
+
+   maser skeletontable "input1.cdf" --output_dir /tmp/cdf/build --to-xlsx
+
+Converting skeleton CDF to binary CDF
+--------------------------------------------
+
+The *skeletoncdf* sub-command allows to convert CDF from skeleton table to binary CDF by calling the skeletoncdf NASA CDF software program.
+
+An option also permits to use Excel 2007 format file (.xlsx) as an input to the *skeletoncdf* sub-command.
+
+To display the help, enter:
+
+.. code-block:: bash
+
+  maser skeletoncdf --help
+
+
+Expected Excel file format description
+--------------------------------------------
 
 This section describes the structure of the Excel format file that can be used by the cdf.serializer module.
 
@@ -59,7 +111,7 @@ The Excel file shall contain the following sheets:
 The first row of each sheet must be used to provide the name of the columns.
 
 *header* sheet
-""""""""""""""
+""""""""""""""""
 
 The "header" sheet must contain the following columns:
 
@@ -78,7 +130,7 @@ CDF_CHECKSUM
   Checksum applied to the CDF
 
 *GLOBALattributes* sheet
-""""""""""""""""""""""""
+"""""""""""""""""""""""""
 
 The "GLOBALattributes" sheet shall contain the following columns:
 
@@ -92,7 +144,7 @@ Value
   Value of the current entry
 
 *zVariables* sheet
-""""""""""""""""""
+"""""""""""""""""""
 
 The "zVariables" sheet shall contain the following columns:
 
@@ -118,7 +170,7 @@ VAR_PADVALUE
   Pad value of the variable.
 
 *VARIABLEattributes* sheet
-""""""""""""""""""""""""""
+""""""""""""""""""""""""""""
 
 The "VARIABLEattributes" sheet shall contain the following columns:
 
@@ -133,7 +185,7 @@ Value
 
 
 *NRV* sheet
-"""""""""""
+""""""""""""
 
 The "NRV" sheet shall contain the following columns:
 
@@ -144,75 +196,8 @@ Index
 Value
   Value of the current NR row
 
-Command line interface
-^^^^^^^^^^^^^^^^^^^^^^
-
-*skeletontable* sub-command
-"""""""""""""""""""""""""""
-
-The *skeletontable* sub-command allows to convert CDF from binary CDF to skeleton table by calling the skeletontable NASA CDF software program.
-
-An option also permits to export skeleton table into Excel 2007 format file (.xlsx).
-
-To display the help, enter:
-
-::
-
-  maser skeletontable --help
-
-Examples
-^^^^^^^^
-
-Convert all input CDFs named "input_*.cdf" into skeleton tables. Output files will be saved into the /tmp/cdf/build folder. Output files will have the same names than input CDFs but with the extension ".skt".
-
-::
-
-   maser skeletontable "input_*.cdf" --output_dir /tmp/cdf/build
-
-
-Convert the input binary CDF named "input1.cdf" into skeleton table. Output files will be saved into the /tmp/cdf/build folder. Output file will have the same name than input CDF but with the extension ".skt". An export file in Excel 2007 format (input1.xlsx) will also be saved.
-
-::
-
-   maser skeletontable "input1.cdf" --output_dir /tmp/cdf/build --to-xlsx
-
-*skeletoncdf* sub-command
-"""""""""""""""""""""""""""
-
-The *skeletoncdf* sub-command allows to convert CDF from skeleton table to binary CDF by calling the skeletoncdf NASA CDF software program.
-
-An option also permits to use Excel 2007 format file (.xlsx) as an input to the *skeletoncdf* sub-command.
-
-To display the help, enter:
-
-::
-
-  maser skeletoncdf --help
-
-
-
-Examples
-^^^^^^^^
-
-Convert all input skeleton tables named "input_*.skt" into binary CDFs. Output files will be saved into the /tmp/cdf/build folder. Output files will have the same names than input files but with the extension ".cdf".
-
-::
-
-   maser skeletoncdf "input_*.skt" --output_dir /tmp/cdf/build
-
-
-Convert the input Excel format file named "input1.xlsx" into skeleton table and binary CDF. Output files will be saved into the /tmp/cdf/build folder. Output files will have the same name than input CDF but with the extension ".skt". An export file in Excel 2007 format (.xlsx) will also be saved.
-
-::
-
-   maser skeletoncdf "input1.xlsx" --output_dir /tmp/cdf/build
-
-If the conversion from Excel to ASCII skeleton table is required only, then add the --no-cdf input keyword to the command line to not create the binary CDF.
-
 Limitations & Known Issues
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-TBW
+"""""""""""""""""""""""""""
 
 
 The *cdf.validator* tool
@@ -233,7 +218,7 @@ To import the *Validate* class from Python, enter:
   from maser.utils.cdf.cdfvalidator import Validate
 
 The Model validation test
-^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""
 
 The *Validate* class allows user to check if a given CDF format file contains specific attributes or variables, by providing a
 so-called "cdfvalidator model file".
@@ -294,8 +279,8 @@ optional arguments:
   -C, --run-cdfvalidate
                         Run the cdfvalidate NASA CDF tool
 
-Example
-^^^^^^^
+Examples
+"""""""""
 
 To test the cdf.validator program, use the dedicated scripts/test_cdfvalidator.sh bash script.
 
