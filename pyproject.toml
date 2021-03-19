@@ -16,11 +16,9 @@ keywords = ["maser4py", "data science", "radioastronomy"]
 [tool.poetry.dependencies]
 python = ">=3.6.1"
 astropy = "*"
-matplotlib = "*"
 scipy = "*"
 numpy = "*"
 toml = "*"
-Pillow = "*"
 openpyxl = "*"
 pytz = "*"
 python-dateutil = "*"

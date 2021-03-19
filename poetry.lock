@@ -523,7 +523,7 @@ tests = ["pytest", "pytest-cov", "pytest-timeout"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.1"
-content-hash = "1fc341a99361a7c8ef7a5ce128eeb8b7a2808706ab1ca45e0a77674978f2c9c8"
+content-hash = "d6a2d618e5d90dc399e4d9afb933babe0a294c97e2a05bf969b33bff4f5a7368"
 
 [metadata.files]
 appdirs = [

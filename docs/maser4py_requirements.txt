@@ -1,9 +1,7 @@
 astropy
 jinja2
-matplotlib
 numpy
 openpyxl
-Pillow
 python-dateutil
 pytz
 scipy
