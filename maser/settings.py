@@ -6,7 +6,7 @@
 import os
 
 __all__ = ['ROOT_DIRECTORY',
-       'MASER_VERSION',
+           'MASER_VERSION',
            'MASER_LIB_DIR',
            'DATA_DIR',
            'SERVICE_DIR',

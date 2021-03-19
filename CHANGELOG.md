@@ -7,7 +7,7 @@ CHANGELOG
 * Correctly handle NRV scalar value in cdf_compare
 * Update setup environment (add pyproject.toml)
 * Update dev. environment (pre-commit)
-* Fix bugs when calling hfcviewer (and use zeep instead of suds for requesting SOAP HFC Web service)
+* Remove helio service module
 * Minor improvement in codes
 
 0.8.3
