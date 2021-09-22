@@ -1,6 +1,11 @@
 CHANGELOG
 ====================
 
+0.9.1
+-----
+- Add read_l2_60s() method in maser.data.wind.waves.read_wind_waves_file.py
+- Update read_l2_hres() output (now is dictionary instead of Waves_data object previously)
+
 0.9.0
 -----
 * Add the numerical precision option for cdf_compare
