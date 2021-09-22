@@ -121,7 +121,7 @@ def read_l2_60s(filepath):
                 break
             else:
                 header.append(header_i)
-                data.append({'FKHZ':freq,'SMEAN':Smoy,'SMIN':Smin,'Smax':Smax})
+                data.append({'FKHZ':freq,'SMEAN':Smoy,'SMIN':Smin,'SMAX':Smax})
                 nsweep+=1
 
     output = {'header': header, 'data': data}
