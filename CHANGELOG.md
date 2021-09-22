@@ -1,6 +1,10 @@
 CHANGELOG
 ====================
 
+0.9.2
+------
+- Minor hotfixes
+
 0.9.1
 -----
 - Add read_l2_60s() method in maser.data.wind.waves.read_wind_waves_file.py
