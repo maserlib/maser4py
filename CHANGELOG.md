@@ -1,6 +1,11 @@
 CHANGELOG
 ====================
 
+0.9.3
+------
+- added Saturn data support and new data organisation
+- Update dependencies
+
 0.9.2
 ------
 - Minor hotfixes
