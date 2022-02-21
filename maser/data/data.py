@@ -3,6 +3,7 @@ from typing import Union, Dict
 from pathlib import Path
 from spacepy import pycdf
 from astropy.io import fits
+from maser.data.pds import PDSLabelDict
 
 
 class BaseData:
@@ -44,10 +45,12 @@ class Data(BaseData, dataset="default"):
 
     @staticmethod
     def get_dataset(filepath):
-        if filepath.name.endswith(".cdf"):
+        if filepath.suffix == ".cdf":
             dataset = BaseData._registry["cdf"].get_dataset(filepath)
-        elif filepath.name.endswith(".fits"):
+        elif filepath.suffix == ".fits":
             dataset = BaseData._registry["fits"].get_dataset(filepath)
+        elif filepath.suffix == ".lbl":
+            dataset = BaseData._registry["pds3"].get_dataset(filepath)
         else:
             raise NotImplementedError()
         return dataset
@@ -67,6 +70,14 @@ class FitsData(Data, dataset="fits"):
         with fits.open(filepath) as f:
             if f[0].header["INSTRUME"] == "NenuFar" and filepath.stem.endswith("_BST"):
                 dataset = "nenufar_bst"
+        return dataset
+
+
+class Pds3Data(Data, dataset="pds3"):
+    @staticmethod
+    def get_dataset(filepath):
+        with PDSLabelDict(filepath) as lbl:
+            dataset = lbl["DATA_SET_ID"].lower()
         return dataset
 
 
