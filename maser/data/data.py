@@ -16,6 +16,10 @@ class BaseData:
     def __init__(self, filepath: Path):
         self.filepath = filepath
 
+    @staticmethod
+    def get_dataset(filepath):
+        pass
+
 
 class Data(BaseData, dataset="default"):
     def __new__(cls, filepath: Path, dataset: Union[None, str] = None):
@@ -60,5 +64,5 @@ class NenufarBstFitsData(BaseData, dataset="nenufar_bst"):
 
 
 if __name__ == "__main__":
-    data = Data(filepath="toto.txt", dataset="cdf")
+    data = Data(filepath=Path("toto.txt"), dataset="cdf")
     print(type(data))

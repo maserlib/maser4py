@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 from maser.data import Data
-from maser.data.data import CdfData, SrnNdaRoutineJupEdrCdfData, NenufarBstFitsData
+from maser.data.data import (
+    CdfData,
+    SrnNdaRoutineJupEdrCdfData,
+    FitsData,
+    NenufarBstFitsData,
+)
 from pathlib import Path
 
 
@@ -10,6 +15,11 @@ BASEDIR = Path(__file__).resolve().parent / "data"
 def test_cdf_dataset():
     data = Data(filepath=Path("toto.txt"), dataset="cdf")
     assert isinstance(data, CdfData)
+
+
+def test_fits_dataset():
+    data = Data(filepath=Path("toto.txt"), dataset="fits")
+    assert isinstance(data, FitsData)
 
 
 def test_srn_nda_routine_jup_edr_dataset():
