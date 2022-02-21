@@ -5,6 +5,8 @@ from maser.data.data import (
     SrnNdaRoutineJupEdrCdfData,
     FitsData,
     NenufarBstFitsData,
+    Pds3Data,
+    Vg1JPra3RdrLowband6secV1Data,
 )
 from pathlib import Path
 
@@ -22,6 +24,12 @@ def test_fits_dataset():
     data = Data(filepath=Path("toto.txt"), dataset="fits")
     assert isinstance(data, Data)
     assert isinstance(data, FitsData)
+
+
+def test_pds3_dataset():
+    data = Data(filepath=Path("toto.txt"), dataset="pds3")
+    assert isinstance(data, Data)
+    assert isinstance(data, Pds3Data)
 
 
 def test_srn_nda_routine_jup_edr_dataset():
@@ -43,3 +51,10 @@ def test_nenufar_bst_dataset():
         / "20220130_112900_BST.fits"
     )
     assert isinstance(data, NenufarBstFitsData)
+
+
+def test_pds_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
+    data = Data(
+        filepath=BASEDIR / "pds" / "VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA_I.LBL"
+    )
+    assert isinstance(data, Vg1JPra3RdrLowband6secV1Data)

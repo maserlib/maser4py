@@ -45,11 +45,11 @@ class Data(BaseData, dataset="default"):
 
     @staticmethod
     def get_dataset(filepath):
-        if filepath.suffix == ".cdf":
+        if filepath.suffix.lower() == ".cdf":
             dataset = BaseData._registry["cdf"].get_dataset(filepath)
-        elif filepath.suffix == ".fits":
+        elif filepath.suffix.lower() == ".fits":
             dataset = BaseData._registry["fits"].get_dataset(filepath)
-        elif filepath.suffix == ".lbl":
+        elif filepath.suffix.lower() == ".lbl":
             dataset = BaseData._registry["pds3"].get_dataset(filepath)
         else:
             raise NotImplementedError()
@@ -76,8 +76,8 @@ class FitsData(Data, dataset="fits"):
 class Pds3Data(Data, dataset="pds3"):
     @staticmethod
     def get_dataset(filepath):
-        with PDSLabelDict(filepath) as lbl:
-            dataset = lbl["DATA_SET_ID"].lower()
+        lbl = PDSLabelDict(filepath)
+        dataset = lbl["DATA_SET_ID"]
         return dataset
 
 
@@ -86,6 +86,12 @@ class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
 
 
 class NenufarBstFitsData(FitsData, dataset="nenufar_bst"):
+    pass
+
+
+class Vg1JPra3RdrLowband6secV1Data(
+    Pds3Data, dataset="VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0"
+):
     pass
 
 
