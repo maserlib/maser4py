@@ -2,6 +2,7 @@
 from typing import Union, Dict
 from pathlib import Path
 from spacepy import pycdf
+from astropy.io import fits
 
 
 class BaseData:
@@ -26,6 +27,10 @@ class Data(BaseData, dataset="default"):
     def get_dataset(filepath):
         if filepath.name.endswith(".cdf"):
             dataset = BaseData._registry["cdf"].get_dataset(filepath)
+        elif filepath.name.endswith(".fits"):
+            dataset = BaseData._registry["fits"].get_dataset(filepath)
+        else:
+            raise NotImplementedError()
         return dataset
 
 
@@ -37,7 +42,20 @@ class CdfData(BaseData, dataset="cdf"):
         return dataset
 
 
+class FitsData(BaseData, dataset="fits"):
+    @staticmethod
+    def get_dataset(filepath):
+        with fits.open(filepath) as f:
+            if f[0].header["INSTRUME"] == "NenuFar" and filepath.stem.endswith("_BST"):
+                dataset = "nenufar_bst"
+        return dataset
+
+
 class SrnNdaRoutineJupEdrCdfData(BaseData, dataset="srn_nda_routine_jup_edr"):
+    pass
+
+
+class NenufarBstFitsData(BaseData, dataset="nenufar_bst"):
     pass
 
 
