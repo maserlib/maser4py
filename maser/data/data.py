@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import Union
 from pathlib import Path
 
@@ -16,11 +17,23 @@ class BaseData:
 
 class Data(BaseData, dataset="default"):
     def __call__(cls, filepath: Path, dataset: str):
-
+        if dataset is None:
+            cls.get_dataset(filepath)
         return BaseData._registry[dataset](filepath)
+
+    @staticmethod
+    def get_dataset(filepath):
+        if filepath.name.endswith(".cdf"):
+            BaseData._registry["cdf"].get_dataset(filepath)
 
 
 class CdfData(BaseData, dataset="cdf"):
+    @staticmethod
+    def get_dataset(filepath):
+        pass
+
+
+class SrnNdaRoutineJupEdrCdfData(BaseData, dataset="srn_nda_routine_jup_edr"):
     pass
 
 
