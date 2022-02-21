@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Union
 from pathlib import Path
+from spacepy import pycdf
 
 
 class BaseData:
@@ -16,7 +17,7 @@ class BaseData:
 
 
 class Data(BaseData, dataset="default"):
-    def __call__(cls, filepath: Path, dataset: str):
+    def __new__(cls, filepath: Path, dataset: str):
         if dataset is None:
             cls.get_dataset(filepath)
         return BaseData._registry[dataset](filepath)
@@ -30,7 +31,9 @@ class Data(BaseData, dataset="default"):
 class CdfData(BaseData, dataset="cdf"):
     @staticmethod
     def get_dataset(filepath):
-        pass
+        with pycdf.CDF(str(filepath)) as c:
+            dataset = c.attrs["Logical_source"][...][0]
+        return dataset
 
 
 class SrnNdaRoutineJupEdrCdfData(BaseData, dataset="srn_nda_routine_jup_edr"):
