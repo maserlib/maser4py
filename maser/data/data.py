@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from typing import Union
 from pathlib import Path
 
@@ -16,7 +15,7 @@ class BaseData:
 
 
 class Data(BaseData, dataset="default"):
-    def __new__(cls, filepath: Path, dataset: str):
+    def __call__(cls, filepath: Path, dataset: str):
 
         return BaseData._registry[dataset](filepath)
 
