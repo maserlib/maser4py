@@ -43,6 +43,29 @@ class Data(BaseData, dataset="default"):
             # create a new instance of the dataset class
             return DatasetClass(filepath, dataset=None)
 
+    def open(self):
+        return open(self.filepath)
+
+    def close(self):
+        self._file.close()
+
+    @property
+    def file(self):
+        if self._file:
+            return self._file
+        else:
+            self._file = self.open(self.filepath)
+
+    def __enter__(self, raw: bool = False):
+        if raw:
+            return self.file
+        else:
+            return self
+
+    def __exit__(self):
+        if self._file:
+            self.close()
+
     @staticmethod
     def get_dataset(filepath):
         if filepath.suffix.lower() == ".cdf":
@@ -57,6 +80,12 @@ class Data(BaseData, dataset="default"):
 
 
 class CdfData(Data, dataset="cdf"):
+    def open(self):
+        return pycdf.CDF(str(self.filepath))
+
+    def close(self):
+        self._file.close()
+
     @staticmethod
     def get_dataset(filepath):
         with pycdf.CDF(str(filepath)) as c:
