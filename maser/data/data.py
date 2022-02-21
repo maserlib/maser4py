@@ -13,7 +13,7 @@ class BaseData:
         cls.dataset = dataset
         BaseData._registry[dataset] = cls
 
-    def __init__(self, filepath: Path):
+    def __init__(self, filepath: Path, dataset: Union[None, str] = "__auto__") -> None:
         self.filepath = filepath
 
     @staticmethod
@@ -22,10 +22,25 @@ class BaseData:
 
 
 class Data(BaseData, dataset="default"):
-    def __new__(cls, filepath: Path, dataset: Union[None, str] = None):
+    def __new__(cls, filepath: Path, dataset: Union[None, str] = "__auto__") -> "Data":
         if dataset is None:
+            # call the base data class __new__ method
+            return super().__new__(cls)
+        elif dataset == "__auto__":
+            # try to guess the dataset
             dataset = cls.get_dataset(filepath)
-        return BaseData._registry[dataset](filepath)
+
+            # get the dataset class from the registry
+            DatasetClass = BaseData._registry[dataset]
+
+            # create a new instance of the dataset class
+            return DatasetClass(filepath, dataset=None)
+        else:
+            # get the dataset class from the registry
+            DatasetClass = BaseData._registry[dataset]
+
+            # create a new instance of the dataset class
+            return DatasetClass(filepath, dataset=None)
 
     @staticmethod
     def get_dataset(filepath):
@@ -38,7 +53,7 @@ class Data(BaseData, dataset="default"):
         return dataset
 
 
-class CdfData(BaseData, dataset="cdf"):
+class CdfData(Data, dataset="cdf"):
     @staticmethod
     def get_dataset(filepath):
         with pycdf.CDF(str(filepath)) as c:
@@ -46,7 +61,7 @@ class CdfData(BaseData, dataset="cdf"):
         return dataset
 
 
-class FitsData(BaseData, dataset="fits"):
+class FitsData(Data, dataset="fits"):
     @staticmethod
     def get_dataset(filepath):
         with fits.open(filepath) as f:
@@ -55,11 +70,11 @@ class FitsData(BaseData, dataset="fits"):
         return dataset
 
 
-class SrnNdaRoutineJupEdrCdfData(BaseData, dataset="srn_nda_routine_jup_edr"):
+class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
     pass
 
 
-class NenufarBstFitsData(BaseData, dataset="nenufar_bst"):
+class NenufarBstFitsData(FitsData, dataset="nenufar_bst"):
     pass
 
 

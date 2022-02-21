@@ -14,11 +14,13 @@ BASEDIR = Path(__file__).resolve().parent / "data"
 
 def test_cdf_dataset():
     data = Data(filepath=Path("toto.txt"), dataset="cdf")
+    assert isinstance(data, Data)
     assert isinstance(data, CdfData)
 
 
 def test_fits_dataset():
     data = Data(filepath=Path("toto.txt"), dataset="fits")
+    assert isinstance(data, Data)
     assert isinstance(data, FitsData)
 
 
