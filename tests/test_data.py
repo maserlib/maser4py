@@ -3,7 +3,7 @@ from maser.data import Data
 from maser.data.data import CdfData, SrnNdaRoutineJupEdrCdfData
 from pathlib import Path
 
-BASEDIR = Path("data")
+BASEDIR = Path("tests/data")
 
 
 def test_cdf_dataset():

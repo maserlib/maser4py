@@ -19,13 +19,14 @@ class BaseData:
 class Data(BaseData, dataset="default"):
     def __new__(cls, filepath: Path, dataset: Union[None, str] = None):
         if dataset is None:
-            cls.get_dataset(filepath)
+            dataset = cls.get_dataset(filepath)
         return BaseData._registry[dataset](filepath)
 
     @staticmethod
     def get_dataset(filepath):
         if filepath.name.endswith(".cdf"):
-            BaseData._registry["cdf"].get_dataset(filepath)
+            dataset = BaseData._registry["cdf"].get_dataset(filepath)
+        return dataset
 
 
 class CdfData(BaseData, dataset="cdf"):
