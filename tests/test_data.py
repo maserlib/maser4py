@@ -8,7 +8,7 @@ BASEDIR = Path(__file__).resolve().parent / "data"
 
 
 def test_cdf_dataset():
-    data = Data(filepath="toto.txt", dataset="cdf")
+    data = Data(filepath=Path("toto.txt"), dataset="cdf")
     assert isinstance(data, CdfData)
 
 
