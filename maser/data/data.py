@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from typing import Union
+from typing import Union, Dict
 from pathlib import Path
 from spacepy import pycdf
 
 
 class BaseData:
     dataset: Union[None, str] = None
-    _registry: dict[str, "BaseData"] = {}
+    _registry: Dict[str, "BaseData"] = {}
 
     def __init_subclass__(cls: "BaseData", *args, dataset: str, **kwargs) -> None:
         cls.dataset = dataset
@@ -17,7 +17,7 @@ class BaseData:
 
 
 class Data(BaseData, dataset="default"):
-    def __new__(cls, filepath: Path, dataset: str):
+    def __new__(cls, filepath: Path, dataset: Union[None, str] = None):
         if dataset is None:
             cls.get_dataset(filepath)
         return BaseData._registry[dataset](filepath)
