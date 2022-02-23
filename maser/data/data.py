@@ -124,9 +124,7 @@ class Pds3Data(Data, dataset="pds3"):
 
     @classmethod
     def get_dataset(cls, filepath):
-        with cls.open(filepath) as f:
-            dataset = f["label"]["DATA_SET_ID"]
-        return dataset
+        return PDSLabelDict(filepath)["DATA_SET_ID"]
 
 
 class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
