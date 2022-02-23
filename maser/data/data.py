@@ -120,11 +120,19 @@ class FitsData(Data, dataset="fits"):
 class Pds3Data(Data, dataset="pds3"):
     @classmethod
     def open(cls, filepath: Path):
-        return {"label": PDSLabelDict(filepath), "data": None}
+        label = PDSLabelDict(filepath)
+        data = None
+        return {"label": label, "data": data}
 
     @classmethod
     def get_dataset(cls, filepath):
-        return PDSLabelDict(filepath)["DATA_SET_ID"]
+        file_label = cls.open(filepath)["label"]
+        dataset = file_label["DATA_SET_ID"]
+        return dataset
+
+    @classmethod
+    def close(cls, file):
+        pass
 
 
 class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
