@@ -9,6 +9,8 @@ from maser.data.data import (
     Vg1JPra3RdrLowband6secV1Data,
 )
 from pathlib import Path
+from spacepy import pycdf
+from astropy.io import fits
 
 
 BASEDIR = Path(__file__).resolve().parent / "data"
@@ -42,6 +44,17 @@ def test_srn_nda_routine_jup_edr_dataset():
     assert isinstance(data, SrnNdaRoutineJupEdrCdfData)
 
 
+def test_srn_nda_routine_jup_edr_dataset__access_mode_raw():
+    with Data(
+        filepath=BASEDIR
+        / "nda"
+        / "routine"
+        / "srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf",
+        access_mode="raw",
+    ) as data:
+        assert isinstance(data, pycdf.CDF)
+
+
 def test_nenufar_bst_dataset():
     data = Data(
         filepath=BASEDIR
@@ -51,6 +64,20 @@ def test_nenufar_bst_dataset():
         / "20220130_112900_BST.fits"
     )
     assert isinstance(data, NenufarBstFitsData)
+
+
+def test_nenufar_bst_dataset__access_mode_raw():
+    with Data(
+        filepath=BASEDIR
+        / "nenufar"
+        / "bst"
+        / "20220130_112900_20220130_123100_SUN_TRACKING"
+        / "20220130_112900_BST.fits",
+        access_mode="raw",
+    ) as data:
+        assert isinstance(data, list)
+        for item in data:
+            assert isinstance(item, fits.hdu.base._BaseHDU)
 
 
 def test_pds_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
