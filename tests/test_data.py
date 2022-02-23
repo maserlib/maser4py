@@ -11,9 +11,15 @@ from maser.data.data import (
 from pathlib import Path
 from spacepy import pycdf
 from astropy.io import fits
+import pytest
 
 
 BASEDIR = Path(__file__).resolve().parent / "data"
+
+
+def test_dataset():
+    with pytest.raises(NotImplementedError):
+        Data(filepath=Path("toto.txt"))
 
 
 def test_cdf_dataset():
@@ -55,6 +61,17 @@ def test_srn_nda_routine_jup_edr_dataset__access_mode_raw():
         assert isinstance(data, pycdf.CDF)
 
 
+def test_srn_nda_routine_jup_edr_dataset__access_mode_error():
+    with pytest.raises(ValueError):
+        Data(
+            filepath=BASEDIR
+            / "nda"
+            / "routine"
+            / "srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf",
+            access_mode="toto",
+        )
+
+
 def test_nenufar_bst_dataset():
     data = Data(
         filepath=BASEDIR
@@ -85,3 +102,11 @@ def test_pds_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
         filepath=BASEDIR / "pds" / "VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA_I.LBL"
     )
     assert isinstance(data, Vg1JPra3RdrLowband6secV1Data)
+
+
+def test_pds_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__access_raw():
+    with Data(
+        filepath=BASEDIR / "pds" / "VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA_I.LBL",
+        access_mode="raw",
+    ) as data:
+        assert isinstance(data, dict)

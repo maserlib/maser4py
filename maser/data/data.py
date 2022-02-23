@@ -21,7 +21,10 @@ class BaseData:
         access_mode: str = "sweeps",
     ) -> None:
         self.filepath = filepath
-        self.access_mode = access_mode
+        if access_mode not in ["sweeps", "records", "raw"]:
+            raise ValueError("Illegal access mode.")
+        else:
+            self.access_mode = access_mode
         self._file = None
 
     @classmethod
@@ -54,7 +57,7 @@ class Data(BaseData, dataset="default"):
 
     @classmethod
     def open(cls, filepath: Path):
-        return open(filepath)
+        return open(filepath, *args, **kwargs)
 
     @classmethod
     def close(cls, file):
@@ -116,9 +119,13 @@ class FitsData(Data, dataset="fits"):
 
 class Pds3Data(Data, dataset="pds3"):
     @classmethod
+    def open(cls, filepath: Path):
+        return {"label": PDSLabelDict(filepath), "data": None}
+
+    @classmethod
     def get_dataset(cls, filepath):
-        lbl = PDSLabelDict(filepath)
-        dataset = lbl["DATA_SET_ID"]
+        with cls.open(filepath) as f:
+            dataset = f["label"]["DATA_SET_ID"]
         return dataset
 
 
