@@ -14,16 +14,25 @@ class BaseData:
         cls.dataset = dataset
         BaseData._registry[dataset] = cls
 
-    def __init__(self, filepath: Path, dataset: Union[None, str] = "__auto__") -> None:
+    def __init__(
+        self,
+        filepath: Path,
+        dataset: Union[None, str] = "__auto__",
+        access_mode: str = "sweeps",
+    ) -> None:
         self.filepath = filepath
+        self.access_mode = access_mode
+        self._file = None
 
-    @staticmethod
-    def get_dataset(filepath):
+    @classmethod
+    def get_dataset(cls, filepath):
         pass
 
 
 class Data(BaseData, dataset="default"):
-    def __new__(cls, filepath: Path, dataset: Union[None, str] = "__auto__") -> "Data":
+    def __new__(
+        cls, filepath: Path, dataset: Union[None, str] = "__auto__", *args, **kwargs
+    ) -> "Data":
         if dataset is None:
             # call the base data class __new__ method
             return super().__new__(cls)
@@ -35,19 +44,21 @@ class Data(BaseData, dataset="default"):
             DatasetClass = BaseData._registry[dataset]
 
             # create a new instance of the dataset class
-            return DatasetClass(filepath, dataset=None)
+            return DatasetClass(filepath, dataset=None, *args, **kwargs)
         else:
             # get the dataset class from the registry
             DatasetClass = BaseData._registry[dataset]
 
             # create a new instance of the dataset class
-            return DatasetClass(filepath, dataset=None)
+            return DatasetClass(filepath, dataset=None, *args, **kwargs)
 
-    def open(self):
-        return open(self.filepath)
+    @classmethod
+    def open(cls, filepath: Path):
+        return open(filepath)
 
-    def close(self):
-        self._file.close()
+    @classmethod
+    def close(cls, file):
+        file.close()
 
     @property
     def file(self):
@@ -55,15 +66,15 @@ class Data(BaseData, dataset="default"):
             self._file = self.open(self.filepath)
         return self._file
 
-    def __enter__(self, raw: bool = False):
-        if raw:
+    def __enter__(self):
+        if self.access_mode == "raw":
             return self.file
         else:
             return self
 
-    def __exit__(self):
+    def __exit__(self, *args, **kwargs):
         if self._file:
-            self.close()
+            self.close(self._file)
 
     @staticmethod
     def get_dataset(filepath):
@@ -79,31 +90,33 @@ class Data(BaseData, dataset="default"):
 
 
 class CdfData(Data, dataset="cdf"):
-    def open(self):
-        return pycdf.CDF(str(self.filepath))
+    @classmethod
+    def open(cls, filepath: Path):
+        return pycdf.CDF(str(filepath))
 
-    def close(self):
-        self._file.close()
-
-    @staticmethod
-    def get_dataset(filepath):
-        with pycdf.CDF(str(filepath)) as c:
+    @classmethod
+    def get_dataset(cls, filepath):
+        with cls.open(filepath) as c:
             dataset = c.attrs["Logical_source"][...][0]
         return dataset
 
 
 class FitsData(Data, dataset="fits"):
-    @staticmethod
-    def get_dataset(filepath):
-        with fits.open(filepath) as f:
+    @classmethod
+    def open(cls, filepath: Path):
+        return fits.open(filepath)
+
+    @classmethod
+    def get_dataset(cls, filepath):
+        with cls.open(filepath) as f:
             if f[0].header["INSTRUME"] == "NenuFar" and filepath.stem.endswith("_BST"):
                 dataset = "nenufar_bst"
         return dataset
 
 
 class Pds3Data(Data, dataset="pds3"):
-    @staticmethod
-    def get_dataset(filepath):
+    @classmethod
+    def get_dataset(cls, filepath):
         lbl = PDSLabelDict(filepath)
         dataset = lbl["DATA_SET_ID"]
         return dataset
