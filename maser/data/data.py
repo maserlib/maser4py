@@ -56,7 +56,7 @@ class Data(BaseData, dataset="default"):
             return DatasetClass(filepath, dataset=None, *args, **kwargs)
 
     @classmethod
-    def open(cls, filepath: Path):
+    def open(cls, filepath: Path, *args, **kwargs):
         return open(filepath, *args, **kwargs)
 
     @classmethod
@@ -69,6 +69,14 @@ class Data(BaseData, dataset="default"):
             self._file = self.open(self.filepath)
         return self._file
 
+    @property
+    def sweeps(self):
+        yield
+
+    @property
+    def records(self):
+        yield
+
     def __enter__(self):
         if self.access_mode == "file":
             return self.file
@@ -78,6 +86,12 @@ class Data(BaseData, dataset="default"):
     def __exit__(self, *args, **kwargs):
         if self._file:
             self.close(self._file)
+
+    def __iter__(self):
+        # get the reference to the right iterator (file, sweeps or records)
+        ref = getattr(self, self.access_mode)
+        for item in ref:
+            yield item
 
     @staticmethod
     def get_dataset(filepath):

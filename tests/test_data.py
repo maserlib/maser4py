@@ -61,6 +61,27 @@ def test_srn_nda_routine_jup_edr_dataset__access_mode_file():
         assert isinstance(data, pycdf.CDF)
 
 
+def test_srn_nda_routine_jup_edr_dataset__iter_method__mode_file():
+    data = Data(
+        filepath=BASEDIR
+        / "nda"
+        / "routine"
+        / "srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf",
+        access_mode="file",
+    )
+    var_labels = [item for item in data]
+    assert list(data.file) == var_labels
+    assert var_labels == [
+        "Epoch",
+        "RR",
+        "LL",
+        "STATUS",
+        "SWEEP_TIME_OFFSET_RAMP",
+        "RR_SWEEP_TIME_OFFSET",
+        "Frequency",
+    ]
+
+
 def test_srn_nda_routine_jup_edr_dataset__access_mode_error():
     with pytest.raises(ValueError):
         Data(
