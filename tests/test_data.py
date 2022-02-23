@@ -92,9 +92,7 @@ def test_nenufar_bst_dataset__access_mode_raw():
         / "20220130_112900_BST.fits",
         access_mode="raw",
     ) as data:
-        assert isinstance(data, list)
-        for item in data:
-            assert isinstance(item, fits.hdu.base._BaseHDU)
+        assert isinstance(data, fits.hdu.hdulist.HDUList)
 
 
 def test_pds_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
