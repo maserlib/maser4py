@@ -21,7 +21,7 @@ class BaseData:
         access_mode: str = "sweeps",
     ) -> None:
         self.filepath = filepath
-        if access_mode not in ["sweeps", "records", "raw"]:
+        if access_mode not in ["sweeps", "records", "file"]:
             raise ValueError("Illegal access mode.")
         else:
             self.access_mode = access_mode
@@ -70,7 +70,7 @@ class Data(BaseData, dataset="default"):
         return self._file
 
     def __enter__(self):
-        if self.access_mode == "raw":
+        if self.access_mode == "file":
             return self.file
         else:
             return self

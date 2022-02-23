@@ -50,13 +50,13 @@ def test_srn_nda_routine_jup_edr_dataset():
     assert isinstance(data, SrnNdaRoutineJupEdrCdfData)
 
 
-def test_srn_nda_routine_jup_edr_dataset__access_mode_raw():
+def test_srn_nda_routine_jup_edr_dataset__access_mode_file():
     with Data(
         filepath=BASEDIR
         / "nda"
         / "routine"
         / "srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf",
-        access_mode="raw",
+        access_mode="file",
     ) as data:
         assert isinstance(data, pycdf.CDF)
 
@@ -83,14 +83,14 @@ def test_nenufar_bst_dataset():
     assert isinstance(data, NenufarBstFitsData)
 
 
-def test_nenufar_bst_dataset__access_mode_raw():
+def test_nenufar_bst_dataset__access_mode_file():
     with Data(
         filepath=BASEDIR
         / "nenufar"
         / "bst"
         / "20220130_112900_20220130_123100_SUN_TRACKING"
         / "20220130_112900_BST.fits",
-        access_mode="raw",
+        access_mode="file",
     ) as data:
         assert isinstance(data, fits.hdu.hdulist.HDUList)
 
@@ -102,9 +102,9 @@ def test_pds_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
     assert isinstance(data, Vg1JPra3RdrLowband6secV1Data)
 
 
-def test_pds_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__access_raw():
+def test_pds_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__access_mode_file():
     with Data(
         filepath=BASEDIR / "pds" / "VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA_I.LBL",
-        access_mode="raw",
+        access_mode="file",
     ) as data:
         assert isinstance(data, dict)
