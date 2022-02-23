@@ -30,13 +30,8 @@ class PDSLabelDict(dict):
         Class for the list-form PDSLabel (internal class, not accessible from outside)
         """
 
-        def __init__(self, label_file, verbose=False, debug=False):
-
-            if debug:
-                print("### This is PDSLabelDict._PDSLabelList.__init__()")
-
-            list.__init__(self)
-            self.debug = debug
+        def __init__(self, label_file, verbose=False):
+            super().__init__(self)
             self.verbose = verbose
             self.file = label_file
             self.process = list()
@@ -52,23 +47,13 @@ class PDSLabelDict(dict):
             The method recursively loads any other .FMT files, for each ^STRUCTURE key.
             """
 
-            if self.debug:
-                print(
-                    "### This is PDSLabelDict._PDSLabelList._load_pds3_label_as_list()"
-                )
-
             # If no input_file is set, retrieve current PDSLabelList file from self
             if input_file is None:
                 input_file = self.file
 
             # Opening input_file and looping through lines
             with open(input_file, "r") as f:
-
-                if self.debug:
-                    print("Reading from {}".format(input_file))
-
                 for line in f.readlines():
-
                     if self.verbose:
                         print(line)
 
@@ -118,11 +103,6 @@ class PDSLabelDict(dict):
             This method merges multiple line values
             """
 
-            if self.debug:
-                print(
-                    "### This is PDSLabelDict._PDSLabelList._merge_multiple_line_values()"
-                )
-
             prev_ii = 0
             remove_list = []
 
@@ -157,11 +137,6 @@ class PDSLabelDict(dict):
         def _add_object_depth_to_label_list(self):
             """Adds an extra elements after in each (key, value) containing the current object depth"""
 
-            if self.debug:
-                print(
-                    "### This is PDSLabelDict._PDSLabelList._add_object_depth_to_label_list()"
-                )
-
             depth = []
             remove_list = []
 
@@ -188,24 +163,17 @@ class PDSLabelDict(dict):
 
             self.process.append("Added depth tag")
 
-    def __init__(self, label_file, verbose=False, debug=False):
+    def __init__(self, label_file, verbose=False):
 
-        if debug:
-            print("### This is PDSLabelDict.__init__()")
-
-        dict.__init__(self)
-        self.debug = debug
+        super().__init__(self)
         self.verbose = verbose
         self.file = label_file
-        label_list = self._PDSLabelList(self.file, self.verbose, self.debug)
+        label_list = self._PDSLabelList(self.file, self.verbose)
         self.process = label_list.process
         self._label_list_to_dict(label_list)
 
     def _label_list_to_dict(self, label_list):
         """This function transforms PDS3 Label list into a PDS3 Label dict"""
-
-        if self.debug:
-            print("### This is PDSLabelDict._label_list_to_dict()")
 
         for item in label_list:
             (cur_key, cur_value, cur_depth) = item
@@ -230,3 +198,244 @@ class PDSLabelDict(dict):
                 cur_dict[cur_key] = cur_value
 
         self.process.append("Converted to dict")
+
+
+class PDSDataFromLabel:
+    """
+    This object contains PDS3 archive data, loaded from their label file.
+    This is MaserDataFromFile object, based on the label file.
+    Attributes:
+        label: parsed label data mapped into a dictionary (PDSLabelDict object)
+        pointers: dict containing {pointer_name: pointer_file} elements
+        objects: list of object names (pointers to data files)
+        dataset_name: name of PDS3 archive volume
+        header: header info (depending on each volume)
+        object: dict containing {object_name: MaserDataFromFile(object_file)} elements
+    Methods:
+        _decode_pointer(self, str_pointer)
+        _detect_pointers(self)
+        _detect_data_object_type(self)
+        _fix_object_label_entries(self)
+        load_data(self)
+        get_single_sweep(self, index)
+        get_first_sweep(self)
+        get_last_sweep(self)
+    """
+
+    def __init__(
+        self,
+        file,
+        label_dict=None,
+        fmt_label_dict=None,
+        load_data_input=True,
+        # data_object_class=PDSDataObject,
+        verbose=False,
+    ):
+
+        if not file.lower().endswith(".lbl"):
+            raise PDSError("Select label file instead of data file")
+
+        self.verbose = verbose
+        self.label_file = file
+        self.format_labels = fmt_label_dict
+        # self.PDSDataObject = data_object_class
+        if label_dict is not None:
+            self.label = label_dict
+        else:
+            self.label = PDSLabelDict(self.label_file, self.format_labels, verbose)
+        self.pointers = self._detect_pointers()
+        self.objects = self._detect_data_object_type()
+        self.dataset_name = self.label["DATA_SET_ID"].strip('"')
+        self._fix_object_label_entries()
+
+        self.header = None
+        self.time = None
+        self.frequency = None
+        self.object = {}
+
+        self.load_data_flag = self._initialize_load_data_flag()
+        self._update_load_data_flag(load_data_input)
+
+        for cur_data_obj in self.objects:
+
+            self.object[cur_data_obj] = self.PDSDataObject(
+                self, self, self.label[cur_data_obj], cur_data_obj, self.verbose
+            )
+
+        self.load_data()
+
+    def _initialize_load_data_flag(self):
+
+        return dict(zip(self.objects, [False] * len(self.objects)))
+
+    def _update_load_data_flag(self, load_data_input):
+
+        if isinstance(load_data_input, bool):
+            if load_data_input:
+                for item in self.objects:
+                    self.load_data_flag[item] = True
+        elif isinstance(load_data_input, list):
+            for item in load_data_input:
+                if item in self.objects:
+                    self.load_data_flag[item] = True
+                else:
+                    print(
+                        "Warning object name unknown, can't load it. ({})".format(
+                            str(item)
+                        )
+                    )
+        elif isinstance(load_data_input, str):
+            if load_data_input in self.objects:
+                self.load_data_flag[load_data_input] = True
+            else:
+                print(
+                    "Warning object name unknown, can't load it. ({})".format(
+                        str(load_data_input)
+                    )
+                )
+        else:
+            print(
+                "Warning object name(s) unknown, can't load it. ({})".format(
+                    str(load_data_input)
+                )
+            )
+
+    def _decode_pointer(self, str_pointer):
+        dict_pointer = {}
+        if str_pointer.startswith("("):
+            str_pointer_tmp = str_pointer.strip()[1:-1].split(",")
+            basename = str_pointer_tmp[0].strip('"')
+            str_offset = str_pointer_tmp[1].strip()
+            if str_offset.endswith("<BYTES>"):
+                byte_offset = int(str_offset[:-7].strip()) - 1
+            else:
+                byte_offset = (int(str_offset.strip()) - 1) * int(
+                    self.label["RECORD_BYTES"]
+                )
+        else:
+            basename = str_pointer.strip().strip('"')
+            byte_offset = 0
+
+        dict_pointer["file_name"] = os.path.join(os.path.dirname(self.file), basename)
+        dict_pointer["byte_offset"] = byte_offset
+
+        return dict_pointer
+
+    def _detect_pointers(self):
+        pointers = {}
+        for key in self.label.keys():
+            if key.startswith("^"):
+                pointers[key[1:]] = self._decode_pointer(self.label[key])
+        return pointers
+
+    def _detect_data_object_type(self):
+        data_types = []
+        for item in self.pointers.keys():
+            if item in self.label.keys():
+                data_types.append(item)
+        return data_types
+
+    def _fix_object_label_entries(self):
+        for item in self.objects:
+            self.label[item] = self.label[item][0]
+
+    def load_data(self, data_object=None):
+        if data_object is not None:
+            self._update_load_data_flag(data_object)
+
+        for cur_data_obj in self.objects:
+            if (
+                self.load_data_flag[cur_data_obj]
+                and not self.object[cur_data_obj].data_loaded
+            ):
+                self.object[cur_data_obj].load_data()
+
+    def _set_start_time(self):
+        self.start_time = dateutil.parser.parse(self.label["START_TIME"], ignoretz=True)
+
+    def _set_end_time(self):
+        self.end_time = dateutil.parser.parse(self.label["STOP_TIME"], ignoretz=True)
+
+    def get_single_sweep(self, index=0):
+        pass
+
+    def get_first_sweep(self):
+        return self.get_single_sweep(0)
+
+    def get_last_sweep(self):
+        return self.get_single_sweep(-1)
+
+    def get_freq_axis(self, unit=None):
+        pass
+
+    def get_time_axis(self):
+        pass
+
+    def get_mime_type(self):
+        if self.object[self.objects[0]].label["INTERCHANGE_FORMAT"] == "ASCII":
+            return "text/ascii"
+        else:
+            return MaserDataFromFile.get_mime_type(self)
+
+    def get_epncore_meta(self):
+        md = MaserDataFromFile.get_epncore_meta(self)
+        md["granule_uid"] = ":".join(
+            [self.label["DATA_SET_ID"], self.label["PRODUCT_ID"]]
+        )
+        md["granule_gid"] = self.label["DATA_SET_ID"]
+
+        if "SPACECRAFT_NAME" in self.label.keys():
+            md["instrument_host_name"] = self.label["SPACECRAFT_NAME"]
+        elif "INSTRUMENT_HOST_NAME" in self.label.keys():
+            md["instrument_host_name"] = self.label["INSTRUMENT_HOST_NAME"]
+
+        if "INSTRUMENT_ID" in self.label.keys():
+            md["instrument_name"] = self.label["INSTRUMENT_ID"]
+        elif "INSTRUMENT_NAME" in self.label.keys():
+            md["instrument_name"] = self.label["INSTRUMENT_NAME"]
+
+        targets = {"name": set(), "class": set(), "region": set()}
+        if "JUPITER" in self.label["TARGET_NAME"]:
+            targets["name"].add("Jupiter")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        if "SATURN" in self.label["TARGET_NAME"]:
+            targets["name"].add("Saturn")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        if "EARTH" in self.label["TARGET_NAME"]:
+            targets["name"].add("Earth")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        if "NEPTUNE" in self.label["TARGET_NAME"]:
+            targets["name"].add("Neptune")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        if "URANUS" in self.label["TARGET_NAME"]:
+            targets["name"].add("Uranus")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        md["target_name"] = "#".join(targets["name"])
+        md["target_class"] = "#".join(targets["class"])
+        md["target_region"] = "#".join(targets["region"])
+
+        md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = min(self.get_freq_axis(unit="Hz"))
+        md["spectral_range_max"] = max(self.get_freq_axis(unit="Hz"))
+
+        if "PRODUCT_CREATION_TIME" in self.label.keys():
+            if self.label["PRODUCT_CREATION_TIME"] != "N/A":
+                md["creation_date"] = dateutil.parser.parse(
+                    self.label["PRODUCT_CREATION_TIME"], ignoretz=True
+                )
+                md["modification_date"] = dateutil.parser.parse(
+                    self.label["PRODUCT_CREATION_TIME"], ignoretz=True
+                )
+                md["release_date"] = dateutil.parser.parse(
+                    self.label["PRODUCT_CREATION_TIME"], ignoretz=True
+                )
+
+        md["publisher"] = "NASA/PDS/PPI"
+
+        return md
