@@ -51,10 +51,9 @@ class Data(BaseData, dataset="default"):
 
     @property
     def file(self):
-        if self._file:
-            return self._file
-        else:
+        if not self._file:
             self._file = self.open(self.filepath)
+        return self._file
 
     def __enter__(self, raw: bool = False):
         if raw:
