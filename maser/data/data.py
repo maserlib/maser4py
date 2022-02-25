@@ -19,11 +19,14 @@ class BaseData:
 
     def __init__(
         self,
-        filepath: Path,
+        filepath: Union[Path, str],
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
     ) -> None:
-        self.filepath = filepath
+        if isinstance(filepath, str):
+            self.filepath = Path(filepath)
+        else:
+            self.filepath = filepath
         if access_mode not in ["sweeps", "records", "file"]:
             raise ValueError("Illegal access mode.")
         else:
@@ -161,7 +164,7 @@ class Pds3Data(Data, dataset="pds3"):
         return {"label": label, "data": data}
 
     @classmethod
-    def get_dataset(cls, filepath):
+    def get_dataset(cls, filepath: Path):
         file_label = cls.open(filepath)["label"]
         dataset = file_label["DATA_SET_ID"]
         return dataset
