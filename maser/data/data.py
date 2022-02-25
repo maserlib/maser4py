@@ -4,6 +4,9 @@ from pathlib import Path
 from spacepy import pycdf
 from astropy.io import fits
 from maser.data.pds import PDSLabelDict
+import numpy
+from astropy.time import Time
+from astropy.units import Unit
 
 
 class BaseData:
@@ -26,6 +29,8 @@ class BaseData:
         else:
             self.access_mode = access_mode
         self._file = None
+        self._times = None
+        self._frequencies = None
 
     @classmethod
     def get_dataset(cls, filepath):
@@ -76,6 +81,21 @@ class Data(BaseData, dataset="default"):
     @property
     def records(self):
         yield
+
+    @property
+    def meta(self) -> dict:
+        return dict()
+
+    @property
+    def times(self):
+        pass
+
+    @property
+    def frequencies(self):
+        pass
+
+    def as_array(self) -> numpy.ndarray:
+        return numpy.ndarray(numpy.empty)
 
     def __enter__(self):
         if self.access_mode == "file":
@@ -150,11 +170,34 @@ class Pds3Data(Data, dataset="pds3"):
 
 
 class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
-    pass
+    @property
+    def frequencies(self):
+        if self._frequencies is None:
+            with self.open(self.filepath) as f:
+                self._frequencies = f["Frequency"][...] * Unit(
+                    f["Frequency"].attrs["UNITS"]
+                )
+        return self._frequencies
+
+    @property
+    def times(self):
+        if self._times is None:
+            with self.open(self.filepath) as f:
+                self._times = Time(f["Epoch"][...])
+        return self._times
 
 
 class NenufarBstFitsData(FitsData, dataset="nenufar_bst"):
     pass
+
+
+class ECallistoFitsData(FitsData, dataset="ecallisto"):
+    @property
+    def times(self):
+        if self._times is None:
+            # with self.open(self.filepath) as f:
+            self._times = []
+        return self._times
 
 
 class Vg1JPra3RdrLowband6secV1Data(
