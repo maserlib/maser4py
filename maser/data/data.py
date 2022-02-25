@@ -117,7 +117,7 @@ class Data(BaseData, dataset="default"):
     def get_dataset(filepath):
         if filepath.suffix.lower() == ".cdf":
             dataset = BaseData._registry["cdf"].get_dataset(filepath)
-        elif filepath.suffix.lower() == ".fits":
+        elif filepath.suffix.lower() in [".fits", ".fit"]:
             dataset = BaseData._registry["fits"].get_dataset(filepath)
         elif filepath.suffix.lower() == ".lbl":
             dataset = BaseData._registry["pds3"].get_dataset(filepath)
@@ -148,6 +148,8 @@ class FitsData(Data, dataset="fits"):
         with cls.open(filepath) as f:
             if f[0].header["INSTRUME"] == "NenuFar" and filepath.stem.endswith("_BST"):
                 dataset = "nenufar_bst"
+            elif "e-CALLISTO" in f[0].header["CONTENT"]:
+                dataset = "ecallisto"
         return dataset
 
 
