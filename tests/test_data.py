@@ -53,6 +53,11 @@ def test_cdf_dataset():
     assert isinstance(data, CdfData)
 
 
+def test_cdf_dataset__filepath_type():
+    data = Data(filepath="toto.txt", dataset="cdf")
+    assert isinstance(data.filepath, Path)
+
+
 def test_fits_dataset():
     data = Data(filepath=Path("toto.txt"), dataset="fits")
     assert isinstance(data, Data)
