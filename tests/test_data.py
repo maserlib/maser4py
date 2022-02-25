@@ -135,6 +135,20 @@ def test_ecallisto_dataset():
         assert isinstance(data, ECallistoFitsData)
 
 
+def test_ecallisto_dataset__access_mode_file():
+    for filepath in TEST_FILES["ecallisto"]:
+        with Data(filepath=filepath, access_mode="file") as data:
+            assert isinstance(data, fits.hdu.hdulist.HDUList)
+
+
+def test_ecallisto_dataset__times():
+    for filepath in TEST_FILES["ecallisto"]:
+        with Data(filepath=filepath) as data:
+            assert isinstance(data.times, Time)
+            assert data.times[0] == Time("2022-01-30 11:15:00.171")
+            assert (data.times[-1] - Time("2022-01-30 11:29:59.921")).value < 1e-7
+
+
 def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
     for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
         data = Data(filepath=filepath)
