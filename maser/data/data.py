@@ -19,14 +19,11 @@ class BaseData:
 
     def __init__(
         self,
-        filepath: Union[Path, str],
+        filepath: Path,
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
     ) -> None:
-        if isinstance(filepath, str):
-            self.filepath = Path(filepath)
-        else:
-            self.filepath = filepath
+        self.filepath = Path(filepath)
         if access_mode not in ["sweeps", "records", "file"]:
             raise ValueError("Illegal access mode.")
         else:
