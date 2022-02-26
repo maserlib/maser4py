@@ -12,6 +12,7 @@ include = "maser"
 python = ">=3.8,<4"
 spacepy = "^0.2.3"
 astropy = "^5.0.1"
+nenupy = {version = "^2.1.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"
