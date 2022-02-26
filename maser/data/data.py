@@ -114,7 +114,7 @@ class Data(BaseData, dataset="default"):
             yield item
 
     @staticmethod
-    def get_dataset(filepath):
+    def get_dataset(filepath: Path):
         if filepath.suffix.lower() == ".cdf":
             dataset = BaseData._registry["cdf"].get_dataset(filepath)
         elif filepath.suffix.lower() in [".fits", ".fit"]:
