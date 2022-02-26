@@ -80,6 +80,7 @@ def test_srn_nda_routine_jup_edr_dataset__times():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath) as data:
             assert isinstance(data.times, Time)
+            assert len(data.times) == 28734
             assert data.times[0] == Time("2016-01-30 22:47:06.03")
             assert data.times[-1] == Time("2016-01-31 06:45:58.68")
 
@@ -88,8 +89,9 @@ def test_srn_nda_routine_jup_edr_dataset__frequencies():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath) as data:
             assert isinstance(data.frequencies, Quantity)
-            assert data.frequencies[0].to(Unit("MHz")).value - 10.0 < 0.000001
-            assert data.frequencies[-1].to(Unit("MHz")).value - 39.925 < 0.000001
+            assert len(data.frequencies) == 400
+            assert data.frequencies[0].to(Unit("MHz")).value == pytest.approx(10)
+            assert data.frequencies[-1].to(Unit("MHz")).value == pytest.approx(39.925)
 
 
 def test_srn_nda_routine_jup_edr_dataset__access_mode_file():
@@ -189,8 +191,20 @@ def test_ecallisto_dataset__times():
     for filepath in TEST_FILES["ecallisto"]:
         with Data(filepath=filepath) as data:
             assert isinstance(data.times, Time)
+            assert len(data.times) == 3600
             assert data.times[0] == Time("2022-01-30 11:15:00.171")
-            assert (data.times[-1] - Time("2022-01-30 11:29:59.921")).value < 1e-7
+            assert data.times[-1].jd == pytest.approx(
+                Time("2022-01-30 11:29:59.921").jd
+            )
+
+
+def test_ecallisto_dataset__frequencies():
+    for filepath in TEST_FILES["ecallisto"]:
+        with Data(filepath=filepath) as data:
+            assert isinstance(data.frequencies, Quantity)
+            assert len(data.frequencies) == 200
+            assert data.frequencies[0] == 105.5 * Unit("MHz")
+            assert data.frequencies[-1] == 10 * Unit("MHz")
 
 
 def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
