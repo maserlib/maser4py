@@ -6,5 +6,5 @@ class Sweeps:
     def __iter__(self):
         self.__call__(load_data=True)
 
-    def __call__(self, load_data: bool = False, *args, **kwargs):
-        yield Sweep()
+    def __call__(self, *args, **kwargs):
+        yield Sweep(*args, **kwargs)
