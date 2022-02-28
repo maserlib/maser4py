@@ -204,9 +204,17 @@ class NenufarBstFitsData(FitsData, dataset="nenufar_bst"):
         beam: int = 0,
     ):
         super().__init__(filepath, dataset, access_mode)
+        self.beam = beam
+
+    @property
+    def beam(self):
+        return self._beam
+
+    @beam.setter
+    def beam(self, beam):
         data = NenufarBstFitsData._nenupy_open(self.filepath)
         if beam <= len(data.dbeams):
-            self.beam = beam
+            self._beam = beam
         else:
             raise ValueError(f"Beam #{beam} doesn't exist.")
 
