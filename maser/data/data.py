@@ -4,7 +4,11 @@ from pathlib import Path
 from spacepy import pycdf
 from astropy.io import fits
 from maser.data.pds import PDSLabelDict
-from maser.data.sweeps import WindWavesL2HighResSweeps
+from maser.data.sweeps import (
+    WindWavesL2HighResSweeps,
+    WindWaves60sSweeps,
+    WindWavesTnrL3Bqt1mnSweeps,
+)
 import numpy
 from astropy.time import Time
 from astropy.units import Unit
@@ -13,6 +17,7 @@ from astropy.units import Unit
 class BaseData:
     dataset: Union[None, str] = None
     _registry: Dict[str, "BaseData"] = {}
+    _access_modes = ["sweeps", "records", "file"]
 
     def __init_subclass__(cls: "BaseData", *args, dataset: str, **kwargs) -> None:
         cls.dataset = dataset
@@ -23,15 +28,17 @@ class BaseData:
         filepath: Path,
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
+        load_data: bool = True,
     ) -> None:
         self.filepath = Path(filepath)
-        if access_mode not in ["sweeps", "records", "file"]:
+        if access_mode not in self._access_modes:
             raise ValueError("Illegal access mode.")
         else:
             self.access_mode = access_mode
         self._file = None
         self._times = None
         self._frequencies = None
+        self._load_data = load_data
 
     @classmethod
     def get_dataset(cls, filepath):
@@ -211,9 +218,9 @@ class WindWavesRad1L260sBinData(BinData, dataset="wi_wa_rad1_l2_60s"):
 class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
     @property
     def sweeps(self):
-        sweeps = WindWavesL2HighResSweeps(file=self.file, load_data=True)
-        for item in sweeps:
-            yield item
+        sweeps = WindWavesL2HighResSweeps(file=self.file, load_data=self._load_data)
+        for sweep in sweeps:
+            yield sweep
 
 
 class WindWavesRad2L260sBinData(BinData, dataset="wi_wa_rad2_l2_60s"):
@@ -225,7 +232,26 @@ class WindWavesTnrL260sBinData(BinData, dataset="wi_wa_tnr_l2_60s"):
 
 
 class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="wi_wa_tnr_l3_bqt_1mn"):
-    pass
+    _access_modes = ["records", "file"]
+
+    def __init__(
+        self,
+        filepath: Path,
+        dataset: Union[None, str] = "__auto__",
+        access_mode: str = "records",
+        load_data: bool = True,
+    ) -> None:
+        super().__init__(filepath, dataset, access_mode, load_data)
+
+    @property
+    def records(self):
+        records = WindWavesTnrL3Bqt1mnSweeps(file=self.file, load_data=self._load_data)
+        for record in records:
+            yield record
+
+    @property
+    def sweeps(self):
+        raise ValueError("Illegal access mode.")
 
 
 class WindWavesTnrL3NnBinData(BinData, dataset="wi_wa_tnr_l3_nn"):
@@ -233,15 +259,27 @@ class WindWavesTnrL3NnBinData(BinData, dataset="wi_wa_tnr_l3_nn"):
 
 
 class WindWavesRad160sBinData(BinData, dataset="win_rad1_60s"):
-    pass
+    @property
+    def sweeps(self):
+        sweeps = WindWaves60sSweeps(file=self.file, load_data=self._load_data)
+        for sweep in sweeps:
+            yield sweep
 
 
 class WindWavesRad260sBinData(BinData, dataset="win_rad2_60s"):
-    pass
+    @property
+    def sweeps(self):
+        sweeps = WindWaves60sSweeps(file=self.file, load_data=self._load_data)
+        for sweep in sweeps:
+            yield sweep
 
 
 class WindWavesTnr60sBinData(BinData, dataset="win_tnr_60s"):
-    pass
+    @property
+    def sweeps(self):
+        sweeps = WindWaves60sSweeps(file=self.file, load_data=self._load_data)
+        for sweep in sweeps:
+            yield sweep
 
 
 class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
