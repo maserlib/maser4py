@@ -222,6 +222,32 @@ class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
         for sweep in sweeps:
             yield sweep
 
+    @property
+    def times(self):
+        if self._times is None:
+            times = []
+            _load_data, self._load_data = self._load_data, False
+            for header, _ in self.sweeps:
+                times.append(
+                    Time(
+                        f"{header['YEAR']}-{header['MONTH']}-"
+                        f"{header['DAY']} {header['HOUR']}:"
+                        f"{header['MINUTE']}:{header['SECOND']}"
+                    )
+                )
+            self._load_data = _load_data
+            self._times = Time(times)
+        return self._times
+
+    @property
+    def frequencies(self):
+        if self._frequencies is None:
+            _load_data, self._load_data = self._load_data, True
+            _, data = next(self.sweeps)
+            self._frequencies = data["FREQ"] * Unit("kHz")
+            self._load_data = _load_data
+        return self._frequencies
+
 
 class WindWavesRad2L260sBinData(BinData, dataset="wi_wa_rad2_l2_60s"):
     pass

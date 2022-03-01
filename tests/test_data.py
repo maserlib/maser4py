@@ -256,6 +256,24 @@ def test_wi_wa_rad1_l2_bin_dataset():
         assert isinstance(data, WindWavesRad1L2BinData)
 
 
+def test_wi_wa_rad1_l2_bin_dataset__times():
+    filepath = TEST_FILES["wi_wa_rad1_l2"][0]
+    data = Data(filepath=filepath)
+    assert isinstance(data.times, Time)
+    assert len(data.times) == 120
+    assert data.times[0] == Time("1994-11-10 16:38:06.000")
+    assert data.times[-1] == Time("1994-11-10 23:55:27.000")
+
+
+def test_wi_wa_rad1_l2_bin_dataset__frequencies():
+    filepath = TEST_FILES["wi_wa_rad1_l2"][0]
+    data = Data(filepath=filepath)
+    assert isinstance(data.frequencies, Quantity)
+    assert len(data.frequencies) == 64
+    assert data.frequencies[0] == 1040 * Unit("kHz")
+    assert data.frequencies[-1] == 20 * Unit("kHz")
+
+
 def test_wi_wa_rad1_l2_bin_dataset__sweeps__load_data_false():
     for filepath in TEST_FILES["wi_wa_rad1_l2"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
