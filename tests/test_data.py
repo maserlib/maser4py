@@ -5,6 +5,7 @@ from astropy.units import Quantity, Unit
 
 from maser.data import Data
 from maser.data.data import (
+    BinData,
     CdfData,
     SrnNdaRoutineJupEdrCdfData,
     FitsData,
@@ -12,6 +13,15 @@ from maser.data.data import (
     ECallistoFitsData,
     Pds3Data,
     Vg1JPra3RdrLowband6secV1Data,
+    WindWavesRad1L260sBinData,
+    WindWavesRad1L2BinData,
+    WindWavesRad2L260sBinData,
+    WindWavesTnrL260sBinData,
+    WindWavesTnrL3Bqt1mnBinData,
+    WindWavesTnrL3NnBinData,
+    WindWavesRad160sBinData,
+    WindWavesRad260sBinData,
+    WindWavesTnr60sBinData,
 )
 from pathlib import Path
 from spacepy import pycdf
@@ -39,6 +49,15 @@ TEST_FILES = {
         BASEDIR / "pds" / "VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA_I.LBL"
     ],
     "ecallisto": [BASEDIR / "e-callisto" / "BIR_20220130_111500_01.fit"],
+    "wi_wa_rad1_l2_60s": [BASEDIR / "wind" / "wi_wa_rad1_l2_60s_19941114_v01.dat"],
+    "wi_wa_rad1_l2": [BASEDIR / "wind" / "wi_wa_rad1_l2_19941110_v01.dat"],
+    "wi_wa_rad2_l2_60s": [BASEDIR / "wind" / "wi_wa_rad2_l2_60s_19941114_v01.dat"],
+    "wi_wa_tnr_l2_60s": [BASEDIR / "wind" / "wi_wa_tnr_l2_60s_19941114_v01.dat"],
+    "wi_wa_tnr_l3_bqt_1mn": [BASEDIR / "wind" / "WI_WA_TNR_L3_BQT_19941114_1MN.DAT"],
+    "wi_wa_tnr_l3_nn": [BASEDIR / "wind" / "WI_WA_TNR_L3_NN_19941114_V02.DAT"],
+    "win_rad1_60s": [BASEDIR / "wind" / "WIN_RAD1_60S_19941114.B3E"],
+    "win_rad2_60s": [BASEDIR / "wind" / "WIN_RAD2_60S_19941114.B3E"],
+    "win_tnr_60s": [BASEDIR / "wind" / "WIN_TNR_60S_19941114.B3E"],
 }
 
 
@@ -68,6 +87,112 @@ def test_pds3_dataset():
     data = Data(filepath=Path("toto.txt"), dataset="pds3")
     assert isinstance(data, Data)
     assert isinstance(data, Pds3Data)
+
+
+def test_bin_dataset():
+    data = Data(filepath=Path("toto.txt"), dataset="bin")
+    assert isinstance(data, Data)
+    assert isinstance(data, BinData)
+
+
+def test_wi_wa_rad1_l2_60s_bin_dataset():
+    for filepath in TEST_FILES["wi_wa_rad1_l2_60s"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, WindWavesRad1L260sBinData)
+
+
+def test_wi_wa_rad1_l2_bin_dataset():
+    for filepath in TEST_FILES["wi_wa_rad1_l2"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, WindWavesRad1L2BinData)
+
+
+def test_wi_wa_rad1_l2_bin_dataset__sweeps():
+    for filepath in TEST_FILES["wi_wa_rad1_l2"]:
+        sweeps = Data(filepath=filepath).sweeps
+        sweep = next(sweeps)
+        assert isinstance(sweep, tuple)
+        header_i, data_i = sweep
+        assert header_i == {
+            "DAY": 10,
+            "HOUR": 16,
+            "IANTEN": 2,
+            "ICAL": 0,
+            "IDIPXY": 1,
+            "IPOLA": 1,
+            "ISWEEP": 1,
+            "IUNIT": 3,
+            "JULIAN_DAY_B1": 0,
+            "JULIAN_DAY_B2": 18,
+            "JULIAN_DAY_B3": 88,
+            "JULIAN_SEC_FRAC": 0.8779999613761902,
+            "KSPIN": 0,
+            "LISTFR": 0,
+            "MINUTE": 38,
+            "MODE": 3,
+            "MONTH": 11,
+            "MSEC_OF_DAY": 59886877,
+            "NFREQ": 16,
+            "NFRPAL": 1,
+            "NPALCY": 64,
+            "NPALIF": 64,
+            "NPBS": 11130,
+            "NSPALF": 16,
+            "NZPALF": 8,
+            "P_FIELD": 76,
+            "RECEIVER_CODE": 1,
+            "SDURCY": 183.23672485351562,
+            "SDURPA": 2.8630738258361816,
+            "SECOND": 6,
+            "SPIN_RATE": 129.59471130371094,
+            "SUN_ANGLE": 190.1953125,
+            "YEAR": 1994,
+        }
+        assert list(data_i.keys()) == ["FREQ", "VSPAL", "VZPAL", "TSPAL", "TZPAL"]
+        assert data_i["FREQ"][0] == 1040.0
+        assert data_i["FREQ"][-1] == 20.0
+
+
+def test_wi_wa_rad2_l2_60s_bin_dataset():
+    for filepath in TEST_FILES["wi_wa_rad2_l2_60s"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, WindWavesRad2L260sBinData)
+
+
+def test_wi_wa_tnr_l2_60s_bin_dataset():
+    for filepath in TEST_FILES["wi_wa_tnr_l2_60s"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, WindWavesTnrL260sBinData)
+
+
+def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset():
+    for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, WindWavesTnrL3Bqt1mnBinData)
+
+
+def test_wi_wa_tnr_l3_nn_bin_dataset():
+    for filepath in TEST_FILES["wi_wa_tnr_l3_nn"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, WindWavesTnrL3NnBinData)
+
+
+def test_win_rad1_60s_bin_dataset():
+    for filepath in TEST_FILES["win_rad1_60s"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, WindWavesRad160sBinData)
+
+
+def test_win_rad2_60s_bin_dataset():
+    for filepath in TEST_FILES["win_rad2_60s"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, WindWavesRad260sBinData)
+
+
+def test_win_tnr_60s_bin_dataset():
+    for filepath in TEST_FILES["win_tnr_60s"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, WindWavesTnr60sBinData)
 
 
 def test_srn_nda_routine_jup_edr_dataset():

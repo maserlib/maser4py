@@ -4,6 +4,7 @@ from pathlib import Path
 from spacepy import pycdf
 from astropy.io import fits
 from maser.data.pds import PDSLabelDict
+from maser.data.sweeps import WindWavesL2HighResSweeps
 import numpy
 from astropy.time import Time
 from astropy.units import Unit
@@ -121,6 +122,8 @@ class Data(BaseData, dataset="default"):
             dataset = BaseData._registry["fits"].get_dataset(filepath)
         elif filepath.suffix.lower() == ".lbl":
             dataset = BaseData._registry["pds3"].get_dataset(filepath)
+        elif filepath.suffix.lower() in [".dat", ".b3e"]:
+            dataset = BaseData._registry["bin"].get_dataset(filepath)
         else:
             raise NotImplementedError()
         return dataset
@@ -169,6 +172,76 @@ class Pds3Data(Data, dataset="pds3"):
     @classmethod
     def close(cls, file):
         pass
+
+
+class BinData(Data, dataset="bin"):
+    @classmethod
+    def open(cls, filepath: Path):
+        return open(filepath, "rb")
+
+    @classmethod
+    def get_dataset(cls, filepath: Path):
+        if filepath.stem.lower().startswith("wi_wa_rad1_l2_60s"):
+            dataset = "wi_wa_rad1_l2_60s"
+        elif filepath.stem.lower().startswith("wi_wa_rad1_l2"):
+            dataset = "wi_wa_rad1_l2"
+        elif filepath.stem.lower().startswith("wi_wa_rad2_l2_60s"):
+            dataset = "wi_wa_rad2_l2_60s"
+        elif filepath.stem.lower().startswith("wi_wa_tnr_l2_60s"):
+            dataset = "wi_wa_tnr_l2_60s"
+        elif filepath.stem.lower().startswith("wi_wa_tnr_l3_bqt"):
+            dataset = "wi_wa_tnr_l3_bqt_1mn"
+        elif filepath.stem.lower().startswith("wi_wa_tnr_l3_nn"):
+            dataset = "wi_wa_tnr_l3_nn"
+        elif filepath.stem.lower().startswith("win_rad1_60s"):
+            dataset = "win_rad1_60s"
+        elif filepath.stem.lower().startswith("win_rad2_60s"):
+            dataset = "win_rad2_60s"
+        elif filepath.stem.lower().startswith("win_tnr_60s"):
+            dataset = "win_tnr_60s"
+        else:
+            raise NotImplementedError()
+        return dataset
+
+
+class WindWavesRad1L260sBinData(BinData, dataset="wi_wa_rad1_l2_60s"):
+    pass
+
+
+class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
+    @property
+    def sweeps(self):
+        sweeps = WindWavesL2HighResSweeps(file=self.file, load_data=True)
+        for item in sweeps:
+            yield item
+
+
+class WindWavesRad2L260sBinData(BinData, dataset="wi_wa_rad2_l2_60s"):
+    pass
+
+
+class WindWavesTnrL260sBinData(BinData, dataset="wi_wa_tnr_l2_60s"):
+    pass
+
+
+class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="wi_wa_tnr_l3_bqt_1mn"):
+    pass
+
+
+class WindWavesTnrL3NnBinData(BinData, dataset="wi_wa_tnr_l3_nn"):
+    pass
+
+
+class WindWavesRad160sBinData(BinData, dataset="win_rad1_60s"):
+    pass
+
+
+class WindWavesRad260sBinData(BinData, dataset="win_rad2_60s"):
+    pass
+
+
+class WindWavesTnr60sBinData(BinData, dataset="win_tnr_60s"):
+    pass
 
 
 class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
