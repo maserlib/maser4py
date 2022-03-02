@@ -95,12 +95,14 @@ def test_bin_dataset():
     assert isinstance(data, BinData)
 
 
+@pytest.mark.test_data_required
 def test_srn_nda_routine_jup_edr_dataset():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         data = Data(filepath=filepath)
         assert isinstance(data, SrnNdaRoutineJupEdrCdfData)
 
 
+@pytest.mark.test_data_required
 def test_srn_nda_routine_jup_edr_dataset__times():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath) as data:
@@ -110,6 +112,7 @@ def test_srn_nda_routine_jup_edr_dataset__times():
             assert data.times[-1] == Time("2016-01-31 06:45:58.68")
 
 
+@pytest.mark.test_data_required
 def test_srn_nda_routine_jup_edr_dataset__frequencies():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath) as data:
@@ -119,12 +122,14 @@ def test_srn_nda_routine_jup_edr_dataset__frequencies():
             assert data.frequencies[-1].to(Unit("MHz")).value == pytest.approx(39.925)
 
 
+@pytest.mark.test_data_required
 def test_srn_nda_routine_jup_edr_dataset__access_mode_file():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath, access_mode="file") as data:
             assert isinstance(data, pycdf.CDF)
 
 
+@pytest.mark.test_data_required
 def test_srn_nda_routine_jup_edr_dataset__iter_method__mode_file():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         data = Data(filepath=filepath, access_mode="file")
@@ -141,6 +146,7 @@ def test_srn_nda_routine_jup_edr_dataset__iter_method__mode_file():
         ]
 
 
+@pytest.mark.test_data_required
 def test_srn_nda_routine_jup_edr_dataset__access_mode_error():
     with pytest.raises(ValueError):
         Data(
@@ -149,30 +155,35 @@ def test_srn_nda_routine_jup_edr_dataset__access_mode_error():
         )
 
 
+@pytest.mark.test_data_required
 def test_nenufar_bst_dataset():
     for filepath in TEST_FILES["nenufar_bst"]:
         data = Data(filepath=filepath)
         assert isinstance(data, NenufarBstFitsData)
 
 
+@pytest.mark.test_data_required
 def test_nenufar_bst_dataset__beam():
     for filepath in TEST_FILES["nenufar_bst"]:
         data = Data(filepath=filepath, beam=1)
         assert data.beam == 1
 
 
+@pytest.mark.test_data_required
 def test_nenufar_bst_dataset__beam__value_error():
     for filepath in TEST_FILES["nenufar_bst"]:
         with pytest.raises(ValueError):
             Data(filepath=filepath, beam=1000)
 
 
+@pytest.mark.test_data_required
 def test_nenufar_bst_dataset__access_mode_file():
     for filepath in TEST_FILES["nenufar_bst"]:
         with Data(filepath=filepath, access_mode="file") as data:
             assert isinstance(data, fits.hdu.hdulist.HDUList)
 
 
+@pytest.mark.test_data_required
 def test_nenufar_bst_dataset__times():
     for filepath in TEST_FILES["nenufar_bst"]:
         with Data(filepath=filepath) as data:
@@ -182,6 +193,7 @@ def test_nenufar_bst_dataset__times():
             assert data.times[-1] == Time(2459610.0209375, format="jd")
 
 
+@pytest.mark.test_data_required
 def test_nenufar_bst_dataset__times__other_beam():
     for filepath in TEST_FILES["nenufar_bst"]:
         with Data(filepath=filepath, beam=1) as data:
@@ -191,6 +203,7 @@ def test_nenufar_bst_dataset__times__other_beam():
             assert data.times[-1] == Time(2459610.0209375, format="jd")
 
 
+@pytest.mark.test_data_required
 def test_nenufar_bst_dataset__frequencies():
     for filepath in TEST_FILES["nenufar_bst"]:
         with Data(filepath=filepath) as data:
@@ -200,18 +213,21 @@ def test_nenufar_bst_dataset__frequencies():
             assert data.frequencies[-1].value == pytest.approx(62.304688)
 
 
+@pytest.mark.test_data_required
 def test_ecallisto_dataset():
     for filepath in TEST_FILES["ecallisto"]:
         data = Data(filepath=filepath)
         assert isinstance(data, ECallistoFitsData)
 
 
+@pytest.mark.test_data_required
 def test_ecallisto_dataset__access_mode_file():
     for filepath in TEST_FILES["ecallisto"]:
         with Data(filepath=filepath, access_mode="file") as data:
             assert isinstance(data, fits.hdu.hdulist.HDUList)
 
 
+@pytest.mark.test_data_required
 def test_ecallisto_dataset__times():
     for filepath in TEST_FILES["ecallisto"]:
         with Data(filepath=filepath) as data:
@@ -223,6 +239,7 @@ def test_ecallisto_dataset__times():
             )
 
 
+@pytest.mark.test_data_required
 def test_ecallisto_dataset__frequencies():
     for filepath in TEST_FILES["ecallisto"]:
         with Data(filepath=filepath) as data:
@@ -232,30 +249,35 @@ def test_ecallisto_dataset__frequencies():
             assert data.frequencies[-1] == 10 * Unit("MHz")
 
 
+@pytest.mark.test_data_required
 def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
     for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
         data = Data(filepath=filepath)
         assert isinstance(data, Vg1JPra3RdrLowband6secV1Data)
 
 
+@pytest.mark.test_data_required
 def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__access_mode_file():
     for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
         with Data(filepath=filepath, access_mode="file") as data:
             assert isinstance(data, dict)
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad1_l2_60s"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad1L260sBinData)
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad1_l2"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad1L2BinData)
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__times():
     filepath = TEST_FILES["wi_wa_rad1_l2"][0]
     data = Data(filepath=filepath)
@@ -265,6 +287,7 @@ def test_wi_wa_rad1_l2_bin_dataset__times():
     assert data.times[-1] == Time("1994-11-10 23:55:27.000")
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__frequencies():
     filepath = TEST_FILES["wi_wa_rad1_l2"][0]
     data = Data(filepath=filepath)
@@ -274,6 +297,7 @@ def test_wi_wa_rad1_l2_bin_dataset__frequencies():
     assert data.frequencies[-1] == 20 * Unit("kHz")
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__sweeps__load_data_false():
     for filepath in TEST_FILES["wi_wa_rad1_l2"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
@@ -283,12 +307,14 @@ def test_wi_wa_rad1_l2_bin_dataset__sweeps__load_data_false():
         assert data_i is None
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["wi_wa_rad1_l2"]:
         for sweep in Data(filepath=filepath):
             assert isinstance(sweep, tuple)
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__sweeps_next():
     for filepath in TEST_FILES["wi_wa_rad1_l2"]:
         sweeps = Data(filepath=filepath).sweeps
@@ -336,36 +362,42 @@ def test_wi_wa_rad1_l2_bin_dataset__sweeps_next():
         assert data_i["FREQ"][-1] == 20.0
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_rad2_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad2_l2_60s"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad2L260sBinData)
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_tnr_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_tnr_l2_60s"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesTnrL260sBinData)
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset():
     for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesTnrL3Bqt1mnBinData)
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__sweeps_access_mode__error():
     with pytest.raises(ValueError):
         filepath = TEST_FILES["wi_wa_tnr_l3_bqt_1mn"][0]
         Data(filepath=filepath, access_mode="sweeps")
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__sweeps_property__error():
     with pytest.raises(ValueError):
         filepath = TEST_FILES["wi_wa_tnr_l3_bqt_1mn"][0]
         Data(filepath=filepath).sweeps
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records__load_data_false():
     for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
         records = Data(filepath=filepath, load_data=False).records
@@ -375,12 +407,14 @@ def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records__load_data_false():
         assert data_i is None
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records_for_loop():
     for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
         for record in Data(filepath=filepath):
             assert isinstance(record, tuple)
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records_next():
     for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
         records = Data(filepath=filepath).records
@@ -413,18 +447,21 @@ def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records_next():
         }
 
 
+@pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_nn_bin_dataset():
     for filepath in TEST_FILES["wi_wa_tnr_l3_nn"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesTnrL3NnBinData)
 
 
+@pytest.mark.test_data_required
 def test_win_rad1_60s_bin_dataset():
     for filepath in TEST_FILES["win_rad1_60s"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad160sBinData)
 
 
+@pytest.mark.test_data_required
 def test_win_rad1_60s_bin_dataset__sweeps__load_data_false():
     for filepath in TEST_FILES["win_rad1_60s"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
@@ -434,12 +471,14 @@ def test_win_rad1_60s_bin_dataset__sweeps__load_data_false():
         assert data_i is None
 
 
+@pytest.mark.test_data_required
 def test_win_rad1_60s_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["win_rad1_60s"]:
         for sweep in Data(filepath=filepath):
             assert isinstance(sweep, tuple)
 
 
+@pytest.mark.test_data_required
 def test_win_rad1_60s_bin_dataset__sweeps_next():
     for filepath in TEST_FILES["win_rad1_60s"]:
         sweeps = Data(filepath=filepath).sweeps
@@ -475,12 +514,14 @@ def test_win_rad1_60s_bin_dataset__sweeps_next():
         }
 
 
+@pytest.mark.test_data_required
 def test_win_rad2_60s_bin_dataset():
     for filepath in TEST_FILES["win_rad2_60s"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad260sBinData)
 
 
+@pytest.mark.test_data_required
 def test_win_rad2_60s_bin_dataset__sweeps__load_data_false():
     for filepath in TEST_FILES["win_rad2_60s"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
@@ -490,12 +531,14 @@ def test_win_rad2_60s_bin_dataset__sweeps__load_data_false():
         assert data_i is None
 
 
+@pytest.mark.test_data_required
 def test_win_rad2_60s_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["win_rad2_60s"]:
         for sweep in Data(filepath=filepath):
             assert isinstance(sweep, tuple)
 
 
+@pytest.mark.test_data_required
 def test_win_rad2_60s_bin_dataset__sweeps_next():
     for filepath in TEST_FILES["win_rad2_60s"]:
         sweeps = Data(filepath=filepath).sweeps
@@ -531,12 +574,14 @@ def test_win_rad2_60s_bin_dataset__sweeps_next():
         }
 
 
+@pytest.mark.test_data_required
 def test_win_tnr_60s_bin_dataset():
     for filepath in TEST_FILES["win_tnr_60s"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesTnr60sBinData)
 
 
+@pytest.mark.test_data_required
 def test_win_tnr_60s_bin_dataset__sweeps__load_data_false():
     for filepath in TEST_FILES["win_tnr_60s"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
@@ -546,12 +591,14 @@ def test_win_tnr_60s_bin_dataset__sweeps__load_data_false():
         assert data_i is None
 
 
+@pytest.mark.test_data_required
 def test_win_tnr_60s_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["win_tnr_60s"]:
         for sweep in Data(filepath=filepath):
             assert isinstance(sweep, tuple)
 
 
+@pytest.mark.test_data_required
 def test_win_tnr_60s_bin_dataset__sweeps_next():
     for filepath in TEST_FILES["win_tnr_60s"]:
         sweeps = Data(filepath=filepath).sweeps
