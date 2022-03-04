@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .base import Data  # noqa: F401
+from .base import Data
 
 
 if __name__ == "__main__":
