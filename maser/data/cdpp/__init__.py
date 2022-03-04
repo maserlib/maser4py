@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from .wind import (  # noqa: F401
-    WindWavesRad1L260sBinData,
-    WindWavesRad160sBinData,
-    WindWavesRad260sBinData,
-    WindWavesTnr60sBinData,
+    WindWavesRad1L260sV2BinData,
+    WindWavesRad1L260sV1BinData,
+    WindWavesRad2L260sV1BinData,
+    WindWavesTnrL260sV1BinData,
     WindWavesRad1L2BinData,
     WindWavesTnrL3NnBinData,
-    WindWavesTnrL260sBinData,
-    WindWavesRad2L260sBinData,
+    WindWavesTnrL260sV2BinData,
+    WindWavesRad2L260sV2BinData,
     WindWavesTnrL3Bqt1mnBinData,
 )

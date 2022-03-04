@@ -16,15 +16,15 @@ from maser.data.data import (
     Vg1JPra3RdrLowband6secV1Data,
 )
 from maser.data.cdpp import (
-    WindWavesRad1L260sBinData,
+    WindWavesRad1L260sV2BinData,
     WindWavesRad1L2BinData,
-    WindWavesRad2L260sBinData,
-    WindWavesTnrL260sBinData,
+    WindWavesRad2L260sV2BinData,
+    WindWavesTnrL260sV2BinData,
     WindWavesTnrL3Bqt1mnBinData,
     WindWavesTnrL3NnBinData,
-    WindWavesRad160sBinData,
-    WindWavesRad260sBinData,
-    WindWavesTnr60sBinData,
+    WindWavesRad1L260sV1BinData,
+    WindWavesRad2L260sV1BinData,
+    WindWavesTnrL260sV1BinData,
 )
 from pathlib import Path
 from spacepy import pycdf
@@ -277,7 +277,7 @@ def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__access_mode_file():
 def test_wi_wa_rad1_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad1_l2_60s"]:
         data = Data(filepath=filepath)
-        assert isinstance(data, WindWavesRad1L260sBinData)
+        assert isinstance(data, WindWavesRad1L260sV2BinData)
 
 
 @pytest.mark.test_data_required
@@ -376,14 +376,14 @@ def test_wi_wa_rad1_l2_bin_dataset__sweeps_next():
 def test_wi_wa_rad2_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad2_l2_60s"]:
         data = Data(filepath=filepath)
-        assert isinstance(data, WindWavesRad2L260sBinData)
+        assert isinstance(data, WindWavesRad2L260sV2BinData)
 
 
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_tnr_l2_60s"]:
         data = Data(filepath=filepath)
-        assert isinstance(data, WindWavesTnrL260sBinData)
+        assert isinstance(data, WindWavesTnrL260sV2BinData)
 
 
 @pytest.mark.test_data_required
@@ -468,7 +468,7 @@ def test_wi_wa_tnr_l3_nn_bin_dataset():
 def test_win_rad1_60s_bin_dataset():
     for filepath in TEST_FILES["win_rad1_60s"]:
         data = Data(filepath=filepath)
-        assert isinstance(data, WindWavesRad160sBinData)
+        assert isinstance(data, WindWavesRad1L260sV1BinData)
 
 
 @pytest.mark.test_data_required
@@ -528,7 +528,7 @@ def test_win_rad1_60s_bin_dataset__sweeps_next():
 def test_win_rad2_60s_bin_dataset():
     for filepath in TEST_FILES["win_rad2_60s"]:
         data = Data(filepath=filepath)
-        assert isinstance(data, WindWavesRad260sBinData)
+        assert isinstance(data, WindWavesRad2L260sV1BinData)
 
 
 @pytest.mark.test_data_required
@@ -588,7 +588,7 @@ def test_win_rad2_60s_bin_dataset__sweeps_next():
 def test_win_tnr_60s_bin_dataset():
     for filepath in TEST_FILES["win_tnr_60s"]:
         data = Data(filepath=filepath)
-        assert isinstance(data, WindWavesTnr60sBinData)
+        assert isinstance(data, WindWavesTnrL260sV1BinData)
 
 
 @pytest.mark.test_data_required

@@ -182,23 +182,23 @@ class BinData(Data, dataset="bin"):
     @classmethod
     def get_dataset(cls, filepath: Path):
         if filepath.stem.lower().startswith("wi_wa_rad1_l2_60s"):
-            dataset = "wi_wa_rad1_l2_60s"
+            dataset = "wi_wa_rad1_l2_60s_v2"
         elif filepath.stem.lower().startswith("wi_wa_rad1_l2"):
             dataset = "wi_wa_rad1_l2"
         elif filepath.stem.lower().startswith("wi_wa_rad2_l2_60s"):
-            dataset = "wi_wa_rad2_l2_60s"
+            dataset = "wi_wa_rad2_l2_60s_v2"
         elif filepath.stem.lower().startswith("wi_wa_tnr_l2_60s"):
-            dataset = "wi_wa_tnr_l2_60s"
+            dataset = "wi_wa_tnr_l2_60s_v2"
         elif filepath.stem.lower().startswith("wi_wa_tnr_l3_bqt"):
             dataset = "wi_wa_tnr_l3_bqt_1mn"
         elif filepath.stem.lower().startswith("wi_wa_tnr_l3_nn"):
             dataset = "wi_wa_tnr_l3_nn"
         elif filepath.stem.lower().startswith("win_rad1_60s"):
-            dataset = "win_rad1_60s"
+            dataset = "wi_wa_rad1_l2_60s_v1"
         elif filepath.stem.lower().startswith("win_rad2_60s"):
-            dataset = "win_rad2_60s"
+            dataset = "wi_wa_rad2_l2_60s_v1"
         elif filepath.stem.lower().startswith("win_tnr_60s"):
-            dataset = "win_tnr_60s"
+            dataset = "wi_wa_tnr_l2_60s_v1"
         else:
             raise NotImplementedError()
         return dataset

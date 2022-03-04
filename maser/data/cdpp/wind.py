@@ -12,7 +12,7 @@ from astropy.time import Time
 from astropy.units import Unit
 
 
-class WindWavesRad1L260sBinData(BinData, dataset="wi_wa_rad1_l2_60s"):
+class WindWavesRad1L260sV2BinData(BinData, dataset="wi_wa_rad1_l2_60s_v2"):
     @property
     def sweeps(self):
         sweeps = WindWavesL260sSweeps(file=self.file, load_data=self._load_data)
@@ -54,11 +54,11 @@ class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
         return self._frequencies
 
 
-class WindWavesRad2L260sBinData(BinData, dataset="wi_wa_rad2_l2_60s"):
+class WindWavesRad2L260sV2BinData(BinData, dataset="wi_wa_rad2_l2_60s_v2"):
     pass
 
 
-class WindWavesTnrL260sBinData(BinData, dataset="wi_wa_tnr_l2_60s"):
+class WindWavesTnrL260sV2BinData(BinData, dataset="wi_wa_tnr_l2_60s_v2"):
     pass
 
 
@@ -89,7 +89,7 @@ class WindWavesTnrL3NnBinData(BinData, dataset="wi_wa_tnr_l3_nn"):
     pass
 
 
-class WindWavesRad160sBinData(BinData, dataset="win_rad1_60s"):
+class WindWavesRad1L260sV1BinData(BinData, dataset="wi_wa_rad1_l2_60s_v1"):
     @property
     def sweeps(self):
         sweeps = WindWaves60sSweeps(file=self.file, load_data=self._load_data)
@@ -97,7 +97,7 @@ class WindWavesRad160sBinData(BinData, dataset="win_rad1_60s"):
             yield sweep
 
 
-class WindWavesRad260sBinData(BinData, dataset="win_rad2_60s"):
+class WindWavesRad2L260sV1BinData(BinData, dataset="wi_wa_rad2_l2_60s_v1"):
     @property
     def sweeps(self):
         sweeps = WindWaves60sSweeps(file=self.file, load_data=self._load_data)
@@ -105,7 +105,7 @@ class WindWavesRad260sBinData(BinData, dataset="win_rad2_60s"):
             yield sweep
 
 
-class WindWavesTnr60sBinData(BinData, dataset="win_tnr_60s"):
+class WindWavesTnrL260sV1BinData(BinData, dataset="wi_wa_tnr_l2_60s_v1"):
     @property
     def sweeps(self):
         sweeps = WindWaves60sSweeps(file=self.file, load_data=self._load_data)
