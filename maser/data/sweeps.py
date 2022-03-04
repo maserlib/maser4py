@@ -11,6 +11,125 @@ class Sweeps:
         yield Sweep(*args, **kwargs)
 
 
+class WindWavesL260sSweeps(Sweeps):
+    def __init__(self, file, load_data=True):
+        self.file = file
+        self.load_data = load_data
+
+    def __call__(self, load_data: bool = True):
+        self.load_data = load_data
+        self.__iter__()
+
+    def __iter__(self):
+        ccsds_fields = [
+            "CCSDS_PREAMBLE",
+            "CCSDS_JULIAN_DAY_B1",
+            "CCSDS_JULIAN_DAY_B2",
+            "CCSDS_JULIAN_DAY_B3",
+            "CCSDS_MILLISECONDS_OF_DAY",
+        ]
+        # CCSDS_PREAMBLE [Int, 8 bits] = 76
+        # CCSDS_JULIAN_DAY [Int, 24 bits] = Days since 1950/01/01 (=1)
+        # CCSDS_MILLISECONDS_OF_DAY [Int, 32 bits] = Millisecond of day
+        ccsds_dtype = ">bbbbi"
+
+        caldate_fields = [
+            "CALEND_DATE_YEAR",
+            "CALEND_DATE_MONTH",
+            "CALEND_DATE_DAY",
+            "CALEND_DATE_HOUR",
+            "CALEND_DATE_MINUTE",
+            "CALEND_DATE_SECOND",
+        ]
+        # CALEND_DATE fields YEAR, MONTH, DAY, HOUR, MINUTE, SECOND: all [Int, 16bits]
+        caldate_dtype = "hhhhhh"
+
+        header_fields = (
+            ccsds_fields
+            + ["RECEIVER_CODE", "JULIAN_SEC"]
+            + caldate_fields
+            + ["AVG_DURATION", "IUNIT", "NFREQ"]
+        )
+
+        # JULIAN_SEC [Int, 32 bits] = Julian date of the middle of the 60-second interval (in seconds since 1950/01/01)
+        # AVG_DURATION [Int, 16 bits] = Averaging duration (seconds)
+        # IUNIT [Int, 16 bits] = Signal intensity unit:
+        #  1: Volt TLM (N1)
+        #  2: V^2/Hz @ receiver (N2-3)
+        #  3: μV^2/Hz @ receiver (N2-3)
+        #  4: SFU (10^-22 W/m^2/Hz) @ antenna (N2-4).
+        # NFREQ [Int, 16 bits] = Number of frequencies
+
+        header_dtype = ccsds_dtype + "hi" + caldate_dtype + "hhh"
+
+        orbit_fields = ["GSE_X", "GSE_Y", "GSE_Z"]
+        # SPACECRAFT_COORDINATES fields GSE_X, GSE_Y, GSE_Z: all [Real, 32bits], in Earth Radii (GSE)
+        orbit_dtype = ">fff"
+
+        nsweep = 0
+
+        while True:
+            try:
+                # Reading number of octets in the current sweep
+                block = self.file.read(4)
+                if len(block) == 0:
+                    break
+                loctets1 = struct.unpack(">i", block)[0]
+
+                # Reading header parameters in the current sweep
+                block = self.file.read(32)
+                header_i = dict(zip(header_fields, struct.unpack(header_dtype, block)))
+                nfreq = header_i["NFREQ"]
+
+                if self.load_data:
+                    # Reading orbit data for current sweep
+                    block = self.file.read(12)
+                    orbit = dict(zip(orbit_fields, struct.unpack(orbit_dtype, block)))
+
+                    # Reading frequency list in the current sweep
+                    block = self.file.read(4 * nfreq)
+                    freq = struct.unpack(">" + "f" * nfreq, block)
+
+                    # Reading Smoy (avg intensity)
+                    block = self.file.read(4 * nfreq)
+                    smoy = struct.unpack(">" + "f" * nfreq, block)
+
+                    # Reading Smin (min intensity)
+                    block = self.file.read(4 * nfreq)
+                    smin = struct.unpack(">" + "f" * nfreq, block)
+
+                    # Reading Smax (max intensity)
+                    block = self.file.read(4 * nfreq)
+                    smax = struct.unpack(">" + "f" * nfreq, block)
+
+                    data_i = {
+                        "FREQ": freq,
+                        "SMOY": smoy,
+                        "SMIN": smin,
+                        "SMAX": smax,
+                        "ORBIT": orbit,
+                    }
+                else:
+                    # Skip data section
+                    self.file.seek(12 + (16 * nfreq), 1)
+                    data_i = None
+
+                # Reading number of octets in the current sweep
+                block = self.file.read(4)
+                loctets2 = struct.unpack(">i", block)[0]
+                if loctets2 != loctets1:
+                    print("Error reading file!")
+                    return None
+
+            except EOFError:
+                print("End of file reached")
+                break
+
+            else:
+                yield header_i, data_i
+                nsweep += 1
+
+
 class WindWaves60sSweeps(Sweeps):
     def __init__(self, file, load_data=True):
         self.file = file

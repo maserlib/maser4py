@@ -250,6 +250,51 @@ def test_wi_wa_rad1_l2_60s_bin_dataset():
         assert isinstance(data, WindWavesRad1L260sBinData)
 
 
+def test_wi_wa_rad1_l2_60s_bin_dataset__sweeps_for_loop():
+    for filepath in TEST_FILES["wi_wa_rad1_l2_60s"]:
+        for sweep in Data(filepath=filepath):
+            assert isinstance(sweep, tuple)
+
+
+def test_wi_wa_rad1_l2_60s_bin_dataset__sweeps__load_data_false():
+    for filepath in TEST_FILES["wi_wa_rad1_l2_60s"]:
+        sweeps = Data(filepath=filepath, load_data=False).sweeps
+        sweep = next(sweeps)
+        assert isinstance(sweep, tuple)
+        _, data_i = sweep
+        assert data_i is None
+
+
+def test_wi_wa_rad1_l2_60s_bin_dataset__sweeps_next():
+    for filepath in TEST_FILES["wi_wa_rad1_l2_60s"]:
+        sweeps = Data(filepath=filepath).sweeps
+        sweep = next(sweeps)
+        assert isinstance(sweep, tuple)
+        header_i, data_i = sweep
+        assert header_i == {
+            "AVG_DURATION": 60,
+            "CALEND_DATE_DAY": 14,
+            "CALEND_DATE_HOUR": 0,
+            "CALEND_DATE_MINUTE": 0,
+            "CALEND_DATE_MONTH": 11,
+            "CALEND_DATE_SECOND": 30,
+            "CALEND_DATE_YEAR": 1994,
+            "CCSDS_JULIAN_DAY_B1": 0,
+            "CCSDS_JULIAN_DAY_B2": 18,
+            "CCSDS_JULIAN_DAY_B3": 92,
+            "CCSDS_MILLISECONDS_OF_DAY": 30000,
+            "CCSDS_PREAMBLE": 76,
+            "IUNIT": 3,
+            "JULIAN_SEC": 406080030,
+            "NFREQ": 256,
+            "RECEIVER_CODE": 1,
+        }
+        assert list(data_i.keys()) == ["FREQ", "SMOY", "SMIN", "SMAX", "ORBIT"]
+        assert len(data_i["FREQ"]) == 256
+        assert data_i["FREQ"][0] == 20.0
+        assert data_i["FREQ"][-1] == 1040.0
+
+
 def test_wi_wa_rad1_l2_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad1_l2"]:
         data = Data(filepath=filepath)

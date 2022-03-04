@@ -5,6 +5,7 @@ from spacepy import pycdf
 from astropy.io import fits
 from maser.data.pds import PDSLabelDict
 from maser.data.sweeps import (
+    WindWavesL260sSweeps,
     WindWavesL2HighResSweeps,
     WindWaves60sSweeps,
     WindWavesTnrL3Bqt1mnSweeps,
@@ -212,7 +213,11 @@ class BinData(Data, dataset="bin"):
 
 
 class WindWavesRad1L260sBinData(BinData, dataset="wi_wa_rad1_l2_60s"):
-    pass
+    @property
+    def sweeps(self):
+        sweeps = WindWavesL260sSweeps(file=self.file, load_data=self._load_data)
+        for sweep in sweeps:
+            yield sweep
 
 
 class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
