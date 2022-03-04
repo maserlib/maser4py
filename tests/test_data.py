@@ -2,17 +2,20 @@
 from astropy.time import Time
 from astropy.units import Quantity, Unit
 
-
 from maser.data import Data
-from maser.data.data import (
+from maser.data.base import (
     BinData,
     CdfData,
-    SrnNdaRoutineJupEdrCdfData,
     FitsData,
+    Pds3Data,
+)
+from maser.data.data import (
+    SrnNdaRoutineJupEdrCdfData,
     NenufarBstFitsData,
     ECallistoFitsData,
-    Pds3Data,
     Vg1JPra3RdrLowband6secV1Data,
+)
+from maser.data.cdpp import (
     WindWavesRad1L260sBinData,
     WindWavesRad1L2BinData,
     WindWavesRad2L260sBinData,
