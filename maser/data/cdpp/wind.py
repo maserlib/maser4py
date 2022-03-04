@@ -15,17 +15,19 @@ from astropy.units import Unit
 class WindWavesRad1L260sV2BinData(BinData, dataset="wi_wa_rad1_l2_60s_v2"):
     @property
     def sweeps(self):
-        sweeps = WindWavesL260sSweeps(file=self.file, load_data=self._load_data)
-        for sweep in sweeps:
-            yield sweep
+        # sweeps =
+        return WindWavesL260sSweeps(file=self.file, load_data=self._load_data)
+        # for sweep in sweeps:
+        #    yield sweep
 
 
 class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
     @property
     def sweeps(self):
-        sweeps = WindWavesL2HighResSweeps(file=self.file, load_data=self._load_data)
-        for sweep in sweeps:
-            yield sweep
+        # sweeps =
+        return WindWavesL2HighResSweeps(file=self.file, load_data=self._load_data)
+        # for sweep in sweeps:
+        #    yield sweep
 
     @property
     def times(self):

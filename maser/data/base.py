@@ -111,6 +111,7 @@ class Data(BaseData, dataset="default"):
     def __iter__(self):
         # get the reference to the right iterator (file, sweeps or records)
         ref = getattr(self, self.access_mode)
+        print(ref)
         for item in ref:
             yield item
 

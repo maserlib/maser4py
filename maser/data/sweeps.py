@@ -1,26 +1,33 @@
 # -*- coding: utf-8 -*-
-from maser.data.sweep import Sweep
 import struct
 
 
 class Sweeps:
-    def __iter__(self):
-        self.__call__(load_data=True)
-
-    def __call__(self, *args, **kwargs):
-        yield Sweep(*args, **kwargs)
-
-
-class WindWavesL260sSweeps(Sweeps):
-    def __init__(self, file, load_data=True):
+    def __init__(self, file, load_data: bool = True):
         self.file = file
         self.load_data = load_data
 
-    def __call__(self, load_data: bool = True):
-        self.load_data = load_data
-        self.__iter__()
-
     def __iter__(self):
+        for d in self.generator:
+            yield d
+
+    def __call__(self, load_data: bool = None, *args, **kwargs):
+        if load_data is not None:
+            self.load_data = load_data
+        return self.generator
+
+    @property
+    def generator(self):
+        for d in self.file:
+            yield d
+
+    def __next__(self):
+        next(self.generator)
+
+
+class WindWavesL260sSweeps(Sweeps):
+    @property
+    def generator(self):
         ccsds_fields = [
             "CCSDS_PREAMBLE",
             "CCSDS_JULIAN_DAY_B1",
@@ -131,15 +138,8 @@ class WindWavesL260sSweeps(Sweeps):
 
 
 class WindWaves60sSweeps(Sweeps):
-    def __init__(self, file, load_data=True):
-        self.file = file
-        self.load_data = load_data
-
-    def __call__(self, load_data: bool = True):
-        self.load_data = load_data
-        self.__iter__()
-
-    def __iter__(self):
+    @property
+    def generator(self):
         ccsds_fields = [
             "CCSDS_PREAMBLE",
             "CCSDS_JULIAN_DAY_B1",
@@ -233,14 +233,6 @@ class WindWaves60sSweeps(Sweeps):
 
 
 class WindWavesL2HighResSweeps(Sweeps):
-    def __init__(self, file, load_data=True):
-        self.file = file
-        self.load_data = load_data
-
-    def __call__(self, load_data: bool = True):
-        self.load_data = load_data
-        self.__iter__()
-
     def _read_data_block(self, nbytes):
         block = self.file.read(nbytes)
         Vspal = struct.unpack(">" + "f" * (nbytes // 4), block)
@@ -248,8 +240,8 @@ class WindWavesL2HighResSweeps(Sweeps):
         Tspal = struct.unpack(">" + "f" * (nbytes // 4), block)
         return Vspal, Tspal
 
-    def __iter__(self):
-
+    @property
+    def generator(self):
         header_fields = (
             "P_FIELD",
             "JULIAN_DAY_B1",
@@ -336,15 +328,8 @@ class WindWavesL2HighResSweeps(Sweeps):
 
 
 class WindWavesTnrL3Bqt1mnSweeps(Sweeps):
-    def __init__(self, file, load_data=True):
-        self.file = file
-        self.load_data = load_data
-
-    def __call__(self, load_data: bool = True):
-        self.load_data = load_data
-        self.__iter__()
-
-    def __iter__(self):
+    @property
+    def generator(self):
         ccsds_fields = [
             "CCSDS_PREAMBLE",
             "CCSDS_JULIAN_DAY_B1",
