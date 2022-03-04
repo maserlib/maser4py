@@ -48,16 +48,24 @@ TEST_FILES = {
     "vg1_j_pra_3_rdr_lowband_6sec_v1": [
         BASEDIR / "pds" / "VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA_I.LBL"
     ],
-    "ecallisto": [BASEDIR / "e-callisto" / "BIR_20220130_111500_01.fit"],
-    "wi_wa_rad1_l2_60s": [BASEDIR / "wind" / "wi_wa_rad1_l2_60s_19941114_v01.dat"],
-    "wi_wa_rad1_l2": [BASEDIR / "wind" / "wi_wa_rad1_l2_19941110_v01.dat"],
-    "wi_wa_rad2_l2_60s": [BASEDIR / "wind" / "wi_wa_rad2_l2_60s_19941114_v01.dat"],
-    "wi_wa_tnr_l2_60s": [BASEDIR / "wind" / "wi_wa_tnr_l2_60s_19941114_v01.dat"],
-    "wi_wa_tnr_l3_bqt_1mn": [BASEDIR / "wind" / "WI_WA_TNR_L3_BQT_19941114_1MN.DAT"],
-    "wi_wa_tnr_l3_nn": [BASEDIR / "wind" / "WI_WA_TNR_L3_NN_19941114_V02.DAT"],
-    "win_rad1_60s": [BASEDIR / "wind" / "WIN_RAD1_60S_19941114.B3E"],
-    "win_rad2_60s": [BASEDIR / "wind" / "WIN_RAD2_60S_19941114.B3E"],
-    "win_tnr_60s": [BASEDIR / "wind" / "WIN_TNR_60S_19941114.B3E"],
+    "ecallisto": [BASEDIR / "e-callisto" / "BIR" / "BIR_20220130_111500_01.fit"],
+    "wi_wa_rad1_l2_60s": [
+        BASEDIR / "cdpp" / "wind" / "wi_wa_rad1_l2_60s_19941114_v01.dat"
+    ],
+    "wi_wa_rad1_l2": [BASEDIR / "cdpp" / "wind" / "wi_wa_rad1_l2_19941110_v01.dat"],
+    "wi_wa_rad2_l2_60s": [
+        BASEDIR / "cdpp" / "wind" / "wi_wa_rad2_l2_60s_19941114_v01.dat"
+    ],
+    "wi_wa_tnr_l2_60s": [
+        BASEDIR / "cdpp" / "wind" / "wi_wa_tnr_l2_60s_19941114_v01.dat"
+    ],
+    "wi_wa_tnr_l3_bqt_1mn": [
+        BASEDIR / "cdpp" / "wind" / "WI_WA_TNR_L3_BQT_19941114_1MN.DAT"
+    ],
+    "wi_wa_tnr_l3_nn": [BASEDIR / "cdpp" / "wind" / "WI_WA_TNR_L3_NN_19941114_V02.DAT"],
+    "win_rad1_60s": [BASEDIR / "cdpp" / "wind" / "WIN_RAD1_60S_19941114.B3E"],
+    "win_rad2_60s": [BASEDIR / "cdpp" / "wind" / "WIN_RAD2_60S_19941114.B3E"],
+    "win_tnr_60s": [BASEDIR / "cdpp" / "wind" / "WIN_TNR_60S_19941114.B3E"],
 }
 
 
