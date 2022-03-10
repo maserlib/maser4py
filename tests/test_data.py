@@ -7,12 +7,16 @@ from maser.data.base import (
     BinData,
     CdfData,
     FitsData,
-    Pds3Data,
 )
-from maser.data.data import (
+from maser.data.nancay import (
     SrnNdaRoutineJupEdrCdfData,
     NenufarBstFitsData,
+)
+from maser.data.ecallisto import (
     ECallistoFitsData,
+)
+from maser.data.pds import (
+    Pds3Data,
     Vg1JPra3RdrLowband6secV1Data,
 )
 from maser.data.cdpp import (

@@ -4,6 +4,6 @@ from .base import (  # noqa: F401
     BinData,
     CdfData,
     FitsData,
-    Pds3Data,
 )
 from .sweeps import Sweeps  # noqa: F401
+from .records import Records  # noqa: F401

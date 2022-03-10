@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from maser.data.pds import PDSLabelDict
+from maser.data.pds.utils import PDSLabelDict
 from pathlib import Path
 import pytest
 

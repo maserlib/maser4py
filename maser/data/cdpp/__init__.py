@@ -11,8 +11,10 @@ from .data.wind import (  # noqa: F401
     WindWavesTnrL3Bqt1mnBinData,
 )
 from .sweeps.wind import (  # noqa: F401
-    WindWavesTnrL3Bqt1mnSweeps,
     WindWavesL260sSweeps,
     WindWavesL2HighResSweeps,
     WindWaves60sSweeps,
+)
+from .records.wind import (  # noqa: F401
+    WindWavesTnrL3Bqt1mnRecords,
 )

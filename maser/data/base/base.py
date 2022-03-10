@@ -3,14 +3,17 @@ from typing import Union, Dict
 from pathlib import Path
 from spacepy import pycdf
 from astropy.io import fits
-from maser.data.pds import PDSLabelDict
 import numpy
+from .sweeps import Sweeps
+from .records import Records
 
 
 class BaseData:
     dataset: Union[None, str] = None
     _registry: Dict[str, "BaseData"] = {}
     _access_modes = ["sweeps", "records", "file"]
+    _iter_sweep_class = Sweeps
+    _iter_record_class = Records
 
     def __init_subclass__(cls: "BaseData", *args, dataset: str, **kwargs) -> None:
         cls.dataset = dataset
@@ -77,11 +80,15 @@ class Data(BaseData, dataset="default"):
 
     @property
     def sweeps(self):
-        yield
+        for sweep in self._iter_sweep_class(file=self.file, load_data=self._load_data):
+            yield sweep
 
     @property
     def records(self):
-        yield
+        for record in self._iter_record_class(
+            file=self.file, load_data=self._load_data
+        ):
+            yield record
 
     @property
     def meta(self) -> dict:
@@ -155,24 +162,6 @@ class FitsData(Data, dataset="fits"):
             elif "e-CALLISTO" in f[0].header["CONTENT"]:
                 dataset = "ecallisto"
         return dataset
-
-
-class Pds3Data(Data, dataset="pds3"):
-    @classmethod
-    def open(cls, filepath: Path):
-        label = PDSLabelDict(filepath)
-        data = None
-        return {"label": label, "data": data}
-
-    @classmethod
-    def get_dataset(cls, filepath: Path):
-        file_label = cls.open(filepath)["label"]
-        dataset = file_label["DATA_SET_ID"]
-        return dataset
-
-    @classmethod
-    def close(cls, file):
-        pass
 
 
 class BinData(Data, dataset="bin"):

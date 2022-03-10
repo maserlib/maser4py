@@ -6,28 +6,18 @@ from maser.data.cdpp.sweeps import (
     WindWavesL260sSweeps,
     WindWavesL2HighResSweeps,
     WindWaves60sSweeps,
-    WindWavesTnrL3Bqt1mnSweeps,
 )
+from maser.data.cdpp.records import WindWavesTnrL3Bqt1mnRecords
 from astropy.time import Time
 from astropy.units import Unit
 
 
 class WindWavesRad1L260sV2BinData(BinData, dataset="wi_wa_rad1_l2_60s_v2"):
-    @property
-    def sweeps(self):
-        # sweeps =
-        return WindWavesL260sSweeps(file=self.file, load_data=self._load_data)
-        # for sweep in sweeps:
-        #    yield sweep
+    _iter_sweep_class = WindWavesL260sSweeps
 
 
 class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
-    @property
-    def sweeps(self):
-        sweeps = WindWavesL2HighResSweeps(file=self.file, load_data=self._load_data)
-        # return WindWavesL2HighResSweeps(file=self.file, load_data=self._load_data)
-        for sweep in sweeps:
-            yield sweep
+    _iter_sweep_class = WindWavesL2HighResSweeps
 
     @property
     def times(self):
@@ -66,6 +56,7 @@ class WindWavesTnrL260sV2BinData(BinData, dataset="wi_wa_tnr_l2_60s_v2"):
 
 class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="wi_wa_tnr_l3_bqt_1mn"):
     _access_modes = ["records", "file"]
+    _iter_record_class = WindWavesTnrL3Bqt1mnRecords
 
     def __init__(
         self,
@@ -77,12 +68,6 @@ class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="wi_wa_tnr_l3_bqt_1mn"):
         super().__init__(filepath, dataset, access_mode, load_data)
 
     @property
-    def records(self):
-        records = WindWavesTnrL3Bqt1mnSweeps(file=self.file, load_data=self._load_data)
-        for record in records:
-            yield record
-
-    @property
     def sweeps(self):
         raise ValueError("Illegal access mode.")
 
@@ -92,24 +77,12 @@ class WindWavesTnrL3NnBinData(BinData, dataset="wi_wa_tnr_l3_nn"):
 
 
 class WindWavesRad1L260sV1BinData(BinData, dataset="wi_wa_rad1_l2_60s_v1"):
-    @property
-    def sweeps(self):
-        sweeps = WindWaves60sSweeps(file=self.file, load_data=self._load_data)
-        for sweep in sweeps:
-            yield sweep
+    _iter_sweep_class = WindWaves60sSweeps
 
 
 class WindWavesRad2L260sV1BinData(BinData, dataset="wi_wa_rad2_l2_60s_v1"):
-    @property
-    def sweeps(self):
-        sweeps = WindWaves60sSweeps(file=self.file, load_data=self._load_data)
-        for sweep in sweeps:
-            yield sweep
+    _iter_sweep_class = WindWaves60sSweeps
 
 
 class WindWavesTnrL260sV1BinData(BinData, dataset="wi_wa_tnr_l2_60s_v1"):
-    @property
-    def sweeps(self):
-        sweeps = WindWaves60sSweeps(file=self.file, load_data=self._load_data)
-        for sweep in sweeps:
-            yield sweep
+    _iter_sweep_class = WindWaves60sSweeps
