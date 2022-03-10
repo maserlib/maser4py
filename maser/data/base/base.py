@@ -50,16 +50,16 @@ class Data(BaseData, dataset="default"):
             dataset = cls.get_dataset(filepath)
 
             # get the dataset class from the registry
-            DatasetClass = BaseData._registry[dataset]
+            dataset_class = BaseData._registry[dataset]
 
             # create a new instance of the dataset class
-            return DatasetClass(filepath, dataset=None, *args, **kwargs)
+            return dataset_class(filepath, dataset=None, *args, **kwargs)
         else:
             # get the dataset class from the registry
-            DatasetClass = BaseData._registry[dataset]
+            dataset_class = BaseData._registry[dataset]
 
             # create a new instance of the dataset class
-            return DatasetClass(filepath, dataset=None, *args, **kwargs)
+            return dataset_class(filepath, dataset=None, *args, **kwargs)
 
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):
@@ -89,11 +89,11 @@ class Data(BaseData, dataset="default"):
 
     @property
     def times(self):
-        pass
+        return None
 
     @property
     def frequencies(self):
-        pass
+        return None
 
     def as_array(self) -> numpy.ndarray:
         return numpy.ndarray(numpy.empty)

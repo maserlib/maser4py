@@ -2,7 +2,7 @@
 from typing import Union
 from pathlib import Path
 from maser.data.base import BinData
-from maser.data.sweeps import (
+from maser.data.cdpp.sweeps import (
     WindWavesL260sSweeps,
     WindWavesL2HighResSweeps,
     WindWaves60sSweeps,
@@ -24,10 +24,10 @@ class WindWavesRad1L260sV2BinData(BinData, dataset="wi_wa_rad1_l2_60s_v2"):
 class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
     @property
     def sweeps(self):
-        # sweeps =
-        return WindWavesL2HighResSweeps(file=self.file, load_data=self._load_data)
-        # for sweep in sweeps:
-        #    yield sweep
+        sweeps = WindWavesL2HighResSweeps(file=self.file, load_data=self._load_data)
+        # return WindWavesL2HighResSweeps(file=self.file, load_data=self._load_data)
+        for sweep in sweeps:
+            yield sweep
 
     @property
     def times(self):
@@ -37,9 +37,9 @@ class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
             for header, _ in self.sweeps:
                 times.append(
                     Time(
-                        f"{header['YEAR']}-{header['MONTH']}-"
-                        f"{header['DAY']} {header['HOUR']}:"
-                        f"{header['MINUTE']}:{header['SECOND']}"
+                        f"{header['CALEND_DATE_YEAR']}-{header['CALEND_DATE_MONTH']}-"
+                        f"{header['CALEND_DATE_DAY']} {header['CALEND_DATE_HOUR']}:"
+                        f"{header['CALEND_DATE_MINUTE']}:{header['CALEND_DATE_SECOND']}"
                     )
                 )
             self._load_data = _load_data

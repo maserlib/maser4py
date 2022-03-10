@@ -1,55 +1,31 @@
 # -*- coding: utf-8 -*-
+from maser.data.base import Sweeps
 import struct
+from .const import (
+    CCSDS_CDS_FIELDS,
+    CALDATE_FIELDS,
+    ORBIT_FIELDS,
+)
 
 
-class Sweeps:
-    def __init__(self, file, load_data: bool = True):
-        self.file = file
-        self.load_data = load_data
+def _merge_dtype(dtypes):
+    return dtypes[0] + "".join(dt[1:] for dt in dtypes[1:])
 
-    def __iter__(self):
-        for d in self.generator:
-            yield d
 
-    def __call__(self, load_data: bool = None, *args, **kwargs):
-        if load_data is not None:
-            self.load_data = load_data
-        return self.generator
-
-    @property
-    def generator(self):
-        for d in self.file:
-            yield d
-
-    def __next__(self):
-        next(self.generator)
+def _read_sweep_length(file):
+    block = file.read(4)
+    if len(block) == 0:
+        return None
+    else:
+        return struct.unpack(">i", block)[0]
 
 
 class WindWavesL260sSweeps(Sweeps):
     @property
     def generator(self):
-        ccsds_fields = [
-            "CCSDS_PREAMBLE",
-            "CCSDS_JULIAN_DAY_B1",
-            "CCSDS_JULIAN_DAY_B2",
-            "CCSDS_JULIAN_DAY_B3",
-            "CCSDS_MILLISECONDS_OF_DAY",
-        ]
-        # CCSDS_PREAMBLE [Int, 8 bits] = 76
-        # CCSDS_JULIAN_DAY [Int, 24 bits] = Days since 1950/01/01 (=1)
-        # CCSDS_MILLISECONDS_OF_DAY [Int, 32 bits] = Millisecond of day
-        ccsds_dtype = ">bbbbi"
 
-        caldate_fields = [
-            "CALEND_DATE_YEAR",
-            "CALEND_DATE_MONTH",
-            "CALEND_DATE_DAY",
-            "CALEND_DATE_HOUR",
-            "CALEND_DATE_MINUTE",
-            "CALEND_DATE_SECOND",
-        ]
-        # CALEND_DATE fields YEAR, MONTH, DAY, HOUR, MINUTE, SECOND: all [Int, 16bits]
-        caldate_dtype = "hhhhhh"
+        ccsds_fields, ccsds_dtype = CCSDS_CDS_FIELDS
+        caldate_fields, caldate_dtype = CALDATE_FIELDS
 
         header_fields = (
             ccsds_fields
@@ -67,21 +43,17 @@ class WindWavesL260sSweeps(Sweeps):
         #  4: SFU (10^-22 W/m^2/Hz) @ antenna (N2-4).
         # NFREQ [Int, 16 bits] = Number of frequencies
 
-        header_dtype = ccsds_dtype + "hi" + caldate_dtype + "hhh"
+        header_dtype = _merge_dtype((ccsds_dtype, ">hi", caldate_dtype, ">hhh"))
 
-        orbit_fields = ["GSE_X", "GSE_Y", "GSE_Z"]
-        # SPACECRAFT_COORDINATES fields GSE_X, GSE_Y, GSE_Z: all [Real, 32bits], in Earth Radii (GSE)
-        orbit_dtype = ">fff"
-
+        orbit_fields, orbit_dtype = ORBIT_FIELDS
         nsweep = 0
 
         while True:
             try:
                 # Reading number of octets in the current sweep
-                block = self.file.read(4)
-                if len(block) == 0:
+                loctets1 = _read_sweep_length(self.file)
+                if loctets1 is None:
                     break
-                loctets1 = struct.unpack(">i", block)[0]
 
                 # Reading header parameters in the current sweep
                 block = self.file.read(32)
@@ -122,8 +94,7 @@ class WindWavesL260sSweeps(Sweeps):
                     data_i = None
 
                 # Reading number of octets in the current sweep
-                block = self.file.read(4)
-                loctets2 = struct.unpack(">i", block)[0]
+                loctets2 = _read_sweep_length(self.file)
                 if loctets2 != loctets1:
                     print("Error reading file!")
                     return None
@@ -140,28 +111,9 @@ class WindWavesL260sSweeps(Sweeps):
 class WindWaves60sSweeps(Sweeps):
     @property
     def generator(self):
-        ccsds_fields = [
-            "CCSDS_PREAMBLE",
-            "CCSDS_JULIAN_DAY_B1",
-            "CCSDS_JULIAN_DAY_B2",
-            "CCSDS_JULIAN_DAY_B3",
-            "CCSDS_MILLISECONDS_OF_DAY",
-        ]
-        # CCSDS_PREAMBLE [Int, 8 bits] = 76
-        # CCSDS_JULIAN_DAY [Int, 24 bits] = Days since 1950/01/01 (=1)
-        # CCSDS_MILLISECONDS_OF_DAY [Int, 32 bits] = Millisecond of day
-        ccsds_dtype = ">bbbbi"
+        ccsds_fields, ccsds_dtype = CCSDS_CDS_FIELDS
 
-        caldate_fields = [
-            "CALEND_DATE_YEAR",
-            "CALEND_DATE_MONTH",
-            "CALEND_DATE_DAY",
-            "CALEND_DATE_HOUR",
-            "CALEND_DATE_MINUTE",
-            "CALEND_DATE_SECOND",
-        ]
-        # CALEND_DATE fields YEAR, MONTH, DAY, HOUR, MINUTE, SECOND: all [Int, 16bits]
-        caldate_dtype = "hhhhhh"
+        caldate_fields, caldate_dtype = CALDATE_FIELDS
 
         header_fields = (
             ccsds_fields
@@ -173,21 +125,18 @@ class WindWaves60sSweeps(Sweeps):
         # RECEIVER_CODE [Int, 16 bits] = Name of Receiver: 0=TNR; 1=RAD1; 2=RAD2
         # JULIAN_SEC [Int, 32 bits] = Julian date of the middle of the 60-second interval (in seconds since 1950/01/01)
 
-        orbit_fields = ["GSE_X", "GSE_Y", "GSE_Z"]
-        # SPACECRAFT_COORDINATES fields GSE_X, GSE_Y, GSE_Z: all [Real, 32bits], in Earth Radii (GSE)
-        orbit_dtype = ">fff"
+        orbit_fields, orbit_dtype = ORBIT_FIELDS
 
-        header_dtype = ccsds_dtype + "hi" + caldate_dtype + "hhh"
+        header_dtype = _merge_dtype((ccsds_dtype, ">hi", caldate_dtype, ">hhh"))
 
         nsweep = 0
 
         while True:
             try:
                 # Reading number of octets in the current sweep
-                block = self.file.read(4)
-                if len(block) == 0:
+                loctets1 = _read_sweep_length(self.file)
+                if loctets1 is None:
                     break
-                loctets1 = struct.unpack(">i", block)[0]
 
                 # Reading header parameters in the current sweep
                 block = self.file.read(32)
@@ -217,8 +166,7 @@ class WindWaves60sSweeps(Sweeps):
                     data_i = None
 
                 # Reading number of octets in the current sweep
-                block = self.file.read(4)
-                loctets2 = struct.unpack(">i", block)[0]
+                loctets2 = _read_sweep_length(self.file)
                 if loctets2 != loctets1:
                     print("Error reading file!")
                     return None
@@ -242,52 +190,48 @@ class WindWavesL2HighResSweeps(Sweeps):
 
     @property
     def generator(self):
+        ccsds_fields, ccsds_dtype = CCSDS_CDS_FIELDS
+        caldate_fields, caldate_dtype = CALDATE_FIELDS
         header_fields = (
-            "P_FIELD",
-            "JULIAN_DAY_B1",
-            "JULIAN_DAY_B2",
-            "JULIAN_DAY_B3",
-            "MSEC_OF_DAY",
-            "RECEIVER_CODE",
-            "JULIAN_SEC_FRAC",
-            "YEAR",
-            "MONTH",
-            "DAY",
-            "HOUR",
-            "MINUTE",
-            "SECOND",
-            "JULIAN_SEC_FRAC",
-            "ISWEEP",
-            "IUNIT",
-            "NPBS",
-            "SUN_ANGLE",
-            "SPIN_RATE",
-            "KSPIN",
-            "MODE",
-            "LISTFR",
-            "NFREQ",
-            "ICAL",
-            "IANTEN",
-            "IPOLA",
-            "IDIPXY",
-            "SDURCY",
-            "SDURPA",
-            "NPALCY",
-            "NFRPAL",
-            "NPALIF",
-            "NSPALF",
-            "NZPALF",
+            ccsds_fields
+            + ["RECEIVER_CODE", "JULIAN_SEC"]
+            + caldate_fields
+            + [
+                "JULIAN_SEC_FRAC",
+                "ISWEEP",
+                "IUNIT",
+                "NPBS",
+                "SUN_ANGLE",
+                "SPIN_RATE",
+                "KSPIN",
+                "MODE",
+                "LISTFR",
+                "NFREQ",
+                "ICAL",
+                "IANTEN",
+                "IPOLA",
+                "IDIPXY",
+                "SDURCY",
+                "SDURPA",
+                "NPALCY",
+                "NFRPAL",
+                "NPALIF",
+                "NSPALF",
+                "NZPALF",
+            ]
         )
-        header_dtype = ">bbbbihLhhhhhhfihhffhhhhhhhhffhhhhh"
+        header_dtype = _merge_dtype(
+            (ccsds_dtype, ">hL", caldate_dtype, ">fihhffhhhhhhhhffhhhhh")
+        )
         # nsweep = 1
 
         while True:
             try:
                 # Reading number of bytes in the current sweep
-                block = self.file.read(4)
-                if len(block) == 0:
+                loctets1 = _read_sweep_length(self.file)
+                if loctets1 is None:
                     break
-                loctets1 = struct.unpack(">i", block)[0]
+
                 # Reading header parameters in the current sweep
                 block = self.file.read(80)
                 header_i = dict(zip(header_fields, struct.unpack(header_dtype, block)))
@@ -297,6 +241,7 @@ class WindWavesL2HighResSweeps(Sweeps):
                 # Reading frequency list (kHz) in the current sweep
                 block = self.file.read(4 * npalf)
                 freq = struct.unpack(">" + "f" * npalf, block)
+                print(npalf)
                 if self.load_data:
                     # Reading intensity and time values for S/SP in the current sweep
                     Vspal, Tspal = self._read_data_block(4 * npalf * nspal)
@@ -314,8 +259,7 @@ class WindWavesL2HighResSweeps(Sweeps):
                     self.file.seek(8 * npalf * (nspal + nzpal), 1)
                     data_i = None
                 # Reading number of octets in the current sweep
-                block = self.file.read(4)
-                loctets2 = struct.unpack(">i", block)[0]
+                loctets2 = _read_sweep_length(self.file)
                 if loctets2 != loctets1:
                     print("Error reading file!")
                     return None
@@ -330,33 +274,21 @@ class WindWavesL2HighResSweeps(Sweeps):
 class WindWavesTnrL3Bqt1mnSweeps(Sweeps):
     @property
     def generator(self):
-        ccsds_fields = [
-            "CCSDS_PREAMBLE",
-            "CCSDS_JULIAN_DAY_B1",
-            "CCSDS_JULIAN_DAY_B2",
-            "CCSDS_JULIAN_DAY_B3",
-            "CCSDS_MILLISECONDS_OF_DAY",
-        ]
-        # CCSDS_PREAMBLE [Int, 8 bits] = 76
-        # CCSDS_JULIAN_DAY [Int, 24 bits] = Days since 1950/01/01 (=1)
-        # CCSDS_MILLISECONDS_OF_DAY [Int, 32 bits] = Millisecond of day
-        ccsds_dtype = ">bbbbi"
+        ccsds_fields, ccsds_dtype = CCSDS_CDS_FIELDS
 
         header_fields = ccsds_fields + ["UR8_TIME"]
 
         # UR8_TIME [Real, 64 bits] = Days since 1982/01/01 (=0)
 
-        header_dtype = ccsds_dtype + "d"
-
+        header_dtype = _merge_dtype((ccsds_dtype, ">d"))
         nsweep = 0
 
         while True:
             try:
                 # Reading number of octets in the current sweep
-                block = self.file.read(4)
-                if len(block) == 0:
+                loctets1 = _read_sweep_length(self.file)
+                if loctets1 is None:
                     break
-                loctets1 = struct.unpack(">i", block)[0]
 
                 # Reading header parameters in the current sweep
                 block = self.file.read(16)
@@ -415,8 +347,7 @@ class WindWavesTnrL3Bqt1mnSweeps(Sweeps):
                     data_i = None
 
                 # Reading number of octets in the current sweep
-                block = self.file.read(4)
-                loctets2 = struct.unpack(">i", block)[0]
+                loctets2 = _read_sweep_length(self.file)
                 if loctets2 != loctets1:
                     print("Error reading file!")
                     return None
