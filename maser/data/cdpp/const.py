@@ -14,6 +14,24 @@ CCSDS_CDS_FIELDS = (
     ">bbbbi",
 )
 
+CCSDS_CCS_FIELDS = (
+    [
+        "CCSDS_PREAMBLE",
+        "CCSDS_B0",
+        "CCSDS_B1",
+        "CCSDS_B2",
+        "CCSDS_B3",
+        "CCSDS_B4",
+        "CCSDS_B5",
+        "CCSDS_B6",
+        "CCSDS_B7",
+        "CCSDS_B8",
+    ],
+    # This dataset uses CCSDS-CCS Time Format.
+    # year, month, day, hour, minute, second, CCSDS_B0*256 + CCSDS_B1
+    ">BBBBBBBBBB",
+)
+
 CALDATE_FIELDS = (
     [
         "CALEND_DATE_YEAR",

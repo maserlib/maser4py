@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .data.wind import (  # noqa: F401
+from .wind import (  # noqa: F401
     WindWavesRad1L260sV2BinData,
     WindWavesRad1L260sV1BinData,
     WindWavesRad2L260sV1BinData,
@@ -10,11 +10,14 @@ from .data.wind import (  # noqa: F401
     WindWavesRad2L260sV2BinData,
     WindWavesTnrL3Bqt1mnBinData,
 )
-from .sweeps.wind import (  # noqa: F401
+from .wind import (  # noqa: F401
     WindWavesL260sSweeps,
     WindWavesL2HighResSweeps,
     WindWaves60sSweeps,
 )
-from .records.wind import (  # noqa: F401
+from .wind import (  # noqa: F401
     WindWavesTnrL3Bqt1mnRecords,
+)
+from .viking import (  # noqa: F401
+    VikingV4nE5BinData,
 )

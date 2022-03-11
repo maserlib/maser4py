@@ -3,22 +3,6 @@ from astropy.time import Time
 from astropy.units import Quantity, Unit
 
 from maser.data import Data
-from maser.data.base import (
-    BinData,
-    CdfData,
-    FitsData,
-)
-from maser.data.nancay import (
-    SrnNdaRoutineJupEdrCdfData,
-    NenufarBstFitsData,
-)
-from maser.data.ecallisto import (
-    ECallistoFitsData,
-)
-from maser.data.pds import (
-    Pds3Data,
-    Vg1JPra3RdrLowband6secV1Data,
-)
 from maser.data.cdpp import (
     WindWavesRad1L260sV2BinData,
     WindWavesRad1L2BinData,
@@ -31,31 +15,12 @@ from maser.data.cdpp import (
     WindWavesTnrL260sV1BinData,
 )
 from pathlib import Path
-from spacepy import pycdf
-from astropy.io import fits
 import pytest
 
 
 BASEDIR = Path(__file__).resolve().parent / "data"
 
 TEST_FILES = {
-    "srn_nda_routine_jup_edr": [
-        BASEDIR
-        / "nda"
-        / "routine"
-        / "srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf"
-    ],
-    "nenufar_bst": [
-        BASEDIR
-        / "nenufar"
-        / "bst"
-        / "20220130_112900_20220130_123100_SUN_TRACKING"
-        / "20220130_112900_BST.fits"
-    ],
-    "vg1_j_pra_3_rdr_lowband_6sec_v1": [
-        BASEDIR / "pds" / "VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA_I.LBL"
-    ],
-    "ecallisto": [BASEDIR / "e-callisto" / "BIR" / "BIR_20220130_111500_01.fit"],
     "wi_wa_rad1_l2_60s": [
         BASEDIR / "cdpp" / "wind" / "wi_wa_rad1_l2_60s_19941114_v01.dat"
     ],
@@ -73,210 +38,11 @@ TEST_FILES = {
     "win_rad1_60s": [BASEDIR / "cdpp" / "wind" / "WIN_RAD1_60S_19941114.B3E"],
     "win_rad2_60s": [BASEDIR / "cdpp" / "wind" / "WIN_RAD2_60S_19941114.B3E"],
     "win_tnr_60s": [BASEDIR / "cdpp" / "wind" / "WIN_TNR_60S_19941114.B3E"],
+    "viking_v4n_e5": [BASEDIR / "cdpp" / "viking" / "V4N_0101_003"],
 }
 
 
-def test_dataset():
-    with pytest.raises(NotImplementedError):
-        Data(filepath=Path("toto.txt"))
-
-
-def test_cdf_dataset():
-    data = Data(filepath=Path("toto.txt"), dataset="cdf")
-    assert isinstance(data, Data)
-    assert isinstance(data, CdfData)
-
-
-def test_cdf_dataset__filepath_type():
-    data = Data(filepath="toto.txt", dataset="cdf")
-    assert isinstance(data.filepath, Path)
-
-
-def test_fits_dataset():
-    data = Data(filepath=Path("toto.txt"), dataset="fits")
-    assert isinstance(data, Data)
-    assert isinstance(data, FitsData)
-
-
-def test_pds3_dataset():
-    data = Data(filepath=Path("toto.txt"), dataset="pds3")
-    assert isinstance(data, Data)
-    assert isinstance(data, Pds3Data)
-
-
-def test_bin_dataset():
-    data = Data(filepath=Path("toto.txt"), dataset="bin")
-    assert isinstance(data, Data)
-    assert isinstance(data, BinData)
-
-
-@pytest.mark.test_data_required
-def test_srn_nda_routine_jup_edr_dataset():
-    for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
-        data = Data(filepath=filepath)
-        assert isinstance(data, SrnNdaRoutineJupEdrCdfData)
-
-
-@pytest.mark.test_data_required
-def test_srn_nda_routine_jup_edr_dataset__times():
-    for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
-        with Data(filepath=filepath) as data:
-            assert isinstance(data.times, Time)
-            assert len(data.times) == 28734
-            assert data.times[0] == Time("2016-01-30 22:47:06.03")
-            assert data.times[-1] == Time("2016-01-31 06:45:58.68")
-
-
-@pytest.mark.test_data_required
-def test_srn_nda_routine_jup_edr_dataset__frequencies():
-    for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
-        with Data(filepath=filepath) as data:
-            assert isinstance(data.frequencies, Quantity)
-            assert len(data.frequencies) == 400
-            assert data.frequencies[0].to(Unit("MHz")).value == pytest.approx(10)
-            assert data.frequencies[-1].to(Unit("MHz")).value == pytest.approx(39.925)
-
-
-def test_srn_nda_routine_jup_edr_dataset__access_mode_file():
-    for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
-        with Data(filepath=filepath, access_mode="file") as data:
-            assert isinstance(data, pycdf.CDF)
-
-
-@pytest.mark.test_data_required
-def test_srn_nda_routine_jup_edr_dataset__iter_method__mode_file():
-    for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
-        data = Data(filepath=filepath, access_mode="file")
-        var_labels = [item for item in data]
-        assert list(data.file) == var_labels
-        assert var_labels == [
-            "Epoch",
-            "RR",
-            "LL",
-            "STATUS",
-            "SWEEP_TIME_OFFSET_RAMP",
-            "RR_SWEEP_TIME_OFFSET",
-            "Frequency",
-        ]
-
-
-@pytest.mark.test_data_required
-def test_srn_nda_routine_jup_edr_dataset__access_mode_error():
-    with pytest.raises(ValueError):
-        Data(
-            filepath=TEST_FILES["srn_nda_routine_jup_edr"][0],
-            access_mode="toto",
-        )
-
-
-@pytest.mark.test_data_required
-def test_nenufar_bst_dataset():
-    for filepath in TEST_FILES["nenufar_bst"]:
-        data = Data(filepath=filepath)
-        assert isinstance(data, NenufarBstFitsData)
-
-
-@pytest.mark.test_data_required
-def test_nenufar_bst_dataset__beam():
-    for filepath in TEST_FILES["nenufar_bst"]:
-        data = Data(filepath=filepath, beam=1)
-        assert data.beam == 1
-
-
-@pytest.mark.test_data_required
-def test_nenufar_bst_dataset__beam__value_error():
-    for filepath in TEST_FILES["nenufar_bst"]:
-        with pytest.raises(ValueError):
-            Data(filepath=filepath, beam=1000)
-
-
-@pytest.mark.test_data_required
-def test_nenufar_bst_dataset__access_mode_file():
-    for filepath in TEST_FILES["nenufar_bst"]:
-        with Data(filepath=filepath, access_mode="file") as data:
-            assert isinstance(data, fits.hdu.hdulist.HDUList)
-
-
-@pytest.mark.test_data_required
-def test_nenufar_bst_dataset__times():
-    for filepath in TEST_FILES["nenufar_bst"]:
-        with Data(filepath=filepath) as data:
-            assert isinstance(data.times, Time)
-            assert len(data.times) == 3600
-            assert data.times[0] == Time(2459609.9792824076, format="jd")
-            assert data.times[-1] == Time(2459610.0209375, format="jd")
-
-
-@pytest.mark.test_data_required
-def test_nenufar_bst_dataset__times__other_beam():
-    for filepath in TEST_FILES["nenufar_bst"]:
-        with Data(filepath=filepath, beam=1) as data:
-            assert isinstance(data.times, Time)
-            assert len(data.times) == 3600
-            assert data.times[0] == Time(2459609.9792824076, format="jd")
-            assert data.times[-1] == Time(2459610.0209375, format="jd")
-
-
-@pytest.mark.test_data_required
-def test_nenufar_bst_dataset__frequencies():
-    for filepath in TEST_FILES["nenufar_bst"]:
-        with Data(filepath=filepath) as data:
-            assert isinstance(data.frequencies, Quantity)
-            assert len(data.frequencies) == 192
-            assert data.frequencies[0] == 25 * Unit("MHz")
-            assert data.frequencies[-1].value == pytest.approx(62.304688)
-
-
-@pytest.mark.test_data_required
-def test_ecallisto_dataset():
-    for filepath in TEST_FILES["ecallisto"]:
-        data = Data(filepath=filepath)
-        assert isinstance(data, ECallistoFitsData)
-
-
-@pytest.mark.test_data_required
-def test_ecallisto_dataset__access_mode_file():
-    for filepath in TEST_FILES["ecallisto"]:
-        with Data(filepath=filepath, access_mode="file") as data:
-            assert isinstance(data, fits.hdu.hdulist.HDUList)
-
-
-@pytest.mark.test_data_required
-def test_ecallisto_dataset__times():
-    for filepath in TEST_FILES["ecallisto"]:
-        with Data(filepath=filepath) as data:
-            assert isinstance(data.times, Time)
-            assert len(data.times) == 3600
-            assert data.times[0] == Time("2022-01-30 11:15:00.171")
-            assert data.times[-1].jd == pytest.approx(
-                Time("2022-01-30 11:29:59.921").jd
-            )
-
-
-@pytest.mark.test_data_required
-def test_ecallisto_dataset__frequencies():
-    for filepath in TEST_FILES["ecallisto"]:
-        with Data(filepath=filepath) as data:
-            assert isinstance(data.frequencies, Quantity)
-            assert len(data.frequencies) == 200
-            assert data.frequencies[0] == 105.5 * Unit("MHz")
-            assert data.frequencies[-1] == 10 * Unit("MHz")
-
-
-@pytest.mark.test_data_required
-def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
-    for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
-        data = Data(filepath=filepath)
-        assert isinstance(data, Vg1JPra3RdrLowband6secV1Data)
-
-
-@pytest.mark.test_data_required
-def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__access_mode_file():
-    for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
-        with Data(filepath=filepath, access_mode="file") as data:
-            assert isinstance(data, dict)
-
-
+# CDPP/WIND TESTS
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad1_l2_60s"]:

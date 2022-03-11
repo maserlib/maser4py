@@ -2,12 +2,12 @@
 from typing import Union
 from pathlib import Path
 from maser.data.base import BinData
-from maser.data.cdpp.sweeps import (
+from .sweeps import (
     WindWavesL260sSweeps,
     WindWavesL2HighResSweeps,
     WindWaves60sSweeps,
 )
-from maser.data.cdpp.records import WindWavesTnrL3Bqt1mnRecords
+from .records import WindWavesTnrL3Bqt1mnRecords
 from astropy.time import Time
 from astropy.units import Unit
 

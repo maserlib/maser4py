@@ -130,7 +130,7 @@ class Data(BaseData, dataset="default"):
             dataset = BaseData._registry["fits"].get_dataset(filepath)
         elif filepath.suffix.lower() == ".lbl":
             dataset = BaseData._registry["pds3"].get_dataset(filepath)
-        elif filepath.suffix.lower() in [".dat", ".b3e"]:
+        elif filepath.suffix.lower() in [".dat", ".b3e", ""]:
             dataset = BaseData._registry["bin"].get_dataset(filepath)
         else:
             raise NotImplementedError()
@@ -189,6 +189,8 @@ class BinData(Data, dataset="bin"):
             dataset = "wi_wa_rad2_l2_60s_v1"
         elif filepath.stem.lower().startswith("win_tnr_60s"):
             dataset = "wi_wa_tnr_l2_60s_v1"
+        elif filepath.stem.lower().startswith("v4n_"):
+            dataset = "viking_v4n_e5"
         else:
             raise NotImplementedError()
         return dataset
