@@ -13,6 +13,7 @@ from maser.data.cdpp import (
     WindWavesRad1L260sV1BinData,
     WindWavesRad2L260sV1BinData,
     WindWavesTnrL260sV1BinData,
+    VikingV4nE5BinData,
 )
 from pathlib import Path
 import pytest
@@ -413,3 +414,11 @@ def test_win_tnr_60s_bin_dataset__sweeps_next():
             "GSE_Y": -5.07206392288208,
             "GSE_Z": -2.4311723709106445,
         }
+
+
+# CDPP/VIKING TESTS
+@pytest.mark.test_data_required
+def test_viking_v4n_e5_bin_dataset():
+    for filepath in TEST_FILES["viking_v4n_e5"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, VikingV4nE5BinData)
