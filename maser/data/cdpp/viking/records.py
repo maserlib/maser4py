@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from maser.data.base import Sweeps
+from maser.data.base import Records
 import struct
 from ..const import CCSDS_CCS_FIELDS, CALDATE_FIELDS
 from ..utils import _merge_dtype
@@ -22,7 +22,7 @@ def is_empty(data):
         return False
 
 
-class VikingV4nE5Sweeps(Sweeps):
+class VikingV4nE5Records(Records):
     dataset_names = [
         "VIKING_V4",
         "VIKING_V4_V1",
