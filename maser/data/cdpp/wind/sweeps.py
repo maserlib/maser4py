@@ -6,7 +6,7 @@ from ..const import (
     CALDATE_FIELDS,
     ORBIT_FIELDS,
 )
-from ..utils import _read_sweep_length, _merge_dtype
+from ..utils import _read_sweep_length, _merge_dtype, _read_block
 
 
 class WindWavesL260sSweeps(Sweeps):
@@ -45,30 +45,25 @@ class WindWavesL260sSweeps(Sweeps):
                     break
 
                 # Reading header parameters in the current sweep
-                block = self.file.read(32)
-                header_i = dict(zip(header_fields, struct.unpack(header_dtype, block)))
+                header_i = _read_block(self.file, header_dtype, header_fields)
                 nfreq = header_i["NFREQ"]
 
                 if self.load_data:
                     # Reading orbit data for current sweep
-                    block = self.file.read(12)
-                    orbit = dict(zip(orbit_fields, struct.unpack(orbit_dtype, block)))
+                    orbit = _read_block(self.file, orbit_dtype, orbit_fields)
 
                     # Reading frequency list in the current sweep
-                    block = self.file.read(4 * nfreq)
-                    freq = struct.unpack(">" + "f" * nfreq, block)
+                    cur_dtype = ">" + "f" * nfreq
+                    freq = _read_block(self.file, cur_dtype)
 
                     # Reading Smoy (avg intensity)
-                    block = self.file.read(4 * nfreq)
-                    smoy = struct.unpack(">" + "f" * nfreq, block)
+                    smoy = _read_block(self.file, cur_dtype)
 
                     # Reading Smin (min intensity)
-                    block = self.file.read(4 * nfreq)
-                    smin = struct.unpack(">" + "f" * nfreq, block)
+                    smin = _read_block(self.file, cur_dtype)
 
                     # Reading Smax (max intensity)
-                    block = self.file.read(4 * nfreq)
-                    smax = struct.unpack(">" + "f" * nfreq, block)
+                    smax = _read_block(self.file, cur_dtype)
 
                     data_i = {
                         "FREQ": freq,
@@ -128,22 +123,20 @@ class WindWaves60sSweeps(Sweeps):
                     break
 
                 # Reading header parameters in the current sweep
-                block = self.file.read(32)
-                header_i = dict(zip(header_fields, struct.unpack(header_dtype, block)))
+                header_i = _read_block(self.file, header_dtype, header_fields)
                 nfreq = header_i["NFREQ"]
 
                 if self.load_data:
                     # Reading orbit data for current sweep
-                    block = self.file.read(12)
-                    orbit = dict(zip(orbit_fields, struct.unpack(orbit_dtype, block)))
+                    orbit = _read_block(self.file, orbit_dtype, orbit_fields)
 
                     # Reading frequency list in the current sweep
-                    block = self.file.read(4 * nfreq)
-                    freq = struct.unpack(">" + "f" * nfreq, block)
+                    cur_dtype = ">" + "f" * nfreq
+                    freq = _read_block(self.file, cur_dtype)
 
                     # Reading frequency list in the current sweep
-                    block = self.file.read(4 * nfreq)
-                    intensity = struct.unpack(">" + "f" * nfreq, block)
+                    intensity = _read_block(self.file, cur_dtype)
+
                     data_i = {
                         "FREQ": freq,
                         "INTENSITY": intensity,
@@ -222,14 +215,14 @@ class WindWavesL2HighResSweeps(Sweeps):
                     break
 
                 # Reading header parameters in the current sweep
-                block = self.file.read(80)
-                header_i = dict(zip(header_fields, struct.unpack(header_dtype, block)))
+                header_i = _read_block(self.file, header_dtype, header_fields)
                 npalf = header_i["NPALIF"]
                 nspal = header_i["NSPALF"]
                 nzpal = header_i["NZPALF"]
+
                 # Reading frequency list (kHz) in the current sweep
-                block = self.file.read(4 * npalf)
-                freq = struct.unpack(">" + "f" * npalf, block)
+                cur_dtype = ">" + "f" * npalf
+                freq = _read_block(self.file, cur_dtype)
                 print(npalf)
                 if self.load_data:
                     # Reading intensity and time values for S/SP in the current sweep
