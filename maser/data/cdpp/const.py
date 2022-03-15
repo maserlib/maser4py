@@ -17,19 +17,18 @@ CCSDS_CDS_FIELDS = (
 CCSDS_CCS_FIELDS = (
     [
         "CCSDS_PREAMBLE",
-        "CCSDS_B0",
-        "CCSDS_B1",
-        "CCSDS_B2",
-        "CCSDS_B3",
-        "CCSDS_B4",
-        "CCSDS_B5",
-        "CCSDS_B6",
-        "CCSDS_B7",
-        "CCSDS_B8",
+        "CCSDS_B0",  # year
+        "CCSDS_B1",  # month
+        "CCSDS_B2",  # day in month
+        "CCSDS_B3",  # hour
+        "CCSDS_B4",  # minute
+        "CCSDS_B5",  # second
+        "CCSDS_B6",  # 1e-2 sec
+        "CCSDS_B7",  # 1e-4 sec
     ],
     # This dataset uses CCSDS-CCS Time Format.
     # year, month, day, hour, minute, second, CCSDS_B0*256 + CCSDS_B1
-    ">BBBBBBBBBB",
+    ">BhBBBBBBB",
 )
 
 CALDATE_FIELDS = (

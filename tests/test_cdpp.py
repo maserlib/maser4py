@@ -14,6 +14,7 @@ from maser.data.cdpp import (
     WindWavesRad2L260sV1BinData,
     WindWavesTnrL260sV1BinData,
     VikingV4nE5BinData,
+    InterballAuroralPolradRspBinData,
 )
 from pathlib import Path
 import pytest
@@ -40,10 +41,14 @@ TEST_FILES = {
     "win_rad2_60s": [BASEDIR / "cdpp" / "wind" / "WIN_RAD2_60S_19941114.B3E"],
     "win_tnr_60s": [BASEDIR / "cdpp" / "wind" / "WIN_TNR_60S_19941114.B3E"],
     "viking_v4n_e5": [BASEDIR / "cdpp" / "viking" / "V4N_0101_003"],
+    "int_aur_polrad_rsp": [
+        BASEDIR / "cdpp" / "interball" / "POLR_RSPN2_19971116",
+        BASEDIR / "cdpp" / "interball" / "POLR_RSPN2_19990126",
+    ],
 }
 
 
-# CDPP/WIND TESTS
+# CDPP/WIND TESTS ===== wi_wa_rad1_l2_60s
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad1_l2_60s"]:
@@ -51,6 +56,7 @@ def test_wi_wa_rad1_l2_60s_bin_dataset():
         assert isinstance(data, WindWavesRad1L260sV2BinData)
 
 
+# CDPP/WIND TESTS ===== wi_wa_rad1_l2
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad1_l2"]:
@@ -144,6 +150,7 @@ def test_wi_wa_rad1_l2_bin_dataset__sweeps_next():
         assert data_i["FREQ"][-1] == 20.0
 
 
+# CDPP/WIND TESTS ===== wi_wa_rad2_l2_60s
 @pytest.mark.test_data_required
 def test_wi_wa_rad2_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_rad2_l2_60s"]:
@@ -151,6 +158,7 @@ def test_wi_wa_rad2_l2_60s_bin_dataset():
         assert isinstance(data, WindWavesRad2L260sV2BinData)
 
 
+# CDPP/WIND TESTS ===== wi_wa_tnr_l2_60s
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l2_60s_bin_dataset():
     for filepath in TEST_FILES["wi_wa_tnr_l2_60s"]:
@@ -158,6 +166,7 @@ def test_wi_wa_tnr_l2_60s_bin_dataset():
         assert isinstance(data, WindWavesTnrL260sV2BinData)
 
 
+# CDPP/WIND TESTS ===== wi_wa_tnr_l3_bqt_1mn
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset():
     for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
@@ -229,6 +238,7 @@ def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records_next():
         }
 
 
+# CDPP/WIND TESTS ===== wi_wa_tnr_l3_nn
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_nn_bin_dataset():
     for filepath in TEST_FILES["wi_wa_tnr_l3_nn"]:
@@ -236,6 +246,7 @@ def test_wi_wa_tnr_l3_nn_bin_dataset():
         assert isinstance(data, WindWavesTnrL3NnBinData)
 
 
+# CDPP/WIND TESTS ===== win_rad1_60s
 @pytest.mark.test_data_required
 def test_win_rad1_60s_bin_dataset():
     for filepath in TEST_FILES["win_rad1_60s"]:
@@ -296,6 +307,7 @@ def test_win_rad1_60s_bin_dataset__sweeps_next():
         }
 
 
+# CDPP/WIND TESTS ===== win_rad2_60s
 @pytest.mark.test_data_required
 def test_win_rad2_60s_bin_dataset():
     for filepath in TEST_FILES["win_rad2_60s"]:
@@ -356,6 +368,7 @@ def test_win_rad2_60s_bin_dataset__sweeps_next():
         }
 
 
+# CDPP/WIND TESTS ===== win_tnr_60s
 @pytest.mark.test_data_required
 def test_win_tnr_60s_bin_dataset():
     for filepath in TEST_FILES["win_tnr_60s"]:
@@ -416,9 +429,99 @@ def test_win_tnr_60s_bin_dataset__sweeps_next():
         }
 
 
-# CDPP/VIKING TESTS
+# CDPP/VIKING TESTS ==== viking_v4n_e5
 @pytest.mark.test_data_required
 def test_viking_v4n_e5_bin_dataset():
     for filepath in TEST_FILES["viking_v4n_e5"]:
         data = Data(filepath=filepath)
         assert isinstance(data, VikingV4nE5BinData)
+
+
+@pytest.mark.test_data_required
+def test_viking_v4n_e5_bin_dataset__times():
+    filepath = TEST_FILES["viking_v4n_e5"][0]
+    data = Data(filepath=filepath)
+    assert isinstance(data.times, Time)
+    assert len(data.times) == 120
+    assert data.times[0] == Time("1994-11-10 16:38:06.000")
+    assert data.times[-1] == Time("1994-11-10 23:55:27.000")
+
+
+@pytest.mark.test_data_required
+def test_viking_v4n_e5_bin_dataset__sweeps_access_mode__error():
+    with pytest.raises(ValueError):
+        filepath = TEST_FILES["viking_v4n_e5"][0]
+        Data(filepath=filepath, access_mode="sweeps")
+
+
+# CDPP/INTERBALL TESTS ==== int_aur_polrad_rst
+@pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset():
+    for filepath in TEST_FILES["int_aur_polrad_rsp"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, InterballAuroralPolradRspBinData)
+
+
+@pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset__sweeps__load_data_false():
+    for filepath in TEST_FILES["int_aur_polrad_rsp"]:
+        sweeps = Data(filepath=filepath, load_data=False).sweeps
+        sweep = next(sweeps)
+        assert isinstance(sweep, tuple)
+        _, data_i = sweep
+        assert data_i is None
+
+
+@pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset__sweeps_for_loop():
+    for filepath in TEST_FILES["int_aur_polrad_rsp"]:
+        for sweep in Data(filepath=filepath):
+            assert isinstance(sweep, tuple)
+
+
+@pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset__sweeps_next():
+    header_result = {
+        TEST_FILES["int_aur_polrad_rsp"][0]: {
+            "CCSDS_PREAMBLE": 76,
+            "CCSDS_JULIAN_DAY_B1": 0,
+            "CCSDS_JULIAN_DAY_B2": 68,
+            "CCSDS_JULIAN_DAY_B3": 78,
+            "CCSDS_MILLISECONDS_OF_DAY": 5417,
+            "ATTENUATION": 0,
+            "CHANNELS": 1,
+            "SWEEP_DURATION": 3.249000072479248,
+            "STEPS": 240,
+            "SESSION_NAME": "73204S21",
+            "FIRST_FREQ": 987.1360473632812,
+            "CCSDS_CDS_LEVEL2_EPOCH": Time("1950-01-01 00:00:00.000"),
+        },
+        TEST_FILES["int_aur_polrad_rsp"][1]: {
+            "CCSDS_PREAMBLE": 76,
+            "CCSDS_JULIAN_DAY_B1": 0,
+            "CCSDS_JULIAN_DAY_B2": 70,
+            "CCSDS_JULIAN_DAY_B3": 2,
+            "CCSDS_MILLISECONDS_OF_DAY": 18381394,
+            "ATTENUATION": 0,
+            "CHANNELS": 3,
+            "SWEEP_DURATION": 6.5,
+            "STEPS": 240,
+            "SESSION_NAME": "90262S21",
+            "FIRST_FREQ": 987.1360473632812,
+            "CCSDS_CDS_LEVEL2_EPOCH": Time("1950-01-01 00:00:00.000"),
+        },
+    }
+    for filepath in TEST_FILES["int_aur_polrad_rsp"]:
+        sweeps = Data(filepath=filepath).sweeps
+        sweep = next(sweeps)
+        assert isinstance(sweep, tuple)
+        header_i, data_i = sweep
+        assert header_i == header_result[filepath]
+        assert list(data_i.keys()) == ["EX", "EY", "EZ"]
+        assert len(data_i["EZ"]) == 240
+        if header_i["CHANNELS"] == 1:
+            assert data_i["EX"] is None
+            assert data_i["EY"] is None
+        else:
+            assert len(data_i["EX"]) == 240
+            assert len(data_i["EY"]) == 240

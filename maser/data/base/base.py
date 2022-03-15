@@ -191,6 +191,8 @@ class BinData(Data, dataset="bin"):
             dataset = "wi_wa_tnr_l2_60s_v1"
         elif filepath.stem.lower().startswith("v4n_"):
             dataset = "viking_v4n_e5"
+        elif filepath.stem.lower().startswith("polr_rspn2_"):
+            dataset = "int_aur_polrad_rsp"
         else:
             raise NotImplementedError()
         return dataset

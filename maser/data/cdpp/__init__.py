@@ -21,3 +21,4 @@ from .wind import (  # noqa: F401
 from .viking import (  # noqa: F401
     VikingV4nE5BinData,
 )
+from .interball import InterballAuroralPolradRspBinData  # noqa: F401

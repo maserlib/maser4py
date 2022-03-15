@@ -7,8 +7,17 @@ def _merge_dtype(dtypes):
 
 
 def _read_sweep_length(file):
-    block = file.read(4)
+    sweep_length = _read_block(file, ">i")
+    return sweep_length[0] if sweep_length is not None else None
+
+
+def _read_block(file, dtype, fields=None):
+    block_len = struct.calcsize(dtype)
+    block = file.read(block_len)
     if len(block) == 0:
         return None
     else:
-        return struct.unpack(">i", block)[0]
+        if fields is None:
+            return struct.unpack(dtype, block)
+        else:
+            return dict(zip(fields, struct.unpack(dtype, block)))
