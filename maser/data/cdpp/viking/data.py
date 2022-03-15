@@ -6,7 +6,7 @@ from .records import VikingV4nE5Records
 
 
 class VikingV4nE5BinData(BinData, dataset="viking_v4n_e5"):
-    _iter_sweep_class = VikingV4nE5Records
+    _iter_record_class = VikingV4nE5Records
     _access_modes = ["file", "records"]
 
     def __init__(
@@ -21,3 +21,20 @@ class VikingV4nE5BinData(BinData, dataset="viking_v4n_e5"):
     @property
     def sweeps(self):
         raise ValueError("Illegal access mode.")
+
+    @property
+    def times(self):
+        if self._times is None:
+            times = []
+            _load_data, self._load_data = self._load_data, False
+            for header, _ in self.records:
+                times.append(
+                    Time(
+                        f"{header[0]['CALEND_DATE_YEAR']}-{header[0]['CALEND_DATE_MONTH']}-"
+                        f"{header[0]['CALEND_DATE_DAY']} {header[0]['CALEND_DATE_HOUR']}:"
+                        f"{header[0]['CALEND_DATE_MINUTE']}:{header[0]['CALEND_DATE_SECOND']}"
+                    )
+                )
+            self._load_data = _load_data
+            self._times = Time(times)
+        return self._times

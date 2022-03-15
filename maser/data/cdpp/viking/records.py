@@ -2,7 +2,7 @@
 from maser.data.base import Records
 import struct
 from ..const import CCSDS_CCS_FIELDS, CALDATE_FIELDS
-from ..utils import _merge_dtype
+from ..utils import _merge_dtype, _read_block
 
 
 def is_empty(data):
@@ -44,9 +44,12 @@ class VikingV4nE5Records(Records):
         # year, month, day, hour, minute, second, CCSDS_B0*256 + CCSDS_B1
         header1b_fields, header1b_dtype = CCSDS_CCS_FIELDS
         header1c_fields, header1c_dtype = CALDATE_FIELDS
+        header1c_fields = header1c_fields + ["CALEND_DATE_MILLI_SECOND"]
+        header1c_dtype = header1c_dtype + "h"
+
         header1d_fields, header1d_dtype = (
             ["ORBIT_NUMBER", "SATELLITE_TIME_MSB", "SATELLITE_TIME_LSB"],
-            ">hii",
+            ">hII",
         )
         # WARNING: UNUSED field is not present in header
         header1e_fields, header1e_dtype = (
@@ -64,11 +67,11 @@ class VikingV4nE5Records(Records):
         )
         header1f_fields, header1f_dtype = (
             ["TM_LACK_BEFORE_SWEEP", "TM_LACK_AFTER_SWEEP"],
-            ">hh",
+            ">BB",
         )
         header1g_fields, header1g_dtype = (
             ["NUMBER_OF_RECORDS_IN_CURRENT_SWEEP", "RANK_OF_RECORD_IN_CURRENT_SWEEP"],
-            ">hh",
+            ">BB",
         )
         # WARNING: NOT_MEANINGFUL field is not present in header
         header1h_fields, header1h_dtype = (
@@ -82,17 +85,16 @@ class VikingV4nE5Records(Records):
         header1i_fields, header1i_dtype = (
             [
                 "UTC_CCSDS_PREAMBLE",
-                "UTC_CCSDS_B0",
-                "UTC_CCSDS_B1",
-                "UTC_CCSDS_B2",
-                "UTC_CCSDS_B3",
-                "UTC_CCSDS_B4",
-                "UTC_CCSDS_B5",
-                "UTC_CCSDS_B6",
-                "UTC_CCSDS_B7",
-                "UTC_CCSDS_B8",
+                "UTC_CCSDS_YEAR",  # year
+                "UTC_CCSDS_MONTH",  # month
+                "UTC_CCSDS_DAY",  # day in month
+                "UTC_CCSDS_HOUR",  # hour
+                "UTC_CCSDS_MINUTE",  # minute
+                "UTC_CCSDS_SECOND",  # second
+                "UTC_CCSDS_1E2_SEC",  # 1e-2 seconds
+                "UTC_CCSDS_1E4_SEC",  # 1e-4 seconds
             ],
-            ">BBBBBBBBBB",
+            ">BhBBBBBBB",
         )
         # WARNING: CNES/CDPP SCRIBE DESCRIPTOR IS WRONG -- CCSDS DAY_IN_YEAR_02 is not present
         header1j_fields, header1j_dtype = (
@@ -136,7 +138,6 @@ class VikingV4nE5Records(Records):
                 header1j_dtype,
             )
         )
-        header1_length = 92
         header1_spare_len = 36
 
         header2_fields = [
@@ -158,7 +159,6 @@ class VikingV4nE5Records(Records):
             "V4H_FREQ_STEP_SYNTH_INCREMENT",
         ]  # V4H OPERATING MODE
         header2_dtype = ">hhhhhhhhffffffff"
-        header2_length = 48
         header2_spare_len = 16
 
         header3_fields = [
@@ -174,7 +174,6 @@ class VikingV4nE5Records(Records):
             "V4L_NUMBER_OF_SAMPLES_PER_WF_CHANNEL",
         ]  # V4L OPERATING MODE
         header3_dtype = ">hhhhhhhhhh"
-        header3_length = 20
         header3_spare_len = 44
 
         data_v1_fields = [
@@ -190,7 +189,6 @@ class VikingV4nE5Records(Records):
             "V1_ID",
         ]
         data_v1_dtype = ">ffffffffhh"
-        data_v1_length = 36
         data_v1_spare_len = 184
 
         orbit_fields = [
@@ -207,12 +205,10 @@ class VikingV4nE5Records(Records):
             "SPACECRAFT_ATTITUDE_SPIN_ANGLE",
         ]
         orbit_dtype = ">fffffffffff"
-        orbit_length = 44
         orbit_spare_len = 212
 
         data_v2_fields = ["V2_AMPLITUDE", "V2_PSI", "V2_PHI", "V2_THETA"]
         data_v2_dtype = ">ffff"
-        data_v2_length = 16
 
         # Defining empty data dict templates
 
@@ -270,74 +266,31 @@ class VikingV4nE5Records(Records):
                 print("Reading sweep #{}".format(nsweep))
 
                 # Reading header1 parameters in the current record
-                block = self.file.read(header1_length)
-                header1_i = dict(
-                    zip(header1_fields, struct.unpack(header1_dtype, block))
-                )
-                # => Here we fix the `P_Field` which is corrupted
-                # we reverse the order of the bits in the byte
-                header1_i["P_Field"] = int(
-                    "{:08b}".format(header1_i["CCSDS_PREAMBLE"])[::-1], 2
-                )
-                header1_i["T_Field"] = bytearray(
-                    [
-                        header1_i["CCSDS_B0"],
-                        header1_i["CCSDS_B1"],
-                        header1_i["CCSDS_B2"],
-                        header1_i["CCSDS_B3"],
-                        header1_i["CCSDS_B4"],
-                        header1_i["CCSDS_B5"],
-                        header1_i["CCSDS_B6"],
-                        header1_i["CCSDS_B7"],
-                        header1_i["CCSDS_B8"],
-                    ]
-                )
-                header1_i["UTC_P_Field"] = int(
-                    "{:08b}".format(header1_i["UTC_CCSDS_PREAMBLE"])[::-1], 2
-                )
-                header1_i["UTC_T_Field"] = bytearray(
-                    [
-                        header1_i["UTC_CCSDS_B0"],
-                        header1_i["UTC_CCSDS_B1"],
-                        header1_i["UTC_CCSDS_B2"],
-                        header1_i["UTC_CCSDS_B3"],
-                        header1_i["UTC_CCSDS_B4"],
-                        header1_i["UTC_CCSDS_B5"],
-                        header1_i["UTC_CCSDS_B6"],
-                        header1_i["UTC_CCSDS_B7"],
-                        header1_i["UTC_CCSDS_B8"],
-                    ]
-                )
+                header1_i = _read_block(self.file, header1_dtype, header1_fields)
+                print(header1_i)
                 self.file.read(header1_spare_len)
 
                 # Reading header2 parameters in the current record
-                block = self.file.read(header2_length)
-                header2_i = dict(
-                    zip(header2_fields, struct.unpack(header2_dtype, block))
-                )
+                header2_i = _read_block(self.file, header2_dtype, header2_fields)
                 self.file.read(header2_spare_len)
 
                 # Reading header3 parameters in the current record
-                block = self.file.read(header3_length)
-                header3_i = dict(
-                    zip(header3_fields, struct.unpack(header3_dtype, block))
-                )
+                header3_i = _read_block(self.file, header3_dtype, header3_fields)
                 self.file.read(header3_spare_len)
 
                 # Reading status data in the current record
                 status_i = list()
                 for i in range(16):
                     cur_stat = dict()
-                    block = self.file.read(16)
-                    cur_stat["G"] = struct.unpack(">hhhhhhhh", block)
+                    cur_stat["G"] = _read_block(self.file, ">hhhhhhhh")
                     for j in range(3):
                         block = self.file.read(16)
-                        cur_stat["ST{}".format(j + 8)] = struct.unpack(
-                            ">hhhhhhhh", block
+                        cur_stat["ST{}".format(j + 8)] = _read_block(
+                            self.file, ">hhhhhhhh"
                         )
                     for j in range(8):
                         block = self.file.read(2)
-                        cur_stat["ST{}".format(j)] = struct.unpack(">h", block)[0]
+                        cur_stat["ST{}".format(j)] = _read_block(self.file, ">h")
                     status_i.append(cur_stat)
 
                 data_i = dict()
@@ -345,15 +298,8 @@ class VikingV4nE5Records(Records):
                 # Reading Viking V1 data in the current record
 
                 data_v1 = data_v4_v1_empty
-
-                block = self.file.read(data_v1_length)
-                data_v1_tmp1 = dict(
-                    zip(data_v1_fields, struct.unpack(data_v1_dtype, block))
-                )
-                block = self.file.read(data_v1_length)
-                data_v1_tmp2 = dict(
-                    zip(data_v1_fields, struct.unpack(data_v1_dtype, block))
-                )
+                data_v1_tmp1 = _read_block(self.file, data_v1_dtype, data_v1_fields)
+                data_v1_tmp2 = _read_block(self.file, data_v1_dtype, data_v1_fields)
 
                 if not is_empty(data_v1_tmp1) or not is_empty(data_v1_tmp2):
                     for k in data_v1_fields:
@@ -367,8 +313,7 @@ class VikingV4nE5Records(Records):
                 data_i["VIKING_V4_V1"] = data_v1
 
                 # Reading Viking orbit data in the current record
-                block = self.file.read(orbit_length)
-                orbit_i = dict(zip(orbit_fields, struct.unpack(orbit_dtype, block)))
+                orbit_i = _read_block(self.file, orbit_dtype, orbit_fields)
                 self.file.read(orbit_spare_len)
 
                 # Reading Viking V4H SFA data in the current record
@@ -377,22 +322,20 @@ class VikingV4nE5Records(Records):
                     self.file.read(3072)
                     data_i["VIKING_V4H_SFA"] = data_v4h_sfa_empty
                 else:
-                    block = self.file.read(1024)
-                    data_tmp = struct.unpack(">" + "f" * 256, block)
+                    cur_dtype = ">" + "f" * 256
+                    data_tmp = _read_block(self.file, cur_dtype)
                     if is_empty(data_tmp):
                         data_v4h_sfa_freq = None
                     else:
                         data_v4h_sfa_freq = data_tmp
 
-                    block = self.file.read(1024)
-                    data_tmp = struct.unpack(">" + "f" * 256, block)
+                    data_tmp = _read_block(self.file, cur_dtype)
                     if is_empty(data_tmp):
                         data_v4h_sfa_elec = None
                     else:
                         data_v4h_sfa_elec = data_tmp
 
-                    block = self.file.read(1024)
-                    data_tmp = struct.unpack(">" + "f" * 256, block)
+                    data_tmp = _read_block(self.file, cur_dtype)
                     if is_empty(data_tmp):
                         data_v4h_sfa_mag = None
                     else:
@@ -474,10 +417,8 @@ class VikingV4nE5Records(Records):
 
                 data_v2 = list()
                 for i in range(16):
-                    block = self.file.read(data_v2_length)
-                    data_tmp = dict(
-                        zip(data_v2_fields, struct.unpack(data_v2_dtype, block))
-                    )
+                    block = self.file.read(struct.calcsize(data_v2_dtype))
+                    data_tmp = _read_block(self.file, data_v2_dtype, data_v2_fields)
                     if is_empty(data_tmp):
                         data_v2.append(None)
                     else:
