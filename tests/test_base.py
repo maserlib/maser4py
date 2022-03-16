@@ -40,9 +40,10 @@ def test_bin_dataset():
 
 
 def test_any_dataset():
-    for filepath in test_filepaths():
+    for filepath, dataset in test_filepaths():
         try:
-            Data(filepath)
+            data = Data(filepath)
+            assert data.dataset == dataset
         except NotImplementedError:
             print(f"Dataset not implemented {str(filepath)}")
 

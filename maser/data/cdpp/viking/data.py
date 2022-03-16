@@ -7,7 +7,7 @@ from .records import VikingV4nE5Records
 from astropy.time import Time
 
 
-class VikingV4nE5BinData(BinData, dataset="viking_v4n_e5"):
+class VikingV4nE5BinData(BinData, dataset="cdpp_viking_v4n_e5"):
     _iter_sweep_class = VikingV4nE5Records
     _access_modes = ["file", "records"]
 
