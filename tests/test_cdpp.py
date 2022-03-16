@@ -23,25 +23,35 @@ import pytest
 BASEDIR = Path(__file__).resolve().parent / "data"
 
 TEST_FILES = {
-    "wi_wa_rad1_l2_60s": [
+    "cdpp_wi_wa_rad1_l2_60s_v2": [
         BASEDIR / "cdpp" / "wind" / "wi_wa_rad1_l2_60s_19941114_v01.dat"
     ],
-    "wi_wa_rad1_l2": [BASEDIR / "cdpp" / "wind" / "wi_wa_rad1_l2_19941110_v01.dat"],
-    "wi_wa_rad2_l2_60s": [
+    "cdpp_wi_wa_rad1_l2": [
+        BASEDIR / "cdpp" / "wind" / "wi_wa_rad1_l2_19941110_v01.dat"
+    ],
+    "cdpp_wi_wa_rad2_l2_60s_v2": [
         BASEDIR / "cdpp" / "wind" / "wi_wa_rad2_l2_60s_19941114_v01.dat"
     ],
-    "wi_wa_tnr_l2_60s": [
+    "cdpp_wi_wa_tnr_l2_60s_v2": [
         BASEDIR / "cdpp" / "wind" / "wi_wa_tnr_l2_60s_19941114_v01.dat"
     ],
-    "wi_wa_tnr_l3_bqt_1mn": [
+    "cdpp_wi_wa_tnr_l3_bqt_1mn": [
         BASEDIR / "cdpp" / "wind" / "WI_WA_TNR_L3_BQT_19941114_1MN.DAT"
     ],
-    "wi_wa_tnr_l3_nn": [BASEDIR / "cdpp" / "wind" / "WI_WA_TNR_L3_NN_19941114_V02.DAT"],
-    "win_rad1_60s": [BASEDIR / "cdpp" / "wind" / "WIN_RAD1_60S_19941114.B3E"],
-    "win_rad2_60s": [BASEDIR / "cdpp" / "wind" / "WIN_RAD2_60S_19941114.B3E"],
-    "win_tnr_60s": [BASEDIR / "cdpp" / "wind" / "WIN_TNR_60S_19941114.B3E"],
-    "viking_v4n_e5": [BASEDIR / "cdpp" / "viking" / "V4N_0101_003"],
-    "int_aur_polrad_rsp": [
+    "cdpp_wi_wa_tnr_l3_nn": [
+        BASEDIR / "cdpp" / "wind" / "WI_WA_TNR_L3_NN_19941114_V02.DAT"
+    ],
+    "cdpp_wi_wa_rad1_l2_60s_v1": [
+        BASEDIR / "cdpp" / "wind" / "WIN_RAD1_60S_19941114.B3E"
+    ],
+    "cdpp_wi_wa_rad2_l2_60s_v1": [
+        BASEDIR / "cdpp" / "wind" / "WIN_RAD2_60S_19941114.B3E"
+    ],
+    "cdpp_wi_wa_tnr_l2_60s_v1": [
+        BASEDIR / "cdpp" / "wind" / "WIN_TNR_60S_19941114.B3E"
+    ],
+    "cdpp_viking_v4n_e5": [BASEDIR / "cdpp" / "viking" / "V4N_0101_003"],
+    "cdpp_int_aur_polrad_rspn2": [
         BASEDIR / "cdpp" / "interball" / "POLR_RSPN2_19971116",
         BASEDIR / "cdpp" / "interball" / "POLR_RSPN2_19990126",
     ],
@@ -51,7 +61,7 @@ TEST_FILES = {
 # CDPP/WIND TESTS ===== wi_wa_rad1_l2_60s
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_60s_bin_dataset():
-    for filepath in TEST_FILES["wi_wa_rad1_l2_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2_60s_v2"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad1L260sV2BinData)
 
@@ -59,14 +69,14 @@ def test_wi_wa_rad1_l2_60s_bin_dataset():
 # CDPP/WIND TESTS ===== wi_wa_rad1_l2
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset():
-    for filepath in TEST_FILES["wi_wa_rad1_l2"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad1L2BinData)
 
 
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__times():
-    filepath = TEST_FILES["wi_wa_rad1_l2"][0]
+    filepath = TEST_FILES["cdpp_wi_wa_rad1_l2"][0]
     data = Data(filepath=filepath)
     assert isinstance(data.times, Time)
     assert len(data.times) == 120
@@ -76,7 +86,7 @@ def test_wi_wa_rad1_l2_bin_dataset__times():
 
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__frequencies():
-    filepath = TEST_FILES["wi_wa_rad1_l2"][0]
+    filepath = TEST_FILES["cdpp_wi_wa_rad1_l2"][0]
     data = Data(filepath=filepath)
     assert isinstance(data.frequencies, Quantity)
     assert len(data.frequencies) == 64
@@ -86,7 +96,7 @@ def test_wi_wa_rad1_l2_bin_dataset__frequencies():
 
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__sweeps__load_data_false():
-    for filepath in TEST_FILES["wi_wa_rad1_l2"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
@@ -96,14 +106,14 @@ def test_wi_wa_rad1_l2_bin_dataset__sweeps__load_data_false():
 
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__sweeps_for_loop():
-    for filepath in TEST_FILES["wi_wa_rad1_l2"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2"]:
         for sweep in Data(filepath=filepath):
             assert isinstance(sweep, tuple)
 
 
 @pytest.mark.test_data_required
 def test_wi_wa_rad1_l2_bin_dataset__sweeps_next():
-    for filepath in TEST_FILES["wi_wa_rad1_l2"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2"]:
         sweeps = Data(filepath=filepath).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
@@ -153,7 +163,7 @@ def test_wi_wa_rad1_l2_bin_dataset__sweeps_next():
 # CDPP/WIND TESTS ===== wi_wa_rad2_l2_60s
 @pytest.mark.test_data_required
 def test_wi_wa_rad2_l2_60s_bin_dataset():
-    for filepath in TEST_FILES["wi_wa_rad2_l2_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad2_l2_60s_v2"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad2L260sV2BinData)
 
@@ -161,7 +171,7 @@ def test_wi_wa_rad2_l2_60s_bin_dataset():
 # CDPP/WIND TESTS ===== wi_wa_tnr_l2_60s
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l2_60s_bin_dataset():
-    for filepath in TEST_FILES["wi_wa_tnr_l2_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l2_60s_v2"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesTnrL260sV2BinData)
 
@@ -169,7 +179,7 @@ def test_wi_wa_tnr_l2_60s_bin_dataset():
 # CDPP/WIND TESTS ===== wi_wa_tnr_l3_bqt_1mn
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset():
-    for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l3_bqt_1mn"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesTnrL3Bqt1mnBinData)
 
@@ -177,20 +187,20 @@ def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset():
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__sweeps_access_mode__error():
     with pytest.raises(ValueError):
-        filepath = TEST_FILES["wi_wa_tnr_l3_bqt_1mn"][0]
+        filepath = TEST_FILES["cdpp_wi_wa_tnr_l3_bqt_1mn"][0]
         Data(filepath=filepath, access_mode="sweeps")
 
 
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__sweeps_property__error():
     with pytest.raises(ValueError):
-        filepath = TEST_FILES["wi_wa_tnr_l3_bqt_1mn"][0]
+        filepath = TEST_FILES["cdpp_wi_wa_tnr_l3_bqt_1mn"][0]
         Data(filepath=filepath).sweeps
 
 
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records__load_data_false():
-    for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l3_bqt_1mn"]:
         records = Data(filepath=filepath, load_data=False).records
         record = next(records)
         assert isinstance(record, tuple)
@@ -200,14 +210,14 @@ def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records__load_data_false():
 
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records_for_loop():
-    for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l3_bqt_1mn"]:
         for record in Data(filepath=filepath):
             assert isinstance(record, tuple)
 
 
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records_next():
-    for filepath in TEST_FILES["wi_wa_tnr_l3_bqt_1mn"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l3_bqt_1mn"]:
         records = Data(filepath=filepath).records
         record = next(records)
         assert isinstance(record, tuple)
@@ -241,7 +251,7 @@ def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records_next():
 # CDPP/WIND TESTS ===== wi_wa_tnr_l3_nn
 @pytest.mark.test_data_required
 def test_wi_wa_tnr_l3_nn_bin_dataset():
-    for filepath in TEST_FILES["wi_wa_tnr_l3_nn"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l3_nn"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesTnrL3NnBinData)
 
@@ -249,14 +259,14 @@ def test_wi_wa_tnr_l3_nn_bin_dataset():
 # CDPP/WIND TESTS ===== win_rad1_60s
 @pytest.mark.test_data_required
 def test_win_rad1_60s_bin_dataset():
-    for filepath in TEST_FILES["win_rad1_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2_60s_v1"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad1L260sV1BinData)
 
 
 @pytest.mark.test_data_required
 def test_win_rad1_60s_bin_dataset__sweeps__load_data_false():
-    for filepath in TEST_FILES["win_rad1_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2_60s_v1"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
@@ -266,14 +276,14 @@ def test_win_rad1_60s_bin_dataset__sweeps__load_data_false():
 
 @pytest.mark.test_data_required
 def test_win_rad1_60s_bin_dataset__sweeps_for_loop():
-    for filepath in TEST_FILES["win_rad1_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2_60s_v1"]:
         for sweep in Data(filepath=filepath):
             assert isinstance(sweep, tuple)
 
 
 @pytest.mark.test_data_required
 def test_win_rad1_60s_bin_dataset__sweeps_next():
-    for filepath in TEST_FILES["win_rad1_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2_60s_v1"]:
         sweeps = Data(filepath=filepath).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
@@ -310,14 +320,14 @@ def test_win_rad1_60s_bin_dataset__sweeps_next():
 # CDPP/WIND TESTS ===== win_rad2_60s
 @pytest.mark.test_data_required
 def test_win_rad2_60s_bin_dataset():
-    for filepath in TEST_FILES["win_rad2_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad2_l2_60s_v1"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesRad2L260sV1BinData)
 
 
 @pytest.mark.test_data_required
 def test_win_rad2_60s_bin_dataset__sweeps__load_data_false():
-    for filepath in TEST_FILES["win_rad2_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad2_l2_60s_v1"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
@@ -327,14 +337,14 @@ def test_win_rad2_60s_bin_dataset__sweeps__load_data_false():
 
 @pytest.mark.test_data_required
 def test_win_rad2_60s_bin_dataset__sweeps_for_loop():
-    for filepath in TEST_FILES["win_rad2_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad2_l2_60s_v1"]:
         for sweep in Data(filepath=filepath):
             assert isinstance(sweep, tuple)
 
 
 @pytest.mark.test_data_required
 def test_win_rad2_60s_bin_dataset__sweeps_next():
-    for filepath in TEST_FILES["win_rad2_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_rad2_l2_60s_v1"]:
         sweeps = Data(filepath=filepath).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
@@ -371,14 +381,14 @@ def test_win_rad2_60s_bin_dataset__sweeps_next():
 # CDPP/WIND TESTS ===== win_tnr_60s
 @pytest.mark.test_data_required
 def test_win_tnr_60s_bin_dataset():
-    for filepath in TEST_FILES["win_tnr_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l2_60s_v1"]:
         data = Data(filepath=filepath)
         assert isinstance(data, WindWavesTnrL260sV1BinData)
 
 
 @pytest.mark.test_data_required
 def test_win_tnr_60s_bin_dataset__sweeps__load_data_false():
-    for filepath in TEST_FILES["win_tnr_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l2_60s_v1"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
@@ -388,14 +398,14 @@ def test_win_tnr_60s_bin_dataset__sweeps__load_data_false():
 
 @pytest.mark.test_data_required
 def test_win_tnr_60s_bin_dataset__sweeps_for_loop():
-    for filepath in TEST_FILES["win_tnr_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l2_60s_v1"]:
         for sweep in Data(filepath=filepath):
             assert isinstance(sweep, tuple)
 
 
 @pytest.mark.test_data_required
 def test_win_tnr_60s_bin_dataset__sweeps_next():
-    for filepath in TEST_FILES["win_tnr_60s"]:
+    for filepath in TEST_FILES["cdpp_wi_wa_tnr_l2_60s_v1"]:
         sweeps = Data(filepath=filepath).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
@@ -432,14 +442,14 @@ def test_win_tnr_60s_bin_dataset__sweeps_next():
 # CDPP/VIKING TESTS ==== viking_v4n_e5
 @pytest.mark.test_data_required
 def test_viking_v4n_e5_bin_dataset():
-    for filepath in TEST_FILES["viking_v4n_e5"]:
+    for filepath in TEST_FILES["cdpp_viking_v4n_e5"]:
         data = Data(filepath=filepath)
         assert isinstance(data, VikingV4nE5BinData)
 
 
 @pytest.mark.test_data_required
 def test_viking_v4n_e5_bin_dataset__times():
-    filepath = TEST_FILES["viking_v4n_e5"][0]
+    filepath = TEST_FILES["cdpp_viking_v4n_e5"][0]
     data = Data(filepath=filepath)
     assert isinstance(data.times, Time)
     assert len(data.times) == 120
@@ -455,21 +465,21 @@ def test_viking_v4n_e5_bin_dataset__frequencies():
 @pytest.mark.test_data_required
 def test_viking_v4n_e5_bin_dataset__sweeps_access_mode__error():
     with pytest.raises(ValueError):
-        filepath = TEST_FILES["viking_v4n_e5"][0]
+        filepath = TEST_FILES["cdpp_viking_v4n_e5"][0]
         Data(filepath=filepath, access_mode="sweeps")
 
 
 # CDPP/INTERBALL TESTS ==== int_aur_polrad_rst
 @pytest.mark.test_data_required
 def test_int_aur_polrad_rsp_bin_dataset():
-    for filepath in TEST_FILES["int_aur_polrad_rsp"]:
+    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
         data = Data(filepath=filepath)
         assert isinstance(data, InterballAuroralPolradRspBinData)
 
 
 @pytest.mark.test_data_required
 def test_int_aur_polrad_rsp_bin_dataset__sweeps__load_data_false():
-    for filepath in TEST_FILES["int_aur_polrad_rsp"]:
+    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
@@ -479,7 +489,7 @@ def test_int_aur_polrad_rsp_bin_dataset__sweeps__load_data_false():
 
 @pytest.mark.test_data_required
 def test_int_aur_polrad_rsp_bin_dataset__sweeps_for_loop():
-    for filepath in TEST_FILES["int_aur_polrad_rsp"]:
+    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
         for sweep in Data(filepath=filepath):
             assert isinstance(sweep, tuple)
 
@@ -487,7 +497,7 @@ def test_int_aur_polrad_rsp_bin_dataset__sweeps_for_loop():
 @pytest.mark.test_data_required
 def test_int_aur_polrad_rsp_bin_dataset__sweeps_next():
     header_result = {
-        TEST_FILES["int_aur_polrad_rsp"][0]: {
+        TEST_FILES["cdpp_int_aur_polrad_rspn2"][0]: {
             "CCSDS_PREAMBLE": 76,
             "CCSDS_JULIAN_DAY_B1": 0,
             "CCSDS_JULIAN_DAY_B2": 68,
@@ -501,7 +511,7 @@ def test_int_aur_polrad_rsp_bin_dataset__sweeps_next():
             "FIRST_FREQ": 987.1360473632812,
             "CCSDS_CDS_LEVEL2_EPOCH": Time("1950-01-01 00:00:00.000"),
         },
-        TEST_FILES["int_aur_polrad_rsp"][1]: {
+        TEST_FILES["cdpp_int_aur_polrad_rspn2"][1]: {
             "CCSDS_PREAMBLE": 76,
             "CCSDS_JULIAN_DAY_B1": 0,
             "CCSDS_JULIAN_DAY_B2": 70,
@@ -516,7 +526,7 @@ def test_int_aur_polrad_rsp_bin_dataset__sweeps_next():
             "CCSDS_CDS_LEVEL2_EPOCH": Time("1950-01-01 00:00:00.000"),
         },
     }
-    for filepath in TEST_FILES["int_aur_polrad_rsp"]:
+    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
         sweeps = Data(filepath=filepath).sweeps
         sweep = next(sweeps)
         assert isinstance(sweep, tuple)
