@@ -307,6 +307,17 @@ def download_file(url: str, filepath: Path, chunk_size=8192):
     return filepath
 
 
+def test_filepaths():
+    filepaths = []
+    for database_name in DATA_FILES.keys():
+        cur_db_name = Path(ROOT_DATA_DIRECTORY) / database_name
+        for dataset_name in DATA_FILES[database_name].keys():
+            cur_dir_name = cur_db_name / dataset_name
+            for file_name in DATA_FILES[database_name][dataset_name]:
+                filepaths.append(cur_dir_name / file_name)
+    return filepaths
+
+
 def download_data_sample(database_name: str, reload: bool = False):
     try:
         files = DATA_FILES[database_name]

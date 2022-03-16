@@ -448,6 +448,11 @@ def test_viking_v4n_e5_bin_dataset__times():
 
 
 @pytest.mark.test_data_required
+def test_viking_v4n_e5_bin_dataset__frequencies():
+    pass
+
+
+@pytest.mark.test_data_required
 def test_viking_v4n_e5_bin_dataset__sweeps_access_mode__error():
     with pytest.raises(ValueError):
         filepath = TEST_FILES["viking_v4n_e5"][0]
