@@ -22,7 +22,11 @@ from .nancay import (  # noqa: F401
     SrnNdaRoutineJupEdrCdfData,
     NenufarBstFitsData,
 )
-from .pds import Vg1JPra3RdrLowband6secV1Data  # noqa: F401
+from .pds import (  # noqa: F401
+    Pds3Data,
+    Vg1JPra3RdrLowband6secV1Data,
+)
+
 
 if __name__ == "__main__":
     data = Data(filepath=Path("toto.txt"), dataset="cdf")

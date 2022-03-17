@@ -12,11 +12,11 @@ from astropy.time import Time
 from astropy.units import Unit
 
 
-class WindWavesRad1L260sV2BinData(BinData, dataset="wi_wa_rad1_l2_60s_v2"):
+class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
     _iter_sweep_class = WindWavesL260sSweeps
 
 
-class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
+class WindWavesRad1L2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2"):
     _iter_sweep_class = WindWavesL2HighResSweeps
 
     @property
@@ -46,15 +46,15 @@ class WindWavesRad1L2BinData(BinData, dataset="wi_wa_rad1_l2"):
         return self._frequencies
 
 
-class WindWavesRad2L260sV2BinData(BinData, dataset="wi_wa_rad2_l2_60s_v2"):
+class WindWavesRad2L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad2_l2_60s_v2"):
     pass
 
 
-class WindWavesTnrL260sV2BinData(BinData, dataset="wi_wa_tnr_l2_60s_v2"):
+class WindWavesTnrL260sV2BinData(BinData, dataset="cdpp_wi_wa_tnr_l2_60s_v2"):
     pass
 
 
-class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="wi_wa_tnr_l3_bqt_1mn"):
+class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_bqt_1mn"):
     _access_modes = ["records", "file"]
     _iter_record_class = WindWavesTnrL3Bqt1mnRecords
 
@@ -72,17 +72,17 @@ class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="wi_wa_tnr_l3_bqt_1mn"):
         raise ValueError("Illegal access mode.")
 
 
-class WindWavesTnrL3NnBinData(BinData, dataset="wi_wa_tnr_l3_nn"):
+class WindWavesTnrL3NnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_nn"):
     pass
 
 
-class WindWavesRad1L260sV1BinData(BinData, dataset="wi_wa_rad1_l2_60s_v1"):
+class WindWavesRad1L260sV1BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v1"):
     _iter_sweep_class = WindWaves60sSweeps
 
 
-class WindWavesRad2L260sV1BinData(BinData, dataset="wi_wa_rad2_l2_60s_v1"):
+class WindWavesRad2L260sV1BinData(BinData, dataset="cdpp_wi_wa_rad2_l2_60s_v1"):
     _iter_sweep_class = WindWaves60sSweeps
 
 
-class WindWavesTnrL260sV1BinData(BinData, dataset="wi_wa_tnr_l2_60s_v1"):
+class WindWavesTnrL260sV1BinData(BinData, dataset="cdpp_wi_wa_tnr_l2_60s_v1"):
     _iter_sweep_class = WindWaves60sSweeps

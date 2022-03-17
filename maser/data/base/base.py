@@ -50,7 +50,7 @@ class Data(BaseData, dataset="default"):
             return super().__new__(cls)
         elif dataset == "__auto__":
             # try to guess the dataset
-            dataset = cls.get_dataset(filepath)
+            dataset = cls.get_dataset(cls, filepath)
 
             # get the dataset class from the registry
             dataset_class = BaseData._registry[dataset]
@@ -123,7 +123,8 @@ class Data(BaseData, dataset="default"):
             yield item
 
     @staticmethod
-    def get_dataset(filepath: Path):
+    def get_dataset(cls, filepath):
+        filepath = Path(filepath)
         if filepath.suffix.lower() == ".cdf":
             dataset = BaseData._registry["cdf"].get_dataset(filepath)
         elif filepath.suffix.lower() in [".fits", ".fit"]:
@@ -158,7 +159,7 @@ class FitsData(Data, dataset="fits"):
     def get_dataset(cls, filepath):
         with cls.open(filepath) as f:
             if f[0].header["INSTRUME"] == "NenuFar" and filepath.stem.endswith("_BST"):
-                dataset = "nenufar_bst"
+                dataset = "srn_nenufar_bst"
             elif "e-CALLISTO" in f[0].header["CONTENT"]:
                 dataset = "ecallisto"
         return dataset
@@ -170,29 +171,30 @@ class BinData(Data, dataset="bin"):
         return open(filepath, "rb")
 
     @classmethod
-    def get_dataset(cls, filepath: Path):
+    def get_dataset(cls, filepath):
+        filepath = Path(filepath)
         if filepath.stem.lower().startswith("wi_wa_rad1_l2_60s"):
-            dataset = "wi_wa_rad1_l2_60s_v2"
+            dataset = "cdpp_wi_wa_rad1_l2_60s_v2"
         elif filepath.stem.lower().startswith("wi_wa_rad1_l2"):
-            dataset = "wi_wa_rad1_l2"
+            dataset = "cdpp_wi_wa_rad1_l2"
         elif filepath.stem.lower().startswith("wi_wa_rad2_l2_60s"):
-            dataset = "wi_wa_rad2_l2_60s_v2"
+            dataset = "cdpp_wi_wa_rad2_l2_60s_v2"
         elif filepath.stem.lower().startswith("wi_wa_tnr_l2_60s"):
-            dataset = "wi_wa_tnr_l2_60s_v2"
+            dataset = "cdpp_wi_wa_tnr_l2_60s_v2"
         elif filepath.stem.lower().startswith("wi_wa_tnr_l3_bqt"):
-            dataset = "wi_wa_tnr_l3_bqt_1mn"
+            dataset = "cdpp_wi_wa_tnr_l3_bqt_1mn"
         elif filepath.stem.lower().startswith("wi_wa_tnr_l3_nn"):
-            dataset = "wi_wa_tnr_l3_nn"
+            dataset = "cdpp_wi_wa_tnr_l3_nn"
         elif filepath.stem.lower().startswith("win_rad1_60s"):
-            dataset = "wi_wa_rad1_l2_60s_v1"
+            dataset = "cdpp_wi_wa_rad1_l2_60s_v1"
         elif filepath.stem.lower().startswith("win_rad2_60s"):
-            dataset = "wi_wa_rad2_l2_60s_v1"
+            dataset = "cdpp_wi_wa_rad2_l2_60s_v1"
         elif filepath.stem.lower().startswith("win_tnr_60s"):
-            dataset = "wi_wa_tnr_l2_60s_v1"
+            dataset = "cdpp_wi_wa_tnr_l2_60s_v1"
         elif filepath.stem.lower().startswith("v4n_"):
-            dataset = "viking_v4n_e5"
+            dataset = "cdpp_viking_v4n_e5"
         elif filepath.stem.lower().startswith("polr_rspn2_"):
-            dataset = "int_aur_polrad_rsp"
+            dataset = "cdpp_int_aur_polrad_rspn2"
         else:
             raise NotImplementedError()
         return dataset

@@ -5,6 +5,7 @@ from maser.data.base import (
     CdfData,
     FitsData,
 )
+from .fixtures import test_filepaths
 from pathlib import Path
 import pytest
 
@@ -36,3 +37,43 @@ def test_bin_dataset():
     data = Data(filepath=Path("toto.txt"), dataset="bin")
     assert isinstance(data, Data)
     assert isinstance(data, BinData)
+
+
+def test_any_dataset():
+    for filepath, dataset in test_filepaths():
+        try:
+            data = Data(filepath)
+            assert data.dataset == dataset
+        except NotImplementedError:
+            print(f"Dataset not implemented {str(filepath)}")
+
+
+# TEST TEMPLATE
+@pytest.mark.test_data_required
+def test___bin_dataset():
+    pass
+
+
+@pytest.mark.test_data_required
+def test___bin_dataset__times():
+    pass
+
+
+@pytest.mark.test_data_required
+def test___bin_dataset__frequencies():
+    pass
+
+
+@pytest.mark.test_data_required
+def test___bin_dataset__sweeps__load_data_false():
+    pass
+
+
+@pytest.mark.test_data_required
+def test___bin_dataset__sweeps_for_loop():
+    pass
+
+
+@pytest.mark.test_data_required
+def test___bin_dataset__sweeps_next():
+    pass

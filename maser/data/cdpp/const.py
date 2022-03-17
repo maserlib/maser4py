@@ -6,12 +6,15 @@ CCSDS_CDS_FIELDS = (
         "CCSDS_JULIAN_DAY_B1",
         "CCSDS_JULIAN_DAY_B2",
         "CCSDS_JULIAN_DAY_B3",
-        "CCSDS_MILLISECONDS_OF_DAY",
+        "CCSDS_MILLISECONDS_OF_DAY_B0",
+        "CCSDS_MILLISECONDS_OF_DAY_B1",
+        "CCSDS_MILLISECONDS_OF_DAY_B2",
+        "CCSDS_MILLISECONDS_OF_DAY_B3",
     ],
     # CCSDS_PREAMBLE [Int, 8 bits] = 76
     # CCSDS_JULIAN_DAY [Int, 24 bits] = Days since 1950/01/01 (=1)
     # CCSDS_MILLISECONDS_OF_DAY [Int, 32 bits] = Millisecond of day
-    ">bbbbi",
+    ">BBBBBBBB",
 )
 
 CCSDS_CCS_FIELDS = (

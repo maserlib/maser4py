@@ -4,7 +4,7 @@ from pathlib import Path
 from maser.data.base import FitsData
 
 
-class NenufarBstFitsData(FitsData, dataset="nenufar_bst"):
+class NenufarBstFitsData(FitsData, dataset="srn_nenufar_bst"):
     @classmethod
     def _nenupy_open(cls, filepath):
         from nenupy.beamlet import BST_Data

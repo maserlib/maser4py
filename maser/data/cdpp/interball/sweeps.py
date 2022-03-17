@@ -26,6 +26,29 @@ class InterballAuroralPolradRspSweeps(Sweeps):
                     break
 
                 header_i = _read_block(self.file, ccsds_dtype, ccsds_fields)
+
+                # => Here we fix the `P_Field` which is corrupted
+                # First we reverse the order of the bits in the byte
+                P_Field_tmp = int("{:08b}".format(header_i["CCSDS_PREAMBLE"])[::-1], 2)
+                # Then we put back the initial 4-6 bits into bits 1-3 (defining the CSSDS code)
+                # as those bits are not in reverse order in the file...
+                P_Field_tmp = (P_Field_tmp & 241) + (
+                    header_i["CCSDS_PREAMBLE"] & 112
+                ) // 8
+
+                header_i["P_Field"] = P_Field_tmp
+                header_i["T_Field"] = bytearray(
+                    [
+                        header_i["CCSDS_JULIAN_DAY_B1"],
+                        header_i["CCSDS_JULIAN_DAY_B2"],
+                        header_i["CCSDS_JULIAN_DAY_B3"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B0"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B1"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B2"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B3"],
+                    ]
+                )
+
                 header_i["CCSDS_CDS_LEVEL2_EPOCH"] = Time("1950-01-01 00:00:00")
                 header_i["SESSION_NAME"] = "".join(
                     [x.decode() for x in _read_block(self.file, ">cccccccc")]
