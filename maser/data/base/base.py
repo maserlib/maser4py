@@ -50,7 +50,7 @@ class Data(BaseData, dataset="default"):
             return super().__new__(cls)
         elif dataset == "__auto__":
             # try to guess the dataset
-            dataset = cls.get_dataset(filepath)
+            dataset = cls.get_dataset(cls, filepath)
 
             # get the dataset class from the registry
             dataset_class = BaseData._registry[dataset]
@@ -123,7 +123,8 @@ class Data(BaseData, dataset="default"):
             yield item
 
     @staticmethod
-    def get_dataset(filepath: Path):
+    def get_dataset(cls, filepath):
+        filepath = Path(filepath)
         if filepath.suffix.lower() == ".cdf":
             dataset = BaseData._registry["cdf"].get_dataset(filepath)
         elif filepath.suffix.lower() in [".fits", ".fit"]:
@@ -170,7 +171,8 @@ class BinData(Data, dataset="bin"):
         return open(filepath, "rb")
 
     @classmethod
-    def get_dataset(cls, filepath: Path):
+    def get_dataset(cls, filepath):
+        filepath = Path(filepath)
         if filepath.stem.lower().startswith("wi_wa_rad1_l2_60s"):
             dataset = "cdpp_wi_wa_rad1_l2_60s_v2"
         elif filepath.stem.lower().startswith("wi_wa_rad1_l2"):

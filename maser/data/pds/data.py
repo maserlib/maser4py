@@ -12,7 +12,7 @@ class Pds3Data(Data, dataset="pds3"):
         return {"label": label, "data": data}
 
     @classmethod
-    def get_dataset(cls, filepath: Path):
+    def get_dataset(cls, filepath):
         file_label = cls.open(filepath)["label"]
         dataset = file_label["DATA_SET_ID"]
         return dataset
