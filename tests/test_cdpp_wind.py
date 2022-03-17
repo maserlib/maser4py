@@ -13,8 +13,6 @@ from maser.data.cdpp import (
     WindWavesRad1L260sV1BinData,
     WindWavesRad2L260sV1BinData,
     WindWavesTnrL260sV1BinData,
-    VikingV4nE5BinData,
-    InterballAuroralPolradRspBinData,
 )
 from pathlib import Path
 import pytest
@@ -49,11 +47,6 @@ TEST_FILES = {
     ],
     "cdpp_wi_wa_tnr_l2_60s_v1": [
         BASEDIR / "cdpp" / "wind" / "WIN_TNR_60S_19941114.B3E"
-    ],
-    "cdpp_viking_v4n_e5": [BASEDIR / "cdpp" / "viking" / "V4N_0101_003"],
-    "cdpp_int_aur_polrad_rspn2": [
-        BASEDIR / "cdpp" / "interball" / "POLR_RSPN2_19971116",
-        BASEDIR / "cdpp" / "interball" / "POLR_RSPN2_19990126",
     ],
 }
 
@@ -123,7 +116,10 @@ def test_wi_wa_rad1_l2_bin_dataset__sweeps_next():
             "CCSDS_JULIAN_DAY_B1": 0,
             "CCSDS_JULIAN_DAY_B2": 18,
             "CCSDS_JULIAN_DAY_B3": 88,
-            "CCSDS_MILLISECONDS_OF_DAY": 59886877,
+            "CCSDS_MILLISECONDS_OF_DAY_B0": 3,
+            "CCSDS_MILLISECONDS_OF_DAY_B1": 145,
+            "CCSDS_MILLISECONDS_OF_DAY_B2": 205,
+            "CCSDS_MILLISECONDS_OF_DAY_B3": 29,
             "RECEIVER_CODE": 1,
             "JULIAN_SEC": 405794286,
             "CALEND_DATE_YEAR": 1994,
@@ -226,7 +222,10 @@ def test_wi_wa_tnr_l3_bqt_1mn_bin_dataset__records_next():
             "CCSDS_JULIAN_DAY_B1": 0,
             "CCSDS_JULIAN_DAY_B2": 64,
             "CCSDS_JULIAN_DAY_B3": 4,
-            "CCSDS_MILLISECONDS_OF_DAY": 90398,
+            "CCSDS_MILLISECONDS_OF_DAY_B0": 0,
+            "CCSDS_MILLISECONDS_OF_DAY_B1": 1,
+            "CCSDS_MILLISECONDS_OF_DAY_B2": 97,
+            "CCSDS_MILLISECONDS_OF_DAY_B3": 30,
             "CCSDS_PREAMBLE": 76,
             "UR8_TIME": 4700.001046273147,
         }
@@ -299,7 +298,10 @@ def test_win_rad1_60s_bin_dataset__sweeps_next():
             "CCSDS_JULIAN_DAY_B1": 0,
             "CCSDS_JULIAN_DAY_B2": 64,
             "CCSDS_JULIAN_DAY_B3": 4,
-            "CCSDS_MILLISECONDS_OF_DAY": 30000,
+            "CCSDS_MILLISECONDS_OF_DAY_B0": 0,
+            "CCSDS_MILLISECONDS_OF_DAY_B1": 0,
+            "CCSDS_MILLISECONDS_OF_DAY_B2": 117,
+            "CCSDS_MILLISECONDS_OF_DAY_B3": 48,
             "CCSDS_PREAMBLE": 76,
             "IUNIT": 3,
             "JULIAN_SEC": 1415923230,
@@ -360,7 +362,10 @@ def test_win_rad2_60s_bin_dataset__sweeps_next():
             "CCSDS_JULIAN_DAY_B1": 0,
             "CCSDS_JULIAN_DAY_B2": 64,
             "CCSDS_JULIAN_DAY_B3": 4,
-            "CCSDS_MILLISECONDS_OF_DAY": 30000,
+            "CCSDS_MILLISECONDS_OF_DAY_B0": 0,
+            "CCSDS_MILLISECONDS_OF_DAY_B1": 0,
+            "CCSDS_MILLISECONDS_OF_DAY_B2": 117,
+            "CCSDS_MILLISECONDS_OF_DAY_B3": 48,
             "CCSDS_PREAMBLE": 76,
             "IUNIT": 3,
             "JULIAN_SEC": 1415923230,
@@ -421,7 +426,10 @@ def test_win_tnr_60s_bin_dataset__sweeps_next():
             "CCSDS_JULIAN_DAY_B1": 0,
             "CCSDS_JULIAN_DAY_B2": 64,
             "CCSDS_JULIAN_DAY_B3": 4,
-            "CCSDS_MILLISECONDS_OF_DAY": 30000,
+            "CCSDS_MILLISECONDS_OF_DAY_B0": 0,
+            "CCSDS_MILLISECONDS_OF_DAY_B1": 0,
+            "CCSDS_MILLISECONDS_OF_DAY_B2": 117,
+            "CCSDS_MILLISECONDS_OF_DAY_B3": 48,
             "CCSDS_PREAMBLE": 76,
             "IUNIT": 3,
             "JULIAN_SEC": 1415923230,
@@ -437,106 +445,3 @@ def test_win_tnr_60s_bin_dataset__sweeps_next():
             "GSE_Y": -5.07206392288208,
             "GSE_Z": -2.4311723709106445,
         }
-
-
-# CDPP/VIKING TESTS ==== viking_v4n_e5
-@pytest.mark.test_data_required
-def test_viking_v4n_e5_bin_dataset():
-    for filepath in TEST_FILES["cdpp_viking_v4n_e5"]:
-        data = Data(filepath=filepath)
-        assert isinstance(data, VikingV4nE5BinData)
-
-
-@pytest.mark.test_data_required
-def test_viking_v4n_e5_bin_dataset__times():
-    filepath = TEST_FILES["cdpp_viking_v4n_e5"][0]
-    data = Data(filepath=filepath)
-    assert isinstance(data.times, Time)
-    assert len(data.times) == 120
-    assert data.times[0] == Time("1994-11-10 16:38:06.000")
-    assert data.times[-1] == Time("1994-11-10 23:55:27.000")
-
-
-@pytest.mark.test_data_required
-def test_viking_v4n_e5_bin_dataset__frequencies():
-    pass
-
-
-@pytest.mark.test_data_required
-def test_viking_v4n_e5_bin_dataset__sweeps_access_mode__error():
-    with pytest.raises(ValueError):
-        filepath = TEST_FILES["cdpp_viking_v4n_e5"][0]
-        Data(filepath=filepath, access_mode="sweeps")
-
-
-# CDPP/INTERBALL TESTS ==== int_aur_polrad_rst
-@pytest.mark.test_data_required
-def test_int_aur_polrad_rsp_bin_dataset():
-    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
-        data = Data(filepath=filepath)
-        assert isinstance(data, InterballAuroralPolradRspBinData)
-
-
-@pytest.mark.test_data_required
-def test_int_aur_polrad_rsp_bin_dataset__sweeps__load_data_false():
-    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
-        sweeps = Data(filepath=filepath, load_data=False).sweeps
-        sweep = next(sweeps)
-        assert isinstance(sweep, tuple)
-        _, data_i = sweep
-        assert data_i is None
-
-
-@pytest.mark.test_data_required
-def test_int_aur_polrad_rsp_bin_dataset__sweeps_for_loop():
-    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
-        for sweep in Data(filepath=filepath):
-            assert isinstance(sweep, tuple)
-
-
-@pytest.mark.test_data_required
-def test_int_aur_polrad_rsp_bin_dataset__sweeps_next():
-    header_result = {
-        TEST_FILES["cdpp_int_aur_polrad_rspn2"][0]: {
-            "CCSDS_PREAMBLE": 76,
-            "CCSDS_JULIAN_DAY_B1": 0,
-            "CCSDS_JULIAN_DAY_B2": 68,
-            "CCSDS_JULIAN_DAY_B3": 78,
-            "CCSDS_MILLISECONDS_OF_DAY": 5417,
-            "ATTENUATION": 0,
-            "CHANNELS": 1,
-            "SWEEP_DURATION": 3.249000072479248,
-            "STEPS": 240,
-            "SESSION_NAME": "73204S21",
-            "FIRST_FREQ": 987.1360473632812,
-            "CCSDS_CDS_LEVEL2_EPOCH": Time("1950-01-01 00:00:00.000"),
-        },
-        TEST_FILES["cdpp_int_aur_polrad_rspn2"][1]: {
-            "CCSDS_PREAMBLE": 76,
-            "CCSDS_JULIAN_DAY_B1": 0,
-            "CCSDS_JULIAN_DAY_B2": 70,
-            "CCSDS_JULIAN_DAY_B3": 2,
-            "CCSDS_MILLISECONDS_OF_DAY": 18381394,
-            "ATTENUATION": 0,
-            "CHANNELS": 3,
-            "SWEEP_DURATION": 6.5,
-            "STEPS": 240,
-            "SESSION_NAME": "90262S21",
-            "FIRST_FREQ": 987.1360473632812,
-            "CCSDS_CDS_LEVEL2_EPOCH": Time("1950-01-01 00:00:00.000"),
-        },
-    }
-    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
-        sweeps = Data(filepath=filepath).sweeps
-        sweep = next(sweeps)
-        assert isinstance(sweep, tuple)
-        header_i, data_i = sweep
-        assert header_i == header_result[filepath]
-        assert list(data_i.keys()) == ["EX", "EY", "EZ"]
-        assert len(data_i["EZ"]) == 240
-        if header_i["CHANNELS"] == 1:
-            assert data_i["EX"] is None
-            assert data_i["EY"] is None
-        else:
-            assert len(data_i["EX"]) == 240
-            assert len(data_i["EY"]) == 240
