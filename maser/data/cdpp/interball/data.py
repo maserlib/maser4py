@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from maser.data.base import BinData
 from .sweeps import InterballAuroralPolradRspSweeps
-
-# from .records import InterballAuroralPolradRspRecords
+from .records import InterballAuroralPolradRspRecords
 
 from astropy.time import Time
 
 
 class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rspn2"):
     _iter_sweep_class = InterballAuroralPolradRspSweeps
+    _iter_record_class = InterballAuroralPolradRspRecords
 
     @property
     def times(self):

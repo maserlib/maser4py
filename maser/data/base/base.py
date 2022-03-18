@@ -25,6 +25,7 @@ class BaseData:
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
         load_data: bool = True,
+        fixed_frequencies: bool = True,
     ) -> None:
         self.filepath = Path(filepath)
         if access_mode not in self._access_modes:
@@ -35,6 +36,7 @@ class BaseData:
         self._times = None
         self._frequencies = None
         self._load_data = load_data
+        self.fixed_frequencies = fixed_frequencies
 
     @classmethod
     def get_dataset(cls, filepath):

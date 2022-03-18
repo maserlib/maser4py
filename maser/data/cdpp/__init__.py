@@ -28,3 +28,7 @@ from .interball import (  # noqa: F401
     InterballAuroralPolradRspSweeps,
     InterballAuroralPolradRspSweep,
 )
+from .interball import (  # noqa: F401
+    InterballAuroralPolradRspRecords,
+    InterballAuroralPolradRspRecord,
+)

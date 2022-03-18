@@ -6,6 +6,7 @@ from maser.data import Data
 from maser.data.cdpp import (
     InterballAuroralPolradRspBinData,
     InterballAuroralPolradRspSweep,
+    InterballAuroralPolradRspRecord,
 )
 from pathlib import Path
 import pytest
@@ -177,3 +178,65 @@ def test_int_aur_polrad_rsp_bin_dataset__session_file1():
         "TELEMETRY_MODE": "MEMORY",
         "STATION_CODE": "EVPATORIA",
     }
+
+
+@pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset__records_next__file0():
+    header_result = {
+        "CCSDS_PREAMBLE": 76,
+        "CCSDS_JULIAN_DAY_B1": 0,
+        "CCSDS_JULIAN_DAY_B2": 68,
+        "CCSDS_JULIAN_DAY_B3": 78,
+        "CCSDS_MILLISECONDS_OF_DAY_B0": 0,
+        "CCSDS_MILLISECONDS_OF_DAY_B1": 0,
+        "CCSDS_MILLISECONDS_OF_DAY_B2": 21,
+        "CCSDS_MILLISECONDS_OF_DAY_B3": 41,
+        "ATTENUATION": 0,
+        "CHANNELS": 1,
+        "SWEEP_DURATION": 3.249000072479248,
+        "STEPS": 240,
+        "SESSION_NAME": "73204S21",
+        "FIRST_FREQ": 987.1360473632812,
+        "CCSDS_CDS_LEVEL2_EPOCH": Time("1950-01-01 00:00:00.000"),
+        "P_Field": 56,
+        "T_Field": bytearray(b"\x00DN\x00\x00\x15)"),
+        "SWEEP_ID": 0,
+    }
+    filepath = TEST_FILES["cdpp_int_aur_polrad_rspn2"][0]
+    records = Data(filepath=filepath).records
+    record = next(records)
+    assert isinstance(record, InterballAuroralPolradRspRecord)
+    header_i = record.header
+    data_i = record.data
+    assert header_i.keys() == header_result.keys()
+    assert record.time.jd == pytest.approx(Time("1997-11-15 23:59:34.417").jd)
+    assert record.frequency.unit == Unit("kHz")
+    assert record.frequency.value == pytest.approx(983.04)
+    assert list(data_i.keys()) == ["EX", "EY", "EZ"]
+    record = next(records)
+    assert record.time.jd == pytest.approx(Time("1997-11-15 23:59:34.417").jd)
+    assert record.frequency.value == pytest.approx(978.944)
+
+
+@pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset__records_for_loop__file0():
+    filepath = TEST_FILES["cdpp_int_aur_polrad_rspn2"][0]
+    counter = 0
+    for record in Data(filepath=filepath).records:
+        assert isinstance(record, InterballAuroralPolradRspRecord)
+        if counter == 0:
+            assert record.time == Time("1997-11-15 23:59:34.417")
+            assert record.frequency.value == pytest.approx(983.04)
+        if counter == 1:
+            assert record.time == Time("1997-11-15 23:59:34.417")
+            assert record.frequency.value == pytest.approx(978.944)
+        if counter == 240:
+            assert record.time == Time("1997-11-15 23:59:41.417")
+            assert record.frequency.value == pytest.approx(983.04)
+        if counter == 241:
+            assert record.time == Time("1997-11-15 23:59:41.417")
+            assert record.frequency.value == pytest.approx(978.944)
+        assert record.header["SWEEP_ID"] == counter // 240
+        counter += 1
+        if counter > 300:
+            break
