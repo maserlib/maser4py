@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
+class Sweep:
+    def __init__(self, sweep_header, sweep_data):
+        self.header = sweep_header
+        self.data = sweep_data
+
+
 class Sweeps:
     def __init__(self, file, load_data: bool = True):
         self.file = file
@@ -18,7 +24,7 @@ class Sweeps:
     @property
     def generator(self):
         for d in self.file:
-            yield d
+            yield Sweep(d)
 
     def __next__(self):
         next(self.generator)

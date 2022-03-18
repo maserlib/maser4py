@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from maser.data.base import BinData
 from .sweeps import InterballAuroralPolradRspSweeps
-from ..ccsds import decode_ccsds_date
+
+# from .records import InterballAuroralPolradRspRecords
 
 from astropy.time import Time
-from astropy.units import Unit
-import numpy
 
 
 class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rspn2"):
@@ -16,16 +15,8 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
         if self._times is None:
             times = []
             _load_data, self._load_data = self._load_data, False
-            for header, _ in self.sweeps:
-                times.append(
-                    Time(
-                        decode_ccsds_date(
-                            header["P_Field"],
-                            header["T_Field"],
-                            header["CCSDS_CDS_LEVEL2_EPOCH"],
-                        ).datetime
-                    )
-                )
+            for sweep in self.sweeps:
+                times.append(sweep.time)
             self._load_data = _load_data
             self._times = Time(times)
         return self._times
@@ -34,10 +25,8 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
     def frequencies(self):
         if self._frequencies is None:
             _load_data, self._load_data = self._load_data, False
-            header, _ = next(self.sweeps)
-            self._frequencies = numpy.flipud(
-                numpy.arange(header["STEPS"]) * 4.096 + 4.096
-            ) * Unit("kHz")
+            sweep = next(self.sweeps)
+            self._frequencies = sweep.frequencies
             self._load_data = _load_data
         return self._frequencies
 

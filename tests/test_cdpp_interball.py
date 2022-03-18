@@ -5,6 +5,7 @@ from astropy.units import Quantity, Unit
 from maser.data import Data
 from maser.data.cdpp import (
     InterballAuroralPolradRspBinData,
+    InterballAuroralPolradRspSweep,
 )
 from pathlib import Path
 import pytest
@@ -33,8 +34,8 @@ def test_int_aur_polrad_rsp_bin_dataset__sweeps__load_data_false():
     for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
         sweeps = Data(filepath=filepath, load_data=False).sweeps
         sweep = next(sweeps)
-        assert isinstance(sweep, tuple)
-        _, data_i = sweep
+        assert isinstance(sweep, InterballAuroralPolradRspSweep)
+        data_i = sweep.data
         assert data_i is None
 
 
@@ -42,7 +43,7 @@ def test_int_aur_polrad_rsp_bin_dataset__sweeps__load_data_false():
 def test_int_aur_polrad_rsp_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
         for sweep in Data(filepath=filepath):
-            assert isinstance(sweep, tuple)
+            assert isinstance(sweep, InterballAuroralPolradRspSweep)
 
 
 @pytest.mark.test_data_required
@@ -65,12 +66,14 @@ def test_int_aur_polrad_rsp_bin_dataset__sweeps_next__file0():
         "CCSDS_CDS_LEVEL2_EPOCH": Time("1950-01-01 00:00:00.000"),
         "P_Field": 56,
         "T_Field": bytearray(b"\x00DN\x00\x00\x15)"),
+        "SWEEP_ID": 0,
     }
     filepath = TEST_FILES["cdpp_int_aur_polrad_rspn2"][0]
     sweeps = Data(filepath=filepath).sweeps
     sweep = next(sweeps)
-    assert isinstance(sweep, tuple)
-    header_i, data_i = sweep
+    assert isinstance(sweep, InterballAuroralPolradRspSweep)
+    header_i = sweep.header
+    data_i = sweep.data
     assert header_i == header_result
     assert list(data_i.keys()) == ["EX", "EY", "EZ"]
     assert len(data_i["EZ"]) == 240
@@ -99,12 +102,14 @@ def test_int_aur_polrad_rsp_bin_dataset__sweeps_next__file1():
         "CCSDS_CDS_LEVEL2_EPOCH": Time("1950-01-01 00:00:00.000"),
         "P_Field": 56,
         "T_Field": bytearray(b"\x00F\x02\x01\x18zR"),
+        "SWEEP_ID": 0,
     }
     filepath = TEST_FILES["cdpp_int_aur_polrad_rspn2"][1]
     sweeps = Data(filepath=filepath).sweeps
     sweep = next(sweeps)
-    assert isinstance(sweep, tuple)
-    header_i, data_i = sweep
+    assert isinstance(sweep, InterballAuroralPolradRspSweep)
+    header_i = sweep.header
+    data_i = sweep.data
     assert header_i == header_result
     assert list(data_i.keys()) == ["EX", "EY", "EZ"]
     assert len(data_i["EZ"]) == 240
@@ -143,7 +148,7 @@ def test_int_aur_polrad_rsp_bin_dataset__session_file0():
     filepath = TEST_FILES["cdpp_int_aur_polrad_rspn2"][0]
     data = Data(filepath=filepath)
     sweeps = data.sweeps
-    header_i, _ = next(sweeps)
+    header_i = next(sweeps).header
     session = data.decode_session_name(header_i["SESSION_NAME"])
     assert isinstance(session, dict)
     assert session == {
@@ -161,7 +166,7 @@ def test_int_aur_polrad_rsp_bin_dataset__session_file1():
     filepath = TEST_FILES["cdpp_int_aur_polrad_rspn2"][1]
     data = Data(filepath=filepath)
     sweeps = data.sweeps
-    header_i, _ = next(sweeps)
+    header_i = next(sweeps).header
     session = data.decode_session_name(header_i["SESSION_NAME"])
     assert isinstance(session, dict)
     assert session == {

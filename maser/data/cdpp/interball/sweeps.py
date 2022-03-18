@@ -1,10 +1,31 @@
 # -*- coding: utf-8 -*-
-import struct
-
-from maser.data.base import Sweeps
+from maser.data.base.sweeps import Sweeps, Sweep
 from ..const import CCSDS_CDS_FIELDS
+from ..ccsds import decode_ccsds_date
 from ..utils import _read_sweep_length, _read_block
+
+import struct
+import numpy
 from astropy.time import Time
+from astropy.units import Unit
+
+
+class InterballAuroralPolradRspSweep(Sweep):
+    @property
+    def time(self):
+        return Time(
+            decode_ccsds_date(
+                self.header["P_Field"],
+                self.header["T_Field"],
+                self.header["CCSDS_CDS_LEVEL2_EPOCH"],
+            ).datetime
+        )
+
+    @property
+    def frequencies(self):
+        return numpy.flipud(numpy.arange(self.header["STEPS"]) * 4.096 + 4.096) * Unit(
+            "kHz"
+        )
 
 
 class InterballAuroralPolradRspSweeps(Sweeps):
@@ -54,6 +75,7 @@ class InterballAuroralPolradRspSweeps(Sweeps):
                     [x.decode() for x in _read_block(self.file, ">cccccccc")]
                 )
                 header_i.update(_read_block(self.file, sfa_conf_dtype, sfa_conf_fields))
+                header_i["SWEEP_ID"] = nsweep
 
                 data_dtype = ">" + "f" * header_i["STEPS"]
                 sweep_length = struct.calcsize(data_dtype) * header_i["CHANNELS"]
@@ -82,5 +104,5 @@ class InterballAuroralPolradRspSweeps(Sweeps):
                 break
 
             else:
-                yield header_i, data_i
+                yield InterballAuroralPolradRspSweep(header_i, data_i)
                 nsweep += 1
