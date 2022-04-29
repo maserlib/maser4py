@@ -7,6 +7,7 @@
 # (Include here the modules to import, e.g. import sys)
 import sys
 import os
+import re
 import argparse
 import logging
 from datetime import datetime
@@ -19,6 +20,7 @@ from maser.utils.cdf.serializer.exceptions import CDFSerializerError
 from maser.utils.cdf.cdfcompare import cdf_compare, add_cdfcompare_subparser
 from maser.utils.cdf.validator import cdfvalidator, ValidatorException, add_cdfvalidator_subparser
 from maser.utils.time import Lstable, add_leapsec_subparser
+from maser.data.subparser import swaves_subparser
 #from maser.services.helio.hfc import hfcviewer, add_hfcviewer_subparser
 from pprint import pformat
 
@@ -63,6 +65,7 @@ def main():
     add_leapsec_subparser(subparsers)
     add_cdfcompare_subparser(subparsers)
     add_cdfvalidator_subparser(subparsers)
+    swaves_subparser(subparsers)
 #    add_hfcviewer_subparser(subparsers)
 
     # Parse args
@@ -215,6 +218,18 @@ def main():
             except:
                 logger.error('cannot run cdf_validator, aborting!')
                 sys.exit(-1)
+        elif 'swaves' in args.maser:
+            """Run maser.data.subparser.swaves_subparser"""
+            from maser.data.stereo.swaves import read_swaves_file as read_swa
+            filepath = args.filepath[0]
+
+            if re.search('ST(A|B)_WAV_\S{3}_\d{8}.B3E', filepath.name):
+                data = read_swa.read_l2_hres(filepath)
+            elif re.search('ST(A|B)_WAV_\S{3}_60s_\d{8}.B3E', filepath.name):
+                data = read_swa.read_l2_60s(filepath)
+            else:
+                logger.warning(f'Input file {filepath} is not readable')
+
 #        elif 'hfcviewer' in args.maser:
             #hfcviewer(**args.__dict__)
         else:

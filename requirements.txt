@@ -5,4 +5,5 @@ openpyxl
 python-dateutil
 pytz
 scipy
+spacepy
 toml
