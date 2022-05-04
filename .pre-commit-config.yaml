@@ -11,13 +11,14 @@ repos:
         - id: remove-crlf
 
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v3.3.0
+      rev: v4.2.0
       hooks:
         # check config files are parsable
         - id: check-xml
         - id: check-toml
         - id: check-json
         - id: check-yaml
+          args: [--unsafe]
         # check merge errors
         - id: check-merge-conflict
         # code quality
