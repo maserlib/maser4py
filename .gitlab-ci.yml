@@ -32,7 +32,8 @@ test-job:
   before_script:
     - !reference [.setup, before_script]
     # install cdf and spacepy.pycdf
-    - apt-get install gfortran ncurses-dev
+    - apt-get update
+    - apt-get install -y gfortran ncurses-dev
     - wget $CDF_URL
     - tar -xf cdf38_1-dist-all.tar.gz && cd ./cdf38_1-dist
     - make OS=linux ENV=gnu CURSES=yes FORTRAN=no UCOPTIONS=-O2 SHARED=yes all
