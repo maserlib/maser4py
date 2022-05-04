@@ -25,6 +25,7 @@ def test_viking_v4n_e5_bin_dataset():
 
 
 @pytest.mark.test_data_required
+@pytest.mark.skip(reason="not fully implemented yet")
 def test_viking_v4n_e5_bin_dataset__times():
     filepath = TEST_FILES["cdpp_viking_v4n_e5"][0]
     data = Data(filepath=filepath)
