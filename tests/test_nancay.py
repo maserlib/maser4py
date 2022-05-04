@@ -19,6 +19,10 @@ except ImportError:
     # if nenupy is not available, skip the corresponding tests
     nenupy = None
 
+skip_if_nenupy_not_available = pytest.mark.skipif(
+    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
+)
+
 
 BASEDIR = Path(__file__).resolve().parent / "data"
 
@@ -100,9 +104,7 @@ def test_srn_nda_routine_jup_edr_dataset__access_mode_error():
 
 
 @pytest.mark.test_data_required
-@pytest.mark.skipif(
-    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
-)
+@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset():
     for filepath in TEST_FILES["srn_nenufar_bst"]:
         data = Data(filepath=filepath)
@@ -110,9 +112,7 @@ def test_nenufar_bst_dataset():
 
 
 @pytest.mark.test_data_required
-@pytest.mark.skipif(
-    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
-)
+@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__beam():
     for filepath in TEST_FILES["srn_nenufar_bst"]:
         data = Data(filepath=filepath, beam=1)
@@ -120,9 +120,7 @@ def test_nenufar_bst_dataset__beam():
 
 
 @pytest.mark.test_data_required
-@pytest.mark.skipif(
-    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
-)
+@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__beam__value_error():
     for filepath in TEST_FILES["srn_nenufar_bst"]:
         with pytest.raises(ValueError):
@@ -130,9 +128,7 @@ def test_nenufar_bst_dataset__beam__value_error():
 
 
 @pytest.mark.test_data_required
-@pytest.mark.skipif(
-    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
-)
+@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__access_mode_file():
     for filepath in TEST_FILES["srn_nenufar_bst"]:
         with Data(filepath=filepath, access_mode="file") as data:
@@ -140,9 +136,7 @@ def test_nenufar_bst_dataset__access_mode_file():
 
 
 @pytest.mark.test_data_required
-@pytest.mark.skipif(
-    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
-)
+@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__times():
     filepath = TEST_FILES["srn_nenufar_bst"][0]
     with Data(filepath=filepath) as data:
@@ -153,9 +147,7 @@ def test_nenufar_bst_dataset__times():
 
 
 @pytest.mark.test_data_required
-@pytest.mark.skipif(
-    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
-)
+@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__times__other_beam():
     filepath = TEST_FILES["srn_nenufar_bst"][0]
     with Data(filepath=filepath, beam=1) as data:
@@ -166,9 +158,7 @@ def test_nenufar_bst_dataset__times__other_beam():
 
 
 @pytest.mark.test_data_required
-@pytest.mark.skipif(
-    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
-)
+@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__frequencies():
     filepath = TEST_FILES["srn_nenufar_bst"][0]
     with Data(filepath=filepath) as data:
