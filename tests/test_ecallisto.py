@@ -39,7 +39,7 @@ def test_ecallisto_dataset__times():
         with Data(filepath=filepath) as data:
             assert isinstance(data.times, Time)
             assert len(data.times) == 3600
-            assert data.times[0] == Time("2022-01-30 11:15:00.171")
+            assert data.times[0].jd == pytest.approx(Time("2022-01-30 11:15:00.171").jd)
             assert data.times[-1].jd == pytest.approx(
                 Time("2022-01-30 11:29:59.921").jd
             )
