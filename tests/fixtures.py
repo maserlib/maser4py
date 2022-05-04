@@ -400,7 +400,7 @@ def download_data_sample(database_name: str, reload: bool = False):
 
             # download is file doesn't exist or reload=True
             if not cur_file_path.exists() or reload:
-                download_url = f"{cur_url_path}/{cur_file}"
+                download_url = f"{cur_url_path}/{cur_file[0]}"
                 print(f"Trying to download URL: {download_url}")
                 print(f"into: {cur_file_path}")
                 download_file(download_url, cur_file_path)
