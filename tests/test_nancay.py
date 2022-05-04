@@ -71,6 +71,7 @@ def test_srn_nda_routine_jup_edr_dataset__frequencies():
             assert data.frequencies[-1].to(Unit("MHz")).value == pytest.approx(39.925)
 
 
+@pytest.mark.test_data_required
 def test_srn_nda_routine_jup_edr_dataset__access_mode_file():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath, access_mode="file") as data:
