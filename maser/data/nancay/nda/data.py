@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 from maser.data.base import CdfData
+from .sweeps import SrnNdaRoutineJupEdrSweeps
 
 from astropy.time import Time
 from astropy.units import Unit
 
 
 class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
+    _iter_sweep_class = SrnNdaRoutineJupEdrSweeps
+
     @property
     def frequencies(self):
         if self._frequencies is None:
