@@ -10,8 +10,8 @@ include = "maser"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
-spacepy = "^0.2.3"
-astropy = "^5.0.1"
+spacepy = "^0.3.0"
+astropy = "^5.0.4"
 nenupy = {version = "^2.1.0", optional = true}
 
 [tool.poetry.dev-dependencies]
@@ -38,6 +38,7 @@ exclude = '''
 [tool.pytest.ini_options]
 markers = [
     "test_data_required: mark tests that require downloading test data",
+    "nenupy_required: mark tests that require the nenupy package"
 ]
 
 [build-system]
