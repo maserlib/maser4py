@@ -1,0 +1,30 @@
+stages:
+  - lint
+  - test
+
+default:
+  image: python:3.8-slim
+  before_script:
+    - python --version
+    - pip install poetry
+    - poetry --version
+    - poetry config virtualenvs.in-project true --local
+
+
+lint-job:
+  stage: lint
+  script:
+    - poetry run pip install pre-commit
+    - poetry run pre-commit run -a"
+
+test-job:
+  stage: test
+  script:
+    - poetry install
+    - poetry run pytest --cov=outflow --junitxml=report.xml
+    - poetry run coverage xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      cobertura: coverage.xml
