@@ -298,7 +298,7 @@ class CCSDSDateCCS(CCSDSDate):
         sub_second = 0
         for item in self.T_field[7:]:
             sub_second = sub_second * 100 + int(item)
-        sub_second = sub_second / (100 ** self._resolution)
+        sub_second = sub_second / (100**self._resolution)
 
         micro = int(sub_second * 1e6)
         if self._resolution > 4:
