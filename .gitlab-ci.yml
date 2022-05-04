@@ -17,7 +17,7 @@ lint-job:
   stage: lint
   script:
     - poetry run pip install pre-commit
-    - poetry run pre-commit run -a"
+    - poetry run pre-commit run -a
 
 test-job:
   stage: test
