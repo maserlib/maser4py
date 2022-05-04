@@ -23,8 +23,13 @@ ROOT_DATA_DIRECTORY = Path(__file__).parent / "data"
 # test data sample
 TEST_COLLECTIONS_FILE = ROOT_DATA_DIRECTORY / "collections.json"
 NOT_IMPLEMENTED_FILE = ROOT_DATA_DIRECTORY / "not_implemented.json"
+
+
 with open(TEST_COLLECTIONS_FILE, "r") as f:
     DATA_FILES = json.load(f)
+
+with open(NOT_IMPLEMENTED_FILE, "r") as f:
+    NOT_IMPLEMENTED_DATASETS = json.load(f)
 
 
 def download_file(url: str, filepath: Path, chunk_size=8192):
@@ -52,6 +57,14 @@ def test_filepaths():
                         marks=pytest.mark.skipif(
                             nenupy is None,
                             reason="the nenupy package is required to run nenufar dataset tests",
+                        ),
+                    )
+                elif file_dataset in NOT_IMPLEMENTED_DATASETS:
+                    pytest_param = pytest.param(
+                        cur_dir_name / file_name,
+                        file_dataset,
+                        marks=pytest.mark.skip(
+                            reason=f"the dataset '{file_dataset}' is not yet implemented",
                         ),
                     )
                 else:
