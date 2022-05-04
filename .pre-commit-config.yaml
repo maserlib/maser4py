@@ -1,37 +1,41 @@
 repos:
-    - repo: https://github.com/ambv/black
-      rev: 22.3.0
-      hooks:
-        - id: black
-          args: [--config=pyproject.toml]
+  - repo: https://github.com/ambv/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        args: [--config=pyproject.toml]
 
-    - repo: https://github.com/Lucas-C/pre-commit-hooks
-      rev: v1.1.9
-      hooks:
-        - id: remove-crlf
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.9
+    hooks:
+      - id: remove-crlf
 
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v4.2.0
-      hooks:
-        # check config files are parsable
-        - id: check-xml
-        - id: check-toml
-        - id: check-json
-        - id: check-yaml
-          args: [--unsafe]
-        # check merge errors
-        - id: check-merge-conflict
-        # code quality
-        - id: end-of-file-fixer
-        - id: fix-encoding-pragma
-        - id: mixed-line-ending
-        - id: requirements-txt-fixer
-        - id: trailing-whitespace
-        # - id: double-quote-string-fixer
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+      # check config files are parsable
+      - id: check-xml
+      - id: check-toml
+      - id: check-json
+      - id: check-yaml
+        args: [--unsafe]
+      # check merge errors
+      - id: check-merge-conflict
+      # code quality
+      - id: end-of-file-fixer
+      - id: fix-encoding-pragma
+      - id: mixed-line-ending
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+      # - id: double-quote-string-fixer
 
+  - repo: https://github.com/prettier/prettier
+    rev: 1.17.0
+    hooks:
+      - id: prettier
 
-    - repo: https://gitlab.com/pycqa/flake8
-      rev: 3.8.4
-      hooks:
-        - id: flake8
-          args: ['--ignore=E501,W503,E231,E203,F821']
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
+    hooks:
+      - id: flake8
+        args: ['--ignore=E501,W503,E231,E203,F821']
