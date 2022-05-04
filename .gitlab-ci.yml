@@ -4,7 +4,6 @@ stages:
 
 default:
   image: python:3.8
-  needs: []
   tags:
     - docker_dio
 
@@ -17,6 +16,7 @@ default:
 
 lint-job:
   stage: lint
+  needs: []
   before_script:
     - !reference [.setup, before_script]
     # install pre-commit
@@ -27,6 +27,7 @@ lint-job:
 
 test-job:
   stage: test
+  needs: []
   variables:
     CDF_URL: 'https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/cdf38_1-dist-all.tar.gz'
   before_script:
