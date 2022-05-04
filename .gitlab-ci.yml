@@ -6,6 +6,8 @@ default:
   image: python:3.8
   tags:
     - docker_dio
+
+.setup:
   before_script:
     - python --version
     - pip install poetry
@@ -15,16 +17,30 @@ default:
 
 lint-job:
   stage: lint
-  script:
+  before_script:
+    - !reference [.setup, before_script]
     # install pre-commit
     - poetry run pip install pre-commit
+  script:
     # run pre-commit
     - poetry run pre-commit run -a
 
 test-job:
   stage: test
+  variables:
+    CDF_URL: "https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/cdf38_1-dist-all.tar.gz"
+  before_script:
+    - !reference [.setup, before_script]
+    # install cdf and spacepy.pycdf
+    - apt-get install gfortran ncurses-dev
+    - wget $CDF_URL
+    - tar -xf cdf38_1-dist-all.tar.gz && cd ./cdf38_1-dist
+    - make OS=linux ENV=gnu CURSES=yes FORTRAN=no UCOPTIONS=-O2 SHARED=yes all
+    - make install
+    # install maser data
+    - cd .. && poetry install
   script:
-    - poetry install
+
     - poetry run pytest --cov=outflow --junitxml=report.xml
     - poetry run coverage xml
   artifacts:
