@@ -14,7 +14,6 @@ default:
     - poetry --version
     - poetry config virtualenvs.in-project true --local
 
-
 lint-job:
   stage: lint
   before_script:
@@ -28,7 +27,7 @@ lint-job:
 test-job:
   stage: test
   variables:
-    CDF_URL: "https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/cdf38_1-dist-all.tar.gz"
+    CDF_URL: 'https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/cdf38_1-dist-all.tar.gz'
   before_script:
     - !reference [.setup, before_script]
     # install cdf and spacepy.pycdf
@@ -43,7 +42,7 @@ test-job:
   script:
     # source the CDF lib and run the test
     - . ./cdf38_1-dist/bin/definitions.B
-    - poetry run pytest --cov=outflow --junitxml=report.xml -m "not test_data_required"
+    - poetry run pytest --cov=maser.data --junitxml=report.xml -m "not test_data_required"
     - poetry run coverage xml
   artifacts:
     when: always
