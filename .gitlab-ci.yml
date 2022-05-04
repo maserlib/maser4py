@@ -16,7 +16,12 @@ default:
 lint-job:
   stage: lint
   script:
+    # install git
+    - apt-get update
+    - apt-get install -y --no-install-recommends git
+    # install pre-commit
     - poetry run pip install pre-commit
+    # run pre-commit
     - poetry run pre-commit run -a
 
 test-job:
