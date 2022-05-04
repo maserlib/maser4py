@@ -3,6 +3,14 @@ from pathlib import Path
 import pytest
 import requests
 
+# try importing nenupy
+try:
+    import nenupy
+except ImportError:
+    # if nenupy is not available, skip the corresponding tests
+    nenupy = None
+
+
 __all__ = ["load_test_data"]
 
 # remote test data url
@@ -341,7 +349,20 @@ def test_filepaths():
             cur_dir_name = cur_db_name / dataset_name
             for file_data in DATA_FILES[database_name][dataset_name]:
                 file_name, file_dataset = file_data[0:2]
-                filepaths.append((cur_dir_name / file_name, file_dataset))
+                if file_dataset == "srn_nenufar_bst":
+
+                    pytest_param = pytest.param(
+                        cur_dir_name / file_name,
+                        file_dataset,
+                        marks=pytest.mark.skipif(
+                            nenupy is None,
+                            reason="the nenupy package is required to run nenufar dataset tests",
+                        ),
+                    )
+                else:
+                    pytest_param = (cur_dir_name / file_name, file_dataset)
+
+                filepaths.append(pytest_param)
     return filepaths
 
 

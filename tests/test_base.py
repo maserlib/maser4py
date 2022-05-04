@@ -39,41 +39,47 @@ def test_bin_dataset():
     assert isinstance(data, BinData)
 
 
-def test_any_dataset():
-    for filepath, dataset in test_filepaths():
-        try:
-            data = Data(filepath)
-            assert data.dataset == dataset
-        except NotImplementedError:
-            print(f"Dataset not implemented {str(filepath)}")
+@pytest.mark.parametrize("filepath,dataset", test_filepaths())
+def test_any_dataset(filepath, dataset):
+    try:
+        data = Data(filepath)
+        assert data.dataset == dataset
+    except NotImplementedError:
+        print(f"Dataset not implemented {str(filepath)}")
 
 
 # TEST TEMPLATE
 @pytest.mark.test_data_required
+@pytest.mark.skip(reason="not implemented")
 def test___bin_dataset():
     pass
 
 
 @pytest.mark.test_data_required
+@pytest.mark.skip(reason="not implemented")
 def test___bin_dataset__times():
     pass
 
 
 @pytest.mark.test_data_required
+@pytest.mark.skip(reason="not implemented")
 def test___bin_dataset__frequencies():
     pass
 
 
 @pytest.mark.test_data_required
+@pytest.mark.skip(reason="not implemented")
 def test___bin_dataset__sweeps__load_data_false():
     pass
 
 
 @pytest.mark.test_data_required
+@pytest.mark.skip(reason="not implemented")
 def test___bin_dataset__sweeps_for_loop():
     pass
 
 
 @pytest.mark.test_data_required
+@pytest.mark.skip(reason="not implemented")
 def test___bin_dataset__sweeps_next():
     pass
