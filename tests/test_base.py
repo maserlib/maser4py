@@ -39,6 +39,7 @@ def test_bin_dataset():
     assert isinstance(data, BinData)
 
 
+@pytest.mark.test_data_required
 @pytest.mark.parametrize("filepath,dataset", test_filepaths())
 def test_any_dataset(filepath, dataset):
     try:
