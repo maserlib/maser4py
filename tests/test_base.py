@@ -5,8 +5,9 @@ from maser.data.base import (
     CdfData,
     FitsData,
 )
-from .fixtures import test_filepaths
+from .fixtures import test_filepaths, NOT_IMPLEMENTED_FILE
 from pathlib import Path
+import json
 import pytest
 
 
@@ -46,6 +47,12 @@ def test_any_dataset(filepath, dataset):
         data = Data(filepath)
         assert data.dataset == dataset
     except NotImplementedError:
+        with open(NOT_IMPLEMENTED_FILE, "r") as f:
+            not_implemented = json.load(f)
+        if dataset not in not_implemented:
+            not_implemented.append(dataset)
+        with open(NOT_IMPLEMENTED_FILE, "w") as f:
+            json.dump(not_implemented, f)
         print(f"Dataset not implemented {str(filepath)}")
 
 

@@ -22,6 +22,7 @@ ROOT_DATA_DIRECTORY = Path(__file__).parent / "data"
 
 # test data sample
 TEST_COLLECTIONS_FILE = ROOT_DATA_DIRECTORY / "collections.json"
+NOT_IMPLEMENTED_FILE = ROOT_DATA_DIRECTORY / "not_implemented.json"
 with open(TEST_COLLECTIONS_FILE, "r") as f:
     DATA_FILES = json.load(f)
 
