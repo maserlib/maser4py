@@ -41,7 +41,8 @@ test-job:
     # install maser data
     - cd .. && poetry install
   script:
-
+    # source the CDF lib and run the test
+    - . ./cdf38_1-dist/bin/definitions.B
     - poetry run pytest --cov=outflow --junitxml=report.xml
     - poetry run coverage xml
   artifacts:
