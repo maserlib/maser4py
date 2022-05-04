@@ -4,6 +4,8 @@ stages:
 
 default:
   image: python:3.8-slim
+  tags:
+    - docker_dio
   before_script:
     - python --version
     - pip install poetry
