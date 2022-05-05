@@ -21,11 +21,11 @@ class RpwLfrSurvBp1Sweeps(Sweeps):
         for frequency_key in self.data_reference.frequency_keys:
             for time, pb, pe, dop, ellip, sx_rea in zip(
                 self.data_reference.times[frequency_key],
-                self.file[f"PB_{frequency_key}"],
-                self.file[f"PE_{frequency_key}"],
-                self.file[f"DOP_{frequency_key}"],
-                self.file[f"ELLIP_{frequency_key}"],
-                self.file[f"SX_REA_{frequency_key}"],
+                self.file[f"PB_{frequency_key}"][...],
+                self.file[f"PE_{frequency_key}"][...],
+                self.file[f"DOP_{frequency_key}"][...],
+                self.file[f"ELLIP_{frequency_key}"][...],
+                self.file[f"SX_REA_{frequency_key}"][...],
             ):
                 yield (
                     {"PB": pb, "PE": pe, "DOP": dop, "ELLIP": ellip, "SX_REA": sx_rea},
