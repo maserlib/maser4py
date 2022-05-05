@@ -82,7 +82,9 @@ class Data(BaseData, dataset="default"):
 
     @property
     def sweeps(self):
-        for sweep in self._iter_sweep_class(file=self.file, load_data=self._load_data):
+        for sweep in self._iter_sweep_class(
+            data_instance=self, load_data=self._load_data
+        ):
             yield sweep
 
     @property

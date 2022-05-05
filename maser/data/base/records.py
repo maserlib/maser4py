@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-
 class Record:
     def __init__(self, header, data):
         self.header = header
@@ -13,8 +11,14 @@ class Record:
 
 
 class Records:
-    def __init__(self, file, load_data: bool = True):
-        self.file = file
+    def __init__(self, *, data_instance, load_data: bool = True):
+        """_summary_
+
+        Args:
+            data_instance (maser.data.Data): a reference to the parent data object
+            load_data (bool, optional): _description_. Defaults to True.
+        """
+        self.data_reference = data_instance
         self.load_data = load_data
 
     def __iter__(self):
@@ -25,6 +29,10 @@ class Records:
         if load_data is not None:
             self.load_data = load_data
         return self.generator
+
+    @property
+    def file(self):
+        return self.data_reference.file
 
     @property
     def generator(self):
