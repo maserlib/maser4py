@@ -8,11 +8,11 @@ from astropy.units import Quantity, Unit
 
 
 TEST_FILES = {
-    "rpw-lfr-surv-bp1": [BASEDIR / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf"],
+    "solo_L2_rpw-lfr-surv-bp1": [BASEDIR / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf"],
 }
 
 # create a decorator to test each file in the list
-for_each_test_file = pytest.mark.parametrize("filepath", TEST_FILES["rpw-lfr-surv-bp1"])
+for_each_test_file = pytest.mark.parametrize("filepath", TEST_FILES["solo_L2_rpw-lfr-surv-bp1"])
 
 
 @pytest.mark.test_data_required
