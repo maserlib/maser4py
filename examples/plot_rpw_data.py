@@ -6,26 +6,16 @@ from astropy.visualization import quantity_support, time_support
 from astropy.time import Time
 import xarray
 import matplotlib.colorbar as cbar
-import fsspec
 
 demo_filepath = BASEDIR / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf"
 from maser.data import Data
 
-
-of = fsspec.open("github://dask:fastparquet@main/test-data/nation.csv", "rt")
-# of is an OpenFile container object. The "with" context below actually opens it
-with of as f:
-    # now f is a text-mode file
-    for line in f:
-        # iterate text lines
-        print(line)
-
 with Data(filepath=demo_filepath) as data:
-    datasets_attrs = {
-        "PB": { "default_units": "nT^2/Hz", 'plot_kwargs': {"norm": colors.LogNorm()}},
+    datasets = {
+        "PB": {"default_units": "nT^2/Hz", 'plot_kwargs': {"norm": colors.LogNorm()}},
         "PE": {"default_units": "", 'plot_kwargs': {"norm": colors.LogNorm()}},
-        "DOP": {"default_units": "",  'plot_kwargs': {'vmin': 0, 'vmax': 1}},
-        "ELLIP": {"default_units": "",  'plot_kwargs': {'vmin': 0, 'vmax': 1}},
+        "DOP": {"default_units": "", 'plot_kwargs': {'vmin': 0, 'vmax': 1}},
+        "ELLIP": {"default_units": "", 'plot_kwargs': {'vmin': 0, 'vmax': 1}},
         "SX_REA": {"default_units": ""},
     }
     for frequency_key in data.frequency_keys:
@@ -45,55 +35,54 @@ with Data(filepath=demo_filepath) as data:
         if not frequency_attrs["units"].strip():
             frequency_attrs["units"] = "Hz"
 
-        dataset = {
-                "time": {"dims": ("time"), "data": times, 'attrs': time_attrs},
-                "frequency": {"dims": ("frequency"), "data": frequencies, 'attrs': frequency_attrs},
-        }
-
-
-        for dataset_key in datasets_attrs:
+        for dataset_key in datasets:
             values = data.file[f"{dataset_key}_{frequency_key}"][...]
-
-            # force lower keys for datasets attributes
             attrs = {
-                k.lower(): v.strip()
+                k.lower(): v
                 for k, v in data.file[f"{dataset_key}_{frequency_key}"].attrs.items()
             }
 
-            # merge datasets attributes
-            attrs = {**attrs, **datasets_attrs[dataset_key]}
+            # if units are not defined, use the default ones
+            if not attrs["units"].strip():
+                attrs["units"] = datasets[dataset_key]["default_units"]
 
-  
-            dataset[dataset_key] = { 'dims': ("time", "frequency"), 'data': values, 'attrs': attrs}
+            if "data" not in datasets[dataset_key]:
+                datasets[dataset_key]["data"] = {}
 
-        dataset = xarray.Dataset.from_dict(dataset)
+            datasets[dataset_key]["data"][frequency_key] = xarray.DataArray(
+                values.T,
+                coords=[
+                    ("frequency", frequencies, frequency_attrs),
+                    ("time", times, time_attrs),
+                ],
+                attrs=attrs,
+                name=f"{dataset_key}_{frequency_key}",
+            )
 
-    nb_datasets = len(datasets)
+
     fig, axes = plt.subplots(len(datasets), 1, sharex=True)
     for ax_idx, dataset_key in enumerate(datasets):
         ax = axes[ax_idx]
+        cbar_ax, kw = cbar.make_axes(ax)
 
-        vmin = datasets[dataset_key].get('vmin', None)
+        vmin = datasets[dataset_key].setdefault('plot_kwargs', {}).get('vmin', None)
         if vmin is None:
             for data_array in datasets[dataset_key]["data"].values():
                 vmin = min(vmin, data_array.min()) if vmin is not None else data_array.min()
-            datasets[dataset_key]['vmin'] = vmin
+            datasets[dataset_key]['plot_kwargs']['vmin'] = vmin
 
-        vmax = datasets[dataset_key].get('vmax', None)
+        vmax = datasets[dataset_key].setdefault('plot_kwargs', {}).get('vmax', None)
         if vmax is None:
             for data_array in datasets[dataset_key]["data"].values():
                 vmax = max(vmax, data_array.max()) if vmax is not None else data_array.max()
-            datasets[dataset_key]['vmax'] = vmax
+            datasets[dataset_key]['plot_kwargs']['vmax'] = vmax
 
-        cbar_ax, kw = cbar.make_axes(ax)
         for data_array in datasets[dataset_key]["data"].values():
             data_array.plot.pcolormesh(
                 ax=ax,
                 yscale="log",
                 add_colorbar=True,
-                vmin=datasets[dataset_key]['vmin'],
-                vmax=datasets[dataset_key]['vmax'],
-                norm=datasets[dataset_key].get("normalization", None),
+                **datasets[dataset_key].get("plot_kwargs", {}),
                 cbar_ax=cbar_ax
             )
         if data_array.attrs["units"]: 
