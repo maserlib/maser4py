@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+# %% [markdown]
+# Import maser and matplotlib packages
+
+# %%
 from tests.constants import BASEDIR
 from matplotlib import pyplot as plt
 from matplotlib import colors
@@ -6,11 +10,17 @@ import matplotlib.colorbar as cbar
 from maser.data import Data
 
 
+# %% [markdown]
+# Create a function to plot each dataset of the LFR BP1 file
+
+# %%
+
+
 def plot_lfr_bp1_data(datasets: dict) -> tuple:
     """Plot the LFR BP1 data using xarray datasets and matplotlib
 
     Args:
-        datasets (dict): _description_
+        datasets (dict): a dict containing LFR BP1 data as xarray datasets
 
     Returns:
         tuple: matplotlib figure and axes
@@ -26,7 +36,7 @@ def plot_lfr_bp1_data(datasets: dict) -> tuple:
     }
 
     # create figure and axes
-    fig, axes = plt.subplots(len(datasets), 1, sharex=True)
+    fig, axes = plt.subplots(len(datasets), 1, sharex=True, figsize=(9, 16))
 
     # loop over datasets
     for ax_idx, dataset_key in enumerate(datasets):
@@ -77,6 +87,10 @@ def plot_lfr_bp1_data(datasets: dict) -> tuple:
     return fig, axes
 
 
+# %% [markdown]
+# Define a function to load the data and plot the datasets
+
+# %%
 def plot(filepath=BASEDIR / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf"):
 
     with Data(filepath=filepath) as data:
@@ -85,5 +99,8 @@ def plot(filepath=BASEDIR / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf")
     plot_lfr_bp1_data(datasets)
 
 
-if __name__ == "__main__":
-    plot()
+# %% [markdown]
+# And finally use the plot function to display the data
+
+# %%
+plot()

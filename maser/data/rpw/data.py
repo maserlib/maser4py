@@ -65,3 +65,58 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                         cdf_file[f"Epoch_{frequency_key}"][...]
                     )
         return self._times
+
+    def as_xarray(self):
+        import xarray
+
+        datasets = {
+            "PB": {},
+            "PE": {},
+            "DOP": {},
+            "ELLIP": {},
+            "SX_REA": {},
+        }
+
+        default_units = {"PB": "nT^2/Hz"}
+
+        for frequency_key in self.frequency_keys:
+            frequencies = self.file[frequency_key][...]
+            if len(frequencies) == 0:
+                continue
+            times = self.file[f"Epoch_{frequency_key}"][...]
+
+            # force lower keys for frequency and time attributes
+            time_attrs = {
+                k.lower(): v
+                for k, v in self.file[f"Epoch_{frequency_key}"].attrs.items()
+            }
+
+            frequency_attrs = {
+                k.lower(): v for k, v in self.file[frequency_key].attrs.items()
+            }
+            if not frequency_attrs["units"].strip():
+                frequency_attrs["units"] = "Hz"
+
+            for dataset_key in datasets:
+                values = self.file[f"{dataset_key}_{frequency_key}"][...]
+                attrs = {
+                    k.lower(): v
+                    for k, v in self.file[
+                        f"{dataset_key}_{frequency_key}"
+                    ].attrs.items()
+                }
+
+                # if units are not defined, use the default ones
+                if not attrs["units"].strip():
+                    attrs["units"] = default_units.get(dataset_key, "")
+
+                datasets[dataset_key][frequency_key] = xarray.DataArray(
+                    values.T,
+                    coords=[
+                        ("frequency", frequencies, frequency_attrs),
+                        ("time", times, time_attrs),
+                    ],
+                    attrs=attrs,
+                    name=f"{dataset_key}_{frequency_key}",
+                )
+        return datasets
