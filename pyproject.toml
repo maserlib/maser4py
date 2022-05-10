@@ -47,6 +47,7 @@ markers = [
 
 [tool.jupytext]
 formats = "ipynb,py:percent"
+# remove notebooks metadata from scripts
 notebook_metadata_filter = "-all"
 cell_metadata_filter = "-all"
 
