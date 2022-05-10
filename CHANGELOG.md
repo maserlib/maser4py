@@ -1,6 +1,13 @@
 CHANGELOG
 ====================
 
+0.10.0
+-------
+- Update package dependencies in pyproject.toml
+- Remove CDF class backup instance
+- Add read_l2_hres() and read_l2_60s() methods in maser.data.stereo.swaves
+- Minor bug fixes
+
 0.9.3
 ------
 - added Saturn data support and new data organisation
