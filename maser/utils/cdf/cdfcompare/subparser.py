@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Python module template."""
+"""cdfcompare module subparser."""
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
@@ -21,20 +21,20 @@ import os
 def add_cdfcompare_subparser(subparser):
     """cdf.cdfcompare script program."""
     cdfcompare_parser = subparser.add_parser('cdf_compare', help='Compare 2 CDF files.')
-    cdfcompare_parser.add_argument('cdf_filepath1', help="Input CDF file path 1")
-    cdfcompare_parser.add_argument('cdf_filepath2', help="Input CDF file path 2")
-    cdfcompare_parser.add_argument('--ignore_gatt', nargs="+",
+    cdfcompare_parser.add_argument('cdf_filepath1', help='Input CDF file path 1')
+    cdfcompare_parser.add_argument('cdf_filepath2', help='Input CDF file path 2')
+    cdfcompare_parser.add_argument('--ignore_gatt', nargs='+',
                                    default=[],
-                                   help="Global attributes to ignore")
-    cdfcompare_parser.add_argument('--ignore_zvar', nargs="+",
+                                   help='Global attributes to ignore')
+    cdfcompare_parser.add_argument('--ignore_zvar', nargs='+',
                                    default=[],
-                                   help="Global attributes to ignore")
-    cdfcompare_parser.add_argument('--ignore_vatt', nargs="+",
+                                   help='Global attributes to ignore')
+    cdfcompare_parser.add_argument('--ignore_vatt', nargs='+',
                                    default=[],
-                                   help="Global attributes to ignore")
-    cdfcompare_parser.add_argument('--precision', nargs="+",
+                                   help='Global attributes to ignore')
+    cdfcompare_parser.add_argument('--precision', nargs='+',
                                    default=[],
-                                   help="zVariable precision settings")
+                                   help='zVariable precision settings')
 
     # _________________ Main ____________________________
 # if __name__ == "__main__":

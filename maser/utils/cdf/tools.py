@@ -9,9 +9,8 @@ Module providing additional tools for the CDF format handling
 # (Include here the modules to import, e.g. import sys)
 import logging
 
-from maser.utils.cdf import const, zAttr
+from spacepy.pycdf import const, zAttr
 import numpy
-import csv
 
 # ________________ HEADER _________________________
 
@@ -107,7 +106,7 @@ def get_vattrs(cdf):
     vattrs = {}
 
     if len(cdf) == 0:
-        logger.warning("No Zvariable found!")
+        logger.warning('No Zvariable found!')
         return vattrs
 
     for zvar in cdf:

@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-Python module to read a Wind/Waves data file.
+Python module with methods to read Wind/Waves data files:
+    - read_l2_hres() --> read Wind/Waves RAD1/RAD2 high resolution L2 binary files
+    - read_l2_60s() --> read Wind/Waves TNR/RAD1/RAD2 60 seconds averaged L2 binary files
 @author: X.Bonnin (LESIA)
 """
 
@@ -28,14 +30,19 @@ def read_l2_hres(filepath):
         'NPALCY','NFRPAL','NPALIF','NSPALF','NZPALF')
     header_dtype = '>bbbbihLhhhhhhfihhffhhhhhhhhffhhhhh'
 
-    header = [] ; data = [] ; nsweep=1
+    header = []
+    data = []
+    nsweep=1
+    # Open input binary file
     with open(filepath,'rb') as frb:
-        while (True):
+        # Loop over data in the file
+        while True:
             try:
                 logger.info('Reading sweep #%i' % (nsweep))
                 # Reading number of octets in the current sweep
                 block = frb.read(4)
-                if (len(block) == 0): break
+                if len(block) == 0:
+                    break
                 loctets1 = struct.unpack('>i',block)[0]
                 # Reading header parameters in the current sweep
                 block = frb.read(80)
@@ -57,7 +64,7 @@ def read_l2_hres(filepath):
                 # Reading number of octets in the current sweep
                 block = frb.read(4)
                 loctets2 = struct.unpack('>i',block)[0]
-                if (loctets2 != loctets1):
+                if loctets2 != loctets1:
                     logger.error(f'Error reading file! ({loctets1} != {loctets2}')
                     return None
             except EOFError:
@@ -66,7 +73,7 @@ def read_l2_hres(filepath):
             else:
                 header.append(header_i)
                 data.append({'FREQ':freq,'VSPAL':Vspal,'VZPAL':Vzpal,'TSPAL':Tspal,'TZPAL':Tzpal})
-                nsweep+=1
+                nsweep += 1
 
     output = {'header': header, 'data': data}
     return output
@@ -89,7 +96,7 @@ def read_l2_60s(filepath):
 
     header = [] ; data = [] ; nsweep=1
     with open(filepath,'rb') as frb:
-        while (True):
+        while True:
             try:
                 logger.info('Reading sweep #%i' % (nsweep))
                 # Reading number of octets in the current sweep

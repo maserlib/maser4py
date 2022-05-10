@@ -10,7 +10,7 @@ import sys
 from pprint import pformat
 
 import numpy as np
-from maser.utils.cdf import CDF
+from spacepy.pycdf import CDF
 
 logger = logging.getLogger(__name__)
 
