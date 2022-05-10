@@ -103,4 +103,5 @@ def plot(filepath=BASEDIR / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf")
 # And finally use the plot function to display the data
 
 # %%
-plot()
+if __name__ == "__main__":
+    plot()
