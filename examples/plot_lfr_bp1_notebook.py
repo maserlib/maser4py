@@ -3,7 +3,6 @@
 # Import maser and matplotlib packages
 
 # %%
-from tests.constants import BASEDIR
 from matplotlib import pyplot as plt
 from matplotlib import colors
 import matplotlib.colorbar as cbar
@@ -91,7 +90,7 @@ def plot_lfr_bp1_data(datasets: dict) -> tuple:
 # Define a function to load the data and plot the datasets
 
 # %%
-def plot(filepath=BASEDIR / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf"):
+def plot(filepath):
 
     with Data(filepath=filepath) as data:
         datasets = data.as_xarray()
@@ -99,9 +98,32 @@ def plot(filepath=BASEDIR / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf")
     plot_lfr_bp1_data(datasets)
 
 
+# %%
+# use the jupyter interface to upload a file or use the following code
+def download_file(url, local_filename=None, force_download=False):
+    import requests
+    from pathlib import Path
+
+    if local_filename is None:
+        local_filename = url.split("/")[-1]
+
+    # check if the file already exists
+    if Path(local_filename).exists() and not force_download:
+        return local_filename
+
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(local_filename, "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+    return local_filename
+
+
 # %% [markdown]
-# And finally use the plot function to display the data
+# And finally download and plot the data
 
 # %%
 if __name__ == "__main__":
-    plot()
+    file_url = "https://rpw.lesia.obspm.fr/roc/data/pub/solo/rpw/data/L2/lfr_bp/2020/12/solo_L2_rpw-lfr-surv-bp1_20201207_V02.cdf"
+    local_filename = download_file(file_url)
+    plot(local_filename)
