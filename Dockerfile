@@ -13,6 +13,7 @@ ARG NB_USER="maser_user"
 ARG NB_UID=1000
 ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
+ENV PATH="/home/${NB_USER}/.local/bin:$PATH"
 
 RUN adduser --disabled-password \
     --gecos "Default user" \
@@ -34,4 +35,6 @@ USER root
 RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
 
+# avoid virtualenv creation
+RUN poetry config virtualenvs.create false --local
 RUN poetry install --extras "all"
