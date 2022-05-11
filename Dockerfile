@@ -38,3 +38,6 @@ USER ${NB_USER}
 # avoid virtualenv creation
 RUN poetry config virtualenvs.create false --local
 RUN poetry install --extras "all"
+
+# generate the notebooks from python scripts
+RUN jupytext --sync **/*_notebook.py
