@@ -5,6 +5,7 @@ from maser.data import Data
 from maser.data.rpw import RpwLfrSurvBp1
 from astropy.time import Time
 from astropy.units import Quantity, Unit
+import xarray
 
 
 TEST_FILES = {
@@ -62,3 +63,25 @@ def test_rpw_lfr_surv_bp1_data__sweeps(filepath):
         assert isinstance(sweep[2], Quantity)
         assert list(sweep[0].keys()) == ["PB", "PE", "DOP", "ELLIP", "SX_REA"]
         assert len(sweep[2]) == 26
+
+
+@pytest.mark.test_data_required
+@for_each_test_file
+def test_rpw_lfr_surv_bp1_data__as_xarray(filepath):
+    with Data(filepath=filepath) as data:
+        # get only the first sweep
+        datasets = data.as_xarray()
+
+        expected_keys = ["PB", "PE", "DOP", "ELLIP", "SX_REA"]
+        expected_frequency_ranges = ["B_F1", "B_F0"]
+
+        # check the sweep content
+        assert len(expected_keys) == 5
+        assert list(datasets.keys()) == expected_keys
+        assert list(datasets[expected_keys[0]].keys()) == expected_frequency_ranges
+
+        test_array = datasets[expected_keys[0]][expected_frequency_ranges[0]]
+        assert isinstance(test_array, xarray.DataArray)
+        assert test_array.coords["frequency"][0] == pytest.approx(120)
+        assert test_array.attrs["units"] == "nT^2/Hz"
+        assert test_array.data[0][0] == pytest.approx(5.73584540e-08)
