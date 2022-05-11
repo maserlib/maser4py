@@ -6,6 +6,12 @@ default:
   image: python:3.8
   tags:
     - docker_dio
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web
 
 .setup:
   before_script:
