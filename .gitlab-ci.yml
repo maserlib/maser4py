@@ -6,12 +6,6 @@ default:
   image: python:3.8
   tags:
     - docker_dio
-  only:
-    - develop
-    - master
-    - tags
-    - merge_requests
-    - web
 
 .setup:
   before_script:
@@ -30,6 +24,12 @@ lint-job:
   script:
     # run pre-commit
     - poetry run pre-commit run -a
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web
 
 test-job:
   stage: test
@@ -57,3 +57,9 @@ test-job:
     reports:
       junit: report.xml
       cobertura: coverage.xml
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web
