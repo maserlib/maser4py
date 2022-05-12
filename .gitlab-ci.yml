@@ -24,6 +24,12 @@ lint-job:
   script:
     # run pre-commit
     - poetry run pre-commit run -a
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web
 
 test-job:
   stage: test
@@ -51,3 +57,9 @@ test-job:
     reports:
       junit: report.xml
       cobertura: coverage.xml
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web

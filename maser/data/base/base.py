@@ -38,6 +38,10 @@ class BaseData:
         self._load_data = load_data
         self.fixed_frequencies = fixed_frequencies
 
+    @property
+    def load_data(self) -> bool:
+        return self._load_data
+
     @classmethod
     def get_dataset(cls, filepath):
         pass
@@ -82,14 +86,12 @@ class Data(BaseData, dataset="default"):
 
     @property
     def sweeps(self):
-        for sweep in self._iter_sweep_class(file=self.file, load_data=self._load_data):
+        for sweep in self._iter_sweep_class(data_instance=self):
             yield sweep
 
     @property
     def records(self):
-        for record in self._iter_record_class(
-            file=self.file, load_data=self._load_data
-        ):
+        for record in self._iter_record_class(data_instance=self):
             yield record
 
     @property

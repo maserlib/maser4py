@@ -17,7 +17,7 @@ class InterballAuroralPolradRspRecord(Record):
 class InterballAuroralPolradRspRecords(Records):
     @property
     def generator(self):
-        sweeps = InterballAuroralPolradRspSweeps(self.file, load_data=True)
+        sweeps = InterballAuroralPolradRspSweeps(data_instance=self)
         for sweep in sweeps:
             for i in range(sweep.header["STEPS"]):
                 data = {

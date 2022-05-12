@@ -80,6 +80,9 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# use jupytext to save notebooks as .py scripts
+*.ipynb
+
 # IPython
 profile_default/
 ipython_config.py
