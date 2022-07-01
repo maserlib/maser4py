@@ -12,7 +12,7 @@ __author__ = "Baptiste Cecconi"
 __copyright__ = "Copyright 2022, LESIA-PADC, Observatoire de Paris"
 __credits__ = ["Baptiste Cecconi"]
 __license__ = "CeCILL"
-__version__ = "1.0b3"
+__version__ = "1.0b4"
 __maintainer__ = "Baptiste Cecconi"
 __email__ = "baptiste.cecconi@obspm.fr"
 __status__ = "Dev"
@@ -30,9 +30,13 @@ class PDSLabelDict(dict):
         Class for the list-form PDSLabel (internal class, not accessible from outside)
         """
 
-        def __init__(self, label_file, verbose=False):
+        def __init__(self, label_file, fmt_label_dict=None, verbose=False):
             super().__init__(self)
             self.verbose = verbose
+            if fmt_label_dict is None:
+                self.fmt_files = {}
+            else:
+                self.fmt_files = fmt_label_dict
             self.file = label_file
             self.process = list()
             self._load_pds3_label_as_list()
@@ -77,9 +81,13 @@ class PDSLabelDict(dict):
 
                         # in case of external FMT file, nested call to this function with the FMT file
                         if cur_key == "^STRUCTURE":
-                            extra_file = os.path.join(
-                                os.path.dirname(input_file), cur_val.strip('"')
-                            )
+                            fmt_file_name = cur_val.strip('"')
+                            if fmt_file_name in self.fmt_files.keys():
+                                extra_file = self.fmt_files[fmt_file_name]
+                            else:
+                                extra_file = os.path.join(
+                                    os.path.dirname(input_file), fmt_file_name
+                                )
                             if self.verbose:
                                 print(
                                     "Inserting external Label from {}".format(
@@ -163,12 +171,16 @@ class PDSLabelDict(dict):
 
             self.process.append("Added depth tag")
 
-    def __init__(self, label_file, verbose=False):
+    def __init__(self, label_file, fmt_label_dict=None, verbose=False):
 
         super().__init__(self)
         self.verbose = verbose
         self.file = label_file
-        label_list = self._PDSLabelList(self.file, self.verbose)
+        if fmt_label_dict is None:
+            self.fmt_files = {}
+        else:
+            self.fmt_files = fmt_label_dict
+        label_list = self._PDSLabelList(self.file, self.fmt_files, self.verbose)
         self.process = label_list.process
         self._label_list_to_dict(label_list)
 
@@ -228,12 +240,11 @@ class PDSDataFromLabel:
         label_dict=None,
         fmt_label_dict=None,
         load_data_input=True,
-        # data_object_class=PDSDataObject,
         verbose=False,
     ):
 
         if not file.lower().endswith(".lbl"):
-            raise PDSError("Select label file instead of data file")
+            raise ValueError("Select label file instead of data file")
 
         self.verbose = verbose
         self.label_file = file
