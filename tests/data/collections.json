@@ -292,5 +292,20 @@
         "LRFC_DATA_QUALITY.FMT"
       ]
     ]
+  },
+  "psa": {
+    "mex/marsis": [
+      [
+        "FRM_AIS_RDR_13714.LBL",
+        "MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0",
+        "FRM_AIS_RDR_13714.DAT",
+        "AIS_FORMAT.FMT"
+      ]
+    ]
+  },
+  "solo": {
+    "rpw": [
+      ["solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf", "solo_L2_rpw-lfr-surv-bp1"]
+    ]
   }
 }
