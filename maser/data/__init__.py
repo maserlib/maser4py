@@ -25,6 +25,12 @@ from .nancay import (  # noqa: F401
 from .pds import (  # noqa: F401
     Pds3Data,
     Vg1JPra3RdrLowband6secV1Data,
+    Vg1JPra4SummBrowse48secV1Data,
+    Vg1SPra3RdrLowband6secV1Data,
+    Vg2NPra2RdrHighrate60msV1Data,
+    Vg2NPra3RdrLowband6secV1Data,
+    CoVEJSSSRpws2RefdrWbrFullV1Data,
+    CoVEJSSSRpws3RdrLrFullV1Data,
 )
 
 from .rpw import (  # noqa: F401
