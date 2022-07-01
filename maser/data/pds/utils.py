@@ -33,6 +33,10 @@ class PDSLabelDict(dict):
         def __init__(self, label_file, fmt_label_dict=None, verbose=False):
             super().__init__(self)
             self.verbose = verbose
+            if fmt_label_dict is False:
+                self.extra_labels = False
+            else:
+                self.extra_labels = True
             if fmt_label_dict is None:
                 self.fmt_files = {}
             else:
@@ -81,20 +85,24 @@ class PDSLabelDict(dict):
 
                         # in case of external FMT file, nested call to this function with the FMT file
                         if cur_key == "^STRUCTURE":
-                            fmt_file_name = cur_val.strip('"')
-                            if fmt_file_name in self.fmt_files.keys():
-                                extra_file = self.fmt_files[fmt_file_name]
-                            else:
-                                extra_file = os.path.join(
-                                    os.path.dirname(input_file), fmt_file_name
-                                )
-                            if self.verbose:
-                                print(
-                                    "Inserting external Label from {}".format(
-                                        extra_file
+                            if self.extra_labels:
+                                fmt_file_name = cur_val.strip('"')
+                                if fmt_file_name in self.fmt_files.keys():
+                                    extra_file = self.fmt_files[fmt_file_name]
+                                else:
+                                    extra_file = os.path.join(
+                                        os.path.dirname(input_file), fmt_file_name
                                     )
-                                )
-                            self._load_pds3_label_as_list(extra_file)
+                                if self.verbose:
+                                    print(
+                                        "Inserting external Label from {}".format(
+                                            extra_file
+                                        )
+                                    )
+                                self._load_pds3_label_as_list(extra_file)
+                            else:
+                                if self.verbose:
+                                    print("Skipping external Label.")
 
                         # regular case: just write out a new line with (key, value)
                         else:
