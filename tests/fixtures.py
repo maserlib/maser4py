@@ -101,18 +101,24 @@ def download_data_sample(database_name: str, reload: bool = False):
             cur_local_path.mkdir(parents=True)
 
         # loop on files to be downloaded
-        for cur_file in file_items:
+        for cur_file_items in file_items:
+            cur_file_list = [cur_file_items[0]]
+            if len(cur_file_items) > 2:
+                for extra_file in cur_file_items[2:]:
+                    cur_file_list.append(extra_file)
+            print(cur_file_list)
 
-            # local path to file
-            cur_file_path = cur_local_path / cur_file[0]
+            for cur_file in cur_file_list:
+                # local path to file
+                cur_file_path = cur_local_path / cur_file
 
-            # download is file doesn't exist or reload=True
-            if not cur_file_path.exists() or reload:
-                download_url = f"{cur_url_path}/{cur_file[0]}"
-                print(f"Trying to download URL: {download_url}")
-                print(f"into: {cur_file_path}")
-                download_file(download_url, cur_file_path)
-                print("Done.\n")
+                # download is file doesn't exist or reload=True
+                if not cur_file_path.exists() or reload:
+                    download_url = f"{cur_url_path}/{cur_file}"
+                    print(f"Trying to download URL: {download_url}")
+                    print(f"into: {cur_file_path}")
+                    download_file(download_url, cur_file_path)
+                    print("Done.\n")
 
 
 def check_pytest_marker(test_item_list, *, marker):
