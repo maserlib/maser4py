@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from astropy.time import Time
 from astropy.units import Quantity, Unit
-
+from .constants import BASEDIR
 from maser.data import Data
 from maser.data.nancay import (
     SrnNdaRoutineJupEdrCdfData,
     NenufarBstFitsData,
 )
-from pathlib import Path
 from spacepy import pycdf
 from astropy.io import fits
 import pytest
@@ -22,9 +21,6 @@ except ImportError:
 skip_if_nenupy_not_available = pytest.mark.skipif(
     nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
 )
-
-
-BASEDIR = Path(__file__).resolve().parent / "data"
 
 TEST_FILES = {
     "srn_nda_routine_jup_edr": [

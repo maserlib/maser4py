@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 from astropy.time import Time
 from astropy.units import Quantity, Unit
-
+from .constants import BASEDIR
 from maser.data import Data
 from maser.data.ecallisto import (
     ECallistoFitsData,
 )
-
-from pathlib import Path
 from astropy.io import fits
 import pytest
-
-BASEDIR = Path(__file__).resolve().parent / "data"
 
 TEST_FILES = {
     "ecallisto": [BASEDIR / "e-callisto" / "BIR" / "BIR_20220130_111500_01.fit"],

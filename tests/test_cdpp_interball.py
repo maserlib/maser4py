@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 from astropy.time import Time
 from astropy.units import Quantity, Unit
-
+from .constants import BASEDIR
 from maser.data import Data
 from maser.data.cdpp import (
     InterballAuroralPolradRspBinData,
     InterballAuroralPolradRspSweep,
     InterballAuroralPolradRspRecord,
 )
-from pathlib import Path
 import pytest
 
-
-BASEDIR = Path(__file__).resolve().parent / "data"
 
 TEST_FILES = {
     "cdpp_int_aur_polrad_rspn2": [

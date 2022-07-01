@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 from maser.data.pds.utils import PDSLabelDict
 from pathlib import Path
-
+from .constants import BASEDIR
 from maser.data import Data
 from maser.data.pds import (
     Pds3Data,
     Vg1JPra3RdrLowband6secV1Data,
 )
 import pytest
-
-BASEDIR = Path(__file__).resolve().parent / "data"
 
 TEST_FILES = {
     "vg1_j_pra_3_rdr_lowband_6sec_v1": [

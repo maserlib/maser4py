@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 from astropy.time import Time
-
+from .constants import BASEDIR
 from maser.data import Data
 from maser.data.cdpp import (
     VikingV4nE5BinData,
 )
-from pathlib import Path
 import pytest
-
-
-BASEDIR = Path(__file__).resolve().parent / "data"
 
 TEST_FILES = {
     "cdpp_viking_v4n_e5": [BASEDIR / "cdpp" / "viking" / "V4N_0101_003"],

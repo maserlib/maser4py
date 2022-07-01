@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from astropy.time import Time
 from astropy.units import Quantity, Unit
-
+from .constants import BASEDIR
 from maser.data import Data
 from maser.data.cdpp import (
     WindWavesRad1L260sV2BinData,
@@ -14,11 +14,7 @@ from maser.data.cdpp import (
     WindWavesRad2L260sV1BinData,
     WindWavesTnrL260sV1BinData,
 )
-from pathlib import Path
 import pytest
-
-
-BASEDIR = Path(__file__).resolve().parent / "data"
 
 TEST_FILES = {
     "cdpp_wi_wa_rad1_l2_60s_v2": [
