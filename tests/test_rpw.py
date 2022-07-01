@@ -10,7 +10,7 @@ import xarray
 
 TEST_FILES = {
     "solo_L2_rpw-lfr-surv-bp1": [
-        BASEDIR / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf"
+        BASEDIR / "solo" / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf"
     ],
 }
 
