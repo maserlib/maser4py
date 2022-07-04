@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from maser.data.pds.utils import PDSLabelDict
-from pathlib import Path
 from .constants import BASEDIR
 from maser.data import Data
 from maser.data.pds import (
@@ -27,7 +26,9 @@ def test_pds_label_dict():
 
 
 def test_pds3_dataset():
-    data = Data(filepath=Path("toto.txt"), dataset="pds3")
+    data = Data(
+        filepath=TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"][0], dataset="pds3"
+    )
     assert isinstance(data, Data)
     assert isinstance(data, Pds3Data)
 
