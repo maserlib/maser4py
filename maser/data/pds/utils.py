@@ -7,6 +7,7 @@ Python module to work with PDS Data
 """
 
 import os
+import numpy
 
 __author__ = "Baptiste Cecconi"
 __copyright__ = "Copyright 2022, LESIA-PADC, Observatoire de Paris"
@@ -220,241 +221,230 @@ class PDSLabelDict(dict):
         self.process.append("Converted to dict")
 
 
-class PDSDataFromLabel:
-    """
-    This object contains PDS3 archive data, loaded from their label file.
-    This is MaserDataFromFile object, based on the label file.
-    Attributes:
-        label: parsed label data mapped into a dictionary (PDSLabelDict object)
-        pointers: dict containing {pointer_name: pointer_file} elements
-        objects: list of object names (pointers to data files)
-        dataset_name: name of PDS3 archive volume
-        header: header info (depending on each volume)
-        object: dict containing {object_name: MaserDataFromFile(object_file)} elements
-    Methods:
-        _decode_pointer(self, str_pointer)
-        _detect_pointers(self)
-        _detect_data_object_type(self)
-        _fix_object_label_entries(self)
-        load_data(self)
-        get_single_sweep(self, index)
-        get_first_sweep(self)
-        get_last_sweep(self)
-    """
-
-    def __init__(
-        self,
-        file,
-        label_dict=None,
-        fmt_label_dict=None,
-        load_data_input=True,
-        verbose=False,
-    ):
-
-        if not file.lower().endswith(".lbl"):
-            raise ValueError("Select label file instead of data file")
-
+class PDSDataTableColumnHeader:
+    def __init__(self, n_rows, column_label, verbose=False):
         self.verbose = verbose
-        self.label_file = file
-        self.format_labels = fmt_label_dict
-        # self.PDSDataObject = data_object_class
-        if label_dict is not None:
-            self.label = label_dict
+        self.n_rows = n_rows
+        self.label = column_label
+        self.name = self.label["NAME"]
+
+        if "ITEMS" in self.label.keys():
+            self.n_items = int(self.label["ITEMS"])
         else:
-            self.label = PDSLabelDict(self.label_file, self.format_labels, verbose)
-        self.pointers = self._detect_pointers()
-        self.objects = self._detect_data_object_type()
-        self.dataset_name = self.label["DATA_SET_ID"].strip('"')
-        self._fix_object_label_entries()
+            self.n_items = 1
 
-        self.header = None
-        self.time = None
-        self.frequency = None
-        self.object = {}
+        self.start_byte = int(self.label["START_BYTE"]) - 1
 
-        self.load_data_flag = self._initialize_load_data_flag()
-        self._update_load_data_flag(load_data_input)
+        self.bytes = int(self.label["BYTES"])
 
-        for cur_data_obj in self.objects:
+        if "ITEM_BYTES" in self.label.keys():
+            self.item_bytes = self.label["ITEM_BYTES"]
+        else:
+            self.item_bytes = self.bytes
 
-            self.object[cur_data_obj] = self.PDSDataObject(
-                self, self, self.label[cur_data_obj], cur_data_obj, self.verbose
+        self.struct_format = self._get_struct_format()
+        if self.verbose:
+            print(self.struct_format)
+
+        self.np_data_type = self._get_np_data_type()
+        if self.verbose:
+            print(self.np_data_type)
+
+    def _get_np_data_type(self):
+
+        struct_to_np_data_type = {
+            "b": numpy.int8,
+            "B": numpy.uint8,
+            "h": numpy.int16,
+            "H": numpy.uint16,
+            "i": numpy.int32,
+            "I": numpy.uint32,
+            "q": numpy.int64,
+            "Q": numpy.uint64,
+            "f": numpy.single,
+            "d": numpy.float_,
+            "c": numpy.str_,
+        }
+        return struct_to_np_data_type[self.struct_format[-1]]
+
+    def _get_struct_format(self):
+
+        data_type = ""
+        endianess = ""
+
+        if self.verbose:
+            print("Data type = {}".format(self.label["DATA_TYPE"]))
+            print("Item bytes= {}".format(self.item_bytes))
+
+        if self.label["DATA_TYPE"].startswith("MSB"):
+            endianess = ">"
+        elif self.label["DATA_TYPE"].startswith("LSB"):
+            endianess = "<"
+
+        if self.label["DATA_TYPE"].endswith("INTEGER"):
+            if int(self.item_bytes) == 1:
+                data_type = "b"
+            elif int(self.item_bytes) == 2:
+                data_type = "h"
+            elif int(self.item_bytes) == 4:
+                data_type = "i"
+            elif int(self.item_bytes) == 8:
+                data_type = "q"
+            elif self.label["DATA_TYPE"].startswith("ASCII"):
+                data_type = "i"
+        elif self.label["DATA_TYPE"].endswith("BIT_STRING"):
+            data_type = "B"
+            self.n_items = self.item_bytes
+        elif (
+            self.label["DATA_TYPE"].endswith("REAL")
+            or self.label["DATA_TYPE"] == "FLOAT"
+        ):
+            data_type = "f"
+            if self.label["DATA_TYPE"] == "PC_REAL":
+                endianess = "<"
+            else:
+                endianess = ">"
+        elif self.label["DATA_TYPE"] == "CHARACTER":
+            data_type = "c"
+            self.n_items = self.item_bytes
+        else:
+            raise ValueError(
+                "Unknown (or not yet implemented) data type ({})".format(
+                    self.label["DATA_TYPE"]
+                )
             )
 
-        self.load_data()
+        if "UNSIGNED" in self.label["DATA_TYPE"]:
+            data_type = data_type.upper()
 
-    def _initialize_load_data_flag(self):
+        return "{}{}{}".format(endianess, self.n_items, data_type)
 
-        return dict(zip(self.objects, [False] * len(self.objects)))
+    def __repr__(self):
+        return f"<PDSDataTableColumnHeader: {self.name}>"
 
-    def _update_load_data_flag(self, load_data_input):
 
-        if isinstance(load_data_input, bool):
-            if load_data_input:
-                for item in self.objects:
-                    self.load_data_flag[item] = True
-        elif isinstance(load_data_input, list):
-            for item in load_data_input:
-                if item in self.objects:
-                    self.load_data_flag[item] = True
-                else:
-                    print(
-                        "Warning object name unknown, can't load it. ({})".format(
-                            str(item)
+class PDSDataTableObject(dict):
+    def __init__(self, obj_label, data_file, data_offset=0, verbose=False):
+        super().__init__(self)
+        self.verbose = verbose
+        self.filepath = data_file
+        self.offset = data_offset
+        self.label = obj_label
+        self.n_columns = int(obj_label["COLUMNS"])
+        self.n_rows = int(obj_label["ROWS"])
+        self.columns = list()
+        for col_label in obj_label["COLUMN"]:
+            self.columns.append(
+                PDSDataTableColumnHeader(self.n_rows, col_label, verbose=self.verbose)
+            )
+        self._create_data_structure()
+
+    def _create_data_structure(self):
+        # Setting up columns
+        for cur_col in self.columns:
+
+            if cur_col.n_items == 1:
+                self[cur_col.name] = numpy.zeros(self.n_rows, cur_col.np_data_type)
+            else:
+                self[cur_col.name] = numpy.zeros(
+                    (self.n_rows, cur_col.n_items), cur_col.np_data_type
+                )
+
+    def load_data(self):
+        # Loading data into columns
+        if self.label["INTERCHANGE_FORMAT"] == "ASCII":
+            self._load_data_ascii()
+        elif self.label["INTERCHANGE_FORMAT"] == "BINARY":
+            self._load_data_binary()
+        else:
+            raise ValueError(
+                "Unknown interchange format ({})".format(
+                    self.label["INTERCHANGE_FORMAT"]
+                )
+            )
+
+    def _load_data_ascii(self):
+        with open(self.filepath, "r") as f:
+
+            for ii, line in enumerate(f.readlines()):
+                for cur_col in self.columns:
+                    cur_name = cur_col.name
+                    cur_byte_start = int(cur_col.start_byte)
+                    cur_byte_length = int(cur_col.bytes)
+                    if cur_col.n_items == 1:
+                        if self.verbose:
+                            print(
+                                "Loading... {}[{}] from bytes {}:{}".format(
+                                    cur_name,
+                                    ii,
+                                    cur_byte_start,
+                                    cur_byte_start + cur_byte_length,
+                                )
+                            )
+                        self[cur_name][ii] = line[
+                            cur_byte_start : cur_byte_start + cur_byte_length
+                        ]
+                    else:
+                        for cur_item in range(cur_col.n_items):
+                            if self.verbose:
+                                print(
+                                    "Loading... {}[{}, {}] from bytes {}:{}".format(
+                                        cur_name,
+                                        ii,
+                                        cur_item,
+                                        cur_byte_start,
+                                        cur_byte_start + cur_byte_length,
+                                    )
+                                )
+                            self[cur_name][ii, cur_item] = line[
+                                cur_byte_start : cur_byte_start + cur_byte_length
+                            ]
+                            cur_byte_start += cur_byte_length
+
+    def _load_data_binary(self):
+
+        import struct
+
+        with open(self.filepath, "rb") as f:
+
+            f.seek(self.offset)
+
+            buf_length = int(self.label["ROW_BYTES"])
+            if "ROW_PREFIX_BYTES" in self.label.keys():
+                buf_length += int(self.label["ROW_PREFIX_BYTES"])
+            if "ROW_SUFFIX_BYTES" in self.label.keys():
+                buf_length += int(self.label["ROW_SUFFIX_BYTES"])
+
+            for ii in range(self.n_rows):
+
+                buf_data = f.read(buf_length)
+
+                for cur_col in self.columns:
+                    cur_name = cur_col.name
+                    cur_byte_start = int(cur_col.start_byte)
+                    cur_byte_length = int(cur_col.bytes)
+
+                    if self.verbose:
+                        print(
+                            "Loading... {}[{}] from bytes {}:{} of buffer({} bytes) with format: {}".format(
+                                cur_name,
+                                ii,
+                                cur_byte_start,
+                                cur_byte_start + cur_byte_length,
+                                buf_length,
+                                cur_col.struct_format,
+                            )
                         )
+
+                    line = struct.unpack(
+                        cur_col.struct_format,
+                        buf_data[cur_byte_start : cur_byte_start + cur_byte_length],
                     )
-        elif isinstance(load_data_input, str):
-            if load_data_input in self.objects:
-                self.load_data_flag[load_data_input] = True
-            else:
-                print(
-                    "Warning object name unknown, can't load it. ({})".format(
-                        str(load_data_input)
-                    )
-                )
-        else:
-            print(
-                "Warning object name(s) unknown, can't load it. ({})".format(
-                    str(load_data_input)
-                )
-            )
 
-    def _decode_pointer(self, str_pointer):
-        dict_pointer = {}
-        if str_pointer.startswith("("):
-            str_pointer_tmp = str_pointer.strip()[1:-1].split(",")
-            basename = str_pointer_tmp[0].strip('"')
-            str_offset = str_pointer_tmp[1].strip()
-            if str_offset.endswith("<BYTES>"):
-                byte_offset = int(str_offset[:-7].strip()) - 1
-            else:
-                byte_offset = (int(str_offset.strip()) - 1) * int(
-                    self.label["RECORD_BYTES"]
-                )
-        else:
-            basename = str_pointer.strip().strip('"')
-            byte_offset = 0
+                    if cur_col.n_items == 1:
+                        self[cur_name][ii] = line[0]
+                    else:
+                        self[cur_name][ii, :] = line
 
-        dict_pointer["file_name"] = os.path.join(os.path.dirname(self.file), basename)
-        dict_pointer["byte_offset"] = byte_offset
-
-        return dict_pointer
-
-    def _detect_pointers(self):
-        pointers = {}
-        for key in self.label.keys():
-            if key.startswith("^"):
-                pointers[key[1:]] = self._decode_pointer(self.label[key])
-        return pointers
-
-    def _detect_data_object_type(self):
-        data_types = []
-        for item in self.pointers.keys():
-            if item in self.label.keys():
-                data_types.append(item)
-        return data_types
-
-    def _fix_object_label_entries(self):
-        for item in self.objects:
-            self.label[item] = self.label[item][0]
-
-    def load_data(self, data_object=None):
-        if data_object is not None:
-            self._update_load_data_flag(data_object)
-
-        for cur_data_obj in self.objects:
-            if (
-                self.load_data_flag[cur_data_obj]
-                and not self.object[cur_data_obj].data_loaded
-            ):
-                self.object[cur_data_obj].load_data()
-
-    def _set_start_time(self):
-        self.start_time = dateutil.parser.parse(self.label["START_TIME"], ignoretz=True)
-
-    def _set_end_time(self):
-        self.end_time = dateutil.parser.parse(self.label["STOP_TIME"], ignoretz=True)
-
-    def get_single_sweep(self, index=0):
-        pass
-
-    def get_first_sweep(self):
-        return self.get_single_sweep(0)
-
-    def get_last_sweep(self):
-        return self.get_single_sweep(-1)
-
-    def get_freq_axis(self, unit=None):
-        pass
-
-    def get_time_axis(self):
-        pass
-
-    def get_mime_type(self):
-        if self.object[self.objects[0]].label["INTERCHANGE_FORMAT"] == "ASCII":
-            return "text/ascii"
-        else:
-            return MaserDataFromFile.get_mime_type(self)
-
-    def get_epncore_meta(self):
-        md = MaserDataFromFile.get_epncore_meta(self)
-        md["granule_uid"] = ":".join(
-            [self.label["DATA_SET_ID"], self.label["PRODUCT_ID"]]
-        )
-        md["granule_gid"] = self.label["DATA_SET_ID"]
-
-        if "SPACECRAFT_NAME" in self.label.keys():
-            md["instrument_host_name"] = self.label["SPACECRAFT_NAME"]
-        elif "INSTRUMENT_HOST_NAME" in self.label.keys():
-            md["instrument_host_name"] = self.label["INSTRUMENT_HOST_NAME"]
-
-        if "INSTRUMENT_ID" in self.label.keys():
-            md["instrument_name"] = self.label["INSTRUMENT_ID"]
-        elif "INSTRUMENT_NAME" in self.label.keys():
-            md["instrument_name"] = self.label["INSTRUMENT_NAME"]
-
-        targets = {"name": set(), "class": set(), "region": set()}
-        if "JUPITER" in self.label["TARGET_NAME"]:
-            targets["name"].add("Jupiter")
-            targets["class"].add("planet")
-            targets["region"].add("magnetosphere")
-        if "SATURN" in self.label["TARGET_NAME"]:
-            targets["name"].add("Saturn")
-            targets["class"].add("planet")
-            targets["region"].add("magnetosphere")
-        if "EARTH" in self.label["TARGET_NAME"]:
-            targets["name"].add("Earth")
-            targets["class"].add("planet")
-            targets["region"].add("magnetosphere")
-        if "NEPTUNE" in self.label["TARGET_NAME"]:
-            targets["name"].add("Neptune")
-            targets["class"].add("planet")
-            targets["region"].add("magnetosphere")
-        if "URANUS" in self.label["TARGET_NAME"]:
-            targets["name"].add("Uranus")
-            targets["class"].add("planet")
-            targets["region"].add("magnetosphere")
-        md["target_name"] = "#".join(targets["name"])
-        md["target_class"] = "#".join(targets["class"])
-        md["target_region"] = "#".join(targets["region"])
-
-        md["dataproduct_type"] = "ds"
-
-        md["spectral_range_min"] = min(self.get_freq_axis(unit="Hz"))
-        md["spectral_range_max"] = max(self.get_freq_axis(unit="Hz"))
-
-        if "PRODUCT_CREATION_TIME" in self.label.keys():
-            if self.label["PRODUCT_CREATION_TIME"] != "N/A":
-                md["creation_date"] = dateutil.parser.parse(
-                    self.label["PRODUCT_CREATION_TIME"], ignoretz=True
-                )
-                md["modification_date"] = dateutil.parser.parse(
-                    self.label["PRODUCT_CREATION_TIME"], ignoretz=True
-                )
-                md["release_date"] = dateutil.parser.parse(
-                    self.label["PRODUCT_CREATION_TIME"], ignoretz=True
-                )
-
-        md["publisher"] = "NASA/PDS/PPI"
-
-        return md
+    def __repr__(self):
+        return f"<PDSTableObject: {self.label['NAME']} ({self.n_rows} rows x {self.n_columns} columns)>"
