@@ -1,0 +1,184 @@
+OBJECT                    = COLUMN
+  NAME                    = SCLK_SECOND
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 1
+  BYTES                   = 4
+  DESCRIPTION             = "Spacecraft clock counter of onboard seconds,
+                             since the epoch of May 3, 2003 (123)."
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = SCLK_PARTITION
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 5
+  BYTES                   = 2
+  DESCRIPTION             = "Spacecraft clock counter partition of onboard
+                             counter roll-over/reset.  Zero or one
+                             indicates the counter is in the first
+                             partition.  See the NAIF Spice documentation."
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = SCLK_FINE
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 7
+  BYTES                   = 2
+  DESCRIPTION             = "Spacecraft clock counter of onboard fractions
+                             of a second with one fraction being 1/65536."
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = SCET_DAYS
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 9
+  BYTES                   = 4
+  DESCRIPTION             = "Spacecraft event time in days since
+                             1958-001T00:00:00Z.  This is the historical
+                             epoch used since the launch of the first U.S.
+                             satellite Explorer I with Dr. James Van Allen's
+                             (University of Iowa) cosmic-ray instrument as
+                             the principal element of the payload, resulting
+                             in the discovery of the Van Allen Radiation
+                             Belts."
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = SCET_MSEC
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 13
+  BYTES                   = 4
+  DESCRIPTION             = "Spacecraft event time in milliseconds of day.
+                             SCET_DAYS and SCET_MSEC are provided to
+                             accurately time tag the data in UTC without
+                             the need for calls to the spice kernel."
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = SCET_STRING
+  DATA_TYPE               = CHARACTER
+  START_BYTE              = 25
+  BYTES                   = 24
+  DESCRIPTION             = "Spacecraft event time in UTC in human readable
+                             ASCII format."
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = PROCESS_ID
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 49
+  BYTES                   = 1
+  DESCRIPTION             = "The seven bits from the 20,3 telemetry packet
+                             header which determine the instrument process id.
+                             0x4D (77d) = Subsurface Sounder (SS1 to SS4)
+                             0x4E (78d) = Active Ionospheric Sounder (AIS)
+                             0x4F (79d) = Calibration (CAL)
+                             0x50 (80d) = Receive Only (RCV)"
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = INSTRUMENT_MODE
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 50
+  BYTES                   = 1
+  DESCRIPTION             = "The bits from the 20,3 telemetry packet header
+                             used to determine the instrument data type and
+                             mode selection."
+  OBJECT                    = BIT_COLUMN
+    NAME                    = DATA_TYPE
+    BIT_DATA_TYPE           = MSB_UNSIGNED_INTEGER
+    START_BIT               = 1
+    BITS                    = 4
+    DESCRIPTION             = " 0001 = AIS, Calibration, or Receive Only
+                                0000 = SS1-SS5 Individual Echoes
+                                0010 = SS1-SS5 Acquisition
+                                0011 = SS1-SS5 Tracking "
+  END_OBJECT                = BIT_COLUMN
+  OBJECT                    = BIT_COLUMN
+    NAME                    = MODE_SELECTION
+    BIT_DATA_TYPE           = MSB_UNSIGNED_INTEGER
+    START_BIT               = 5
+    BITS                    = 4
+    DESCRIPTION             = " 0101 = Calibration
+                                0110 = Receive Only
+                                0111 = Active Ionospheric Sounder
+                                1000 = Subsurface Sounder 1
+                                1001 = Subsurface Sounder 2
+                                1010 = Subsurface Sounder 3
+                                1011 = Subsurface Sounder 4
+                                1100 = Subsurface Sounder 5 "
+  END_OBJECT                = BIT_COLUMN
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = TRANSMIT_POWER
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 60
+  BYTES                   = 1
+  DESCRIPTION             = "The transmit power level, expressed as the
+                             power supply regulation voltage for the
+                             final power amplifier output.
+                               0x00  (0d) = minimum transmit power  2.5V
+                               0x0F (15d) = maximum transmit power 40.0V "
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = FREQUENCY_TABLE_NUMBER
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 61
+  BYTES                   = 1
+  DESCRIPTION             = "The Active Ionospheric Sounder may select
+                             one of sixteen frequency tables to use during
+                             transmit.  Each table has 160 frequencies
+                             that are transmitted during an AIS capture.
+                             Table 0 is the default table."
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = FREQUENCY_NUMBER
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 62
+  BYTES                   = 1
+  DESCRIPTION             = "The frequency number from the table, ranging
+                             from 0 to 159."
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = BAND_NUMBER
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 63
+  BYTES                   = 1
+  DESCRIPTION             = "The band that was selected to receive the echo.
+                               0 = band 0      3 = band 3
+                               1 = band 1      4 = band 4
+                               2 = band 2"
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = RECEIVER_ATTENUATION
+  DATA_TYPE               = MSB_UNSIGNED_INTEGER
+  START_BYTE              = 64
+  BYTES                   = 1
+  DESCRIPTION             = "The receiver attenuation for band selected
+                             measured in dB."
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = FREQUENCY
+  DATA_TYPE               = IEEE_REAL
+  START_BYTE              = 77
+  BYTES                   = 4
+  UNIT                    = HZ
+  DESCRIPTION             = "The frequency of the transmit pulse"
+END_OBJECT                = COLUMN
+
+OBJECT                    = COLUMN
+  NAME                    = SPECTRAL_DENSITY
+  DATA_TYPE               = IEEE_REAL
+  START_BYTE              = 81
+  BYTES                   = 320
+  ITEMS                   = 80
+  ITEM_BYTES              = 4
+  UNIT                    = "VOLT**2/M**2/HZ"
+  DESCRIPTION             = "A series of calibrated spectral densities
+                             from a single transmit pulse,"
+END_OBJECT                = COLUMN
