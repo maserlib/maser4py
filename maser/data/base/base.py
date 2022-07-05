@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Union, Dict
 from pathlib import Path
-from spacepy import pycdf
 from astropy.io import fits
 import numpy
 from .sweeps import Sweeps
@@ -145,6 +144,8 @@ class Data(BaseData, dataset="default"):
 class CdfData(Data, dataset="cdf"):
     @classmethod
     def open(cls, filepath: Path):
+        from spacepy import pycdf
+
         return pycdf.CDF(str(filepath))
 
     @classmethod
