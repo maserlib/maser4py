@@ -16,28 +16,30 @@ TEST_FILES = {
 }
 
 
-@pytest.mark.test_data_required
-def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__dataset():
-    for filepath in TEST_FILES["mex-m-marsis-3-rdr-ais-ext4-v1.0"]:
-        data = Data(filepath=filepath)
-        assert data.dataset == "MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0"
-        assert isinstance(data, MexMMarsis3RdrAisExt4V1Data)
-        assert isinstance(data, Pds3Data)
+@pytest.fixture
+def mex_data():
+    return Data(filepath=TEST_FILES["mex-m-marsis-3-rdr-ais-ext4-v1.0"][0])
 
 
 @pytest.mark.test_data_required
-def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__times():
-    filepath = TEST_FILES["mex-m-marsis-3-rdr-ais-ext4-v1.0"][0]
-    data = Data(filepath=filepath)
+def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__dataset(mex_data):
+    data = mex_data
+    assert data.dataset == "MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0"
+    assert isinstance(data, MexMMarsis3RdrAisExt4V1Data)
+    assert isinstance(data, Pds3Data)
+
+
+@pytest.mark.test_data_required
+def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__times(mex_data):
+    data = mex_data
     times = data.times
     assert len(times) == 1057
     assert times[0].isot == "2014-10-21T03:45:40.562"
 
 
 @pytest.mark.test_data_required
-def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__freqs():
-    filepath = TEST_FILES["mex-m-marsis-3-rdr-ais-ext4-v1.0"][0]
-    data = Data(filepath=filepath)
+def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__freqs(mex_data):
+    data = mex_data
     freqs = data.frequencies
     assert len(freqs) == 160
     assert isinstance(freqs, Quantity)
@@ -46,9 +48,8 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__freqs():
 
 
 @pytest.mark.test_data_required
-def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__iter_method__sweeps():
-    filepath = TEST_FILES["mex-m-marsis-3-rdr-ais-ext4-v1.0"][0]
-    data = Data(filepath=filepath)
+def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__iter_method__sweeps(mex_data):
+    data = mex_data
     time, freqs, signal = next(data.sweeps)
     assert time == data.times[0]
     assert len(freqs) == len(data.frequencies)

@@ -11,8 +11,28 @@ except ImportError:
     # if nenupy is not available, skip the corresponding tests
     nenupy = None
 
+# try importing spacepy
+try:
+    import spacepy
+except ImportError:
+    # if spacepy is not available, skip the corresponding tests
+    spacepy = None
 
-__all__ = ["load_test_data"]
+__all__ = [
+    "skip_if_nenupy_not_available",
+    "skip_if_spacepy_not_available",
+    "load_test_data",
+]
+
+skip_if_nenupy_not_available = pytest.mark.skipif(
+    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
+)
+
+skip_if_spacepy_not_available = pytest.mark.skipif(
+    spacepy is None,
+    reason="the nenupy package is required to run nenufar dataset tests",
+)
+
 
 # remote test data url
 DATA_REPO_URL = "http://maser.obspm.fr/data/maser4py/tests/data"
@@ -59,6 +79,19 @@ def test_filepaths():
                             reason="the nenupy package is required to run nenufar dataset tests",
                         ),
                     )
+                elif file_dataset in [
+                    "srn_nda_routine_jup_edr",
+                    "solo_L2_rpw-lfr-surv-bp1",
+                ]:
+                    pytest_param = pytest.param(
+                        cur_dir_name / file_name,
+                        file_dataset,
+                        marks=pytest.mark.skipif(
+                            spacepy is None,
+                            reason="the spacepy package is required to run CDF dataset tests",
+                        ),
+                    )
+
                 elif file_dataset in NOT_IMPLEMENTED_DATASETS:
                     pytest_param = pytest.param(
                         cur_dir_name / file_name,

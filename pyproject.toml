@@ -48,7 +48,8 @@ exclude = '''
 [tool.pytest.ini_options]
 markers = [
     "test_data_required: mark tests that require downloading test data",
-    "nenupy_required: mark tests that require the nenupy package"
+    "nenupy_required: mark tests that require the nenupy package",
+    "spacepy_required: mark tests that require the spacepy package",
 ]
 
 [tool.jupytext]

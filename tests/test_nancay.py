@@ -7,20 +7,10 @@ from maser.data.nancay import (
     SrnNdaRoutineJupEdrCdfData,
     NenufarBstFitsData,
 )
-from spacepy import pycdf
 from astropy.io import fits
 import pytest
+from .fixtures import skip_if_nenupy_not_available, skip_if_spacepy_not_available
 
-# try importing nenupy
-try:
-    import nenupy
-except ImportError:
-    # if nenupy is not available, skip the corresponding tests
-    nenupy = None
-
-skip_if_nenupy_not_available = pytest.mark.skipif(
-    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
-)
 
 TEST_FILES = {
     "srn_nda_routine_jup_edr": [
@@ -41,6 +31,7 @@ TEST_FILES = {
 
 # NANCAY TESTS
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 def test_srn_nda_routine_jup_edr_dataset():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         data = Data(filepath=filepath)
@@ -48,6 +39,7 @@ def test_srn_nda_routine_jup_edr_dataset():
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 def test_srn_nda_routine_jup_edr_dataset__times():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath) as data:
@@ -58,6 +50,7 @@ def test_srn_nda_routine_jup_edr_dataset__times():
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 def test_srn_nda_routine_jup_edr_dataset__frequencies():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath) as data:
@@ -68,6 +61,7 @@ def test_srn_nda_routine_jup_edr_dataset__frequencies():
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 def test_srn_nda_routine_jup_edr_dataset__access_mode_file():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath, access_mode="file") as data:
@@ -75,6 +69,7 @@ def test_srn_nda_routine_jup_edr_dataset__access_mode_file():
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 def test_srn_nda_routine_jup_edr_dataset__iter_method__mode_file():
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         data = Data(filepath=filepath, access_mode="file")
@@ -92,6 +87,7 @@ def test_srn_nda_routine_jup_edr_dataset__iter_method__mode_file():
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 def test_srn_nda_routine_jup_edr_dataset__access_mode_error():
     with pytest.raises(ValueError):
         Data(

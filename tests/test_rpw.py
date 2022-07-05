@@ -6,7 +6,7 @@ from maser.data.rpw import RpwLfrSurvBp1
 from astropy.time import Time
 from astropy.units import Quantity, Unit
 import xarray
-
+from .fixtures import skip_if_spacepy_not_available
 
 TEST_FILES = {
     "solo_L2_rpw-lfr-surv-bp1": [
@@ -21,6 +21,7 @@ for_each_test_file = pytest.mark.parametrize(
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 @for_each_test_file
 def test_rpw_lfr_surv_bp1_dataset(filepath):
     data = Data(filepath=filepath)
@@ -28,6 +29,7 @@ def test_rpw_lfr_surv_bp1_dataset(filepath):
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 @for_each_test_file
 def test_rpw_lfr_surv_bp1_dataset__times(filepath):
     with Data(filepath=filepath) as data:
@@ -39,6 +41,7 @@ def test_rpw_lfr_surv_bp1_dataset__times(filepath):
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 @for_each_test_file
 def test_rpw_lfr_surv_bp1_datase__frequencies(filepath):
     with Data(filepath=filepath) as data:
@@ -50,6 +53,7 @@ def test_rpw_lfr_surv_bp1_datase__frequencies(filepath):
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 @for_each_test_file
 def test_rpw_lfr_surv_bp1_data__sweeps(filepath):
     with Data(filepath=filepath) as data:
@@ -66,6 +70,7 @@ def test_rpw_lfr_surv_bp1_data__sweeps(filepath):
 
 
 @pytest.mark.test_data_required
+@skip_if_spacepy_not_available
 @for_each_test_file
 def test_rpw_lfr_surv_bp1_data__as_xarray(filepath):
     with Data(filepath=filepath) as data:

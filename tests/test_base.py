@@ -8,6 +8,7 @@ from maser.data.base import (
 from .fixtures import test_filepaths
 from pathlib import Path
 import pytest
+from .fixtures import skip_if_spacepy_not_available
 
 
 # BASE TESTS
@@ -16,6 +17,7 @@ def test_dataset():
         Data(filepath=Path("toto.txt"))
 
 
+@skip_if_spacepy_not_available
 def test_cdf_dataset():
     data = Data(filepath=Path("toto.txt"), dataset="cdf")
     assert isinstance(data, Data)
