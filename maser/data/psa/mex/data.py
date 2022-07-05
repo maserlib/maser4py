@@ -4,12 +4,25 @@ from typing import Union
 from ...pds import Pds3Data
 from ...pds.utils import PDSDataTableObject
 from maser.data.base.sweeps import Sweeps, Sweep
-from .consts import MEX_MARSIS_AIS_FREQUENCY_TABLES
+from .consts import (
+    MEX_MARSIS_AIS_PROCESS_IDS,
+    MEX_MARSIS_AIS_DATA_TYPES,
+    MEX_MARSIS_AIS_MODE_SELECTIONS,
+)
 from ...psa.labels import FMT_LABELS
 from astropy.time import Time
 from astropy.units import Unit
 from datetime import datetime
 import numpy
+
+
+def decode_instrument_mode(instrument_mode: int):
+    data_type = (instrument_mode & 240) // 16
+    mode_selection = instrument_mode & 15
+    return {
+        "data_type": MEX_MARSIS_AIS_DATA_TYPES[data_type],
+        "mode_selection": MEX_MARSIS_AIS_MODE_SELECTIONS[mode_selection],
+    }
 
 
 class MexMMarsis3RdrAisExt4V1Sweep(Sweep):
@@ -27,10 +40,24 @@ class MexMMarsis3RdrAisExt4V1Sweeps(Sweeps):
                 freqs = self.data_reference.frequencies
             else:
                 freqs = self.data_reference.frequencies[sweep_id]
-            yield (
-                self.data_reference.times[sweep_id],
+            table = self.data_reference.table
+            times = self.data_reference.times
+            header = {
+                "process_id": MEX_MARSIS_AIS_PROCESS_IDS[
+                    table["PROCESS_ID"][sweep_mask][0]
+                ],
+                "attenuation": table["RECEIVER_ATTENUATION"][sweep_mask],
+                "band_number": table["BAND_NUMBER"][sweep_mask],
+                "transmit_power": table["TRANSMIT_POWER"][sweep_mask][0],
+            }
+            header.update(
+                decode_instrument_mode(table["INSTRUMENT_MODE"][sweep_mask][0])
+            )
+            yield MexMMarsis3RdrAisExt4V1Sweep(
+                header,
+                table["SPECTRAL_DENSITY"][sweep_mask],
+                times[sweep_id],
                 freqs,
-                self.data_reference.table["SPECTRAL_DENSITY"][sweep_mask],
             )
 
 
@@ -103,14 +130,11 @@ class MexMMarsis3RdrAisExt4V1Data(
                 self._load_data = True
             freq_table_nb = self.table["FREQUENCY_TABLE_NUMBER"]
             if len(set(freq_table_nb)) == 1:
-                self._frequencies = MEX_MARSIS_AIS_FREQUENCY_TABLES[
-                    freq_table_nb[0]
-                ] * Unit("kHz")
+                self._frequencies = self.table["FREQUENCY"][0:159] * Unit("Hz")
             else:
                 self.fixed_frequencies = False
                 self._frequencies = [
-                    MEX_MARSIS_AIS_FREQUENCY_TABLES[freq_table_nb[sweep_mask][0]]
-                    * Unit("kHz")
+                    self.table["FREQUENCY"][sweep_mask] * Unit("Hz")
                     for sweep_mask in self._sweep_masks
                 ]
         return self._frequencies
