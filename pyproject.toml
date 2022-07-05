@@ -10,7 +10,7 @@ include = "maser"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
-spacepy = "^0.3.0"
+spacepy = {version = "^0.3.0", optional = true}
 astropy = "^5.0.4"
 nenupy = {version = "^2.1.0", optional = true}
 xarray = "^2022.3.0"
@@ -20,6 +20,7 @@ jupytext = {version = "^1.13.8", optional = true}
 [tool.poetry.extras]
 jupyter = ["jupyter", "jupytext"]
 nenupy = ["nenupy"]
+spacepy = ["spacepy"]
 all = ["jupyter", "jupytext", "nenupy"]
 
 [tool.poetry.dev-dependencies]

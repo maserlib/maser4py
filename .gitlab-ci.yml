@@ -46,7 +46,7 @@ test-job:
     - make OS=linux ENV=gnu CURSES=yes FORTRAN=no UCOPTIONS=-O2 SHARED=yes all
     - make install
     # install maser data
-    - cd .. && poetry install
+    - cd .. && poetry install -E spacepy
   script:
     # source the CDF lib and run the test
     - . ./cdf38_1-dist/bin/definitions.B
