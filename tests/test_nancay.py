@@ -63,6 +63,8 @@ def test_srn_nda_routine_jup_edr_dataset__frequencies():
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 def test_srn_nda_routine_jup_edr_dataset__access_mode_file():
+    from spacepy import pycdf
+
     for filepath in TEST_FILES["srn_nda_routine_jup_edr"]:
         with Data(filepath=filepath, access_mode="file") as data:
             assert isinstance(data, pycdf.CDF)

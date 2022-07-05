@@ -3,6 +3,7 @@ from .constants import BASEDIR
 from maser.data import Data
 from maser.data.psa import (
     MexMMarsis3RdrAisExt4V1Data,
+    MexMMarsis3RdrAisExt4V1Sweep,
 )
 from maser.data.pds import Pds3Data
 import pytest
@@ -43,15 +44,24 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__freqs(mex_data):
     freqs = data.frequencies
     assert len(freqs) == 160
     assert isinstance(freqs, Quantity)
-    assert freqs[0].value == 109.4
-    assert freqs.unit.name == "kHz"
+    assert freqs[0].value == 109377.0
+    assert freqs.unit.name == "Hz"
 
 
 @pytest.mark.test_data_required
 def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__iter_method__sweeps(mex_data):
     data = mex_data
-    time, freqs, signal = next(data.sweeps)
-    assert time == data.times[0]
-    assert len(freqs) == len(data.frequencies)
-    assert freqs[0].value == 109.4
-    assert signal.shape == (160, 80)
+    sweep = next(data.sweeps)
+    assert isinstance(sweep, MexMMarsis3RdrAisExt4V1Sweep)
+    assert sweep.time == data.times[0]
+    assert len(sweep.frequencies) == len(data.frequencies)
+    assert sweep.frequencies[0].value == 109377.0
+    assert sweep.data.shape == (160, 80)
+    assert set(sweep.header.keys()) == {
+        "process_id",
+        "attenuation",
+        "band_number",
+        "transmit_power",
+        "data_type",
+        "mode_selection",
+    }

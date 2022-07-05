@@ -130,7 +130,9 @@ class MexMMarsis3RdrAisExt4V1Data(
                 self._load_data = True
             freq_table_nb = self.table["FREQUENCY_TABLE_NUMBER"]
             if len(set(freq_table_nb)) == 1:
-                self._frequencies = self.table["FREQUENCY"][0:159] * Unit("Hz")
+                self._frequencies = self.table["FREQUENCY"][
+                    next(self._sweep_masks)
+                ] * Unit("Hz")
             else:
                 self.fixed_frequencies = False
                 self._frequencies = [
