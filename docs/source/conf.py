@@ -49,7 +49,7 @@ release = project_info["tool"]["poetry"]["version"]
 # ones.
 extensions = [
     "sphinx_rtd_theme",
-    "recommonmark",  # markdown
+    "myst_parser",  # markdown
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.coverage",
