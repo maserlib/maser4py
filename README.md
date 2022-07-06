@@ -28,6 +28,12 @@ or this one if you want to use `maser.data` with jupyter notebooks:
 poetry install --extras "jupyter"
 ```
 
+Extra installation options are:
+
+- `jupyter` for Jupyter notebook support
+- `spacepy` for CDF data format support
+- `nenupy` for NenuFAR data products support
+
 # Usage
 
 The `Data` class is a wrapper around several classes that allow you to read data from many different formats, including CDF, Fits, and some custom binary formats. By default, the class will try to automagically detect the format of the file and use the appropriate class to read the data.
