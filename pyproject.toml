@@ -28,6 +28,7 @@ pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 pre-commit = "^2.17.0"
 requests = "^2.27.1"
+poetry2setup = "^1.0.0"
 
 [tool.black]
 include = '\.pyi?$'

@@ -50,3 +50,17 @@ data = Data(filepath=filepath)
 # Tests
 
 Use `pytest -m "not test_data_required"` to skip tests that require test data (and to skip auto download).
+
+# Generate setup.py for editable local installation
+
+In top level of the project folder, run:
+
+```
+python generate_setup.py
+```
+
+To install the package locally in editable mode, run:
+
+```
+pip install -e path/to/project/folder
+```
