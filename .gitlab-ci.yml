@@ -57,9 +57,10 @@ test-job:
   artifacts:
     when: always
     reports:
+      junit: report.xml
       coverage_report:
-        path: report.xml
-        coverage_format: coverage.xml
+        path: coverage.xml
+        coverage_format: cobertura
   only:
     - develop
     - master
