@@ -1,6 +1,8 @@
 stages:
   - lint
   - test
+  - publish
+  - deploy
 
 default:
   image: python:3.8
@@ -63,3 +65,35 @@ test-job:
     - tags
     - merge_requests
     - web
+
+# publish python package on gitlab registry
+publish-job:
+  stage: publish
+  tags:
+    - docker_dio
+  before_script:
+    - python --version
+    - pip install --upgrade pip
+    - pip install poetry
+  script:
+    # publish on a dedicated and centralized repository
+    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+    - poetry build
+    - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
+  only:
+    - tags
+    - web
+
+# deploy doc pages
+pages:
+  stage: publish
+  tags:
+    - docker_dio
+  script:
+    - pip install -r docs/requirements.txt
+    - sphinx-build -b html docs/source public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
