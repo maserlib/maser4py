@@ -9,9 +9,10 @@ default:
   tags:
     - docker_dio
 
-.setup:
+.setup-poetry:
   before_script:
     - python --version
+    - pip install --upgrade pip
     - pip install poetry
     - poetry --version
     - poetry config virtualenvs.in-project true --local
@@ -20,7 +21,7 @@ lint-job:
   stage: lint
   needs: []
   before_script:
-    - !reference [.setup, before_script]
+    - !reference [.setup-poetry, before_script]
     # install pre-commit
     - poetry run pip install pre-commit
   script:
@@ -39,7 +40,7 @@ test-job:
   variables:
     CDF_URL: 'https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/cdf38_1-dist-all.tar.gz'
   before_script:
-    - !reference [.setup, before_script]
+    - !reference [.setup-poetry, before_script]
     # install cdf and spacepy.pycdf
     - apt-get update
     - apt-get install -y gfortran ncurses-dev
@@ -71,12 +72,8 @@ test-job:
 # publish python package on gitlab registry
 publish-job:
   stage: publish
-  tags:
-    - docker_dio
   before_script:
-    - python --version
-    - pip install --upgrade pip
-    - pip install poetry
+    - !reference [.setup-poetry, before_script]
   script:
     # publish on a dedicated and centralized repository
     - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
@@ -89,13 +86,12 @@ publish-job:
 # deploy doc pages
 pages:
   stage: publish
-  tags:
-    - docker_dio
   script:
-    - pip install -r docs/requirements.txt
+    - pip install .
     - sphinx-build -b html docs/source public
   artifacts:
     paths:
       - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  only:
+    - tags
+    - web
