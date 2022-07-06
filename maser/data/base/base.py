@@ -8,6 +8,8 @@ from .records import Records
 
 
 class BaseData:
+    """Base class for all data classes."""
+
     dataset: Union[None, str] = None
     _registry: Dict[str, "BaseData"] = {}
     _access_modes = ["sweeps", "records", "file"]
@@ -15,7 +17,16 @@ class BaseData:
     _iter_record_class = Records
 
     def __init_subclass__(cls: "BaseData", *args, dataset: str, **kwargs) -> None:
+        """Register subclasses to be able to instantiate them using only the dataset name
+
+        Args:
+            cls (BaseData): Subclass of BaseData
+            dataset (str): Dataset name
+        """
+        # store the dataset name in the class
         cls.dataset = dataset
+
+        # add the subclass to the BaseData registry
         BaseData._registry[dataset] = cls
 
     def __init__(
@@ -26,15 +37,26 @@ class BaseData:
         load_data: bool = True,
         fixed_frequencies: bool = True,
     ) -> None:
+
+        # store the filepath as a Path object
         self.filepath = Path(filepath)
+
+        # check if access_mode is valid
         if access_mode not in self._access_modes:
             raise ValueError("Illegal access mode.")
         else:
             self.access_mode = access_mode
+
+        # a reference to the file object
         self._file = None
+
+        # store the computed times/frequencies to avoid computing them again
         self._times = None
         self._frequencies = None
+
+        # flag used to determine if are in lazy mode or not
         self._load_data = load_data
+
         self.fixed_frequencies = fixed_frequencies
 
     @property
