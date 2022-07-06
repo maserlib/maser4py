@@ -86,9 +86,11 @@ publish-job:
 # deploy doc pages
 pages:
   stage: publish
+  before_script:
+    - !reference [.setup-poetry, before_script]
   script:
-    - pip install .
-    - sphinx-build -b html docs/source public
+    - poetry install
+    - poetry run sphinx-build -b html docs/source public
   artifacts:
     paths:
       - public
