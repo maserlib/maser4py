@@ -39,8 +39,8 @@ type-check-job:
   needs: []
   before_script:
     - !reference [.setup-poetry, before_script]
-    # install mypy
-    - poetry run pip install mypy
+    # install maser and dependencies (including mypy)
+    - poetry install
   script:
     # run mypy
     - poetry run mypy maser
