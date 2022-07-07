@@ -68,8 +68,9 @@ class Pds3Data(Data, dataset="pds3"):
         pass
 
     @classmethod
-    def open(cls, filepath: Path, fmt_label_dict=None):
-        label = cls.open_label(filepath, fmt_label_dict=fmt_label_dict)
+    def open(cls, filepath: Path, *args, fmt_label_dict=None, **kwargs):
+        # ignore 'gets multiple values for keyword argument "fmt_label_dict"'
+        label = cls.open_label(filepath, *args, fmt_label_dict=fmt_label_dict, **kwargs)  # type: ignore
         data = None
         return {"label": label, "data": data}
 

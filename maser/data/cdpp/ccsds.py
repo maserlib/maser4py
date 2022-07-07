@@ -22,7 +22,6 @@ __all__ = [
 
 import datetime
 
-
 # TODO: implement BCD for CCS (but ISEE3-SBH doesn't follow the CCS standard)
 # TODO: fix MSB as described in the CCSDS standard - first bit read is least significant bit
 
@@ -154,8 +153,8 @@ class CCSDSDate(object):
             self.T_field
         )  # this value will be check by derived classes
 
-    def _decode_t_field(self) -> datetime:
-        return datetime.datetime
+    def _decode_t_field(self) -> datetime.datetime:
+        return NotImplemented
 
 
 class CCSDSDateCUC(CCSDSDate):
@@ -176,7 +175,7 @@ class CCSDSDateCUC(CCSDSDate):
         self.time_epoch = datetime.datetime(1958, 1, 1)
         self.datetime = self._decode_t_field()
 
-    def _decode_t_field(self) -> datetime:
+    def _decode_t_field(self) -> datetime.datetime:
         """Return a datetime object out of a CUC T_field"""
         seconds = 0
         for item in self.T_field[0 : self._n_bytes_coarse_time]:
@@ -237,7 +236,7 @@ class CCSDSDateCDS(CCSDSDate):
 
         self.datetime = self._decode_t_field()
 
-    def _decode_t_field(self) -> datetime:
+    def _decode_t_field(self) -> datetime.datetime:
         """Return a datetime object out of a CDS T_field"""
         days = 0
         for item in self.T_field[0 : self._n_bytes_day]:

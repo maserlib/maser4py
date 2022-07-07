@@ -1,15 +1,18 @@
 stages:
   - lint
   - test
+  - publish
+  - deploy
 
 default:
   image: python:3.8
   tags:
     - docker_dio
 
-.setup:
+.setup-poetry:
   before_script:
     - python --version
+    - pip install --upgrade pip
     - pip install poetry
     - poetry --version
     - poetry config virtualenvs.in-project true --local
@@ -18,12 +21,29 @@ lint-job:
   stage: lint
   needs: []
   before_script:
-    - !reference [.setup, before_script]
+    - !reference [.setup-poetry, before_script]
     # install pre-commit
     - poetry run pip install pre-commit
   script:
     # run pre-commit
     - poetry run pre-commit run -a
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web
+
+type-check-job:
+  stage: lint
+  needs: []
+  before_script:
+    - !reference [.setup-poetry, before_script]
+    # install mypy
+    - poetry run pip install mypy
+  script:
+    # run mypy
+    - poetry run mypy maser
   only:
     - develop
     - master
@@ -37,7 +57,7 @@ test-job:
   variables:
     CDF_URL: 'https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/cdf38_1-dist-all.tar.gz'
   before_script:
-    - !reference [.setup, before_script]
+    - !reference [.setup-poetry, before_script]
     # install cdf and spacepy.pycdf
     - apt-get update
     - apt-get install -y gfortran ncurses-dev
@@ -56,10 +76,41 @@ test-job:
     when: always
     reports:
       junit: report.xml
-      cobertura: coverage.xml
+      coverage_report:
+        path: coverage.xml
+        coverage_format: cobertura
   only:
     - develop
     - master
     - tags
     - merge_requests
+    - web
+
+# publish python package on gitlab registry
+publish-job:
+  stage: publish
+  before_script:
+    - !reference [.setup-poetry, before_script]
+  script:
+    # publish on a dedicated and centralized repository
+    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+    - poetry build
+    - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
+  only:
+    - tags
+    - web
+
+# deploy doc pages
+pages:
+  stage: publish
+  before_script:
+    - !reference [.setup-poetry, before_script]
+  script:
+    - poetry install
+    - poetry run sphinx-build -b html docs/source public
+  artifacts:
+    paths:
+      - public
+  only:
+    - tags
     - web

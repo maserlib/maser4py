@@ -25,6 +25,7 @@ def test_pds_label_dict():
     assert isinstance(label, PDSLabelDict)
 
 
+@pytest.mark.test_data_required
 def test_pds3_dataset():
     data = Data(
         filepath=TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"][0], dataset="pds3"

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-from typing import Union
+from typing import Union, Dict
 from ...pds import Pds3Data
 from ...pds.utils import PDSDataTableObject
 from maser.data.base.sweeps import Sweeps, Sweep
@@ -82,7 +82,7 @@ class MexMMarsis3RdrAisExt4V1Data(
         self.table = PDSDataTableObject(
             self.label["AIS_TABLE"], self.pointers["AIS_TABLE"]["file_name"]
         )
-        self.sweep_mapping = {}
+        self.sweep_mapping: Dict[int, bool] = {}
         if self._load_data:
             self.load_data()
 
