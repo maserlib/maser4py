@@ -33,6 +33,7 @@ Sphinx = "^5.0.2"
 sphinx-rtd-theme = "^1.0.0"
 tomli = "^2.0.1"
 myst-parser = "^0.18.0"
+mypy = "^0.961"
 
 [tool.black]
 include = '\.pyi?$'
@@ -62,6 +63,13 @@ formats = "ipynb,py:percent"
 # remove notebooks metadata from scripts
 notebook_metadata_filter = "-all"
 cell_metadata_filter = "-all"
+
+[[tool.mypy.overrides]]
+module = [
+    "astropy.*",
+]
+ignore_missing_imports = true
+
 
 [build-system]
 requires = ["poetry>=1.1.4", "setuptools"]
