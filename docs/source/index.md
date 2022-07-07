@@ -8,7 +8,9 @@ To install the package, run the following command:
 pip install maser.data --extra-index-url https://gitlab.obspm.fr/api/v4/projects/2440/packages/pypi/simple
 ```
 
-Then use the `Data` class, a wrapper around several classes that allow you to read data from many different formats, including CDF, Fits, and some custom binary formats. By default, the class will try to automagically detect the format of the file and use the appropriate class to read the data.
+Then use the `Data` class, a wrapper around several classes that allow you to read data from various formats,
+including CDF, FITS, and some custom binary formats. By default, the class will try to automagically detect the
+format of the file and use the appropriate class to read the data.
 
 ```python
 from maser.data import Data

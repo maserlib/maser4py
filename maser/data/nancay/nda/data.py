@@ -7,6 +7,8 @@ from astropy.units import Unit
 
 
 class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
+    """ORN NDA Routine Jupiter dataset"""
+
     _iter_sweep_class = SrnNdaRoutineJupEdrSweeps
 
     @property

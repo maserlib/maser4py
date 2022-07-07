@@ -13,10 +13,20 @@ from astropy.units import Unit
 
 
 class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
+    """CDPP Wind Waves RAD1 Level 2 60s-Average (version 2) dataset
+
+    - Observatory/Facility: WIND
+    - Experiment: Waves
+    - Repository: CDPP (Centre de Données de la Physique des Plasmas)
+    - Dataset-id: `cdpp_wi_wa_rad1_l2_60s_v2`
+    - Data format: Binary"""
+
     _iter_sweep_class = WindWavesL260sSweeps
 
 
 class WindWavesRad1L2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2"):
+    """Class for `cdpp_wi_wa_rad1_l2` binary data."""
+
     _iter_sweep_class = WindWavesL2HighResSweeps
 
     @property
@@ -47,14 +57,20 @@ class WindWavesRad1L2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2"):
 
 
 class WindWavesRad2L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad2_l2_60s_v2"):
+    """Class for `cdpp_wi_wa_rad2_l2_60s_v2` binary data."""
+
     pass
 
 
 class WindWavesTnrL260sV2BinData(BinData, dataset="cdpp_wi_wa_tnr_l2_60s_v2"):
+    """Class for `cdpp_wi_wa_tnr_l2_60s_v2` binary data."""
+
     pass
 
 
 class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_bqt_1mn"):
+    """Class for `cdpp_wi_wa_tnr_l3_bqt_1mn` data."""
+
     _access_modes = ["records", "file"]
     _iter_record_class = WindWavesTnrL3Bqt1mnRecords
 
@@ -73,16 +89,24 @@ class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_bqt_1mn"):
 
 
 class WindWavesTnrL3NnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_nn"):
+    """Class for `cdpp_wi_wa_tnr_l3_nn` data."""
+
     pass
 
 
 class WindWavesRad1L260sV1BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v1"):
+    """Class for `cdpp_wi_wa_rad1_l2_60s_v1` binary data"""
+
     _iter_sweep_class = WindWaves60sSweeps
 
 
 class WindWavesRad2L260sV1BinData(BinData, dataset="cdpp_wi_wa_rad2_l2_60s_v1"):
+    """Class for `cdpp_wi_wa_rad2_l2_60s_v1` binary data"""
+
     _iter_sweep_class = WindWaves60sSweeps
 
 
 class WindWavesTnrL260sV1BinData(BinData, dataset="cdpp_wi_wa_tnr_l2_60s_v1"):
+    """Class for `cdpp_wi_wa_tnr_l2_60s_v1` binary data"""
+
     _iter_sweep_class = WindWaves60sSweeps
