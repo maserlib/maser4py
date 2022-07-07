@@ -24,8 +24,6 @@ class Records:
             yield d
 
     def __call__(self, load_data: bool = None, *args, **kwargs):
-        if load_data is not None:
-            self.load_data = load_data
         return self.generator
 
     @property

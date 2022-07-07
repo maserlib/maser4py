@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from typing import Union, Dict
+from typing import Union, Dict, Type, cast
+
 from pathlib import Path
 from astropy.io import fits
 import numpy
@@ -10,13 +11,13 @@ from .records import Records
 class BaseData:
     """Base class for all data classes."""
 
-    dataset: Union[None, str] = None
-    _registry: Dict[str, "BaseData"] = {}
+    dataset: str
+    _registry: Dict[str, Type["BaseData"]] = {}
     _access_modes = ["sweeps", "records", "file"]
     _iter_sweep_class = Sweeps
     _iter_record_class = Records
 
-    def __init_subclass__(cls: "BaseData", *args, dataset: str, **kwargs) -> None:
+    def __init_subclass__(cls, *args, dataset: str, **kwargs) -> None:
         """Register subclasses to be able to instantiate them using only the dataset name
 
         Args:
@@ -80,16 +81,19 @@ class Data(BaseData, dataset="default"):
             dataset = cls.get_dataset(cls, filepath)
 
             # get the dataset class from the registry
-            dataset_class = BaseData._registry[dataset]
+            # we need an explicit cast to make mypy happy
+            dataset_class = BaseData._registry[cast(str, dataset)]
 
             # create a new instance of the dataset class
-            return dataset_class(filepath, dataset=None, *args, **kwargs)
+            # ignore 'gets multiple values for keyword argument "dataset"'
+            return dataset_class(filepath, dataset=None, *args, **kwargs)  # type: ignore
         else:
             # get the dataset class from the registry
-            dataset_class = BaseData._registry[dataset]
+            dataset_class = BaseData._registry[cast(str, dataset)]
 
             # create a new instance of the dataset class
-            return dataset_class(filepath, dataset=None, *args, **kwargs)
+            # ignore 'gets multiple values for keyword argument "dataset"'
+            return dataset_class(filepath, dataset=None, *args, **kwargs)  # type: ignore
 
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):
@@ -128,7 +132,7 @@ class Data(BaseData, dataset="default"):
         return None
 
     def as_array(self) -> numpy.ndarray:
-        return numpy.ndarray(numpy.empty)
+        return numpy.ndarray(0)
 
     def __enter__(self):
         if self.access_mode == "file":
@@ -165,7 +169,7 @@ class Data(BaseData, dataset="default"):
 
 class CdfData(Data, dataset="cdf"):
     @classmethod
-    def open(cls, filepath: Path):
+    def open(cls, filepath: Path, *args, **kwargs):
         from spacepy import pycdf
 
         return pycdf.CDF(str(filepath))
@@ -179,8 +183,8 @@ class CdfData(Data, dataset="cdf"):
 
 class FitsData(Data, dataset="fits"):
     @classmethod
-    def open(cls, filepath: Path):
-        return fits.open(filepath)
+    def open(cls, filepath: Path, *args, **kwargs):
+        return fits.open(filepath, *args, **kwargs)
 
     @classmethod
     def get_dataset(cls, filepath):
@@ -194,8 +198,9 @@ class FitsData(Data, dataset="fits"):
 
 class BinData(Data, dataset="bin"):
     @classmethod
-    def open(cls, filepath: Path):
-        return open(filepath, "rb")
+    def open(cls, filepath: Path, *args, mode: str = "rb", **kwargs):
+        # ignore 'No overload variant of "open" ...'
+        return filepath.open(*args, mode=mode, **kwargs)  # type: ignore
 
     @classmethod
     def get_dataset(cls, filepath):

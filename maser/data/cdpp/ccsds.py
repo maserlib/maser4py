@@ -21,7 +21,6 @@ __all__ = [
 ]
 
 import datetime
-from typing import Type
 
 # TODO: implement BCD for CCS (but ISEE3-SBH doesn't follow the CCS standard)
 # TODO: fix MSB as described in the CCSDS standard - first bit read is least significant bit
@@ -154,8 +153,8 @@ class CCSDSDate(object):
             self.T_field
         )  # this value will be check by derived classes
 
-    def _decode_t_field(self) -> Type[datetime.datetime]:
-        return datetime.datetime
+    def _decode_t_field(self) -> datetime.datetime:
+        return NotImplemented
 
 
 class CCSDSDateCUC(CCSDSDate):

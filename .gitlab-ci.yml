@@ -34,6 +34,23 @@ lint-job:
     - merge_requests
     - web
 
+type-check-job:
+  stage: lint
+  needs: []
+  before_script:
+    - !reference [.setup-poetry, before_script]
+    # install mypy
+    - poetry run pip install mypy
+  script:
+    # run mypy
+    - poetry run mypy maser
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web
+
 test-job:
   stage: test
   needs: []

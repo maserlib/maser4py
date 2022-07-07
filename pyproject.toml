@@ -67,6 +67,8 @@ cell_metadata_filter = "-all"
 [[tool.mypy.overrides]]
 module = [
     "astropy.*",
+    "spacepy.*",
+    "nenupy.*",
 ]
 ignore_missing_imports = true
 

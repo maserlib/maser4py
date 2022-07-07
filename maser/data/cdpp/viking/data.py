@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-from typing import Union
+from typing import Union, Type
 from maser.data.base import BinData
 from .records import VikingV4nE5Records
 
@@ -8,7 +8,7 @@ from astropy.time import Time
 
 
 class VikingV4nE5BinData(BinData, dataset="cdpp_viking_v4n_e5"):
-    _iter_sweep_class = VikingV4nE5Records
+    _iter_sweep_class = Type[VikingV4nE5Records]
     _access_modes = ["file", "records"]
 
     def __init__(
