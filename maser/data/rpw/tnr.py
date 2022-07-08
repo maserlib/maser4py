@@ -252,36 +252,6 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             "times": times_sensor,
             "FREQUENCIES_SENSOR": frequencies_sensor,
         }
-
-        # TEST : A matrice similar to Antonio's code
-
-        #size_row,size_column=np.shape(auto)
-        #size_data_sweep=int(size_row/4)
-        #auto_antonio=np.zeros((size_data_sweep,128))
-        #ind=0
-        #for n in range (20772):
-            #if (current_TNR_band[n]==0):
-                #auto_antonio[ind][0:32]=auto[n]
-            #if (current_TNR_band[n]==1):
-                #auto_antonio[ind][32:64]=auto[n]
-            #if (current_TNR_band[n]==2):
-                #auto_antonio[ind][64:96]=auto[n]
-            #if (current_TNR_band[n]==3):
-                #auto_antonio[ind][96:128]=auto[n]
-            
-            #if ((n+1)%4==0):
-                #ind=ind+1
-        
-
-            
-        #index_A=(current_TNR_band==0).nonzero()[0]
-
-        #Times_A=times_sensor[index_A]
-
-        #dic_sensor["Times_A"] = Times_A
-        #dic_sensor["AUTO_ANTONIO"]=auto_antonio
-
-       
        
         # Interpolation of AUTO for each time 
         auto_interpolation = np.zeros((size_data, 128))
@@ -368,8 +338,7 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
     
     
-    # Plot the graph by using datas_dic_per_band
-    def plot_tnr_data_for_quicklook_SonnyVersion(  
+    def plot_tnr_data_for_quicklook_SonnyVersion(     # Plot the spectrum by using datas_dic_per_band and pcolormesh
         self,
     ):  # 0 for band A, 1 for band B, 2 for band C, 3 for band D
         # with self.datas_dic_per_band() as dic_data:
@@ -526,7 +495,7 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
     def data_TNR_per_band_per_frequencies(
         self, band
-    ):  # Return a dictionary that contains all data per frequencies for a given band
+    ):  # Return a dictionary that contains all data per frequencies for a given band including magnetic_data and flux_density without filtering the fillvalue
         array_index_band = (self.TNR_CURRENT_BAND_WORKING_ON == band).nonzero()[0]
         times_band = self.epoch[array_index_band]
         data_dic_per_frequencies = {}
