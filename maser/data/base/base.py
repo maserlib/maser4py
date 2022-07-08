@@ -168,6 +168,8 @@ class Data(BaseData, dataset="default"):
 
 
 class CdfData(Data, dataset="cdf"):
+    """Base class for CDF formatted data. Requires `spacepy`."""
+
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):
         from spacepy import pycdf
@@ -182,6 +184,8 @@ class CdfData(Data, dataset="cdf"):
 
 
 class FitsData(Data, dataset="fits"):
+    """Base class for FITS formatted data. FITS formatted NenuFAR data requires `nenupy`."""
+
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):
         return fits.open(filepath, *args, **kwargs)
@@ -197,6 +201,8 @@ class FitsData(Data, dataset="fits"):
 
 
 class BinData(Data, dataset="bin"):
+    """Base class for custom binary data."""
+
     @classmethod
     def open(cls, filepath: Path, *args, mode: str = "rb", **kwargs):
         # ignore 'No overload variant of "open" ...'

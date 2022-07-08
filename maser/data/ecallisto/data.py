@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+"""Classes for e-Callisto datasets"""
+
 from maser.data.base import FitsData
 
 from astropy.time import Time
@@ -6,6 +9,8 @@ from astropy.units import Unit
 
 
 class ECallistoFitsData(FitsData, dataset="ecallisto"):
+    """Class for `ecallisto` FITS files."""
+
     @property
     def times(self):
         if self._times is None:

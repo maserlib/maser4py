@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+
 from typing import Union
 from pathlib import Path
 from maser.data.base import FitsData
 
 
 class NenufarBstFitsData(FitsData, dataset="srn_nenufar_bst"):
+    """NenuFAR/BST (Beam Statistics) dataset"""
+
     @classmethod
     def _nenupy_open(cls, filepath):
         from nenupy.beamlet import BST_Data
