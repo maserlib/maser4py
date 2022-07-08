@@ -15,7 +15,7 @@ def cross_time(
 
     my_tnr_data = Data(filepath=tnr_filepath)
     my_lfr_data = Data(filepath=lfr_filepath)
-    my_tnr_data._init_
+    my_tnr_data.load()
 
     dic_data = my_tnr_data.datas_dic_per_band()
     auto = {
