@@ -146,5 +146,9 @@ cython_debug/
 .vscode/
 .idea/
 
-#outflow sqlite databases
+# sqlite databases
 *.db
+
+
+# CDF data
+*.cdf
