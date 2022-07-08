@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 from maser.data import Data
-import numpy as np
+import numpy
 import matplotlib.pyplot as plt
 
 
@@ -38,20 +38,20 @@ def plot_mean(
         3: my_tnr_data.frequenciesD,
     }
 
-    frequencies = np.hstack((freq[0], freq[1]))
-    frequencies = np.hstack((frequencies, freq[2]))
-    frequencies = np.hstack((frequencies, freq[3]))
+    frequencies = numpy.hstack((freq[0], freq[1]))
+    frequencies = numpy.hstack((frequencies, freq[2]))
+    frequencies = numpy.hstack((frequencies, freq[3]))
 
     index_tnr_start = 0
 
-    while np.abs(desired_time_start - times[0][index_tnr_start]) > datetime.timedelta(
+    while numpy.abs(desired_time_start - times[0][index_tnr_start]) > datetime.timedelta(
         seconds=margin
     ):
         index_tnr_start = index_tnr_start + 1
 
     index_tnr_end = index_tnr_start
 
-    while np.abs(desired_time_end - times[0][index_tnr_end]) > datetime.timedelta(
+    while numpy.abs(desired_time_end - times[0][index_tnr_end]) > datetime.timedelta(
         seconds=margin
     ):
         index_tnr_end = index_tnr_end + 1
@@ -61,16 +61,16 @@ def plot_mean(
     Auto_C = auto[2][index_tnr_start:index_tnr_end, :]
     Auto_D = auto[3][index_tnr_start:index_tnr_end, :]
 
-    Auto_A_mean = np.mean(Auto_A, 0)
-    Auto_B_mean = np.mean(Auto_B, 0)
-    Auto_C_mean = np.mean(Auto_C, 0)
-    Auto_D_mean = np.mean(Auto_D, 0)
+    Auto_A_mean = numpy.mean(Auto_A, 0)
+    Auto_B_mean = numpy.mean(Auto_B, 0)
+    Auto_C_mean = numpy.mean(Auto_C, 0)
+    Auto_D_mean = numpy.mean(Auto_D, 0)
 
-    Auto_mean = np.hstack((Auto_A_mean, Auto_B_mean))
-    Auto_mean = np.hstack((Auto_mean, Auto_C_mean))
-    Auto_mean = np.hstack((Auto_mean, Auto_D_mean))
+    Auto_mean = numpy.hstack((Auto_A_mean, Auto_B_mean))
+    Auto_mean = numpy.hstack((Auto_mean, Auto_C_mean))
+    Auto_mean = numpy.hstack((Auto_mean, Auto_D_mean))
 
-    Auto_mean = 10 * np.log10(Auto_mean)
+    Auto_mean = 10 * numpy.log10(Auto_mean)
 
     xarray_lfr = my_lfr_data.as_xarray()
 
@@ -83,56 +83,56 @@ def plot_mean(
     index_lfr_B_start = 0
 
     if mode == 0:
-        freq_N = np.hstack((freq_lfr["N_F2"], freq_lfr["N_F1"]))
-        freq_N = np.hstack((freq_N, freq_lfr["N_F0"]))
+        freq_N = numpy.hstack((freq_lfr["N_F2"], freq_lfr["N_F1"]))
+        freq_N = numpy.hstack((freq_N, freq_lfr["N_F0"]))
         voltage_N_F0 = voltage["N_F0"].T
         voltage_N_F1 = voltage["N_F1"].T
         voltage_N_F2 = voltage["N_F2"].T
         times_N_F1 = times_lfr["N_F1"].T
-        while np.abs(
+        while numpy.abs(
             desired_time_start - times_N_F1[index_lfr_N_start]
         ) > datetime.timedelta(seconds=margin):
             index_lfr_N_start = index_lfr_N_start + 1
         index_lfr_N_end = index_lfr_N_start
-        while np.abs(
+        while numpy.abs(
             desired_time_end - times_N_F1[index_lfr_N_end]
         ) > datetime.timedelta(seconds=margin):
             index_lfr_N_end = index_lfr_N_end + 1
         voltage_N_F2 = voltage_N_F2[index_lfr_N_start : index_lfr_N_end + 1]
         voltage_N_F1 = voltage_N_F1[index_lfr_N_start : index_lfr_N_end + 1]
         voltage_N_F0 = voltage_N_F0[index_lfr_N_start : index_lfr_N_end + 1]
-        voltage_N_F2_mean = np.mean(voltage_N_F2.values, 0)
-        voltage_N_F1_mean = np.mean(voltage_N_F1.values, 0)
-        voltage_N_F0_mean = np.mean(voltage_N_F0.values, 0)
-        voltage_N_mean = np.hstack((voltage_N_F2_mean, voltage_N_F1_mean))
-        voltage_N_mean = np.hstack((voltage_N_mean, voltage_N_F0_mean))
-        voltage_N_mean = 10 * np.log10(voltage_N_mean)
+        voltage_N_F2_mean = numpy.mean(voltage_N_F2.values, 0)
+        voltage_N_F1_mean = numpy.mean(voltage_N_F1.values, 0)
+        voltage_N_F0_mean = numpy.mean(voltage_N_F0.values, 0)
+        voltage_N_mean = numpy.hstack((voltage_N_F2_mean, voltage_N_F1_mean))
+        voltage_N_mean = numpy.hstack((voltage_N_mean, voltage_N_F0_mean))
+        voltage_N_mean = 10 * numpy.log10(voltage_N_mean)
         plt.plot(freq_N, voltage_N_mean)
 
     if mode == 1:
-        freq_B = np.hstack((freq_lfr["B_F1"], freq_lfr["B_F0"]))
+        freq_B = numpy.hstack((freq_lfr["B_F1"], freq_lfr["B_F0"]))
         voltage_B_F0 = voltage["B_F0"].T
         voltage_B_F1 = voltage["B_F1"].T
         times_B_F0 = times_lfr["B_F0"].T
 
-        while np.abs(
+        while numpy.abs(
             desired_time_start - times_B_F0[index_lfr_B_start]
         ) > datetime.timedelta(seconds=margin):
             index_lfr_B_start = index_lfr_B_start + 1
         index_lfr_B_end = index_lfr_B_start
-        while np.abs(
+        while numpy.abs(
             desired_time_end - times_B_F0[index_lfr_B_end]
         ) > datetime.timedelta(seconds=margin):
             index_lfr_B_end = index_lfr_B_end + 1
 
         voltage_B_F1 = voltage_B_F1[index_lfr_B_start : index_lfr_B_end + 1]
         voltage_B_F0 = voltage_B_F0[index_lfr_B_start : index_lfr_B_end + 1]
-        voltage_B_F1_mean = np.mean(voltage_B_F1.values, 0)
-        voltage_B_F0_mean = np.mean(voltage_B_F0.values, 0)
-        voltage_B_mean = np.hstack((voltage_B_F1_mean, voltage_B_F0_mean))
-        print(np.shape(voltage_B_mean))
+        voltage_B_F1_mean = numpy.mean(voltage_B_F1.values, 0)
+        voltage_B_F0_mean = numpy.mean(voltage_B_F0.values, 0)
+        voltage_B_mean = numpy.hstack((voltage_B_F1_mean, voltage_B_F0_mean))
+        print(numpy.shape(voltage_B_mean))
         print(freq_B)
-        voltage_B_mean = 10 * np.log10(voltage_B_mean)
+        voltage_B_mean = 10 * numpy.log10(voltage_B_mean)
         plt.plot(freq_B, voltage_B_mean)
 
     plt.plot(frequencies, Auto_mean)
