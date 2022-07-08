@@ -1,42 +1,39 @@
 [tool.poetry]
-name = "maser4py"
-version = "0.10.0"
-description = "maser4py offers tools to handle low frequency radioastronomy data"
-authors = ["Xavier BONNIN <xavier.bonnin@obspm.fr>","Baptiste CECCONI <baptiste.cecconi@obspm.fr>", "Sonny LION <sonny.lion@obspm.fr>", "Alan Loh <alan.loh@obspm.fr>", "Quynh Nhu Nguyen <quynh-nhu.nguyen@obspm.fr>"]
-readme = "README.md"
-license = "GPL-V3"
-homepage = "https://pypi.org/project/maser4py"
-repository = "https://github.com/maserlib/maser4py"
-keywords = ["maser4py", "data science", "radioastronomy"]
-
-[tool.poetry.urls]
-"Documentation" = "https://maser.readthedocs.io/en/latest/"
-"Tracker" = "https://github.com/maserlib/maser4py/issues"
-
-[tool.poetry.dependencies]
-python = ">=3.6.1"
-astropy = "*"
-scipy = "*"
-numpy = "*"
-toml = "*"
-openpyxl = "*"
-pytz = "*"
-python-dateutil = "*"
-jinja2 = "*"
-spacepy = "^0.3"
-
-
-[tool.poetry.dev-dependencies]
-pytest = "^5.2"
-pytest-cov = "2.10.1"
-pytest-timeout = "^1.4"
-pre-commit = "^2.8"
-
-[tool.poetry.extras]
-tests = ["pytest", "pytest-cov", "pytest-timeout"]
-
+name = "maser.data"
+version = "0.1.0"
+description = ""
+authors = ["Baptiste Cecconi <baptiste.cecconi@obspm.fr>"]
+license = "CeCILL"
 [[tool.poetry.packages]]
 include = "maser"
+
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4"
+spacepy = {version = "^0.3.0", optional = true}
+astropy = "^5.0.4"
+nenupy = {version = "^2.1.0", optional = true}
+xarray = "^2022.3.0"
+jupyter = {version = "^1.0.0", optional = true}
+jupytext = {version = "^1.13.8", optional = true}
+
+[tool.poetry.extras]
+jupyter = ["jupyter", "jupytext"]
+nenupy = ["nenupy"]
+spacepy = ["spacepy"]
+all = ["jupyter", "jupytext", "nenupy", "spacepy"]
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0.1"
+pytest-cov = "^3.0.0"
+pre-commit = "^2.17.0"
+requests = "^2.27.1"
+poetry2setup = "^1.0.0"
+Sphinx = "^5.0.2"
+sphinx-rtd-theme = "^1.0.0"
+tomli = "^2.0.1"
+myst-parser = "^0.18.0"
+mypy = "^0.961"
 
 [tool.black]
 include = '\.pyi?$'
@@ -54,8 +51,26 @@ exclude = '''
 )/
 '''
 
-[tool.poetry.scripts]
-maser = 'maser.script:main'
+[tool.pytest.ini_options]
+markers = [
+    "test_data_required: mark tests that require downloading test data",
+    "nenupy_required: mark tests that require the nenupy package",
+    "spacepy_required: mark tests that require the spacepy package",
+]
+
+[tool.jupytext]
+formats = "ipynb,py:percent"
+# remove notebooks metadata from scripts
+notebook_metadata_filter = "-all"
+cell_metadata_filter = "-all"
+
+[[tool.mypy.overrides]]
+module = [
+    "astropy.*",
+    "spacepy.*",
+    "nenupy.*",
+]
+ignore_missing_imports = true
 
 
 [build-system]

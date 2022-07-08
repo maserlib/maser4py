@@ -1,5 +1,4 @@
-#! /usr/bin/env python
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 
 """
 Python module to provide Viking constant variables.
@@ -10,9 +9,19 @@ __author__ = "Baptiste Cecconi"
 __date__ = "15-NOV-2018"
 __version__ = "0.01"
 
-__all__ = ["VIKING_V1_META", "VIKING_V4H_SFA_META", "VIKING_V4H_FB_META", "VIKING_V4L_FBL_PHYS_META",
-           "VIKING_V4L_FBL_DB_META", "VIKING_V2_META", "VIKING_V4L_NI_META", "VIKING_V4L_DFT_PHYS_META",
-           "VIKING_V4L_DFT_DB_META", "VIKING_V4L_WF_PHYS_META", "VIKING_V4L_WF_DB_META"]
+__all__ = [
+    "VIKING_V1_META",
+    "VIKING_V4H_SFA_META",
+    "VIKING_V4H_FB_META",
+    "VIKING_V4L_FBL_PHYS_META",
+    "VIKING_V4L_FBL_DB_META",
+    "VIKING_V2_META",
+    "VIKING_V4L_NI_META",
+    "VIKING_V4L_DFT_PHYS_META",
+    "VIKING_V4L_DFT_DB_META",
+    "VIKING_V4L_WF_PHYS_META",
+    "VIKING_V4L_WF_DB_META",
+]
 
 import astropy.units as u
 
@@ -121,7 +130,7 @@ VIKING_V2_META = {
     "V2_PSI": {
         "unit": u.Unit("deg"),
         "description": "Angle between Ey antenna and the projection of magnetic field in the plane perpendicular "
-                       "to satellite spin axis",
+        "to satellite spin axis",
     },
     "V2_PHI": {
         "unit": u.Unit("deg"),
