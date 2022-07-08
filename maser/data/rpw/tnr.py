@@ -4,7 +4,6 @@ from maser.data.base import CdfData
 from astropy.time import Time
 from astropy.units import Unit
 from maser.data.base.sweeps import Sweeps
-from spacepy import pycdf
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
@@ -14,34 +13,6 @@ from maser.data.rpw.filtre_for_tnr import pre_process
 
 
 class RpwTnrSurvSweeps(Sweeps):
-    @property
-    def _init_(self):
-        with pycdf.CDF(self.file) as data_L2_TNR:
-            self.TNR_BAND_FREQ = data_L2_TNR["TNR_BAND_FREQ"][...]
-            self.frequenciesA = self.TNR_BAND_FREQ[0, :]  # Band A
-            self.frequenciesB = self.TNR_BAND_FREQ[1, :]  # Band B
-            self.frequenciesC = self.TNR_BAND_FREQ[2, :]  # Band C
-            self.frequenciesD = self.TNR_BAND_FREQ[3, :]  # Band D
-            self._frequencies = np.append(self.frequenciesA, self.frequenciesB)
-            self._frequencies = np.append(self._frequencies, self.frequenciesC)
-            self._frequencies = np.append(self._frequencies, self.frequenciesD)
-            self.epoch = data_L2_TNR["Epoch"][...]  # Epoch
-            self.sensor_config = data_L2_TNR["SENSOR_CONFIG"][
-                ...
-            ]  # Sensor configuration at each acquisition
-            self.sweep_num = data_L2_TNR["SWEEP_NUM"][
-                ...
-            ]  # Sweep Number (A, B, C, D for one sweep)
-            self.auto1 = data_L2_TNR["AUTO1"][...]
-            self.auto2 = data_L2_TNR["AUTO2"][...]
-            self.flux1 = data_L2_TNR["FLUX_DENSITY1"][...]
-            self.flux2 = data_L2_TNR["FLUX_DENSITY2"][...]
-            self.magnetic1 = data_L2_TNR["MAGNETIC_SPECTRAL_POWER1"][...]
-            self.magnetic2 = data_L2_TNR["MAGNETIC_SPECTRAL_POWER2"][...]
-            self.channel_status_data = data_L2_TNR["CHANNEL_STATUS"][...]
-            self.TNR_CURRENT_BAND_WORKING_ON = data_L2_TNR["TNR_BAND"][...]
-            self.PHASE = data_L2_TNR["PHASE"]
-
     @property
     def generator(self):
         """
@@ -61,17 +32,17 @@ class RpwTnrSurvSweeps(Sweeps):
             4
         ):  # 0 for band A, 1 for band B, 2 for band C and 3 for band D
             array_band_index = (
-                self.TNR_CURRENT_BAND_WORKING_ON == band_index
+                self.data_reference.TNR_CURRENT_BAND_WORKING_ON == band_index
             ).nonzero()[0]
-            auto_1 = self.auto1[array_band_index]
-            auto_2 = self.auto2[array_band_index]
-            sensor_config = self.sensor_config[array_band_index]
-            phase = self.PHASE[array_band_index]
-            flux_1 = self.flux1[array_band_index]
-            flux_2 = self.flux2[array_band_index]
-            magnetic_1 = self.magnetic1[array_band_index]
-            magnetic_2 = self.magnetic2[array_band_index]
-            times = self.epoch[array_band_index]
+            auto_1 = self.data_reference.auto1[array_band_index]
+            auto_2 = self.data_reference.auto2[array_band_index]
+            sensor_config = self.data_reference.sensor_config[array_band_index]
+            phase = self.data_reference.PHASE[array_band_index]
+            flux_1 = self.data_reference.flux1[array_band_index]
+            flux_2 = self.data_reference.flux2[array_band_index]
+            magnetic_1 = self.data_reference.magnetic1[array_band_index]
+            magnetic_2 = self.data_reference.magnetic2[array_band_index]
+            times = self.data_reference.epoch[array_band_index]
             for time, a1, a2, sc, ph, f1, f2, m1, m2 in zip(
                 times,
                 auto_1,
@@ -102,8 +73,7 @@ class RpwTnrSurvSweeps(Sweeps):
 class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     _iter_sweep_class = RpwTnrSurvSweeps
 
-    @property
-    def _init_(self):  # loading all the data
+    def load(self):  # loading all the data
         with self.open(self.filepath) as data_L2_TNR:
             # with pycdf.CDF(self.filepath) as data_L2_TNR:
             self.TNR_BAND_FREQ = data_L2_TNR["TNR_BAND_FREQ"][...]

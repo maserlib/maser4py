@@ -16,8 +16,7 @@ def plot_mean(
 
     my_tnr_data = Data(filepath=tnr_filepath)
     my_lfr_data = Data(filepath=lfr_filepath)
-    my_tnr_data._init_
-
+    my_tnr_data.load()
     dic_data = my_tnr_data.datas_dic_per_band()
     auto = {
         0: dic_data[0]["Auto"],
@@ -56,12 +55,6 @@ def plot_mean(
         seconds=margin
     ):
         index_tnr_end = index_tnr_end + 1
-
-    times_A = times[0][index_tnr_start : index_tnr_end + 1]
-    times_B = times[1][index_tnr_start : index_tnr_end + 1]
-    times_C = times[2][index_tnr_start : index_tnr_end + 1]
-    times_D = times[3][index_tnr_start : index_tnr_end + 1]
-
 
     Auto_A = auto[0][index_tnr_start:index_tnr_end, :]
     Auto_B = auto[1][index_tnr_start:index_tnr_end, :]
@@ -116,13 +109,11 @@ def plot_mean(
         voltage_N_mean = 10 * np.log10(voltage_N_mean)
         plt.plot(freq_N, voltage_N_mean)
 
-
     if mode == 1:
         freq_B = np.hstack((freq_lfr["B_F1"], freq_lfr["B_F0"]))
         voltage_B_F0 = voltage["B_F0"].T
         voltage_B_F1 = voltage["B_F1"].T
         times_B_F0 = times_lfr["B_F0"].T
-        times_B_F1 = times_lfr["B_F1"].T
 
         while np.abs(
             desired_time_start - times_B_F0[index_lfr_B_start]

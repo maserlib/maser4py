@@ -257,9 +257,3 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                 cbar_label = dataset_key
             cbar_ax.set_ylabel(cbar_label)
         return fig, axes
-
-    def plot(self):
-        datasets = self.as_xarray()
-        # plot_lfr_bp1_data(datasets)
-        fig, axes = self.plot_lfr_bp1_data()
-        plt.show()

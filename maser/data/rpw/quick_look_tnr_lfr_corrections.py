@@ -16,7 +16,7 @@ def quick_look_tnr_lfr_only_E_final(
 
     my_data_lfr = Data(filepath=filepathlfr)
     my_data_tnr = Data(filepath=filepathtnr)
-    my_data_tnr._init_
+    my_data_tnr.load()
 
     times_lfr = my_data_lfr.times
 
@@ -193,7 +193,7 @@ def quick_look_tnr_lfr_final(
 ):  # plot quick_look and displaying white when no values are available
     my_data_lfr = Data(filepath=filepathlfr)
     my_data_tnr = Data(filepath=filepathtnr)
-    my_data_tnr._init_
+    my_data_tnr.load()
 
     fig, axes = plt.subplots(5, 1, sharex=True)
 
@@ -446,7 +446,7 @@ def quick_look_tnr_lfr_final_PE_PB_DOP(
 ):  # Displaying only PE, PB and DOP and set a bottom limit on y axis (10.5 Hz)
     my_data_lfr = Data(filepath=filepathlfr)
     my_data_tnr = Data(filepath=filepathtnr)
-    my_data_tnr._init_
+    my_data_tnr.load()
 
     fig, axes = plt.subplots(3, 1, sharex=True)
 
@@ -691,7 +691,7 @@ def quick_look_tnr_lfr_final_PE_PB_DOP(
 def quick_look_tnr_lfr_savefig(filepathtnr, filepathlfr, savefigpath):
     my_data_lfr = Data(filepath=filepathlfr)
     my_data_tnr = Data(filepath=filepathtnr)
-    my_data_tnr._init_
+    my_data_tnr.load()
 
     fig, axes = plt.subplots(3, 1, sharex=True)
 
