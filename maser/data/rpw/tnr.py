@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import matplotlib.colorbar as cbar
 
-from maser.data.rpw.filtre_for_tnr import fft_filter,pre_process
+from maser.data.rpw.filtre_for_tnr import pre_process
 
 
 class RpwTnrSurvSweeps(Sweeps):
@@ -103,7 +103,7 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     _iter_sweep_class = RpwTnrSurvSweeps
 
     @property
-    def _init_(self): # loading all the data
+    def _init_(self):  # loading all the data
         with self.open(self.filepath) as data_L2_TNR:
             # with pycdf.CDF(self.filepath) as data_L2_TNR:
             self.TNR_BAND_FREQ = data_L2_TNR["TNR_BAND_FREQ"][...]
@@ -114,10 +114,10 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             self._frequencies_ = np.append(self.frequenciesA, self.frequenciesB)
             self._frequencies_ = np.append(self._frequencies_, self.frequenciesC)
             self._frequencies_ = np.append(self._frequencies_, self.frequenciesD)
-            self.freqtest=data_L2_TNR['FREQUENCY'][...]
-            self.freq_tnr1=np.append(self.freqtest[0,:],self.freqtest[1,:])
-            self.freq_tnr2=np.append(self.freqtest[2,:],self.freqtest[3,:])
-            self.freq_tnr=np.append(self.freq_tnr1,self.freq_tnr2)
+            self.freqtest = data_L2_TNR["FREQUENCY"][...]
+            self.freq_tnr1 = np.append(self.freqtest[0, :], self.freqtest[1, :])
+            self.freq_tnr2 = np.append(self.freqtest[2, :], self.freqtest[3, :])
+            self.freq_tnr = np.append(self.freq_tnr1, self.freq_tnr2)
             self.epoch = data_L2_TNR["Epoch"][...]  # Epoch
             self.sensor_config = data_L2_TNR["SENSOR_CONFIG"][
                 ...
@@ -138,7 +138,7 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
     frequency_keys = ["A", "B", "C", "D"]  # Label for TNR band
 
-    #@property
+    # @property
     def frequencies(self):
         if self._frequencies is None:
 
@@ -155,16 +155,15 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     @property
     def times(self):
         if self._times is None:
-            with self.open(self.filepath) as cdf_file:
-                self._times = {}
-                band_label = 0
-                for frequency_key in self.frequency_keys:
-                    array_band_index = (
-                        self.TNR_CURRENT_BAND_WORKING_ON == band_label
-                    ).nonzero()[0]
-                    times_band_label = self.epoch[array_band_index]
-                    self._times[frequency_key] = Time(times_band_label)
-                band_label = band_label + 1
+            self._times = {}
+            band_label = 0
+            for frequency_key in self.frequency_keys:
+                array_band_index = (
+                    self.TNR_CURRENT_BAND_WORKING_ON == band_label
+                ).nonzero()[0]
+                times_band_label = self.epoch[array_band_index]
+                self._times[frequency_key] = Time(times_band_label)
+            band_label = band_label + 1
         return self._times
 
     def as_array(
@@ -173,15 +172,14 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         sensor_index = (self.sensor_config == sensor).nonzero()[0]
         sensor_config_ = self.sensor_config[sensor_index]
         current_TNR_band = self.TNR_CURRENT_BAND_WORKING_ON[sensor_index]
-        sweep_sensor=self.sweep_num[sensor_index]
+        sweep_sensor = self.sweep_num[sensor_index]
         times_sensor = self.epoch[sensor_index]
         auto1_sensor = self.auto1[sensor_index]
         auto2_sensor = self.auto2[sensor_index]
         flux1_sensor = self.flux1[sensor_index]
         flux2_sensor = self.flux2[sensor_index]
-        channel_status = self.channel_status_data[sensor_index]
         size_data = np.size(sensor_index)
-        #dic_frequencies_per_band = self.frequencies()
+        # dic_frequencies_per_band = self.frequencies()
 
         if auto1_sensor[0, 0] > 0:
             auto = auto1_sensor[0, :]
@@ -207,42 +205,41 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             # if (flux2_sensor[index][0]>=0):
             # flux=np.vstack((flux,flux2_sensor[index,:]))
 
-            #if (channel_status[index][0]==0):
-                #auto=np.vstack((auto,auto1_sensor[index,:]))
-                #flux=np.vstack((flux,flux1_sensor[index,:]))
+            # if (channel_status[index][0]==0):
+            # auto=np.vstack((auto,auto1_sensor[index,:]))
+            # flux=np.vstack((flux,flux1_sensor[index,:]))
 
-            #if (channel_status[index][0]==1):
-                #auto=np.vstack((auto,auto2_sensor[index,:]))
-                #flux=np.vstack((flux,flux2_sensor[index,:]))
+            # if (channel_status[index][0]==1):
+            # auto=np.vstack((auto,auto2_sensor[index,:]))
+            # flux=np.vstack((flux,flux2_sensor[index,:]))
 
             if sensor_config_[index][0] == sensor:
                 auto = np.vstack((auto, auto1_sensor[index, :]))
                 flux = np.vstack((flux, flux1_sensor[index, :]))
 
-            if(sensor_config_[index][1]==sensor):
+            if sensor_config_[index][1] == sensor:
                 auto = np.vstack((auto, auto2_sensor[index, :]))
                 flux = np.vstack((flux, flux2_sensor[index, :]))
 
         # Delete the first and last values that not correspond to an entire sweep
-        i=0
-        sweep_sensor_bis=sweep_sensor
-        while sweep_sensor[i]!=sweep_sensor[i+3]:
-            auto=auto[1:]
-            times_sensor=times_sensor[1:]
-            current_TNR_band=current_TNR_band[1:]
-            i=i+1
-        size_data=size_data-i
+        i = 0
+        sweep_sensor_bis = sweep_sensor
+        while sweep_sensor[i] != sweep_sensor[i + 3]:
+            auto = auto[1:]
+            times_sensor = times_sensor[1:]
+            current_TNR_band = current_TNR_band[1:]
+            i = i + 1
+        size_data = size_data - i
 
-        q=size_data
-        k=0
-        while sweep_sensor_bis[q-1]!=sweep_sensor_bis[q-4] :
-            auto=auto[:q-1]
-            times_sensor=times_sensor[:q-1]
-            current_TNR_band=current_TNR_band[:q-1]
-            q=q-1
-            k=k+1
-        size_data=size_data-k
-        
+        q = size_data
+        k = 0
+        while sweep_sensor_bis[q - 1] != sweep_sensor_bis[q - 4]:
+            auto = auto[: q - 1]
+            times_sensor = times_sensor[: q - 1]
+            current_TNR_band = current_TNR_band[: q - 1]
+            q = q - 1
+            k = k + 1
+        size_data = size_data - k
 
         dic_sensor = {
             "TNR_BAND": current_TNR_band,
@@ -252,8 +249,8 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             "times": times_sensor,
             "FREQUENCIES_SENSOR": frequencies_sensor,
         }
-       
-        # Interpolation of AUTO for each time 
+
+        # Interpolation of AUTO for each time
         auto_interpolation = np.zeros((size_data, 128))
         auto_interpolation[0][0:32] = auto[0]
         auto_interpolation[0][32:64] = auto[1]
@@ -261,22 +258,22 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         auto_interpolation[0][96:128] = auto[3]
 
         for i in range(1, size_data):
-            if (current_TNR_band[i] == current_TNR_band[0]):
+            if current_TNR_band[i] == current_TNR_band[0]:
                 auto_interpolation[i][0:32] = auto[i]
                 auto_interpolation[i][32:64] = auto_interpolation[i - 1][32:64]
                 auto_interpolation[i][64:96] = auto_interpolation[i - 1][64:96]
                 auto_interpolation[i][96:128] = auto_interpolation[i - 1][96:128]
-            if (current_TNR_band[i] == current_TNR_band[1]):
+            if current_TNR_band[i] == current_TNR_band[1]:
                 auto_interpolation[i][32:64] = auto[i]
                 auto_interpolation[i][0:32] = auto_interpolation[i - 1][0:32]
                 auto_interpolation[i][64:96] = auto_interpolation[i - 1][64:96]
                 auto_interpolation[i][96:128] = auto_interpolation[i - 1][96:128]
-            if (current_TNR_band[i] == current_TNR_band[2]):
+            if current_TNR_band[i] == current_TNR_band[2]:
                 auto_interpolation[i][64:96] = auto[i]
                 auto_interpolation[i][0:32] = auto_interpolation[i - 1][0:32]
                 auto_interpolation[i][32:64] = auto_interpolation[i - 1][32:64]
                 auto_interpolation[i][96:128] = auto_interpolation[i - 1][96:128]
-            if (current_TNR_band[i] == current_TNR_band[3]):
+            if current_TNR_band[i] == current_TNR_band[3]:
                 auto_interpolation[i][96:128] = auto[i]
                 auto_interpolation[i][32:64] = auto_interpolation[i - 1][32:64]
                 auto_interpolation[i][64:96] = auto_interpolation[i - 1][64:96]
@@ -286,8 +283,9 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
         return dic_sensor
 
-
-    def datas_per_band(self, band, sensor=4): # Return a dictionnary that contains the data of a band (times,auto)
+    def datas_per_band(
+        self, band, sensor=4
+    ):  # Return a dictionnary that contains the data of a band (times,auto)
 
         # Filtering all the rows containing the given sensor
         sensor_index = (self.sensor_config == sensor).nonzero()[0]
@@ -330,15 +328,15 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
         return dict_band
 
-    def datas_dic_per_band(self): # a function that returns a dictionnary of all data of each band
+    def datas_dic_per_band(
+        self,
+    ):  # a function that returns a dictionnary of all data of each band
         data_dic_per_band = {}
         for i in range(4):
             data_dic_per_band[i] = self.datas_per_band(sensor=4, band=i)
         return data_dic_per_band
 
-    
-    
-    def plot_tnr_data_for_quicklook_SonnyVersion(     # Plot the spectrum by using datas_dic_per_band and pcolormesh
+    def plot_tnr_data_for_quicklook_SonnyVersion(  # Plot the spectrum by using datas_dic_per_band and pcolormesh
         self,
     ):  # 0 for band A, 1 for band B, 2 for band C, 3 for band D
         # with self.datas_dic_per_band() as dic_data:
@@ -373,11 +371,11 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             dic_data[2]["auto_max"],
             dic_data[3]["auto_max"],
         )  # get maximum value of auto
-        #print("auto_min,auto_max", auto_min, auto_max)
+        # print("auto_min,auto_max", auto_min, auto_max)
         fig, ax = plt.subplots(1, 1, figsize=(9, 16))
         cbar_ax, kw = cbar.make_axes(ax)
         cmap = plt.get_cmap("jet")
-        levels = MaxNLocator(nbins=250).tick_values(10 * np.log10(auto_min), 10 * np.log10(auto_max))
+
         # norm=BoundaryNorm(levels,ncolors=cmap.N,clip=True)
 
         for index_band in range(3):
@@ -400,32 +398,40 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
         plt.show()
 
-    def plot_filtered_values(self): # Plot the filtered spectrum  using pre_process function and as_array with contourf
-        _times=self.as_array(sensor=4)["times"]
-        FOI=self._frequencies_
-        x,y=np.meshgrid(_times,FOI)
-        auto_int=self.as_array(sensor=4)["AUTO_INTERPOLATION"]
-        auto_int=np.transpose(auto_int)
-        auto_int_log,auto_int_log_filtered=pre_process(auto_int)
-        levels=MaxNLocator(nbins=250).tick_values(auto_int_log_filtered.min(),auto_int_log_filtered.max())
-        plt.contourf(x,y,auto_int_log_filtered,levels=levels,cmap="jet")
+    def plot_filtered_values(
+        self,
+    ):  # Plot the filtered spectrum  using pre_process function and as_array with contourf
+        _times = self.as_array(sensor=4)["times"]
+        FOI = self._frequencies_
+        x, y = np.meshgrid(_times, FOI)
+        auto_int = self.as_array(sensor=4)["AUTO_INTERPOLATION"]
+        auto_int = np.transpose(auto_int)
+        auto_int_log, auto_int_log_filtered = pre_process(auto_int)
+        levels = MaxNLocator(nbins=250).tick_values(
+            auto_int_log_filtered.min(), auto_int_log_filtered.max()
+        )
+        plt.contourf(x, y, auto_int_log_filtered, levels=levels, cmap="jet")
         cbar = plt.colorbar()
-        cbar.set_label("Power spectral density (10*log10 V²/Hz)",fontsize=20)
+        cbar.set_label("Power spectral density (10*log10 V²/Hz)", fontsize=20)
         plt.yscale("log")
-        plt.xlabel("Time",fontsize=20)
+        plt.xlabel("Time", fontsize=20)
         plt.xticks(rotation=45)
-        plt.ylabel("Frequency (MHz)",fontsize=20)
-        plt.title("Power spectral density",fontsize=20)
+        plt.ylabel("Frequency (MHz)", fontsize=20)
+        plt.title("Power spectral density", fontsize=20)
         plt.show()
 
-    def plot_filtered_values_pcolormesh(self): # Plot the filtered spectrum  using pre_process function and as_array with pcolormesh
-        _times=self.as_array(sensor=4)["times"]
-        FOI=self._frequencies_
-        x,y=np.meshgrid(_times,FOI)
-        auto_int=self.as_array(sensor=4)["AUTO_INTERPOLATION"]
-        auto_int=np.transpose(auto_int)
-        auto_int_log,auto_int_log_filtered=pre_process(auto_int)
-        levels=MaxNLocator(nbins=250).tick_values(auto_int_log_filtered.min(),auto_int_log_filtered.max())
+    def plot_filtered_values_pcolormesh(
+        self,
+    ):  # Plot the filtered spectrum  using pre_process function and as_array with pcolormesh
+        _times = self.as_array(sensor=4)["times"]
+        FOI = self._frequencies_
+        x, y = np.meshgrid(_times, FOI)
+        auto_int = self.as_array(sensor=4)["AUTO_INTERPOLATION"]
+        auto_int = np.transpose(auto_int)
+        auto_int_log, auto_int_log_filtered = pre_process(auto_int)
+        levels = MaxNLocator(nbins=250).tick_values(
+            auto_int_log_filtered.min(), auto_int_log_filtered.max()
+        )
         cmap = plt.get_cmap("jet")
         norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
         fig, ax0 = plt.subplots(nrows=1)
@@ -436,7 +442,9 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         ax0.set_ylabel("frequences")
         plt.show()
 
-    def plot_tnr_data_for_quicklook(self): # plot the spectrum using as_array and pcolormesh
+    def plot_tnr_data_for_quicklook(
+        self,
+    ):  # plot the spectrum using as_array and pcolormesh
         """Plot the TNR data using an array datasets and matplotlib with pcolormesh
 
         Args:
@@ -449,14 +457,14 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         # with self.as_array(sensor=4) as datasets:
         datasets = self.as_array(sensor=4)
         auto_interpolation_log = 10 * np.log10(datasets["AUTO_INTERPOLATION"])
-        _times_=datasets["times"]
-        #while self.TNR_CURRENT_BAND_WORKING_ON[i]!=0:
-            #auto_interpolation_log=auto_interpolation_log[1:]
-            #_times_=_times_[1:]
-            #i=i+1
-            #print(i)
-        x, y = np.meshgrid(_times_, self._frequencies_/ 1000)
-        #auto_interpolation_log = 10 * np.log10(datasets["AUTO_INTERPOLATION"])
+        _times_ = datasets["times"]
+        # while self.TNR_CURRENT_BAND_WORKING_ON[i]!=0:
+        # auto_interpolation_log=auto_interpolation_log[1:]
+        # _times_=_times_[1:]
+        # i=i+1
+        # print(i)
+        x, y = np.meshgrid(_times_, self._frequencies_ / 1000)
+        # auto_interpolation_log = 10 * np.log10(datasets["AUTO_INTERPOLATION"])
         levels = MaxNLocator(nbins=250).tick_values(
             auto_interpolation_log.min(), auto_interpolation_log.max()
         )
@@ -471,7 +479,9 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         ax0.set_ylabel("frequences")
         plt.show()
 
-    def plot_tnr_data_for_quicklook_bis(self): # plot the spectrum using as_array and contourf
+    def plot_tnr_data_for_quicklook_bis(
+        self,
+    ):  # plot the spectrum using as_array and contourf
         """Plot the TNR data using an array datasets and matplotlib with contourf
 
         Args:
@@ -481,9 +491,11 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             tuple: matplotlib figure and axes
         """
         datasets = self.as_array(sensor=4)
-        x, y = np.meshgrid(datasets["times"], self._frequencies_ / 1000) #avec self._frequencies_ il y a un pb ...
+        x, y = np.meshgrid(
+            datasets["times"], self._frequencies_ / 1000
+        )  # avec self._frequencies_ il y a un pb ...
         auto_interpolation_log = 10 * np.log10(datasets["AUTO_INTERPOLATION"])
-        plt.contourf(x, y/1000,auto_interpolation_log.T, levels=100, cmap="jet")
+        plt.contourf(x, y / 1000, auto_interpolation_log.T, levels=100, cmap="jet")
         cbar = plt.colorbar()
         cbar.set_label("Power spectral density (10*log10 V²/Hz)", fontsize=20)
         plt.yscale("log")
@@ -521,9 +533,8 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
         return data_dic_per_frequencies
 
-    
-    def as_xarray(self): # Return the data as a xarray
-        
+    def as_xarray(self):  # Return the data as a xarray
+
         import xarray
 
         datasets = {
@@ -534,22 +545,18 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
         with self.open(self.filepath) as cdf_file:
 
-            for band_label,frequency_key in enumerate(self.frequency_keys):
+            for band_label, frequency_key in enumerate(self.frequency_keys):
                 frequencies = self.frequencies()[frequency_key]
                 if len(frequencies) == 0:
                     continue
-                #times = self.file[f"Epoch_{frequency_key}"][...]
-                _times_=self.datas_per_band(band_label)["Times"]
+                # times = self.file[f"Epoch_{frequency_key}"][...]
+                _times_ = self.datas_per_band(band_label)["Times"]
 
                 # force lower keys for frequency and time attributes
-                time_attrs = {
-                    k.lower(): v
-                    for k, v in cdf_file["Epoch"].attrs.items()
-                }
+                time_attrs = {k.lower(): v for k, v in cdf_file["Epoch"].attrs.items()}
 
                 frequency_attrs = {
-                k.lower(): v 
-                for k, v in cdf_file["TNR_BAND_FREQ"].attrs.items()
+                    k.lower(): v for k, v in cdf_file["TNR_BAND_FREQ"].attrs.items()
                 }
 
                 if not frequency_attrs["units"].strip():
@@ -557,28 +564,23 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
                 for dataset_key in datasets:
                     values = self.datas_per_band(band_label)["Auto"]
-                    attrs = {
-                        k.lower(): v
-                        for k, v in cdf_file[
-                            "AUTO1"
-                        ].attrs.items()
-                    }
+                    attrs = {k.lower(): v for k, v in cdf_file["AUTO1"].attrs.items()}
 
                     # if units are not defined, use the default ones
                     if not attrs["units"].strip():
                         attrs["units"] = default_units.get(dataset_key, "")
 
                     datasets[dataset_key][frequency_key] = xarray.DataArray(
-                    values.T,
-                    coords=[
-                        ("frequency", frequencies, frequency_attrs),
-                        ("time", _times_, time_attrs),
-                    ],
-                    attrs=attrs,
-                    name=f"{dataset_key}_{frequency_key}",
-                )
+                        values.T,
+                        coords=[
+                            ("frequency", frequencies, frequency_attrs),
+                            ("time", _times_, time_attrs),
+                        ],
+                        attrs=attrs,
+                        name=f"{dataset_key}_{frequency_key}",
+                    )
 
-        return datasets   
+        return datasets
 
 
 # ----------------------------------------

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from examples.plot_rpw_data import plot_lfr_bp1_data
 from maser.data.base import CdfData
 
 from astropy.time import Time
@@ -8,7 +7,6 @@ from maser.data.base.sweeps import Sweeps
 import matplotlib.colorbar as cbar
 from matplotlib import colors
 from matplotlib import pyplot as plt
-from maser.data import Data
 
 
 class RpwLfrSurvBp1Sweeps(Sweeps):
@@ -45,9 +43,9 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
     # keys used to loop over F0, F1, F2 frequency ranges and Burst/Normal modes
     frequency_keys = ["N_F2", "B_F1", "N_F1", "B_F0", "N_F0"]
 
-    #keys used to loop over F0 and F1 frequency ranges and Burst/Normal modes
+    # keys used to loop over F0 and F1 frequency ranges and Burst/Normal modes
 
-    frequency_keys_wo_F0=["N_F2","B_F1","N_F1"]
+    frequency_keys_wo_F0 = ["N_F2", "B_F1", "N_F1"]
 
     @property
     def frequencies(self):
@@ -70,18 +68,18 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
             with self.open(self.filepath) as cdf_file:
                 self._times = {}
                 for frequency_key in self.frequency_keys:
-                    #self._times[frequency_key] = Time(
-                        #cdf_file[f"Epoch_{frequency_key}"][...]
-                    #)
+                    # self._times[frequency_key] = Time(
+                    # cdf_file[f"Epoch_{frequency_key}"][...]
+                    # )
                     self._times[frequency_key] = cdf_file[f"Epoch_{frequency_key}"][...]
-                    
+
         return self._times
 
     def as_xarray(self):
         import xarray
 
         datasets = {
-            #"PB": {},
+            # "PB": {},
             "PE": {},
             "PB": {},
             "DOP": {},
@@ -133,13 +131,11 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                 )
         return datasets
 
-
-
     def as_xarray_wo_F0(self):
         import xarray
 
         datasets = {
-            #"PB": {},
+            # "PB": {},
             "PE": {},
             "PB": {},
             "DOP": {},
@@ -191,8 +187,7 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                 )
         return datasets
 
-
-    #def plot_lfr_bp1_data(self,datasets: dict) -> tuple:
+    # def plot_lfr_bp1_data(self,datasets: dict) -> tuple:
     def plot_lfr_bp1_data(self):
         """Plot the LFR BP1 data using xarray datasets and matplotlib
 
@@ -261,10 +256,10 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
             else:
                 cbar_label = dataset_key
             cbar_ax.set_ylabel(cbar_label)
-        return fig,axes
+        return fig, axes
 
     def plot(self):
         datasets = self.as_xarray()
-        #plot_lfr_bp1_data(datasets)
-        fig,axes=self.plot_lfr_bp1_data()
+        # plot_lfr_bp1_data(datasets)
+        fig, axes = self.plot_lfr_bp1_data()
         plt.show()

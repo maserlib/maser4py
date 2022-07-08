@@ -1,20 +1,20 @@
+# -*- coding: utf-8 -*-
 import numpy
 
 
-def fft_filter(x1, tlow, tup): # x1 represente l'entrée (auto)
-    npp = numpy.size(x1) # taille de l'entrée
-    yfo = numpy.fft.ifft(x1) # Fourier discret + ifft
-    yyf0 = yfo[0] #recuperation de la premiere valeur f0
-    freq = numpy.arange(float((npp - 1) / 2) + 1.0) # numpy.arange([start, ]stop, [step, ]dtype=None, *, like=None) Return evenly spaced values within a given interval.
+def fft_filter(x1, tlow, tup):  # x1 represente l'entrée (auto)
+    npp = numpy.size(x1)  # taille de l'entrée
+    yfo = numpy.fft.ifft(x1)  # Fourier discret + ifft
+    yyf0 = yfo[0]  # recuperation de la premiere valeur f0
+    freq = numpy.arange(
+        float((npp - 1) / 2) + 1.0
+    )  # numpy.arange([start, ]stop, [step, ]dtype=None, *, like=None) Return evenly spaced values within a given interval.
     freq = freq / (npp)
     if (numpy.mod(npp, 2)) == 0:
-        yyf = yfo[1 : int(npp / 2)]  # yyf = yfo[ 1:(numpy / 2) - 1 ]
         yyf0 = yfo[0]
-        yyfn = yfo[int(npp / 2)]
         freq = numpy.arange(float(npp / 2) + 1.0)
         freq[0 : int(npp / 2)] = freq[0 : int(npp / 2)] / (npp)
         freq[int(npp / 2)] = 1.0 / (2.0)
-    period = [1.0 / freq[1::], 0]
     fup = tup / npp
     flow = tlow / (npp)
     nnf = numpy.size(freq)
@@ -65,14 +65,14 @@ def pre_process(V, tlow=0.01, tup=280.0):
         xfnull = outf[1]
         Vf[ii, :] = xf
         Vf0[ii, :] = xfnull
-    
+
     V[75:80, :] = 1e-25
     V[85:86, :] = 1e-25
     V[103:104, :] = 1e-25
     V[110:111, :] = 1e-25
     V[115:116, :] = 1e-25
     V[118:119, :] = 1e-25
-    
+
     VV = 10.0 * numpy.log10(V)
 
     Vfil = Vf + numpy.median(Vf0)

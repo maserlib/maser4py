@@ -17,5 +17,3 @@ def plot_tnr():
 
 if __name__ == "__main__":
     plot_tnr()
-
-
