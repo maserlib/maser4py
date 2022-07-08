@@ -17,959 +17,11 @@ from maser.data.rpw.filtre_for_tnr import pre_process
 
 import matplotlib.dates as mdates
 
-def quick_look_tnr_lfr_corrections(filepathtnr,filepathlfr): #plot in log scale, PE first
 
-    
-    #fig, axess = plt.subplots( 7, 1, figsize=(9, 16))
-    my_data_lfr=Data(filepath=filepathlfr)
-    my_data_tnr=Data(filepath=filepathtnr)
-    my_data_tnr._init_
 
-    fig,axes=plt.subplots(6,1,sharex=True)
 
 
-    dic_data = my_data_tnr.datas_dic_per_band()
-    auto = {
-            0: dic_data[0]["Auto"],
-            1: dic_data[1]["Auto"],
-            2: dic_data[2]["Auto"],
-            3: dic_data[3]["Auto"],
-        }  # one dictionary for auto
-    times = {
-            0: dic_data[0]["Times"],
-            1: dic_data[1]["Times"],
-            2: dic_data[2]["Times"],
-            3: dic_data[3]["Times"],
-        }  # one dictionary for times
-    freq = {
-            0: my_data_tnr.frequenciesA,
-            1: my_data_tnr.frequenciesB,
-            2: my_data_tnr.frequenciesC,
-            3: my_data_tnr.frequenciesD,
-        }  # one dictionary for frequencies
-    auto_min = min(
-            dic_data[0]["auto_min"],
-            dic_data[1]["auto_min"],
-            dic_data[2]["auto_min"],
-            dic_data[3]["auto_min"],
-        )  # get minimum value of auto
-    auto_max = max(
-            dic_data[0]["auto_max"],
-            dic_data[1]["auto_max"],
-            dic_data[2]["auto_max"],
-            dic_data[3]["auto_max"],
-        )  # get maximum value of auto
-        #print("auto_min,auto_max", auto_min, auto_max)
-    
-    cbar_ax, kw = cbar.make_axes(axes[0])
-    cmap = plt.get_cmap("jet")
-    levels = MaxNLocator(nbins=250).tick_values(10 * np.log10(auto_min), 10 * np.log10(auto_max))
-    # norm=BoundaryNorm(levels,ncolors=cmap.N,clip=True)
-
-    for index_band in range(3):
-        x, y = np.meshgrid(times[index_band], freq[index_band])
-        auto_log = 10 * np.log10(auto[index_band])
-        auto_log = np.transpose(auto_log)
-        im = axes[0].pcolormesh(
-            x,
-            y,
-            auto_log,
-            cmap=cmap,
-            vmax=10 * np.log10(auto_max),
-            vmin=10 * np.log10(auto_min),
-        )
-
-    fig.colorbar(im, cax=cbar_ax)
-    axes[0].set_yscale("log")
-    axes[0].set_xlabel("Times")
-    axes[0].set_ylabel("frequencies[Hz]")
-
-
-    datasets = my_data_lfr.as_xarray()
-
-    print(datasets['PE'])
-
-    voltage=datasets['PE']
-    magnetic=datasets['PB']
-
-    PB_min=None
-    PB_max=None
-
-    PE_min=None
-    PE_max=None
-
-    for key in voltage:
-        voltage[key].values=10*np.log10(voltage[key].values)
-        
-        if PE_min is None:
-            PE_min=voltage[key].values.min()
-        if PE_max is None:
-            PE_max=voltage[key].values.max()
-
-        PE_min=min(PE_min,voltage[key].values.min())
-        PE_max=max(PE_max,voltage[key].values.max())
-
-    for key_B in magnetic:
-        magnetic[key_B].values=10*np.log10(magnetic[key_B].values)
-
-        if PB_min is None:
-            PB_min=magnetic[key_B].values.min()
-        if PB_max is None:
-            PB_max=magnetic[key_B].values.max()
-
-        PB_min=min(PB_min,magnetic[key_B].values.min())
-        PB_max=max(PB_max,magnetic[key_B].values.max())
-
-    print(PE_min)
-    print(PE_max)
-    datasets['PE']=voltage
-    datasets['PB']=magnetic
-
-    print(datasets['PE'])
-
-
-    # prepare kwargs for each dataset/plot
-    plot_kwargs = {
-        "PE": {"norm": colors.LogNorm(),"vmin":PE_min,"vmax":PE_max},
-        "PB": {"norm": colors.LogNorm(),"vmin":PB_min,"vmax":PB_max},
-        "DOP": {"vmin": 0, "vmax": 1},
-        "ELLIP": {"vmin": 0, "vmax": 1},
-        "SX_REA": {},
-        }
-
-    for ax_idx, dataset_key in enumerate(datasets):
-
-            # select the ax to plot on
-            ax = axes[ax_idx+1]
-
-            # create the associated colorbar
-            cbar_ax, kw = cbar.make_axes(ax)
-
-            # compute vmin and vmax by taking the min and max of each dataset for each frequency range
-            vmin = plot_kwargs[dataset_key].get("vmin", None)
-            if vmin is None:
-                for data_array in datasets[dataset_key].values():
-                    vmin = (
-                        min(vmin, data_array.min())
-                        if vmin is not None
-                        else data_array.min()
-                    )
-                plot_kwargs[dataset_key]["vmin"] = vmin
-
-            vmax = plot_kwargs[dataset_key].get("vmax", None)
-            if vmax is None:
-                for data_array in datasets[dataset_key].values():
-                    vmax = (
-                        max(vmax, data_array.max())
-                        if vmax is not None
-                        else data_array.max()
-                    )
-                plot_kwargs[dataset_key]["vmax"] = vmax
-
-            # plot the data
-            for data_array in datasets[dataset_key].values():
-                data_array.plot.pcolormesh(
-                    ax=ax,
-                    cmap=cmap,
-                    yscale="log",
-                    add_colorbar=True,
-                    #**plot_kwargs[dataset_key],
-                    levels=100,
-                    vmin=vmin,
-                    vmax=vmax,
-                    cbar_ax=cbar_ax,
-                )
-
-            # set the color bar title
-            if data_array.attrs["units"]:
-                cbar_label = f'{dataset_key} [${data_array.attrs["units"]}$]'
-            else:
-                cbar_label = dataset_key
-            cbar_ax.set_ylabel(cbar_label)
-
-    plt.show()
-
-
-
-def quick_look_tnr_lfr_wo_F0(filepathtnr,filepathlfr): # delete the band F0 (N and B) for DOP,ELLIP and SX_REA
-
-    #fig, axess = plt.subplots( 7, 1, figsize=(9, 16))
-    my_data_lfr=Data(filepath=filepathlfr)
-    my_data_tnr=Data(filepath=filepathtnr)
-    my_data_tnr._init_
-
-    fig,axes=plt.subplots(6,1,sharex=True)
-
-
-    dic_data = my_data_tnr.datas_dic_per_band()
-    auto = {
-            0: dic_data[0]["Auto"],
-            1: dic_data[1]["Auto"],
-            2: dic_data[2]["Auto"],
-            3: dic_data[3]["Auto"],
-        }  # one dictionary for auto
-    times = {
-            0: dic_data[0]["Times"],
-            1: dic_data[1]["Times"],
-            2: dic_data[2]["Times"],
-            3: dic_data[3]["Times"],
-        }  # one dictionary for times
-    freq = {
-            0: my_data_tnr.frequenciesA,
-            1: my_data_tnr.frequenciesB,
-            2: my_data_tnr.frequenciesC,
-            3: my_data_tnr.frequenciesD,
-        }  # one dictionary for frequencies
-    auto_min = min(
-            dic_data[0]["auto_min"],
-            dic_data[1]["auto_min"],
-            dic_data[2]["auto_min"],
-            dic_data[3]["auto_min"],
-        )  # get minimum value of auto
-    auto_max = max(
-            dic_data[0]["auto_max"],
-            dic_data[1]["auto_max"],
-            dic_data[2]["auto_max"],
-            dic_data[3]["auto_max"],
-        )  # get maximum value of auto
-        #print("auto_min,auto_max", auto_min, auto_max)
-    
-    cbar_ax, kw = cbar.make_axes(axes[0])
-    cmap = plt.get_cmap("jet")
-    levels = MaxNLocator(nbins=250).tick_values(10 * np.log10(auto_min), 10 * np.log10(auto_max))
-    # norm=BoundaryNorm(levels,ncolors=cmap.N,clip=True)
-
-    for index_band in range(3):
-        x, y = np.meshgrid(times[index_band], freq[index_band])
-        auto_log = 10 * np.log10(auto[index_band])
-        auto_log = np.transpose(auto_log)
-        im = axes[0].pcolormesh(
-            x,
-            y,
-            auto_log,
-            cmap=cmap,
-            vmax=10 * np.log10(auto_max),
-            vmin=10 * np.log10(auto_min),
-        )
-
-    fig.colorbar(im, cax=cbar_ax)
-    axes[0].set_yscale("log")
-    axes[0].set_xlabel("Times")
-    axes[0].set_ylabel("frequencies[Hz]")
-
-
-    datasets = my_data_lfr.as_xarray()
-    datasets_wo_F0=my_data_lfr.as_xarray_wo_F0()
-
-    print(datasets['PE'])
-
-    voltage=datasets['PE']
-    magnetic=datasets_wo_F0['PB']
-    dop=datasets_wo_F0['DOP']
-
-    PB_min=None
-    PB_max=None
-
-    PE_min=None
-    PE_max=None
-
-    for key in voltage:
-        voltage[key].values=10*np.log10(voltage[key].values)
-        
-        if PE_min is None:
-            PE_min=voltage[key].values.min()
-        if PE_max is None:
-            PE_max=voltage[key].values.max()
-
-        PE_min=min(PE_min,voltage[key].values.min())
-        PE_max=max(PE_max,voltage[key].values.max())
-
-    for key_B in magnetic:
-        magnetic[key_B].values=10*np.log10(magnetic[key_B].values)
-
-        if PB_min is None:
-            PB_min=magnetic[key_B].values.min()
-        if PB_max is None:
-            PB_max=magnetic[key_B].values.max()
-
-        PB_min=min(PB_min,magnetic[key_B].values.min())
-        PB_max=max(PB_max,magnetic[key_B].values.max())
-
-    print(PE_min)
-    print(PE_max)
-
-    _datasets_={"PE":voltage,"PB":magnetic,"DOP":dop,"ELLIP":datasets_wo_F0["ELLIP"],"SX_REA":datasets_wo_F0["SX_REA"]}
-
-    print ('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-    print(dop)
-    print('ELLIP ELLIP ELLIP ELLIP ELLIP')
-    print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
-
-
-    # prepare kwargs for each dataset/plot
-    plot_kwargs = {
-        "PE": {"norm": colors.LogNorm(),"vmin":PE_min,"vmax":PE_max},
-        "PB": {"norm": colors.LogNorm(),"vmin":PB_min,"vmax":PB_max},
-        "DOP": {"vmin": 0, "vmax": 1},
-        "ELLIP": {"vmin": 0, "vmax": 1},
-        "SX_REA": {},
-        }
-
-    for ax_idx, dataset_key in enumerate(_datasets_):
-
-            # select the ax to plot on
-            ax = axes[ax_idx+1]
-
-            # create the associated colorbar
-            cbar_ax, kw = cbar.make_axes(ax)
-
-            # compute vmin and vmax by taking the min and max of each dataset for each frequency range
-            vmin = plot_kwargs[dataset_key].get("vmin", None)
-            if vmin is None:
-                for data_array in _datasets_[dataset_key].values():
-                    vmin = (
-                        min(vmin, data_array.min())
-                        if vmin is not None
-                        else data_array.min()
-                    )
-                plot_kwargs[dataset_key]["vmin"] = vmin
-
-            vmax = plot_kwargs[dataset_key].get("vmax", None)
-            if vmax is None:
-                for data_array in _datasets_[dataset_key].values():
-                    vmax = (
-                        max(vmax, data_array.max())
-                        if vmax is not None
-                        else data_array.max()
-                    )
-                plot_kwargs[dataset_key]["vmax"] = vmax
-
-            # plot the data
-            for data_array in _datasets_[dataset_key].values():
-                data_array.plot.pcolormesh(
-                    ax=ax,
-                    cmap=cmap,
-                    yscale="log",
-                    add_colorbar=True,
-                    #**plot_kwargs[dataset_key],
-                    levels=100,
-                    vmin=vmin,
-                    vmax=vmax,
-                    cbar_ax=cbar_ax,
-                )
-
-            # set the color bar title
-            if data_array.attrs["units"]:
-                cbar_label = f'{dataset_key} [${data_array.attrs["units"]}$]'
-            else:
-                cbar_label = dataset_key
-            cbar_ax.set_ylabel(cbar_label)
-
-    plt.show()
-
-
-
-def quick_look_tnr_lfr_fusion(filepathtnr,filepathlfr): # try to fusion tnr and lfr data
-
-    my_data_lfr=Data(filepath=filepathlfr)
-    my_data_tnr=Data(filepath=filepathtnr)
-    my_data_tnr._init_
-
-    fig,axes=plt.subplots(6,1,sharex=True)
-
-
-    datasets = my_data_lfr.as_xarray()
-    datasets_wo_F0=my_data_lfr.as_xarray_wo_F0()
-
-    print(datasets['PE'])
-
-    voltage=datasets['PE']
-    magnetic=datasets_wo_F0['PB']
-    dop=datasets_wo_F0['DOP']
-
-    PB_min=None
-    PB_max=None
-
-    PE_min=None
-    PE_max=None
-
-    for key in voltage:
-        voltage[key].values=10*np.log10(voltage[key].values)
-        
-        if PE_min is None:
-            PE_min=voltage[key].values.min()
-        if PE_max is None:
-            PE_max=voltage[key].values.max()
-
-        PE_min=min(PE_min,voltage[key].values.min())
-        PE_max=max(PE_max,voltage[key].values.max())
-
-    for key_B in magnetic:
-        magnetic[key_B].values=10*np.log10(magnetic[key_B].values)
-
-        if PB_min is None:
-            PB_min=magnetic[key_B].values.min()
-        if PB_max is None:
-            PB_max=magnetic[key_B].values.max()
-
-        PB_min=min(PB_min,magnetic[key_B].values.min())
-        PB_max=max(PB_max,magnetic[key_B].values.max())
-
-    print(PE_min)
-    print(PE_max)
-
-
-    
-    dic_voltage_lfr={}
-
-    for key_voltage_lfr in voltage :
-        dic_voltage_lfr[key_voltage_lfr]=voltage[key_voltage_lfr]
-    
-    dic_data = my_data_tnr.datas_dic_per_band()
-    auto = {
-            0: dic_data[0]["Auto"],
-            1: dic_data[1]["Auto"],
-            2: dic_data[2]["Auto"],
-            3: dic_data[3]["Auto"],
-        }  # one dictionary for auto
-    times = {
-            0: dic_data[0]["Times"],
-            1: dic_data[1]["Times"],
-            2: dic_data[2]["Times"],
-            3: dic_data[3]["Times"],
-        }  # one dictionary for times
-    freq = {
-            0: my_data_tnr.frequenciesA,
-            1: my_data_tnr.frequenciesB,
-            2: my_data_tnr.frequenciesC,
-            3: my_data_tnr.frequenciesD,
-        }  # one dictionary for frequencies
-    auto_min = min(
-            dic_data[0]["auto_min"],
-            dic_data[1]["auto_min"],
-            dic_data[2]["auto_min"],
-            dic_data[3]["auto_min"],
-        )  # get minimum value of auto
-    auto_max = max(
-            dic_data[0]["auto_max"],
-            dic_data[1]["auto_max"],
-            dic_data[2]["auto_max"],
-            dic_data[3]["auto_max"],
-        )  # get maximum value of auto
-        #print("auto_min,auto_max", auto_min, auto_max)
-    
-    cbar_ax, kw = cbar.make_axes(axes[0])
-    cmap = plt.get_cmap("jet")
-    levels = MaxNLocator(nbins=250).tick_values(10 * np.log10(auto_min), 10 * np.log10(auto_max))
-    # norm=BoundaryNorm(levels,ncolors=cmap.N,clip=True)
-
-    for key_volt_lfr in dic_voltage_lfr :
-        x,y=np.meshgrid(dic_voltage_lfr[key_volt_lfr].time.values,dic_voltage_lfr[key_volt_lfr].frequency.values)
-        im=axes[0].pcolormesh(
-            x,
-            y,
-            dic_voltage_lfr[key_volt_lfr].values,
-            vmax=10 * np.log10(auto_max),
-            vmin=10 * np.log10(auto_min)
-        )
-
-    for index_band in range(3):
-        x, y = np.meshgrid(times[index_band], freq[index_band])
-        auto_log = 10 * np.log10(auto[index_band])
-        auto_log = np.transpose(auto_log)
-        im = axes[0].pcolormesh(
-            x,
-            y,
-            auto_log,
-            cmap=cmap,
-            vmax=10 * np.log10(auto_max),
-            vmin=10 * np.log10(auto_min),
-        )
-
-    fig.colorbar(im, cax=cbar_ax)
-    axes[0].set_yscale("log")
-    axes[0].set_xlabel("Times")
-    axes[0].set_ylabel("frequencies[Hz]")
-
-
-    _datasets_={"PE":voltage,"PB":magnetic,"DOP":dop,"ELLIP":datasets_wo_F0["ELLIP"],"SX_REA":datasets_wo_F0["SX_REA"]}
-
-    print ('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-    print(dop)
-    print('ELLIP ELLIP ELLIP ELLIP ELLIP')
-    print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
-
-
-    # prepare kwargs for each dataset/plot
-    plot_kwargs = {
-        "PE": {"norm": colors.LogNorm(),"vmin":PE_min,"vmax":PE_max},
-        "PB": {"norm": colors.LogNorm(),"vmin":PB_min,"vmax":PB_max},
-        "DOP": {"vmin": 0, "vmax": 1},
-        "ELLIP": {"vmin": 0, "vmax": 1},
-        "SX_REA": {},
-        }
-
-    for ax_idx, dataset_key in enumerate(_datasets_):
-
-            # select the ax to plot on
-            ax = axes[ax_idx+1]
-
-            # create the associated colorbar
-            cbar_ax, kw = cbar.make_axes(ax)
-
-            # compute vmin and vmax by taking the min and max of each dataset for each frequency range
-            vmin = plot_kwargs[dataset_key].get("vmin", None)
-            if vmin is None:
-                for data_array in _datasets_[dataset_key].values():
-                    vmin = (
-                        min(vmin, data_array.min())
-                        if vmin is not None
-                        else data_array.min()
-                    )
-                plot_kwargs[dataset_key]["vmin"] = vmin
-
-            vmax = plot_kwargs[dataset_key].get("vmax", None)
-            if vmax is None:
-                for data_array in _datasets_[dataset_key].values():
-                    vmax = (
-                        max(vmax, data_array.max())
-                        if vmax is not None
-                        else data_array.max()
-                    )
-                plot_kwargs[dataset_key]["vmax"] = vmax
-
-            # plot the data
-            for data_array in _datasets_[dataset_key].values():
-                data_array.plot.pcolormesh(
-                    ax=ax,
-                    cmap=cmap,
-                    yscale="log",
-                    add_colorbar=True,
-                    #**plot_kwargs[dataset_key],
-                    levels=100,
-                    vmin=vmin,
-                    vmax=vmax,
-                    cbar_ax=cbar_ax,
-                )
-
-            # set the color bar title
-            if data_array.attrs["units"]:
-                cbar_label = f'{dataset_key} [${data_array.attrs["units"]}$]'
-            else:
-                cbar_label = dataset_key
-            cbar_ax.set_ylabel(cbar_label)
-
-    plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-def quick_look_tnr_lfr_only_E(filepathtnr,filepathlfr): # Plot only E
-
-
-    my_data_lfr=Data(filepath=filepathlfr)
-    my_data_tnr=Data(filepath=filepathtnr)
-    my_data_tnr._init_
-
-    fig,axes=plt.subplots(1,1)
-
-
-    datasets = my_data_lfr.as_xarray()
-    datasets_wo_F0=my_data_lfr.as_xarray_wo_F0()
-
-    print(datasets['PE'])
-
-    voltage=datasets['PE']
-
-    
-    # getting the frequencies values of LFR F0 that
-
-    if "B_F0" in voltage:
-        voltage["B_F0"]=voltage["B_F0"][0:6]
-
-    if "N_F0" in voltage:
-        voltage["N_F0"]=voltage["N_F0"][0:3]
-
-    magnetic=datasets_wo_F0['PB']
-    dop=datasets_wo_F0['DOP']
-
-    PB_min=None
-    PB_max=None
-
-    PE_min=None
-    PE_max=None
-
-
-
-    for key in voltage:
-        voltage[key].values=10*np.log10(voltage[key].values) #log scale
-        # Getting PE_min and PE_max
-        if PE_min is None: 
-            PE_min=voltage[key].values.min()
-        if PE_max is None:
-            PE_max=voltage[key].values.max()
-
-        PE_min=min(PE_min,voltage[key].values.min())
-        PE_max=max(PE_max,voltage[key].values.max())
-
-    for key_B in magnetic:
-        magnetic[key_B].values=10*np.log10(magnetic[key_B].values)
-
-        if PB_min is None:
-            PB_min=magnetic[key_B].values.min()
-        if PB_max is None:
-            PB_max=magnetic[key_B].values.max()
-
-        PB_min=min(PB_min,magnetic[key_B].values.min())
-        PB_max=max(PB_max,magnetic[key_B].values.max())
-
-    print(PE_min)
-    print(PE_max)
-
-
-    
-    dic_voltage_lfr={}
-
-    for key_voltage_lfr in voltage :
-        dic_voltage_lfr[key_voltage_lfr]=voltage[key_voltage_lfr]
-    
-    dic_data = my_data_tnr.datas_dic_per_band()
-    auto = {
-            0: dic_data[0]["Auto"],
-            1: dic_data[1]["Auto"],
-            2: dic_data[2]["Auto"],
-            3: dic_data[3]["Auto"],
-        }  # one dictionary for auto
-    times = {
-            0: dic_data[0]["Times"],
-            1: dic_data[1]["Times"],
-            2: dic_data[2]["Times"],
-            3: dic_data[3]["Times"],
-        }  # one dictionary for times
-    freq = {
-            0: my_data_tnr.frequenciesA,
-            1: my_data_tnr.frequenciesB,
-            2: my_data_tnr.frequenciesC,
-            3: my_data_tnr.frequenciesD,
-        }  # one dictionary for frequencies
-    auto_min = min(
-            #PE_min,
-            dic_data[0]["auto_min"],
-            dic_data[1]["auto_min"],
-            dic_data[2]["auto_min"],
-            dic_data[3]["auto_min"],
-        )  # get minimum value of auto
-    auto_max = max(
-            #PE_max,
-            dic_data[0]["auto_max"],
-            dic_data[1]["auto_max"],
-            dic_data[2]["auto_max"],
-            dic_data[3]["auto_max"],
-        )  # get maximum value of auto
-        #print("auto_min,auto_max", auto_min, auto_max)
-
-
-    auto_max=10*np.log10(auto_max)
-    auto_min=10*np.log10(auto_min)
-
-    auto_min=min(auto_min,PE_min)
-    auto_max=max(auto_max,PE_max)
-    
-    cbar_ax, kw = cbar.make_axes(axes)
-    cmap = plt.get_cmap("jet")
-    levels = MaxNLocator(nbins=250).tick_values(auto_min,auto_max)
-    # norm=BoundaryNorm(levels,ncolors=cmap.N,clip=True)
-
-    for key_volt_lfr in dic_voltage_lfr :
-        x,y=np.meshgrid(dic_voltage_lfr[key_volt_lfr].time.values,dic_voltage_lfr[key_volt_lfr].frequency.values)
-        im=axes.pcolormesh(
-            x,
-            y,
-            dic_voltage_lfr[key_volt_lfr].values,
-            cmap=cmap,
-            vmax=auto_max,
-            vmin=auto_min,
-        )
-
-    for index_band in range(4):
-        x, y = np.meshgrid(times[index_band], freq[index_band])
-        auto_log = 10 * np.log10(auto[index_band])
-        auto_log = np.transpose(auto_log)
-        im = axes.pcolormesh(
-            x,
-            y,
-            auto_log,
-            cmap=cmap,
-            vmax=auto_max,
-            vmin=auto_min,
-        )
-
-    fig.colorbar(im, cax=cbar_ax)
-    cbar_ax.set_ylabel('PE : V²/Hz (dB scale)')
-    axes.set_yscale("log")
-    axes.set_xlabel("Times")
-    axes.set_ylabel("frequency[Hz]")
-    title=times[0][80]
-    title=title.strftime("%m/%d/%Y")
-    title=title+' '+' combined TNR and LFR data'
-    print(title)
-    plt.suptitle(title,fontweight='bold',style='italic',color='grey')
-
-    plt.show()
-
-
-
-
-
-
-
-
-def quick_look_tnr_lfr_final(filepathtnr,filepathlfr): 
-    my_data_lfr=Data(filepath=filepathlfr)
-    my_data_tnr=Data(filepath=filepathtnr)
-    my_data_tnr._init_
-
-    fig,axes=plt.subplots(5,1,sharex=True)
-
-
-    datasets = my_data_lfr.as_xarray()
-    datasets_wo_F0=my_data_lfr.as_xarray_wo_F0()
-
-    print(datasets['PE'])
-
-    voltage=datasets['PE']
-
-    if "B_F0" in voltage:
-        voltage["B_F0"]=voltage["B_F0"][0:6]
-
-    if "N_F0" in voltage:
-        voltage["N_F0"]=voltage["N_F0"][0:3]
-
-    magnetic=datasets_wo_F0['PB']
-    dop=datasets_wo_F0['DOP']
-
-    PB_min=None
-    PB_max=None
-
-    PE_min=None
-    PE_max=None
-
-
-
-    for key in voltage:
-        voltage[key].values=10*np.log10(voltage[key].values)
-        
-        if PE_min is None:
-            PE_min=voltage[key].values.min()
-        if PE_max is None:
-            PE_max=voltage[key].values.max()
-
-        PE_min=min(PE_min,voltage[key].values.min())
-        PE_max=max(PE_max,voltage[key].values.max())
-
-    for key_B in magnetic:
-        magnetic[key_B].values=10*np.log10(magnetic[key_B].values)
-
-        if PB_min is None:
-            PB_min=magnetic[key_B].values.min()
-        if PB_max is None:
-            PB_max=magnetic[key_B].values.max()
-
-        PB_min=min(PB_min,magnetic[key_B].values.min())
-        PB_max=max(PB_max,magnetic[key_B].values.max())
-
-    print(PE_min)
-    print(PE_max)
-
-
-    
-    dic_voltage_lfr={}
-
-    for key_voltage_lfr in voltage :
-        dic_voltage_lfr[key_voltage_lfr]=voltage[key_voltage_lfr]
-    
-    dic_data = my_data_tnr.datas_dic_per_band()
-    auto = {
-            0: dic_data[0]["Auto"],
-            1: dic_data[1]["Auto"],
-            2: dic_data[2]["Auto"],
-            3: dic_data[3]["Auto"],
-        }  # one dictionary for auto
-    times = {
-            0: dic_data[0]["Times"],
-            1: dic_data[1]["Times"],
-            2: dic_data[2]["Times"],
-            3: dic_data[3]["Times"],
-        }  # one dictionary for times
-    freq = {
-            0: my_data_tnr.frequenciesA,
-            1: my_data_tnr.frequenciesB,
-            2: my_data_tnr.frequenciesC,
-            3: my_data_tnr.frequenciesD,
-        }  # one dictionary for frequencies
-    auto_min = min(
-            #PE_min,
-            dic_data[0]["auto_min"],
-            dic_data[1]["auto_min"],
-            dic_data[2]["auto_min"],
-            dic_data[3]["auto_min"],
-        )  # get minimum value of auto
-    auto_max = max(
-            #PE_max,
-            dic_data[0]["auto_max"],
-            dic_data[1]["auto_max"],
-            dic_data[2]["auto_max"],
-            dic_data[3]["auto_max"],
-        )  # get maximum value of auto
-        #print("auto_min,auto_max", auto_min, auto_max)
-
-
-    auto_max=10*np.log10(auto_max)
-    auto_min=10*np.log10(auto_min)
-
-    auto_min=min(auto_min,PE_min)
-    auto_max=max(auto_max,PE_max)
-    
-    cbar_ax, kw = cbar.make_axes(axes[0])
-    cmap = plt.get_cmap("jet")
-    levels = MaxNLocator(nbins=250).tick_values(auto_min,auto_max)
-    # norm=BoundaryNorm(levels,ncolors=cmap.N,clip=True)
-
-    for key_volt_lfr in dic_voltage_lfr :
-        x,y=np.meshgrid(dic_voltage_lfr[key_volt_lfr].time.values,dic_voltage_lfr[key_volt_lfr].frequency.values)
-        im=axes[0].pcolormesh(
-            x,
-            y,
-            dic_voltage_lfr[key_volt_lfr].values,
-            cmap=cmap,
-            #levels=10,
-            vmax=auto_max,
-            vmin=auto_min,
-        )
-
-    for index_band in range(3):
-        x, y = np.meshgrid(times[index_band], freq[index_band])
-        auto_log = 10 * np.log10(auto[index_band])
-        auto_log = np.transpose(auto_log)
-        im = axes[0].pcolormesh(
-            x,
-            y,
-            auto_log,
-            cmap=cmap,
-            #levels=10,
-            vmax=auto_max,
-            vmin=auto_min,
-        )
-
-    fig.colorbar(im, cax=cbar_ax)
-    axes[0].set_yscale("log")
-    #axes[0].set_xlabel("Times")
-    axes[0].set_ylabel("frequency[Hz]")
-    cbar_ax.set_ylabel("PE (V²/Hz)")
-
-
-    #_datasets_={"PE":voltage,"PB":magnetic,"DOP":dop,"ELLIP":datasets_wo_F0["ELLIP"],"SX_REA":datasets_wo_F0["SX_REA"]}
-
-    _datasets_={"PB":magnetic,"DOP":dop,"ELLIP":datasets_wo_F0["ELLIP"],"SX_REA":datasets_wo_F0["SX_REA"]}
-
-    print ('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-    print(dop)
-    print('ELLIP ELLIP ELLIP ELLIP ELLIP')
-    print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
-
-
-    # prepare kwargs for each dataset/plot
-    plot_kwargs = {
-        "PE": {"norm": colors.LogNorm(),"vmin":PE_min,"vmax":PE_max},
-        "PB": {"norm": colors.LogNorm(),"vmin":PB_min,"vmax":PB_max},
-        "DOP": {"vmin": 0, "vmax": 1},
-        "ELLIP": {"vmin": 0, "vmax": 1},
-        "SX_REA": {},
-        }
-
-    for ax_idx, dataset_key in enumerate(_datasets_):
-
-            # select the ax to plot on
-            ax = axes[ax_idx+1]
-
-            # create the associated colorbar
-            cbar_ax, kw = cbar.make_axes(ax)
-
-            # compute vmin and vmax by taking the min and max of each dataset for each frequency range
-            vmin = plot_kwargs[dataset_key].get("vmin", None)
-            if vmin is None:
-                for data_array in _datasets_[dataset_key].values():
-                    vmin = (
-                        min(vmin, data_array.min())
-                        if vmin is not None
-                        else data_array.min()
-                    )
-                plot_kwargs[dataset_key]["vmin"] = vmin
-
-            vmax = plot_kwargs[dataset_key].get("vmax", None)
-            if vmax is None:
-                for data_array in _datasets_[dataset_key].values():
-                    vmax = (
-                        max(vmax, data_array.max())
-                        if vmax is not None
-                        else data_array.max()
-                    )
-                plot_kwargs[dataset_key]["vmax"] = vmax
-
-            # plot the data
-            for data_array in _datasets_[dataset_key].values():
-                data_array.plot.pcolormesh(
-                    ax=ax,
-                    cmap=cmap,
-                    yscale="log",
-                    add_colorbar=True,
-                    #**plot_kwargs[dataset_key],
-                    #levels=10,
-                    vmin=vmin,
-                    vmax=vmax,
-                    cbar_ax=cbar_ax,
-                )
-
-            # set the color bar title
-            if data_array.attrs["units"]:
-                cbar_label = f'{dataset_key} [${data_array.attrs["units"]}$]'
-            else:
-                cbar_label = dataset_key
-            cbar_ax.set_ylabel(cbar_label)
-
-    title=times[0][80]
-    title=title.strftime("%m/%d/%Y")
-    title=title+' '+' Quick look of combined TNR and LFR data'
-
-
-    xformatter=mdates.DateFormatter('%H:%M')
-    axes[0].xaxis.set_major_formatter(xformatter)
-
-    axes[0].set_xlabel("")
-    axes[1].set_xlabel("")
-    axes[2].set_xlabel("")
-    axes[3].set_xlabel("")
-    axes[4].set_xlabel("")
-
-    #plt.suptitle(title,fontweight='bold',style='italic',color='grey')
-
-    plt.show()
-
-
-
-
-
-
-
-def quick_look_tnr_lfr_only_E_white(filepathtnr,filepathlfr): # Only E and displaying white when no values are available
+def quick_look_tnr_lfr_only_E_final(filepathtnr,filepathlfr): # Only E and displaying white when no values are available
 
 
     my_data_lfr=Data(filepath=filepathlfr)
@@ -1002,8 +54,6 @@ def quick_look_tnr_lfr_only_E_white(filepathtnr,filepathlfr): # Only E and displ
                         _xarray_wo_F0[physic_key][key].values[:,index_time-1]=np.nan
                         _xarray_wo_F0[physic_key][key].values[:,index_time]=np.nan
 
-
-    #print(datasets['PE'])
 
     voltage_xarray=_xarray_['PE']
     voltage=datasets['PE']
@@ -1049,11 +99,8 @@ def quick_look_tnr_lfr_only_E_white(filepathtnr,filepathlfr): # Only E and displ
         PB_min=min(PB_min,magnetic[key_B].values.min())
         PB_max=max(PB_max,magnetic[key_B].values.max())
 
-    print(PE_min)
-    print(PE_max)
 
 
-    
     dic_voltage_lfr={}
 
     for key_voltage_lfr in voltage_xarray :
@@ -1103,7 +150,7 @@ def quick_look_tnr_lfr_only_E_white(filepathtnr,filepathlfr): # Only E and displ
     
     cbar_ax, kw = cbar.make_axes(axes)
     cmap = plt.get_cmap("jet")
-    levels = MaxNLocator(nbins=250).tick_values(auto_min,auto_max)
+    #levels = MaxNLocator(nbins=250).tick_values(auto_min,auto_max)
     # norm=BoundaryNorm(levels,ncolors=cmap.N,clip=True)
 
     for key_volt_lfr in dic_voltage_lfr :
@@ -1158,7 +205,7 @@ def quick_look_tnr_lfr_only_E_white(filepathtnr,filepathlfr): # Only E and displ
 
 
 
-def quick_look_tnr_lfr_final_bis(filepathtnr,filepathlfr): #plot quick_look and displaying white when no values are available
+def quick_look_tnr_lfr_final(filepathtnr,filepathlfr): #plot quick_look and displaying white when no values are available
     my_data_lfr=Data(filepath=filepathlfr)
     my_data_tnr=Data(filepath=filepathtnr)
     my_data_tnr._init_
@@ -1190,9 +237,7 @@ def quick_look_tnr_lfr_final_bis(filepathtnr,filepathlfr): #plot quick_look and 
                     if (key!='N_F0' and key!='B_F0'):
                         _xarray_wo_F0[physic_key][key].values[:,index_time-1]=np.nan
                         _xarray_wo_F0[physic_key][key].values[:,index_time]=np.nan
-    
 
-    print(datasets['PE'])
 
     voltage=datasets['PE']
     voltage_xarray=_xarray_['PE']
@@ -1240,14 +285,6 @@ def quick_look_tnr_lfr_final_bis(filepathtnr,filepathlfr): #plot quick_look and 
 
     for key_BB in magnetic_xarray:
         magnetic_xarray[key_BB].values=10*np.log10(magnetic_xarray[key_BB].values)
-
-
-
-    
-    print ('PE MIN AND PE MAX')
-    print(PE_min)
-    print(PE_max)
-
 
     
     dic_voltage_lfr={}
@@ -1341,12 +378,6 @@ def quick_look_tnr_lfr_final_bis(filepathtnr,filepathlfr): #plot quick_look and 
 
     _datasets_={"PB":magnetic_xarray,"DOP":dop,"ELLIP":_xarray_wo_F0["ELLIP"],"SX_REA":_xarray_wo_F0["SX_REA"]}
 
-    print ('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-    print(dop)
-    print('ELLIP ELLIP ELLIP ELLIP ELLIP')
-    print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
-
-
     # prepare kwargs for each dataset/plot
     plot_kwargs = {
         "PE": {"norm": colors.LogNorm(),"vmin":PE_min,"vmax":PE_max},
@@ -1424,23 +455,7 @@ def quick_look_tnr_lfr_final_bis(filepathtnr,filepathlfr): #plot quick_look and 
     plt.suptitle(title,fontweight='bold',style='italic',color='grey')
 
 
-
-    #print('PB MIN AND PB MAX')
-    #print (PB_max)
-    #print(PB_min)
-
-    #print('MAGNETIC MAGNETIC MAGNEITC')
-    #print(magnetic['N_F2'])
-    #print ('XARRAY MAGNETIC XARRAY MAGNETIC')
-    #print(magnetic_xarray['N_F2'])
-
-
-
-    print ('------------------------------------')
-    print (_xarray_wo_F0['PB'])
-
     plt.show()
-
 
 
 
@@ -1480,9 +495,7 @@ def quick_look_tnr_lfr_final_PE_PB_DOP(filepathtnr,filepathlfr): # Displaying on
                     if (key!='N_F0' and key!='B_F0'):
                         _xarray_wo_F0[physic_key][key].values[:,index_time-1]=np.nan
                         _xarray_wo_F0[physic_key][key].values[:,index_time]=np.nan
-    
 
-    #print(datasets['PE'])
 
     voltage=datasets['PE']
     voltage_xarray=_xarray_['PE']
@@ -1530,14 +543,6 @@ def quick_look_tnr_lfr_final_PE_PB_DOP(filepathtnr,filepathlfr): # Displaying on
 
     for key_BB in magnetic_xarray:
         magnetic_xarray[key_BB].values=10*np.log10(magnetic_xarray[key_BB].values)
-
-
-
-    
-    #print ('PE MIN AND PE MAX')
-    #print(PE_min)
-    #print(PE_max)
-
 
     
     dic_voltage_lfr={}
@@ -1714,35 +719,18 @@ def quick_look_tnr_lfr_final_PE_PB_DOP(filepathtnr,filepathlfr): # Displaying on
     if "N_F2" in voltage:
 
         axes[1].set_ylim(bottom=10.5,auto=True,emit=False)
-        axes[2].set_ylim(bottom=10.5)
+        axes[2].set_ylim(bottom=10.5,auto=True,emit=False)
 
     plt.suptitle(title,fontweight='bold',style='italic',color='grey')
 
 
 
-    #print('PB MIN AND PB MAX')
-    #print (PB_max)
-    #print(PB_min)
-
-    #print('MAGNETIC MAGNETIC MAGNEITC')
-    #print(magnetic['N_F2'])
-    #print ('XARRAY MAGNETIC XARRAY MAGNETIC')
-    #print(magnetic_xarray['N_F2'])
-
-
-
-    #print ('------------------------------------')
-    #print (_xarray_wo_F0['PB'])
 
     plt.show()
 
 
-def print_test_import():
-    print('ok')
 
-
-
-def quick_look_tnr_lfr_argparse(filepathtnr,filepathlfr,savefigpath):
+def quick_look_tnr_lfr_savefig(filepathtnr,filepathlfr,savefigpath):
     my_data_lfr=Data(filepath=filepathlfr)
     my_data_tnr=Data(filepath=filepathtnr)
     my_data_tnr._init_
@@ -1825,12 +813,6 @@ def quick_look_tnr_lfr_argparse(filepathtnr,filepathlfr,savefigpath):
     for key_BB in magnetic_xarray:
         magnetic_xarray[key_BB].values=10*np.log10(magnetic_xarray[key_BB].values)
 
-
-
-    
-    #print ('PE MIN AND PE MAX')
-    #print(PE_min)
-    #print(PE_max)
 
 
     
@@ -1924,10 +906,6 @@ def quick_look_tnr_lfr_argparse(filepathtnr,filepathlfr,savefigpath):
     #_datasets_={"PE":voltage,"PB":magnetic,"DOP":dop,"ELLIP":datasets_wo_F0["ELLIP"],"SX_REA":datasets_wo_F0["SX_REA"]}
 
     _datasets_={"PB":magnetic_xarray,"DOP":dop}
-
-    #print(dop)
-    #print('ELLIP ELLIP ELLIP ELLIP ELLIP')
-    #print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
 
 
     # prepare kwargs for each dataset/plot
