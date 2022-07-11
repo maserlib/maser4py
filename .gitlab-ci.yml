@@ -17,7 +17,7 @@ default:
     - poetry --version
     - poetry config virtualenvs.in-project true --local
 
-.publish-job:
+.publish-job: &publish_job
   stage: publish
   before_script:
     - !reference [.setup-poetry, before_script]
@@ -102,17 +102,17 @@ test-job:
 
 # publish python package on gitlab registry
 publish-maser_data:
-  <<: .publish-job
+  <<: *publish_job
   variables:
     PACKAGE_DIR: 'scr/maser_data'
 
 publish-maser_plot:
-  <<: .publish-job
+  <<: *publish_job
   variables:
     PACKAGE_DIR: 'scr/maser_plot'
 
 publish-maser4py:
-  <<: .publish-job
+  <<: *publish_job
   variables:
     PACKAGE_DIR: '.'
 
