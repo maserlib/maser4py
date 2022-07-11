@@ -17,6 +17,11 @@ default:
     - poetry --version
     - poetry config virtualenvs.in-project true --local
 
+.install-fortran:
+  before_script:
+    - apt-get update
+    - apt-get install -y gfortran ncurses-dev
+
 .publish-job: &publish_job
   stage: publish
   before_script:
@@ -53,6 +58,7 @@ type-check-job:
   needs: []
   before_script:
     - !reference [.setup-poetry, before_script]
+    - !reference [.install-fortran, before_script]
     # install maser and dependencies (including mypy)
     - poetry install
   script:
@@ -73,14 +79,13 @@ test-job:
   before_script:
     - !reference [.setup-poetry, before_script]
     # install cdf and spacepy.pycdf
-    - apt-get update
-    - apt-get install -y gfortran ncurses-dev
+    - !reference [.install-fortran, before_script]
     - wget $CDF_URL
     - tar -xf cdf38_1-dist-all.tar.gz && cd ./cdf38_1-dist
     - make OS=linux ENV=gnu CURSES=yes FORTRAN=no UCOPTIONS=-O2 SHARED=yes all
     - make install
-    # install maser data
-    - cd .. && poetry install -E spacepy
+    # install maser
+    - cd .. && poetry install
   script:
     # source the CDF lib and run the test
     - . ./cdf38_1-dist/bin/definitions.B
