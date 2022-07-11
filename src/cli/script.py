@@ -106,14 +106,14 @@ def main():
                         auto_pad=not args.no_auto_pad,
                         no_cdf=args.no_cdf,
                     )
-                except CDFSerializerError as strerror:
-                    logger.exception("SkeletonCDF error has occurred!")
+                except CDFSerializerError as cdf_err:
+                    logger.exception(f"SkeletonCDF error has occurred! ({cdf_err})")
                     cdf = None
-                except ValueError as strerror:
-                    logger.exception("Value error has occurred!")
+                except ValueError as val_err:
+                    logger.exception(f"Value error has occurred! ({val_err})")
                     cdf = None
-                except:
-                    logger.exception("skeletoncdf has failed!")
+                except Exception as err:
+                    logger.exception(f"skeletoncdf has failed! ({err})")
                     cdf = None
                 finally:
                     if cdf is None:
@@ -154,7 +154,7 @@ def main():
                 except ValueError as strerror:
                     logger.error("Value error -- {0}".format(strerror))
                     cdf = None
-                except:
+                except Exception:
                     logger.error(sys.exc_info()[0])
                     cdf = None
                 finally:
@@ -231,7 +231,7 @@ def main():
             except ValidatorException as strerror:
                 logger.error("cdf_validator error -- {0}, aborting!".format(strerror))
                 sys.exit(-1)
-            except:
+            except Exception:
                 logger.error("cannot run cdf_validator, aborting!")
                 sys.exit(-1)
         elif "swaves" in args.maser:
@@ -240,10 +240,12 @@ def main():
 
             filepath = args.filepath[0]
 
-            if re.search("ST(A|B)_WAV_\S{3}_\d{8}.B3E", filepath.name):
+            if re.search(r"ST(A|B)_WAV_\S{3}_\d{8}.B3E", filepath.name):
                 data = read_swa.read_l2_hres(filepath)
-            elif re.search("ST(A|B)_WAV_\S{3}_60s_\d{8}.B3E", filepath.name):
+                logger.debug(f"l2_hres data {data}")
+            elif re.search(r"ST(A|B)_WAV_\S{3}_60s_\d{8}.B3E", filepath.name):
                 data = read_swa.read_l2_60s(filepath)
+                logger.debug(f"l2_60s data {data}")
             else:
                 logger.warning(f"Input file {filepath} is not readable")
 

@@ -43,7 +43,7 @@ def make_cdf(raw_cdf_version, install_dir):
     elif platform.system() == "Darwin":
         command += ["OS=macosx", "ENV=x86_64", "CURSES=yes", "all"]
     else:
-        raise NotImplemented(
+        raise NotImplementedError(
             "Your OS is not supported at the moment, please install the CDF lib manually"
         )
 

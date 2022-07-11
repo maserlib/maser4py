@@ -254,7 +254,7 @@ class Skeleton:
                     self.gattrs[attname][i][key] = new_entry[key]
                     has_entry = True
 
-        if has_entry == False:
+        if has_entry is False:
             logger.warning(
                 "Entry Number {0} not found!".format(new_entry["Entry Number"])
             )

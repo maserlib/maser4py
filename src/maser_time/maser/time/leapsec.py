@@ -12,13 +12,11 @@ NASA CDF LeapSecond table.
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
-import sys
 import os
 import logging
-import argparse
 from datetime import datetime
 
-from ..toolbox.toolbox import setup_logging, download_data, print_exception
+from maser.toolbox.toolbox import download_data, print_exception
 
 __all__ = ["Lstable"]
 
@@ -141,7 +139,7 @@ class Lstable:
                 logger.info("{0} saved".format(target_filepath))
             else:
                 raise LstableException("Downloading {0} has failed!".format(url))
-        except:
+        except Exception:
             print_exception()
         else:
             return True

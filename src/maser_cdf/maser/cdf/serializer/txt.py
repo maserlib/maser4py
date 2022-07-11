@@ -105,7 +105,6 @@ class Skt2txt:
         :return:
         """
 
-        new_gattr = dict()
         for gattr, entries in gattrs.items():
             for i, entry in enumerate(entries):
                 value = ""
@@ -220,7 +219,7 @@ class Txt2skt:
         new_nrv = False
         gattname = None
         for row in self.txt_iterator():
-            cols = [col for col in re.split("\[|\]| |'|\n", row) if col]
+            cols = [col for col in re.split(r"\[|\]| |'|\n", row) if col]
             ncols = len(cols)
             # Get "compressed" row, i.e., without any empty space
             row_c = "".join(cols)
@@ -515,9 +514,9 @@ class Txt2skt:
         dtype = items[i]
 
         if dtype == "CDF_CHAR" or dtype == "CDF_UCHAR":
-            att_pattern = '\{ "([\S ]*)" \}'
+            att_pattern = r'\{ "([\S ]*)" \}'
         else:
-            att_pattern = "\{ ([\S ]*) \}"
+            att_pattern = r"\{ ([\S ]*) \}"
 
         # Join value items
         value = " ".join(items[i + 1 :])
@@ -553,7 +552,7 @@ class Txt2skt:
         index = items[0].strip()[1:-1]
         value = items[1].strip()
         if value.startswith("{"):
-            value = re.findall('\{ "([\S ]*)" \}', value)
+            value = re.findall(r'\{ "([\S ]*)" \}', value)
 
         if isinstance(value, list):
             value = "".join(value).strip()

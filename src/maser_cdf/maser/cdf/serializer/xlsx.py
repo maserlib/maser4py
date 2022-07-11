@@ -315,7 +315,7 @@ class Xlsx2skt:
         try:
             for key, value in sheets[HEADER].items():
                 header[key] = value[0]
-        except:
+        except Exception:
             logger.exception(
                 "{0} sheet is badly formatted, please check!".format(HEADER)
             )
@@ -344,7 +344,7 @@ class Xlsx2skt:
                             fields[col] = current_value
 
                         gattrs[gatt].append(fields)
-        except:
+        except Exception:
             raise InvalidFile(
                 message="{0} sheet is badly formatted, please check!".format(GATTRS)
             )
@@ -368,7 +368,7 @@ class Xlsx2skt:
                             fields[col] = [current_value]
                         else:
                             fields[col] = current_value
-                    except:
+                    except Exception:
                         raise InvalidEntry(
                             message="Invalid {0} for {1} zVariable!".format(col, zvar)
                         )
@@ -397,7 +397,7 @@ class Xlsx2skt:
                             fields[col] = sheets[VATTRS][col][j]
 
                         vattrs[zvar][sheets[VATTRS]["Attribute Name"][j]] = fields
-        except:
+        except Exception:
             logger.exception(
                 "{0}, {1} or {2} sheet is badly formatted, "
                 "please check!".format(ZVARS, VATTRS, NRV)

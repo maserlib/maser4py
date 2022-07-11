@@ -114,7 +114,7 @@ def move_safe(src, dst, no_erase=False, tempdir=tempfile.gettempdir()):
         shutil.copytree(src, target)
         is_item = os.path.isdir
     except shutil.Error as e:
-        LOGGER.error("Directory not copied. Error: %s".format(e))
+        LOGGER.error(f"Directory not copied. Error: {e}")
     except OSError as e:
         if e.errno == errno.ENOTDIR:
             shutil.copyfile(src, dst)
@@ -145,7 +145,7 @@ def download_data(url, encoding="utf-8", target_file=None, binary=False):
     try:
         buff = urllib.request.urlopen(url)
         data = buff.read().decode(encoding)
-    except:
+    except Exception:
         return None
     else:
         if target_file is not None:

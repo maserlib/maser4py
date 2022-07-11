@@ -23,6 +23,7 @@ LS_FILE_DEF_PATH = os.path.join(LS_FILE_DEF_DIR, LS_FILENAME)
 # ________________ Class Definition __________
 # (If required, define here classes)
 
+
 # ________________ Global Functions __________
 # (If required, define here global functions)
 def add_leapsec_subparser(subparser):

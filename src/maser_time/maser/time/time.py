@@ -130,7 +130,7 @@ def cast_timedelta(fr=None, to=None):
                     td_in = args[0]
                 else:
                     raise TypeError("Input argument is not valid!")
-            except:
+            except Exception:
                 print_exception()
             else:
                 # Execute the function with the right input time type
@@ -227,7 +227,7 @@ def cast_datetime(fr=None, to=None):
                     dt_in = args[0]
                 else:
                     raise TypeError("Input argument is not valid!")
-            except:
+            except Exception:
                 print_exception()
             else:
                 # Execute the function with the right input time type

@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 # Checking file
 def checking_file_exist(cdf_file):
-    if os.path.isfile(cdf_file) == False:
+    if not os.path.isfile(cdf_file):
         raise FileNotFoundError("%s : does not exist !" % cdf_file)
-    if os.access(cdf_file, os.R_OK) == False:
+    if not os.access(cdf_file, os.R_OK):
         raise IOError("%s : is not readable !" % cdf_file)
 
 
@@ -156,7 +156,7 @@ def compare_global_attributes(global_att1, global_att2, list_ignore_gatt):
     if nl1 == nl2:  # The 2 dictionaries have the same keys
         # Compare 2 dictionaries
         checking = global_att1 == global_att2
-        if checking == False:
+        if not checking:
             # Not equal !!
             logger.debug("Global attributes value: different")
             common_att = sorted(list(global_att1.keys()))
@@ -482,9 +482,8 @@ def main(cdf_file1, cdf_file2):
             ind_ignore_gatt = (list_argv).index("--ignore_gatt")
             list_ignore_gatt = []
             for item in list_argv[ind_ignore_gatt + 1 :]:
-                if (
-                    item.startswith("--ignore_") == False
-                    and item.startswith("--precision") == False
+                if not item.startswith("--ignore_") and not item.startswith(
+                    "--precision"
                 ):
                     list_ignore_gatt.append(item)
                 else:
@@ -497,9 +496,8 @@ def main(cdf_file1, cdf_file2):
             ind_ignore_zvar = (list_argv).index("--ignore_zvar")
             list_ignore_zvar = []
             for item in list_argv[ind_ignore_zvar + 1 :]:
-                if (
-                    item.startswith("--ignore_") == False
-                    and item.startswith("--precision") == False
+                if not item.startswith("--ignore_") and not item.startswith(
+                    "--precision"
                 ):
                     list_ignore_zvar.append(item)
                 else:
@@ -512,9 +510,8 @@ def main(cdf_file1, cdf_file2):
             ind_ignore_vatt = (list_argv).index("--ignore_vatt")
             list_ignore_vatt = []
             for item in list_argv[ind_ignore_vatt + 1 :]:
-                if (
-                    item.startswith("--ignore_") == False
-                    and item.startswith("--precision") == False
+                if not item.startswith("--ignore_") and not item.startswith(
+                    "--precision"
                 ):
                     list_ignore_vatt.append(item)
                 else:
@@ -527,9 +524,8 @@ def main(cdf_file1, cdf_file2):
             ind_precision_zvar = (list_argv).index("--precision")
             list_numerical_precision = []
             for item in list_argv[ind_precision_zvar + 1 :]:
-                if (
-                    item.startswith("--ignore_") == False
-                    and item.startswith("--precision") == False
+                if not item.startswith("--ignore_") and not item.startswith(
+                    "--precision"
                 ):
                     list_numerical_precision.append(item)
                 else:
@@ -542,9 +538,8 @@ def main(cdf_file1, cdf_file2):
             ind_precision_zvar = (list_argv).index("--precision")
             list_numerical_precision = []
             for item in list_argv[ind_precision_zvar + 1 :]:
-                if (
-                    item.startswith("--ignore_") == False
-                    and item.startswith("--precision") == False
+                if not item.startswith("--ignore_") and not item.startswith(
+                    "--precision"
                 ):
                     list_numerical_precision.append(item)
                 else:

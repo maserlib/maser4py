@@ -5,7 +5,6 @@
 
 # ________________ IMPORT _________________________
 # (Include here the modules to import, e.g. import sys)
-import os
 
 __all__ = ["add_cdfvalidator_subparser"]
 

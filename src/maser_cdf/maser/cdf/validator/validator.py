@@ -82,7 +82,7 @@ class Issue:
         if check not in ISSUE_CHECKS:
             logger.warning("Input Issue check ({0}) is not valid!".format(check))
             print(name, itype, check, msg, passed)
-            x = input()
+            _ = input()
             return None
 
         if not num:
@@ -321,7 +321,7 @@ class Validate:
                     issue_type = "vatt"
                     try:
                         entries = self.cdf[varname].attrs
-                    except:
+                    except Exception:
                         entries = []
                 elif is_gattr:
                     issue_type = "gatt"

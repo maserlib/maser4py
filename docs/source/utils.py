@@ -40,7 +40,6 @@ class APIDoc(Command):
         print(sys.argv[0])
         # create the absolute paths to where to put things to avoid problems
         sourcedir = osp.join(osp.dirname(osp.abspath(__file__)))
-        buildir = osp.join(osp.dirname(osp.abspath(__file__)), "build")
 
         apidir = osp.join(sourcedir, "api")
 
