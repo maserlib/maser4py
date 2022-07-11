@@ -1,11 +1,15 @@
 [tool.poetry]
-name = "maser.data"
-version = "0.1.0"
+name = "maser"
+version = "0.11.0"
 description = ""
 authors = ["Baptiste Cecconi <baptiste.cecconi@obspm.fr>"]
 license = "CeCILL"
 [[tool.poetry.packages]]
-include = "maser"
+
+# handle namespace with poetry
+packages = [
+    { include = "maser" }
+]
 
 
 [tool.poetry.dependencies]
