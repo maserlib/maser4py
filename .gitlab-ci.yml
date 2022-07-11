@@ -17,6 +17,20 @@ default:
     - poetry --version
     - poetry config virtualenvs.in-project true --local
 
+.publish-job:
+  stage: publish
+  before_script:
+    - !reference [.setup-poetry, before_script]
+  script:
+    # publish on a dedicated and centralized repository
+    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+    - cd ${PACKAGE_DIR}
+    - poetry build
+    - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
+  only:
+    - tags
+    - web
+
 lint-job:
   stage: lint
   needs: []
@@ -87,18 +101,20 @@ test-job:
     - web
 
 # publish python package on gitlab registry
-publish-job:
-  stage: publish
-  before_script:
-    - !reference [.setup-poetry, before_script]
-  script:
-    # publish on a dedicated and centralized repository
-    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
-    - poetry build
-    - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
-  only:
-    - tags
-    - web
+publish-maser_data:
+  <<: .publish-job
+  variables:
+    PACKAGE_DIR: 'scr/maser_data'
+
+publish-maser_plot:
+  <<: .publish-job
+  variables:
+    PACKAGE_DIR: 'scr/maser_plot'
+
+publish-maser4py:
+  <<: .publish-job
+  variables:
+    PACKAGE_DIR: '.'
 
 # deploy doc pages
 pages:
