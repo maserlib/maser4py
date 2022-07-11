@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "maser.time"
+version = "0.1.0"
+description = ""
+authors = ["MASER Team"]
+license = "CeCILL"
+[[tool.poetry.packages]]
+
+# handle namespace with poetry
+packages = [
+    { include = "maser" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4"
+pytz = "^2022.1"
+
+[build-system]
+requires = ["poetry>=1.1.4", "setuptools"]
+build-backend = "poetry.masonry.api"
