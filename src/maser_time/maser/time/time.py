@@ -15,24 +15,25 @@ from ..toolbox import print_exception
 
 from .leapsec import Lstable
 
-from .const import MJD_EPOCH, \
-    JD_TO_MJD, TT2000_EPOCH, DELTA_NSEC_TAI_TT
+from .const import MJD_EPOCH, JD_TO_MJD, TT2000_EPOCH, DELTA_NSEC_TAI_TT
 
-__all__ = ["set_tzone",
-           "local_to_utc",
-           "jd_to_mjd",
-           "jd_to_tt2000",
-           "mjd_to_jd",
-           "tai_to_tt",
-           "tt_to_tai",
-           "tt_to_utc",
-           "tt_to_tt2000",
-           "utc_to_tt2000",
-           "utc_to_tt",
-           "tt2000_to_tt",
-           "tt2000_to_utc",
-           "tt2000_to_jd",
-           "get_leapsec"]
+__all__ = [
+    "set_tzone",
+    "local_to_utc",
+    "jd_to_mjd",
+    "jd_to_tt2000",
+    "mjd_to_jd",
+    "tai_to_tt",
+    "tt_to_tai",
+    "tt_to_utc",
+    "tt_to_tt2000",
+    "utc_to_tt2000",
+    "utc_to_tt",
+    "tt2000_to_tt",
+    "tt2000_to_utc",
+    "tt2000_to_jd",
+    "get_leapsec",
+]
 
 # ________________ HEADER _________________________
 
@@ -61,6 +62,7 @@ logger = logging.getLogger(__name__)
 
 class TimeException(Exception):
     pass
+
 
 # ________________Global Functions __________
 # (If required, define here classes)
@@ -100,8 +102,10 @@ def cast_timedelta(fr=None, to=None):
         datetime.timedelta object and to
         return the td_out output as a numpy.timedelta64 object.
     """
+
     def decorated(func):
         """Decorated method."""
+
         def wrapper(*args, **kwargs):
             args = list(args)
             """Decorator wrapper."""
@@ -111,8 +115,8 @@ def cast_timedelta(fr=None, to=None):
                     # Only timedelta and timedelta64 objects are allowed as
                     # input.
                     raise TypeError(
-                        "Input argument format is not valid [{0}]!".format(
-                            type_in))
+                        "Input argument format is not valid [{0}]!".format(type_in)
+                    )
 
                 if type_in is timedelta64 and fr is timedelta:
                     td_in = td64_to_td(args[0])
@@ -145,22 +149,19 @@ def cast_timedelta(fr=None, to=None):
             elif type_out is timedelta64 and to is timedelta64:
                 return td_out
             # If output type is not defined, then return as an input type
-            elif (type_out is timedelta and to is None and
-                  type_in is timedelta):
+            elif type_out is timedelta and to is None and type_in is timedelta:
                 return td_out
-            elif (type_out is timedelta and to is None and
-                  type_in is timedelta64):
+            elif type_out is timedelta and to is None and type_in is timedelta64:
                 return td_to_td64(td_out)
-            elif (type_out is timedelta64 and to is None and
-                  type_in is timedelta):
+            elif type_out is timedelta64 and to is None and type_in is timedelta:
                 return td64_to_td(td_out)
-            elif (type_out is timedelta64 and to is None and
-                  type_in is timedelta64):
+            elif type_out is timedelta64 and to is None and type_in is timedelta64:
                 return td_out
             else:
                 return td_out
 
         return wrapper
+
     return decorated
 
 
@@ -197,8 +198,10 @@ def cast_datetime(fr=None, to=None):
         to be passed to the function as a datetime.datetime object and to
         return the dt_out output as a numpy.datetime64 object.
     """
+
     def decorated(func):
         """Decorated method."""
+
         def wrapper(*args, **kwargs):
             args = list(args)
             """Decorator wrapper."""
@@ -209,8 +212,8 @@ def cast_datetime(fr=None, to=None):
                     # Only datetime and datetime64 objects are allowed as
                     # input.
                     raise TypeError(
-                        "Input argument format is not valid [{0}]!".format(
-                            type_in))
+                        "Input argument format is not valid [{0}]!".format(type_in)
+                    )
 
                 if type_in is datetime64 and fr is datetime:
                     dt_in = dt64_to_dt(args[0])
@@ -243,22 +246,19 @@ def cast_datetime(fr=None, to=None):
             elif type_out is datetime64 and to is datetime64:
                 return dt_out
             # If output type is not defined, then return as an input type
-            elif (type_out is datetime and to is None and
-                  type_in is datetime):
+            elif type_out is datetime and to is None and type_in is datetime:
                 return dt_out
-            elif (type_out is datetime and to is None and
-                  type_in is datetime64):
+            elif type_out is datetime and to is None and type_in is datetime64:
                 return dt_to_dt64(dt_out)
-            elif (type_out is datetime64 and to is None and
-                  type_in is datetime):
+            elif type_out is datetime64 and to is None and type_in is datetime:
                 return dt64_to_dt(dt_out)
-            elif (type_out is datetime64 and to is None and
-                  type_in is datetime64):
+            elif type_out is datetime64 and to is None and type_in is datetime64:
                 return dt_out
             else:
                 return dt_out
 
         return wrapper
+
     return decorated
 
 
@@ -317,7 +317,7 @@ def dt64_to_dt(dt64):
     Note that the time resolution of a datetime.datetime
     object is microsecond.
     """
-    return dt64.astype('M8[us]').astype('O')
+    return dt64.astype("M8[us]").astype("O")
 
 
 def dt_to_dt64(dt):
@@ -353,7 +353,7 @@ def local_to_utc(local_time, tzone=None):
         tz = timezone(tzone)
         ltime = tz.localize(local_time.replace(tzinfo=None))
 
-    return ltime.astimezone(timezone('UTC'))
+    return ltime.astimezone(timezone("UTC"))
 
 
 @cast_timedelta(fr=timedelta64)
@@ -363,7 +363,7 @@ def jd_to_mjd(jd):
     Be awared that the best time resolution is
     microsec.
     """
-    return numpy.timedelta64(jd, 'us') - JD_TO_MJD
+    return numpy.timedelta64(jd, "us") - JD_TO_MJD
 
 
 @cast_timedelta(fr=timedelta64)
@@ -373,7 +373,7 @@ def mjd_to_jd(mjd):
     Be awared that the best time resolution is
     microsec.
     """
-    return numpy.timedelta64(mjd, 'us') + JD_TO_MJD
+    return numpy.timedelta64(mjd, "us") + JD_TO_MJD
 
 
 @cast_datetime(fr=datetime64)
@@ -401,9 +401,7 @@ def utc_to_tt(utc):
 
     TT time is returned as a numpy.datetime64 object.
     """
-    return utc + \
-        get_leapsec(utc, to_timedelta64=True) + \
-        DELTA_NSEC_TAI_TT
+    return utc + get_leapsec(utc, to_timedelta64=True) + DELTA_NSEC_TAI_TT
 
 
 @cast_datetime(fr=datetime64)
@@ -417,9 +415,7 @@ def tt_to_utc(tt):
     where DELTA_NSEC_TAI_TT = 32.184s
 
     """
-    return tt - \
-        get_leapsec(tt, to_timedelta64=True) - \
-        DELTA_NSEC_TAI_TT
+    return tt - get_leapsec(tt, to_timedelta64=True) - DELTA_NSEC_TAI_TT
 
 
 @cast_datetime(fr=datetime64)
@@ -510,8 +506,7 @@ def tt_to_tt2000(tt):
 
 
 @cast_timedelta(fr=timedelta64)
-def tt2000_to_jd(tt2000,
-                 to_mjd=False):
+def tt2000_to_jd(tt2000, to_mjd=False):
     """
     tt2000_to_jd.
 
@@ -529,8 +524,7 @@ def tt2000_to_jd(tt2000,
 
 
 @cast_timedelta(fr=timedelta64)
-def jd_to_tt2000(jd,
-                 from_mjd=False):
+def jd_to_tt2000(jd, from_mjd=False):
     """
     jd_to_tt2000.
 
@@ -550,5 +544,5 @@ def jd_to_tt2000(jd,
 
 # _________________ Main ____________________________
 # if (__name__ == "__main__"):
-    # print ""
-    # main()
+# print ""
+# main()

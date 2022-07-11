@@ -13,7 +13,8 @@ class APIDoc(Command):
     Create a specific command handler to generate and create the documentation
     of the program.
     """
-    description = 'run sphinx-apidoc'
+
+    description = "run sphinx-apidoc"
     user_options = []
 
     def initialize_options(self):
@@ -31,31 +32,31 @@ class APIDoc(Command):
 
     def run(self):
         from sphinx.apidoc import main
+
         """Run command."""
         # process options as done in the source file of sphinx
-        sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+        sys.argv[0] = re.sub(r"(-script\.pyw|\.exe)?$", "", sys.argv[0])
 
         print(sys.argv[0])
         # create the absolute paths to where to put things to avoid problems
-        sourcedir = osp.join(
-            osp.dirname(osp.abspath(__file__)))
-        buildir = osp.join(
-            osp.dirname(osp.abspath(__file__)),
-            "build")
+        sourcedir = osp.join(osp.dirname(osp.abspath(__file__)))
+        buildir = osp.join(osp.dirname(osp.abspath(__file__)), "build")
 
         apidir = osp.join(sourcedir, "api")
 
-        rootdir = osp.join(
-            osp.dirname(osp.abspath(__file__)),
-            osp.pardir)
+        rootdir = osp.join(osp.dirname(osp.abspath(__file__)), osp.pardir)
 
         # same here, and add path
-        main([
-            'sphinx-apidoc', '-f', '-o',
-            osp.join(apidir, "maser4py"),
-            osp.join(rootdir, "maser"),
-            "--separate",
-        ])
+        main(
+            [
+                "sphinx-apidoc",
+                "-f",
+                "-o",
+                osp.join(apidir, "maser4py"),
+                osp.join(rootdir, "maser"),
+                "--separate",
+            ]
+        )
 
         # build the documentation as provided by sphinx
         self.run_command("build_sphinx")

@@ -9,5 +9,5 @@ maser __main__ module
 # (Include here the modules to import, e.g. import sys)
 from maser.script import main
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

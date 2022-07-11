@@ -44,9 +44,9 @@ def plot_mean(
 
     index_tnr_start = 0
 
-    while numpy.abs(desired_time_start - times[0][index_tnr_start]) > datetime.timedelta(
-        seconds=margin
-    ):
+    while numpy.abs(
+        desired_time_start - times[0][index_tnr_start]
+    ) > datetime.timedelta(seconds=margin):
         index_tnr_start = index_tnr_start + 1
 
     index_tnr_end = index_tnr_start

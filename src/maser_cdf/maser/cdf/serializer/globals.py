@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 import os
 from maser.settings import SUPPORT_DIR
 
@@ -13,12 +13,7 @@ SHEETS = {
         "CDF_COMPRESSION",
         "CDF_CHECKSUM",
     ],
-    "GLOBALattributes": [
-        "Attribute Name",
-        "Entry Number",
-        "Data Type",
-        "Value"
-    ],
+    "GLOBALattributes": ["Attribute Name", "Entry Number", "Data Type", "Value"],
     "zVariables": [
         "Variable Name",
         "Data Type",
@@ -31,17 +26,8 @@ SHEETS = {
         "VAR_SPARESERECORDS",
         "VAR_PADVALUE",
     ],
-    "VARIABLEattributes": [
-        "Variable Name",
-        "Attribute Name",
-        "Data Type",
-        "Value"
-    ],
-    "NRV": [
-        "Variable Name",
-        "Index",
-        "Value"
-    ]
+    "VARIABLEattributes": ["Variable Name", "Attribute Name", "Data Type", "Value"],
+    "NRV": ["Variable Name", "Index", "Value"],
 }
 
 HEADER = "header"

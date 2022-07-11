@@ -51,9 +51,7 @@ LS_FILENAME = "CDFLeapSeconds.txt"
 INPUT_DATE = "%Y-%m-%dT%H:%M:%S"
 
 CURDIR = os.path.dirname(os.path.abspath(__file__))
-LS_FILE_DEF_DIR = os.path.join(CURDIR,
-                               "..", "..",
-                                     "support", "data")
+LS_FILE_DEF_DIR = os.path.join(CURDIR, "..", "..", "support", "data")
 if not os.path.isdir(LS_FILE_DEF_DIR):
     os.makedirs(LS_FILE_DEF_DIR)
 LS_FILE_DEF_PATH = os.path.join(LS_FILE_DEF_DIR, LS_FILENAME)
@@ -88,9 +86,7 @@ class Lstable:
             logger.error("Input row is not valid!")
             return
 
-        date = datetime(int(fields[0]),
-                        int(fields[1]),
-                        int(fields[2]))
+        date = datetime(int(fields[0]), int(fields[1]), int(fields[2]))
         self.date.append(date)
         self.leapsec.append(float(fields[3]))
         self.drift.append([float(fields[4]), float(fields[5])])
@@ -112,8 +108,7 @@ class Lstable:
         return None
 
     @staticmethod
-    def get_lstable_file(target_dir=None, overwrite=False,
-                         url=URL):
+    def get_lstable_file(target_dir=None, overwrite=False, url=URL):
         """Download the CDFLeapSeconds.txt leapsec table file into the target_dir.
 
         If target_dir is None and the $CDF_LEAPSECONDSTABLE env. variable
@@ -145,8 +140,7 @@ class Lstable:
             if download_data(url, target_file=target_filepath) is not None:
                 logger.info("{0} saved".format(target_filepath))
             else:
-                raise LstableException(
-                    "Downloading {0} has failed!".format(url))
+                raise LstableException("Downloading {0} has failed!".format(url))
         except:
             print_exception()
         else:
@@ -158,8 +152,11 @@ class Lstable:
             self.file = file
         elif file is None and ENVAR in os.environ:
             self.file = os.environ[ENVAR]
-        elif (file is None and ENVAR not in os.environ and
-              os.path.isfile(LS_FILE_DEF_PATH)):
+        elif (
+            file is None
+            and ENVAR not in os.environ
+            and os.path.isfile(LS_FILE_DEF_PATH)
+        ):
             self.file = LS_FILE_DEF_PATH
         else:
             self.file = URL
@@ -176,13 +173,12 @@ class Lstable:
         elif self.lstable is not None and reload:
             logger.warning("Leapsec. table will be reloaded!")
 
-        if (self.file.startswith("http") or
-                self.file.startswith("ftp")):
+        if self.file.startswith("http") or self.file.startswith("ftp"):
             data = download_data(self.file)
             self.lstable = self._parse_lstable(data)
             return True
         elif os.path.isfile(self.file):
-            buff = open(self.file, 'rt')
+            buff = open(self.file, "rt")
             data = buff.read()
             self.lstable = self._parse_lstable(data)
             return True
@@ -211,12 +207,11 @@ class Lstable:
         self.load_lstable()
         if self.lstable is None:
             return ""
-        string = ("Date -- Leap Sec. -- Drift\n")
+        string = "Date -- Leap Sec. -- Drift\n"
         for i, row in enumerate(self.date):
-            string += ("{0} -- {1} -- {2}\n".format(
-                self.date[i],
-                self.leapsec[i],
-                self.drift[i]))
+            string += "{0} -- {1} -- {2}\n".format(
+                self.date[i], self.leapsec[i], self.drift[i]
+            )
         return string
 
 
@@ -225,5 +220,5 @@ class Lstable:
 
 
 # _________________ Main ____________________________
-#if (__name__ == "__main__"):
+# if (__name__ == "__main__"):
 #    main()

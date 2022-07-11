@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["MASER Team"]
 license = "CeCILL"
-[[tool.poetry.packages]]
 
 # handle namespace with poetry
 packages = [

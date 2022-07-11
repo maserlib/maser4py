@@ -44,4 +44,3 @@ fi
 
 # Perform all of the validation tests available
 cdfvalid -VC $cdffile -m $jsonfile
-

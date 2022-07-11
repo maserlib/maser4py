@@ -9,9 +9,14 @@ from datetime import datetime, timedelta
 
 from numpy import datetime64, timedelta64
 
-from .time import get_leapsec, local_to_utc, \
-    tt2000_to_utc, utc_to_tt2000, tt2000_to_jd, \
-    jd_to_tt2000
+from .time import (
+    get_leapsec,
+    local_to_utc,
+    tt2000_to_utc,
+    utc_to_tt2000,
+    tt2000_to_jd,
+    jd_to_tt2000,
+)
 
 # ________________ HEADER _________________________
 
@@ -41,6 +46,7 @@ from .time import get_leapsec, local_to_utc, \
 
 # Test time.py methods
 
+
 def test_get_leapsec():
     """Test get_leapsec()."""
     date = datetime64("2011-03-01T07:00")
@@ -56,7 +62,7 @@ def test_get_leapsec64():
     """
     date = datetime64("2011-03-01T07:00")
     leapsec = get_leapsec(date, to_timedelta64=True)
-    assert leapsec == timedelta64(34, 's')
+    assert leapsec == timedelta64(34, "s")
 
 
 def test_local_to_utc():
@@ -68,28 +74,28 @@ def test_local_to_utc():
 def test_utc_to_tt2000():
     """Test utc_to_tt2000()."""
     tt2000 = utc_to_tt2000(datetime(2011, 3, 1, 7, 0, 0))
-    assert tt2000 == timedelta64(352234802000000000, 'ns')
+    assert tt2000 == timedelta64(352234802000000000, "ns")
 
 
 def test_tt2000_to_utc():
     """Test tt2000_to_utc()."""
-    tt2000 = timedelta64(352234802000000000, 'ns')
+    tt2000 = timedelta64(352234802000000000, "ns")
     utc = tt2000_to_utc(tt2000)
     assert utc == datetime64("2011-03-01T07:00")
 
 
 def test_tt2000_to_jd():
     """Test tt2000_to_jd()."""
-    tt2000 = timedelta64(352234802000000000, 'ns')
+    tt2000 = timedelta64(352234802000000000, "ns")
     jd = tt2000_to_jd(tt2000)
-    assert jd == timedelta64(212165722800000000, 'us')
+    assert jd == timedelta64(212165722800000000, "us")
 
 
 def test_mjd_to_tt2000():
     """Test mjd_to_tt2000()."""
-    mjd = timedelta64(80094660, 'm')
+    mjd = timedelta64(80094660, "m")
     tt2000 = jd_to_tt2000(mjd, from_mjd=True)
-    assert tt2000 == timedelta64(352234802000000, 'us')
+    assert tt2000 == timedelta64(352234802000000, "us")
 
 
 # _________________ Main ____________________________

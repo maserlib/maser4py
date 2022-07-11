@@ -18,16 +18,8 @@ keywords = ["maser4py", "data science", "radioastronomy"]
 maser = 'maser.script:main'
 
 
-[[tool.poetry.packages]]
-
-# handle namespace with poetry
-packages = [
-    { include = "maser" }
-]
-
-
 [tool.poetry.dependencies]
-
+python = ">=3.8,<4"
 jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
 
@@ -36,6 +28,10 @@ jupyter = ["jupyter", "jupytext"]
 all = ["jupyter"]
 
 [tool.poetry.dev-dependencies]
+"maser.cdf" = { path = "src/maser_cdf", develop = false }
+"maser.das2" = { path = "src/maser_das2", develop = false }
+"maser.data" = { path = "src/maser_data", develop = false }
+"maser.plot" = { path = "src/maser_plot", develop = false }
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 pre-commit = "^2.17.0"

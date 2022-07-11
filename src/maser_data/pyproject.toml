@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["Baptiste Cecconi <baptiste.cecconi@obspm.fr>", "Sonny Lion <sonny.lion@obspm.fr>"]
 license = "CeCILL"
-[[tool.poetry.packages]]
 
 # handle namespace with poetry
 packages = [

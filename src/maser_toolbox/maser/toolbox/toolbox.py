@@ -18,17 +18,20 @@ import errno
 
 import tempfile
 
-__all__ = ['get_version',
-           'print_exception',
-           'which',
-           'truncate_str',
-           'Singleton',
-           'download_data',
-           'setup_logging',
-           'quote', 'uniq',
-           'insert_char',
-           'run_command',
-           'move_safe']
+__all__ = [
+    "get_version",
+    "print_exception",
+    "which",
+    "truncate_str",
+    "Singleton",
+    "download_data",
+    "setup_logging",
+    "quote",
+    "uniq",
+    "insert_char",
+    "run_command",
+    "move_safe",
+]
 
 # ________________ HEADER _________________________
 
@@ -50,7 +53,7 @@ __all__ = ['get_version',
 # (define here the global variables)
 LOGGER = logging.getLogger(__name__)
 
-DEF_INDENT = ' ' * 16
+DEF_INDENT = " " * 16
 
 # ________________ Class Definition __________
 # (If required, define here classes)
@@ -71,7 +74,7 @@ class Singleton(type):
         Check that an instance is already
         stored before creating a new one.
         """
-        if hasattr(cls, 'instance'):
+        if hasattr(cls, "instance"):
             return cls.instance
 
         cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
@@ -82,23 +85,21 @@ class Singleton(type):
 # ________________ Global Functions __________
 # (If required, define here global functions)
 
+
 def get_version(changelog):
     """Get latest version from the input CHANGELOG.md file."""
-    pattern = re.compile(r'(\d*)\.(\w*)\.(\w*)')
+    pattern = re.compile(r"(\d*)\.(\w*)\.(\w*)")
     if osp.isfile(changelog):
-        with open(changelog, 'rt') as file:
+        with open(changelog, "rt") as file:
             for line in file:
                 if pattern.match(line):
                     return line.strip()
 
-    print('WARNING: CHANGELOG.md not found or invalid, version unknown!')
-    return 'unknown'
+    print("WARNING: CHANGELOG.md not found or invalid, version unknown!")
+    return "unknown"
 
 
-
-def move_safe(src, dst,
-              no_erase=False,
-              tempdir=tempfile.gettempdir()):
+def move_safe(src, dst, no_erase=False, tempdir=tempfile.gettempdir()):
     """
     Safely move a sections file or a directory into a dst directory.
 
@@ -113,35 +114,29 @@ def move_safe(src, dst,
         shutil.copytree(src, target)
         is_item = os.path.isdir
     except shutil.Error as e:
-        LOGGER.error('Directory not copied. Error: %s'.format(e))
+        LOGGER.error("Directory not copied. Error: %s".format(e))
     except OSError as e:
         if e.errno == errno.ENOTDIR:
             shutil.copyfile(src, dst)
             is_item = os.path.isfile
         else:
-            LOGGER.error('{0} is not a valid directory!'.format(dst))
-            raise FileNotFoundError(
-                errno.ENOENT, os.strerror(errno.ENOENT), src)
+            LOGGER.error("{0} is not a valid directory!".format(dst))
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
 
     # Check that file/directory has been correctly copied before removing the
     # original
     if not is_item(target):
-        LOGGER.error(
-            '{0} has not been moved correctly, aborting!'.format(src))
-        raise FileNotFoundError(
-            errno.ENOENT, os.strerror(errno.ENOENT), src)
+        LOGGER.error("{0} has not been moved correctly, aborting!".format(src))
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
 
     if no_erase:
         move_safe(src, tempdir)
-        LOGGER.info('{0} moved in {1}'.format(src, tempdir))
+        LOGGER.info("{0} moved in {1}".format(src, tempdir))
 
     return target
 
 
-def download_data(url,
-                  encoding='utf-8',
-                  target_file=None,
-                  binary=False):
+def download_data(url, encoding="utf-8", target_file=None, binary=False):
     """Download the data from the given url.
 
     If target_file input keyword is not None, then
@@ -155,9 +150,9 @@ def download_data(url,
     else:
         if target_file is not None:
             if binary:
-                wm = 'wb'
+                wm = "wb"
             else:
-                wm = 'w'
+                wm = "w"
             with open(target_file, wm) as fw:
                 fw.write(data)
     return data
@@ -182,7 +177,7 @@ def print_exception(message=None, exit=True):
     # if not message provided, get the traceback of errors to be a little more
     # useful for the developer
     if message is not None:
-        mess = '\n'.join([trace, message])
+        mess = "\n".join([trace, message])
     else:
         # else use message provided by developer
         mess = trace
@@ -202,33 +197,34 @@ def quote(string, unquote=False):
     if string is not None:
         if not isinstance(string, str):
             string = str(string)
-        if string.startswith("\""):
+        if string.startswith('"'):
             string = string[1:]
-        if string.endswith("\""):
+        if string.endswith('"'):
             string = string[:-1]
         if unquote:
             return string
-        return "\"" + string + "\""
+        return '"' + string + '"'
 
 
-def run_command(cmd, env=None,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                shell=False,
-                logger=LOGGER):
+def run_command(
+    cmd,
+    env=None,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    shell=False,
+    logger=LOGGER,
+):
     """Run a command with subprocess."""
 
     try:
-        logger.info(' '.join(cmd))
-        res = subprocess.Popen(cmd, env=env, shell=shell,
-                               stdout=stdout,
-                               stderr=stderr)
+        logger.info(" ".join(cmd))
+        res = subprocess.Popen(cmd, env=env, shell=shell, stdout=stdout, stderr=stderr)
     except TypeError as e:
         logger.error(e)
     except OSError as e:
         logger.error(e)
     except subprocess.TimeoutExpired as e:
-        logger.error('TIME OUT EXPIRED:  %i SEC.', e.timeout)
+        logger.error("TIME OUT EXPIRED:  %i SEC.", e.timeout)
 
     return res
 
@@ -248,15 +244,15 @@ def set_handler_config(handler, quiet=False, debug=False, formatter=None):
         handler.setFormatter(formatter)
 
 
-def setup_logging(filename=None,
-                  quiet=False, debug=False,
-                  logger=logging.root,
-                  stream=None):
+def setup_logging(
+    filename=None, quiet=False, debug=False, logger=logging.root, stream=None
+):
     """Method to set up logging."""
 
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                                  datefmt='%Y-%m-%dT%H:%M:%S')
-
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%S",
+    )
 
     # set the logger log-level
     set_level(logger, quiet=quiet, debug=debug)
@@ -275,13 +271,16 @@ def setup_logging(filename=None,
     for handler in logger.handlers:
         set_handler_config(handler, quiet=quiet, debug=debug, formatter=formatter)
 
-
     # create the file handler
     if filename:
         fh = logging.FileHandler(filename, delay=True)
-        fh.setFormatter(logging.Formatter('%(asctime)s %(name)-\
-                        12s %(levelname)-8s %(funcName)-12s %(message)s',
-                                          datefmt='%Y-%m-%d %H:%M:%S'))
+        fh.setFormatter(
+            logging.Formatter(
+                "%(asctime)s %(name)-\
+                        12s %(levelname)-8s %(funcName)-12s %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
+        )
         if debug:
             fh.setLevel(logging.DEBUG)
         else:
@@ -292,19 +291,17 @@ def setup_logging(filename=None,
     return logger
 
 
-def truncate_str(string, max_length,
-                 gap=DEF_INDENT,
-                 min_length=3):
+def truncate_str(string, max_length, gap=DEF_INDENT, min_length=3):
     """Truncate a too long CDF_CHAR value."""
     nstr = len(string)
-    new_string = ''
+    new_string = ""
     for i, val_c in enumerate(string):
         if i > nstr - min_length:
             new_string += string[i:]
             break
         new_string += val_c
         if (i % max_length == 0) and (i != 0):
-            new_string += "\" - \n" + gap + "\""
+            new_string += '" - \n' + gap + '"'
 
     return new_string
 
@@ -319,8 +316,9 @@ def uniq(seq, not_none=False):
         return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-def which(program, path='PATH'):
+def which(program, path="PATH"):
     """Run which function."""
+
     def is_exe(fpath):
         """Run is_exe function."""
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
@@ -341,5 +339,5 @@ def which(program, path='PATH'):
 
 
 # _________________ Main ____________________________
-if __name__ == '__main__':
-    print('toolbox for maser package')
+if __name__ == "__main__":
+    print("toolbox for maser package")

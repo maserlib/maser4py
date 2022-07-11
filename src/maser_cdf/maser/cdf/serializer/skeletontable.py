@@ -33,13 +33,14 @@ logger = logging.getLogger(__name__)
 # (If required, define here classes)
 
 
-def skeletontable(input_cdf,
-                output_dir=os.getcwd(),
-                output_skt=None,
-                overwrite=False,
-                to_xlsx=False,
-                exe=None,
-                ):
+def skeletontable(
+    input_cdf,
+    output_dir=os.getcwd(),
+    output_skt=None,
+    overwrite=False,
+    to_xlsx=False,
+    exe=None,
+):
     """
     Make a skeleton table file from an input CDF file
     using the skeletontable program of the NASA CDF software.
@@ -59,9 +60,7 @@ def skeletontable(input_cdf,
     # If output_dir does not provide then use current one
     # If provided, but does not exist, then create it
     if not osp.isdir(output_dir):
-        logger.warning(
-                "{0} output directory not found, create it!".format(
-                    output_dir))
+        logger.warning("{0} output directory not found, create it!".format(output_dir))
         os.mkdir(output_dir)
 
     # Get basename, extension of the input CDF
@@ -85,14 +84,13 @@ def skeletontable(input_cdf,
             if "CDF_BIN" in os.environ:
                 exe = osp.join(os.environ["CDF_BIN"], "skeletontable")
             else:
-                exe = which('skeletontable')
+                exe = which("skeletontable")
         if exe is None:
             logger.error("skeletontable program is not callable!")
             return None
         cmd.append(exe)
         if os.path.isfile(output_skt) and overwrite:
-            logger.warning("%s existing file will be overwritten!",
-                           output_skt)
+            logger.warning("%s existing file will be overwritten!", output_skt)
             cmd.append("-delete")
         cmd.append(input_cdf)
         cmd.extend(["-skeleton", os.path.splitext(output_skt)[0]])
@@ -113,18 +111,20 @@ def skeletontable(input_cdf,
             logger.error(" ".join(cmd))
             logger.error("STDOUT - %s", str(output))
             logger.error("STDERR - %s", str(errors))
-            logger.error("OUTPUT \"{0}\" HAS NOT BEEN SAVED!".format(output_skt))
+            logger.error('OUTPUT "{0}" HAS NOT BEEN SAVED!'.format(output_skt))
             return None
     else:
-        logger.warning("Input CDF seems to be already a skeleton table ({0})".format(
-            input_cdf))
+        logger.warning(
+            "Input CDF seems to be already a skeleton table ({0})".format(input_cdf)
+        )
         input_skt = input_cdf
 
     # if requested, also save as an Excel file
     if to_xlsx:
         skeleton = Skeleton.from_txt(input_skt)
-        output_xlsx = os.path.join(output_dir,
-            os.path.basename(os.path.splitext(input_skt)[0] + ".xlsx"))
+        output_xlsx = os.path.join(
+            output_dir, os.path.basename(os.path.splitext(input_skt)[0] + ".xlsx")
+        )
         skeleton.to_xlsx(output_xlsx)
         if os.path.isfile(output_xlsx):
             logger.info("{0} has been saved correctly!".format(output_xlsx))
