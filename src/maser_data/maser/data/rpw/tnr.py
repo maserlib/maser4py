@@ -126,14 +126,9 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     def times(self):
         if self._times is None:
             self._times = {}
-            band_label = 0
-            for frequency_key in self.frequency_keys:
-                array_band_index = (
-                    self.TNR_CURRENT_BAND_WORKING_ON == band_label
-                ).nonzero()[0]
-                times_band_label = self.epoch[array_band_index]
-                self._times[frequency_key] = Time(times_band_label)
-            band_label = band_label + 1
+            for band_index, frequency_key in enumerate(self.frequency_keys):
+                mask = self.TNR_CURRENT_BAND_WORKING_ON == band_index
+                self._times[frequency_key] = Time(self.epoch[mask])
         return self._times
 
     def as_array(

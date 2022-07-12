@@ -130,8 +130,7 @@ def plot_mean(
         voltage_B_F1_mean = numpy.mean(voltage_B_F1.values, 0)
         voltage_B_F0_mean = numpy.mean(voltage_B_F0.values, 0)
         voltage_B_mean = numpy.hstack((voltage_B_F1_mean, voltage_B_F0_mean))
-        print(numpy.shape(voltage_B_mean))
-        print(freq_B)
+
         voltage_B_mean = 10 * numpy.log10(voltage_B_mean)
         plt.plot(freq_B, voltage_B_mean)
 

@@ -139,7 +139,6 @@ def download_data_sample(database_name: str, reload: bool = False):
             if len(cur_file_items) > 2:
                 for extra_file in cur_file_items[2:]:
                     cur_file_list.append(extra_file)
-            print(cur_file_list)
 
             for cur_file in cur_file_list:
                 # local path to file

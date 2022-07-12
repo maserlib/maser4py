@@ -68,10 +68,9 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
             with self.open(self.filepath) as cdf_file:
                 self._times = {}
                 for frequency_key in self.frequency_keys:
-                    # self._times[frequency_key] = Time(
-                    # cdf_file[f"Epoch_{frequency_key}"][...]
-                    # )
-                    self._times[frequency_key] = cdf_file[f"Epoch_{frequency_key}"][...]
+                    self._times[frequency_key] = Time(
+                        cdf_file[f"Epoch_{frequency_key}"][...]
+                    )
 
         return self._times
 

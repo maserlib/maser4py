@@ -82,7 +82,7 @@ def test_rpw_lfr_surv_bp1_data__as_xarray(filepath):
 
         # check the sweep content
         assert len(expected_keys) == 5
-        assert list(datasets.keys()) == expected_keys
+        assert sorted(list(datasets.keys())) == sorted(expected_keys)
         assert list(datasets[expected_keys[0]].keys()) == expected_frequency_ranges
 
         test_array = datasets[expected_keys[0]][expected_frequency_ranges[0]]

@@ -180,7 +180,7 @@ def quick_look_tnr_lfr_only_E_final(
     path = "/home/atokgozoglu/Documents/captureecran/"
     path = path + title_png
     title = title + " " + " combined TNR and LFR data"
-    print(title)
+
     plt.suptitle(title, fontweight="bold", style="italic", color="grey")
 
     # plt.show()
