@@ -126,6 +126,7 @@ pages:
   stage: publish
   before_script:
     - !reference [.setup-poetry, before_script]
+    - !reference [.install-fortran, before_script]
   script:
     - poetry install
     - poetry run sphinx-build -b html docs/source public
