@@ -109,12 +109,12 @@ test-job:
 publish-maser_data:
   <<: *publish_job
   variables:
-    PACKAGE_DIR: 'scr/maser_data'
+    PACKAGE_DIR: 'src/maser_data'
 
 publish-maser_plot:
   <<: *publish_job
   variables:
-    PACKAGE_DIR: 'scr/maser_plot'
+    PACKAGE_DIR: 'src/maser_plot'
 
 publish-maser4py:
   <<: *publish_job
