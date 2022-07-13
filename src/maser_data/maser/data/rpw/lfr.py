@@ -72,8 +72,9 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
 
     def as_xarray(self):
         import xarray
+        import numpy
 
-        datasets = {
+        dataset = {
             "PE": {},
             "PB": {},
             "DOP": {},
@@ -101,8 +102,9 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
             if not frequency_attrs["units"].strip():
                 frequency_attrs["units"] = "Hz"
 
-            for dataset_key in datasets:
+            for dataset_key in dataset:
                 values = self.file[f"{dataset_key}_{frequency_band}"][...]
+
                 attrs = {
                     k.lower(): v
                     for k, v in self.file[
@@ -114,16 +116,17 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                 if not attrs["units"].strip():
                     attrs["units"] = default_units.get(dataset_key, "")
 
-                datasets[dataset_key][frequency_band] = xarray.DataArray(
-                    values.T,
+                dataset[dataset_key][frequency_band] = xarray.DataArray(
+                    values,
                     coords=[
-                        ("frequency", frequencies, frequency_attrs),
                         ("time", times, time_attrs),
+                        ("frequency", frequencies, frequency_attrs),
                     ],
                     attrs=attrs,
                     name=f"{dataset_key}_{frequency_band}",
                 )
-        return datasets
+
+        return dataset
 
     # def plot_lfr_bp1_data(self,datasets: dict) -> tuple:
     def plot_lfr_bp1_data(self):
@@ -135,7 +138,9 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
         Returns:
             tuple: matplotlib figure and axes
         """
-        datasets = self.as_xarray()
+        dataset = self.as_xarray()
+
+        print(dataset)
 
         # prepare kwargs for each dataset/plot
         plot_kwargs = {
@@ -147,9 +152,9 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
         }
 
         # create figure and axes
-        fig, axes = plt.subplots(len(datasets), 1, sharex=True)
+        fig, axes = plt.subplots(len(dataset), 1, sharex=True)
         # loop over datasets
-        for ax_idx, dataset_key in enumerate(datasets):
+        for ax_idx, dataset_key in enumerate(dataset):
 
             # select the ax to plot on
             ax = axes[ax_idx]
@@ -158,30 +163,22 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
             cbar_ax, kw = cbar.make_axes(ax)
 
             # compute vmin and vmax by taking the min and max of each dataset for each frequency range
-            vmin = plot_kwargs[dataset_key].get("vmin", None)
-            if vmin is None:
-                for data_array in datasets[dataset_key].values():
-                    vmin = (
-                        min(vmin, data_array.min())
-                        if vmin is not None
-                        else data_array.min()
-                    )
-                plot_kwargs[dataset_key]["vmin"] = vmin
-
-            vmax = plot_kwargs[dataset_key].get("vmax", None)
-            if vmax is None:
-                for data_array in datasets[dataset_key].values():
-                    vmax = (
-                        max(vmax, data_array.max())
-                        if vmax is not None
-                        else data_array.max()
-                    )
-                plot_kwargs[dataset_key]["vmax"] = vmax
+            min_value = min(
+                [dataset[dataset_key][band].min() for band in dataset[dataset_key]]
+            )
+            max_value = max(
+                [dataset[dataset_key][band].max() for band in dataset[dataset_key]]
+            )
+            plot_kwargs[dataset_key].setdefault("vmin", min_value)
+            plot_kwargs[dataset_key].setdefault("vmax", max_value)
 
             # plot the data
-            for data_array in datasets[dataset_key].values():
+            for band in dataset[dataset_key]:
+                data_array = dataset[dataset_key][band]
                 data_array.plot.pcolormesh(
                     ax=ax,
+                    x="time",
+                    y="frequency",
                     yscale="log",
                     add_colorbar=True,
                     **plot_kwargs[dataset_key],
@@ -189,9 +186,28 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                 )
 
             # set the color bar title
-            if data_array.attrs["units"]:
+            if data_array.attrs.get("units"):
                 cbar_label = f'{dataset_key} [${data_array.attrs["units"]}$]'
             else:
                 cbar_label = dataset_key
             cbar_ax.set_ylabel(cbar_label)
         return fig, axes
+
+
+if __name__ == "__main__":
+    from maser.data import Data
+    from pathlib import Path
+    import matplotlib.pyplot as plt
+
+    data_path = Path(__file__).parents[5] / "tests" / "data" / "solo" / "rpw"
+
+    print(data_path)
+
+    # lfr_file = "solo_L2_rpw-lfr-surv-bp1_20211127_V02.cdf"
+    lfr_file = "solo_L2_rpw-lfr-surv-bp1_20220118_V02.cdf"
+    lfr_filepath = data_path / lfr_file
+
+    lfr_data = Data(filepath=lfr_filepath)
+    # fig, ax = plt.subplots()
+    lfr_data.plot_lfr_bp1_data()
+    plt.show()

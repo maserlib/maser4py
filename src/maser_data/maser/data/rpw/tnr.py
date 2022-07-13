@@ -146,16 +146,19 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             dims=["channel", "time", "freq_index"],
         )
 
-        return auto
+        return xarray.Dataset({"auto": auto})
 
-    def plot(self, **kwargs):
+    def plot(self, ax, sensor="V1-V2", **kwargs):
         from matplotlib import colors
         import matplotlib.colorbar as cbar
 
-        auto = self.as_xarray()
+        # create a colorbar axis
+        cbar_ax, kw = cbar.make_axes(ax)
+
+        auto = self.as_xarray()["auto"]
 
         # keep only V1-V2 sensor
-        v1_v2_auto = auto.where(auto.sensor == "V1-V2", drop=True)
+        v1_v2_auto = auto.where(auto.sensor == sensor, drop=True)
 
         # determine min/max for the colorbar
         vmin = v1_v2_auto.where(v1_v2_auto > 0).min()
@@ -173,6 +176,8 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         for band, data_array in v1_v2_auto.groupby("band"):
             for channel in self.channel_labels:
                 data_array.sel(channel=channel).plot.pcolormesh(
+                    cbar_ax=cbar_ax,
+                    ax=ax,
                     x="time",
                     y="frequency",
                     yscale="log",
@@ -195,5 +200,6 @@ if __name__ == "__main__":
     tnr_filepath = data_path / tnr_file
 
     tnr_data = Data(filepath=tnr_filepath)
-    tnr_data.plot()
+    fig, ax = plt.subplots()
+    tnr_data.plot(ax)
     plt.show()
