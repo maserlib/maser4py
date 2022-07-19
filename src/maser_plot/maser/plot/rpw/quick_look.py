@@ -3,7 +3,6 @@ import datetime
 from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 
-# from maser import data
 from maser.data import Data
 import matplotlib.colorbar as cbar
 
