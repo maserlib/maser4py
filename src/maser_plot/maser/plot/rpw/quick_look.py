@@ -18,6 +18,7 @@ def quick_look(
     tnr_filepath: Path,
     *,
     fields: list = ["PB", "PE", "DOP", "ELLIP", "SX_REA"],
+    bands: list = ["A", "B", "C", "D"],
 ):
     try:
         import seaborn
@@ -53,7 +54,9 @@ def quick_look(
     }
 
     # plot LFR and TNR data using pcolormesh
-    pcolormesh_tnr_lfr(fig, axes_dict, lfr_data, tnr_data, plot_kwargs=plot_kwargs)
+    pcolormesh_tnr_lfr(
+        fig, axes_dict, lfr_data, tnr_data, bands=bands, plot_kwargs=plot_kwargs
+    )
 
     # then adjust the figure ...
 
@@ -119,7 +122,14 @@ def quick_look(
 
 
 def pcolormesh_tnr_lfr(
-    fig, axes, lfr_data, tnr_data, *, max_gap_in_sec=60, plot_kwargs={}
+    fig,
+    axes,
+    lfr_data,
+    tnr_data,
+    *,
+    bands=["A", "B", "C", "D"],
+    max_gap_in_sec=60,
+    plot_kwargs={},
 ):
     from maser.plot.rpw.lfr import plot_lfr_bp1_field
     from maser.plot.rpw.tnr import plot_auto
@@ -136,7 +146,9 @@ def pcolormesh_tnr_lfr(
 
         if field == "PE":
             # plot auto from TNR
-            tnr_plot = plot_auto(tnr_data, **axes[field], **plot_kwargs.get(field, {}))
+            tnr_plot = plot_auto(
+                tnr_data, bands=bands, **axes[field], **plot_kwargs.get(field, {})
+            )
             tnr_vmin, tnr_vmax = tnr_plot["vmin"], tnr_plot["vmax"]
 
             # adjust the vmin and vmax
@@ -168,6 +180,7 @@ if __name__ == "__main__":
         lfr_filepath=data_path / lfr_file,
         tnr_filepath=data_path / tnr_file,
         fields=["PB", "PE", "DOP", "ELLIP", "SX_REA"],
+        bands=["A", "B", "C", "D"],
     )
 
     plt.show()
