@@ -8,6 +8,7 @@ import matplotlib.colorbar as cbar
 
 import matplotlib.dates as mdates
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
