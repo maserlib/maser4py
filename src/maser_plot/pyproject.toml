@@ -13,6 +13,11 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
 matplotlib = "^3.5.2"
+seaborn = {version = "^0.11.2", optional = true}
+
+[tool.poetry.extras]
+all = ["seaborn"]
+"*" = ["seaborn"]
 
 [build-system]
 requires = ["poetry>=1.1.4", "setuptools"]

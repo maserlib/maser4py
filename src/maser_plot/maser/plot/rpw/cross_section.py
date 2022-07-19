@@ -114,10 +114,19 @@ def cross_time(
     plt.show()
 
 
-cross_time(
-    "/home/atokgozoglu/Documents/formationPython/solo_L2_rpw-tnr-surv_20201227_V01.cdf",
-    "/home/atokgozoglu/Documents/Maser/maser-data/maser/data/rpw/solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf",
-    mode=1,
-    margin=2,
-    desired_time=datetime.datetime(2020, 12, 27, 12, 58, 1, 1),
-)
+def main():
+    from pathlib import Path
+
+    data_path = Path(__file__).parents[5] / "tests" / "data" / "solo" / "rpw"
+
+    cross_time(
+        data_path / "solo_L2_rpw-tnr-surv_20210701_V01.cdf",
+        data_path / "solo_L2_rpw-lfr-surv-bp1_20210701_V03.cdf",
+        mode=1,
+        margin=2,
+        desired_time=datetime.datetime(2020, 12, 27, 12, 58, 1, 1),
+    )
+
+
+if __name__ == "__main__":
+    main()

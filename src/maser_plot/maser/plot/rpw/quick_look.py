@@ -8,15 +8,28 @@ from maser.data import Data
 import matplotlib.colorbar as cbar
 
 import matplotlib.dates as mdates
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-def quick_look_tnr_lfr(lfr_filepath, tnr_filepath):
-    import seaborn
+def quick_look(
+    lfr_filepath: Path,
+    tnr_filepath: Path,
+    *,
+    fields: list = ["PB", "PE", "DOP", "ELLIP", "SX_REA"],
+):
+    try:
+        import seaborn
+    except ImportError:
+        logger.warning("seaborn not installed, using matplotlib")
+        seaborn = None
+
+    if len(fields) < 1:
+        raise ValueError("No fields to plot")
 
     lfr_data = Data(filepath=lfr_filepath)
     tnr_data = Data(filepath=tnr_filepath)
-
-    fields = ["PB", "PE", "DOP", "ELLIP", "SX_REA"]
 
     nb_plot = len(fields)
 
@@ -66,27 +79,28 @@ def quick_look_tnr_lfr(lfr_filepath, tnr_filepath):
         ax.set_title("")
     axes[-1].set_title("")
 
-    # fix PE labels
-    axes_dict["PE"]["cbar_ax"].set_ylabel("PE [$V^2/Hz$]")
-    axes_dict["PE"]["ax"].set_ylabel("frequency [Hz]")
+    if "PE" in fields:
+        # fix PE labels issues due to TNR auto data overplotting
+        axes_dict["PE"]["cbar_ax"].set_ylabel("PE [$V^2/Hz$]")
+        axes_dict["PE"]["ax"].set_ylabel("frequency [Hz]")
 
     # set the y-axis limits/ticks
     ymin = lfr_data.file["N_F2"][:].min()
     ymax = tnr_data.file["FREQUENCY"][:].max()
 
-    axes_dict["PE"]["ax"].set_ylim(bottom=ymin, top=ymax)
-    axes_dict["PE"]["ax"].yaxis.set_minor_locator(ticker.FixedLocator([1e2, 1e4, 1e5]))
+    axes[-1].set_ylim(bottom=ymin, top=ymax)
+    axes[-1].yaxis.set_minor_locator(ticker.FixedLocator([1e2, 1e4, 1e5]))
 
     # set formatter for y-axis
-    axes_dict["PE"]["ax"].yaxis.set_major_formatter(
+    axes[-1].yaxis.set_major_formatter(
         ticker.LogFormatterSciNotation(labelOnlyBase=False)
     )
 
     # remove minor labels
-    axes_dict["PE"]["ax"].yaxis.set_minor_formatter(ticker.NullFormatter())
+    axes[-1].yaxis.set_minor_formatter(ticker.NullFormatter())
 
     # set major ticks for y-axis
-    axes_dict["PE"]["ax"].set_yticks([10, 1e3, 1e6])
+    axes[-1].set_yticks([10, 1e3, 1e6])
 
     # set the plot title
     title = (
@@ -95,9 +109,10 @@ def quick_look_tnr_lfr(lfr_filepath, tnr_filepath):
 
     fig.suptitle(title, y=0.92)
 
+    # Remove the top and right spines from plots and offset/trim axes
     for ax in axes:
-        # Remove the top and right spines from plots and offset/trim axes
-        seaborn.despine(ax=ax, offset=10, trim=True)
+        if seaborn is not None:
+            seaborn.despine(ax=ax, offset=10, trim=True)
         ax.tick_params(
             axis="x", direction="inout", length=plt.rcParams["xtick.major.size"] * 2
         )
@@ -106,9 +121,12 @@ def quick_look_tnr_lfr(lfr_filepath, tnr_filepath):
 def pcolormesh_tnr_lfr(
     fig, axes, lfr_data, tnr_data, *, max_gap_in_sec=60, plot_kwargs={}
 ):
+    from maser.plot.rpw.lfr import plot_lfr_bp1_field
+    from maser.plot.rpw.tnr import plot_auto
 
     for field in axes:
-        lfr_plot = lfr_data.plot_lfr_bp1_field(
+        lfr_plot = plot_lfr_bp1_field(
+            lfr_data,
             **axes[field],
             field=field,
             max_gap_in_sec=max_gap_in_sec,
@@ -118,7 +136,7 @@ def pcolormesh_tnr_lfr(
 
         if field == "PE":
             # plot auto from TNR
-            tnr_plot = tnr_data.plot_auto(**axes[field], **plot_kwargs.get(field, {}))
+            tnr_plot = plot_auto(tnr_data, **axes[field], **plot_kwargs.get(field, {}))
             tnr_vmin, tnr_vmax = tnr_plot["vmin"], tnr_plot["vmax"]
 
             # adjust the vmin and vmax
@@ -146,8 +164,10 @@ if __name__ == "__main__":
     tnr_file = f"solo_L2_rpw-tnr-surv_{date}_V02.cdf"
     lfr_file = f"solo_L2_rpw-lfr-surv-bp1_{date}_V02.cdf"
 
-    quick_look_tnr_lfr(
-        lfr_filepath=data_path / lfr_file, tnr_filepath=data_path / tnr_file
+    quick_look(
+        lfr_filepath=data_path / lfr_file,
+        tnr_filepath=data_path / tnr_file,
+        fields=["PB", "PE", "DOP", "ELLIP", "SX_REA"],
     )
 
     plt.show()

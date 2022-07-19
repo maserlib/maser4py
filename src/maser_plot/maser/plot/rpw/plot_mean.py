@@ -10,8 +10,8 @@ def plot_mean(
     lfr_filepath,
     mode,
     margin=5,
-    desired_time_start=datetime.datetime(2021, 10, 28, 0, 0, 0, 0),
-    desired_time_end=datetime.datetime(2021, 10, 28, 23, 59, 59, 0),
+    start=datetime.datetime(2021, 10, 28, 0, 0, 0, 0),
+    end=datetime.datetime(2021, 10, 28, 23, 59, 59, 0),
 ):
 
     my_tnr_data = Data(filepath=tnr_filepath)
@@ -44,16 +44,14 @@ def plot_mean(
 
     index_tnr_start = 0
 
-    while numpy.abs(
-        desired_time_start - times[0][index_tnr_start]
-    ) > datetime.timedelta(seconds=margin):
+    while numpy.abs(start - times[0][index_tnr_start]) > datetime.timedelta(
+        seconds=margin
+    ):
         index_tnr_start = index_tnr_start + 1
 
     index_tnr_end = index_tnr_start
 
-    while numpy.abs(desired_time_end - times[0][index_tnr_end]) > datetime.timedelta(
-        seconds=margin
-    ):
+    while numpy.abs(end - times[0][index_tnr_end]) > datetime.timedelta(seconds=margin):
         index_tnr_end = index_tnr_end + 1
 
     Auto_A = auto[0][index_tnr_start:index_tnr_end, :]
@@ -89,14 +87,14 @@ def plot_mean(
         voltage_N_F1 = voltage["N_F1"].T
         voltage_N_F2 = voltage["N_F2"].T
         times_N_F1 = times_lfr["N_F1"].T
-        while numpy.abs(
-            desired_time_start - times_N_F1[index_lfr_N_start]
-        ) > datetime.timedelta(seconds=margin):
+        while numpy.abs(start - times_N_F1[index_lfr_N_start]) > datetime.timedelta(
+            seconds=margin
+        ):
             index_lfr_N_start = index_lfr_N_start + 1
         index_lfr_N_end = index_lfr_N_start
-        while numpy.abs(
-            desired_time_end - times_N_F1[index_lfr_N_end]
-        ) > datetime.timedelta(seconds=margin):
+        while numpy.abs(end - times_N_F1[index_lfr_N_end]) > datetime.timedelta(
+            seconds=margin
+        ):
             index_lfr_N_end = index_lfr_N_end + 1
         voltage_N_F2 = voltage_N_F2[index_lfr_N_start : index_lfr_N_end + 1]
         voltage_N_F1 = voltage_N_F1[index_lfr_N_start : index_lfr_N_end + 1]
@@ -115,14 +113,14 @@ def plot_mean(
         voltage_B_F1 = voltage["B_F1"].T
         times_B_F0 = times_lfr["B_F0"].T
 
-        while numpy.abs(
-            desired_time_start - times_B_F0[index_lfr_B_start]
-        ) > datetime.timedelta(seconds=margin):
+        while numpy.abs(start - times_B_F0[index_lfr_B_start]) > datetime.timedelta(
+            seconds=margin
+        ):
             index_lfr_B_start = index_lfr_B_start + 1
         index_lfr_B_end = index_lfr_B_start
-        while numpy.abs(
-            desired_time_end - times_B_F0[index_lfr_B_end]
-        ) > datetime.timedelta(seconds=margin):
+        while numpy.abs(end - times_B_F0[index_lfr_B_end]) > datetime.timedelta(
+            seconds=margin
+        ):
             index_lfr_B_end = index_lfr_B_end + 1
 
         voltage_B_F1 = voltage_B_F1[index_lfr_B_start : index_lfr_B_end + 1]
@@ -138,15 +136,24 @@ def plot_mean(
     plt.xlabel("frequencies")
     plt.ylabel("V^2/Hz")
     plt.xscale("log")
-    plt.title(desired_time_start)
+    plt.title(start)
     plt.show()
 
 
-plot_mean(
-    "/home/atokgozoglu/Documents/Maser/maser-data/maser/data/rpw/solo_L2_rpw-tnr-surv_20210701_V01.cdf",
-    "/home/atokgozoglu/Documents/formationPython/solo_L2_rpw-lfr-surv-bp1_20210701_V03.cdf",
-    mode=0,
-    margin=19,
-    desired_time_start=datetime.datetime(2021, 7, 1, 0, 49, 44, 1),
-    desired_time_end=datetime.datetime(2021, 7, 1, 5, 50, 55, 1),
-)
+def main():
+    from pathlib import Path
+
+    data_path = Path(__file__).parents[5] / "tests" / "data" / "solo" / "rpw"
+
+    plot_mean(
+        data_path / "solo_L2_rpw-tnr-surv_20210701_V01.cdf",
+        data_path / "solo_L2_rpw-lfr-surv-bp1_20210701_V03.cdf",
+        mode=0,
+        margin=19,
+        start=datetime.datetime(2021, 7, 1, 0, 49, 44, 1),
+        end=datetime.datetime(2021, 7, 1, 5, 50, 55, 1),
+    )
+
+
+if __name__ == "__main__":
+    main()
