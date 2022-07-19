@@ -148,12 +148,13 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
         return xarray.Dataset({"auto": auto})
 
-    def plot(self, ax, sensor="V1-V2", **kwargs):
+    def plot_auto(self, ax, sensor="V1-V2", cbar_ax=None, **kwargs):
         from matplotlib import colors
         import matplotlib.colorbar as cbar
 
         # create a colorbar axis
-        cbar_ax, kw = cbar.make_axes(ax)
+        if cbar_ax is None:
+            cbar_ax, kw = cbar.make_axes(ax)
 
         auto = self.as_xarray()["auto"]
 
@@ -164,18 +165,28 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         vmin = v1_v2_auto.where(v1_v2_auto > 0).min()
         vmax = v1_v2_auto.max()
 
+        print("kwargs:", kwargs)
+
         plot_kwargs = {
             "cmap": "jet",
-            "norm": colors.LogNorm(),
+            "norm": "log",
             "vmin": vmin,
             "vmax": vmax,
             **kwargs,
         }
 
+        # create a new norm object to display the colorbar in log scale
+        if "norm" in plot_kwargs and plot_kwargs["norm"] == "log":
+            plot_kwargs["norm"] = colors.LogNorm()
+
+        print("plot_kwargs:", plot_kwargs)
+
+        meshes = []
+
         # group data by band and plot each channel
         for band, data_array in v1_v2_auto.groupby("band"):
             for channel in self.channel_labels:
-                data_array.sel(channel=channel).plot.pcolormesh(
+                mesh = data_array.sel(channel=channel).plot.pcolormesh(
                     cbar_ax=cbar_ax,
                     ax=ax,
                     x="time",
@@ -184,6 +195,16 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
                     add_colorbar=True,
                     **plot_kwargs,
                 )
+
+                meshes.append(mesh)
+
+        return {
+            "ax": ax,
+            "cbar_ax": cbar_ax,
+            "vmin": vmin,
+            "vmax": vmax,
+            "meshes": meshes,
+        }
 
 
 if __name__ == "__main__":
@@ -201,5 +222,5 @@ if __name__ == "__main__":
 
     tnr_data = Data(filepath=tnr_filepath)
     fig, ax = plt.subplots()
-    tnr_data.plot(ax)
+    tnr_data.plot_auto(ax)
     plt.show()
