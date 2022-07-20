@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from cProfile import label
 import datetime
 from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
@@ -35,8 +36,21 @@ def quick_look(
     nb_plot = len(fields)
 
     fig, axes = plt.subplots(
-        len(fields), 1, sharex=True, sharey=True, figsize=(9, 2 * nb_plot)
+        nb_plot,
+        1,
+        sharex=True,
+        sharey=True,
+        figsize=(9, 2 * nb_plot),
+        constrained_layout=True,
     )
+
+    cbar_labels = {
+        "PB": "PB [$nT^2/Hz$]",
+        "PE": "PE [$V^2/Hz$]",
+        "DOP": "DOP",
+        "ELLIP": "ELLIP",
+        "SX_REA": "SX_REA",
+    }
 
     axes_dict = {}
     for key, ax in zip(fields, axes):
@@ -84,12 +98,11 @@ def quick_look(
 
     if "PE" in fields:
         # fix PE labels issues due to TNR auto data overplotting
-        axes_dict["PE"]["cbar_ax"].set_ylabel("PE [$V^2/Hz$]")
         axes_dict["PE"]["ax"].set_ylabel("frequency [Hz]")
 
     # set the y-axis limits/ticks
     ymin = lfr_data.file["N_F2"][:].min()
-    ymax = tnr_data.file["FREQUENCY"][:].max()
+    ymax = 1e5
 
     axes[-1].set_ylim(bottom=ymin, top=ymax)
     axes[-1].yaxis.set_minor_locator(ticker.FixedLocator([1e2, 1e4, 1e5]))
@@ -103,22 +116,25 @@ def quick_look(
     axes[-1].yaxis.set_minor_formatter(ticker.NullFormatter())
 
     # set major ticks for y-axis
-    axes[-1].set_yticks([10, 1e3, 1e6])
+    axes[-1].set_yticks([10, 1e3, 1e5])
 
     # set the plot title
     title = (
         f"{current_date.strftime('%Y-%m-%d')} | Quick look of combined TNR and LFR data"
     )
 
-    fig.suptitle(title, y=0.92)
+    fig.suptitle(title)
 
     # Remove the top and right spines from plots and offset/trim axes
-    for ax in axes:
+    for field in axes_dict:
+        ax = axes_dict[field]["ax"]
+        cbar_ax = axes_dict[field]["cbar_ax"]
         if seaborn is not None:
             seaborn.despine(ax=ax, offset=10, trim=True)
         ax.tick_params(
             axis="x", direction="inout", length=plt.rcParams["xtick.major.size"] * 2
         )
+        cbar_ax.set_ylabel(cbar_labels[field])
 
 
 def pcolormesh_tnr_lfr(
@@ -162,6 +178,11 @@ def pcolormesh_tnr_lfr(
             for mesh in tnr_plot["meshes"]:
                 mesh.set_clim(vmin, vmax)
 
+            axes[field]["cbar_ax"].clear()
+
+        if len(lfr_plot["meshes"]) > 0:
+            plt.colorbar(mappable=lfr_plot["meshes"][0], cax=axes[field]["cbar_ax"])
+
     return fig, axes
 
 
@@ -170,8 +191,8 @@ if __name__ == "__main__":
 
     data_path = Path(__file__).parents[5] / "tests" / "data" / "solo" / "rpw"
 
-    date = "20211127"
-    # date = '20220118'
+    # date = "20211127"
+    date = "20220118"
 
     tnr_file = f"solo_L2_rpw-tnr-surv_{date}_V02.cdf"
     lfr_file = f"solo_L2_rpw-lfr-surv-bp1_{date}_V02.cdf"
@@ -179,7 +200,7 @@ if __name__ == "__main__":
     quick_look(
         lfr_filepath=data_path / lfr_file,
         tnr_filepath=data_path / tnr_file,
-        fields=["PB", "PE", "DOP", "ELLIP", "SX_REA"],
+        fields=["PB", "PE", "DOP"],
         bands=["A", "B", "C", "D"],
     )
 

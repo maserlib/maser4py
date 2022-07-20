@@ -38,9 +38,10 @@ def plot_lfr_bp1_field(
     if cbar_ax is None:
         cbar_ax, kw = cbar.make_axes(ax)
 
-    # compute vmin and vmax by taking the min and max of each dataset for each frequency range
-    min_value = min([dataset[field][band].min() for band in dataset[field]])
-    max_value = max([dataset[field][band].max() for band in dataset[field]])
+    # determine min/max for the colorbar by taking account of each dataset for each frequency range
+    # use q5 and q95 for vmin and vmax to avoid outliers
+    min_value = min([dataset[field][band].quantile(0.05) for band in dataset[field]])
+    max_value = max([dataset[field][band].quantile(0.95) for band in dataset[field]])
     merge_kwargs.setdefault("vmin", min_value)
     merge_kwargs.setdefault("vmax", max_value)
 
@@ -80,9 +81,10 @@ def plot_lfr_bp1_field(
                 x="time",
                 y="frequency",
                 yscale="log",
-                add_colorbar=True,
+                # add_colorbar=True,
                 **merge_kwargs,
-                cbar_ax=cbar_ax,
+                cbar_ax=None,
+                add_colorbar=False,
             )
 
             meshes.append(mesh)
