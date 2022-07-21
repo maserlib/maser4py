@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from cProfile import label
 import datetime
 from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 
 from maser.data import Data
 import matplotlib.colorbar as cbar
+import matplotlib
 
 import matplotlib.dates as mdates
 import logging
@@ -14,6 +14,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
+@matplotlib.rc_context({"axes.spines.right": False, "axes.spines.top": False})
 def quick_look(
     lfr_filepath: Path,
     tnr_filepath: Path,
@@ -21,11 +22,6 @@ def quick_look(
     fields: list = ["PB", "PE", "DOP", "ELLIP", "SX_REA"],
     bands: list = ["A", "B", "C", "D"],
 ):
-    try:
-        import seaborn
-    except ImportError:
-        logger.warning("seaborn not installed, using matplotlib")
-        seaborn = None
 
     if len(fields) < 1:
         raise ValueError("No fields to plot")
@@ -79,8 +75,8 @@ def quick_look(
         hour=0, minute=0, second=0
     )
 
-    xmin = current_date - datetime.timedelta(minutes=10)
-    xmax = current_date + datetime.timedelta(hours=24, minutes=10)
+    xmin = current_date - datetime.timedelta(minutes=1)
+    xmax = current_date + datetime.timedelta(hours=24, minutes=1)
 
     # set the time axis format/limits
     formatter = mdates.DateFormatter("%H:%M")
@@ -101,11 +97,11 @@ def quick_look(
         axes_dict["PE"]["ax"].set_ylabel("frequency [Hz]")
 
     # set the y-axis limits/ticks
-    ymin = lfr_data.file["N_F2"][:].min()
+    ymin = 1e1
     ymax = 1e5
 
     axes[-1].set_ylim(bottom=ymin, top=ymax)
-    axes[-1].yaxis.set_minor_locator(ticker.FixedLocator([1e2, 1e4, 1e5]))
+    axes[-1].yaxis.set_minor_locator(ticker.FixedLocator([1e2, 1e4]))
 
     # set formatter for y-axis
     axes[-1].yaxis.set_major_formatter(
@@ -116,7 +112,7 @@ def quick_look(
     axes[-1].yaxis.set_minor_formatter(ticker.NullFormatter())
 
     # set major ticks for y-axis
-    axes[-1].set_yticks([10, 1e3, 1e5])
+    axes[-1].set_yticks([1e1, 1e3, 1e5])
 
     # set the plot title
     title = (
@@ -129,12 +125,13 @@ def quick_look(
     for field in axes_dict:
         ax = axes_dict[field]["ax"]
         cbar_ax = axes_dict[field]["cbar_ax"]
-        if seaborn is not None:
-            seaborn.despine(ax=ax, offset=10, trim=True)
+
         ax.tick_params(
             axis="x", direction="inout", length=plt.rcParams["xtick.major.size"] * 2
         )
         cbar_ax.set_ylabel(cbar_labels[field])
+
+    return fig, axes
 
 
 def pcolormesh_tnr_lfr(
