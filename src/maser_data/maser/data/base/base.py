@@ -70,6 +70,8 @@ class BaseData:
 
 
 class Data(BaseData, dataset="default"):
+    """Generic Data class"""
+
     def __new__(
         cls, filepath: Path, dataset: Union[None, str] = "__auto__", *args, **kwargs
     ) -> "Data":
@@ -97,41 +99,50 @@ class Data(BaseData, dataset="default"):
 
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):
+        """Generic open() method."""
         return open(filepath, *args, **kwargs)
 
     @classmethod
     def close(cls, file):
+        """Generic close() method."""
         file.close()
 
     @property
     def file(self):
+        """Generic open method (using the default open class)."""
         if not self._file:
             self._file = self.open(self.filepath)
         return self._file
 
     @property
     def sweeps(self):
+        """Generic iterator method to access sweeps."""
         for sweep in self._iter_sweep_class(data_instance=self):
             yield sweep
 
     @property
     def records(self):
+        """Generic iterator method to access records."""
         for record in self._iter_record_class(data_instance=self):
             yield record
 
     @property
     def meta(self) -> dict:
+        """Generic method to metadata."""
         return dict()
 
     @property
     def times(self):
+        """Generic method to get the time axis."""
         return None
 
     @property
     def frequencies(self):
+        """Generic method to get the spectral axis."""
         return None
 
     def as_array(self) -> numpy.ndarray:
+        """Generic method to get the data as a numpy.array."""
         return numpy.ndarray(0)
 
     def __enter__(self):
@@ -147,11 +158,13 @@ class Data(BaseData, dataset="default"):
     def __iter__(self):
         # get the reference to the right iterator (file, sweeps or records)
         ref = getattr(self, self.access_mode)
+        print(ref)
         for item in ref:
             yield item
 
     @staticmethod
     def get_dataset(cls, filepath):
+        """Dataset selector method."""
         filepath = Path(filepath)
         if filepath.suffix.lower() == ".cdf":
             dataset = BaseData._registry["cdf"].get_dataset(filepath)
@@ -171,12 +184,14 @@ class CdfData(Data, dataset="cdf"):
 
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):
+        """Open method for CDF formatted data products"""
         from spacepy import pycdf
 
         return pycdf.CDF(str(filepath))
 
     @classmethod
     def get_dataset(cls, filepath):
+        """Dataset selector for CDF files (must be ISTP compliant)"""
         with cls.open(filepath) as c:
             dataset = c.attrs["Logical_source"][...][0]
         return dataset
@@ -187,10 +202,12 @@ class FitsData(Data, dataset="fits"):
 
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):
+        """Open method for FITS formatted data products"""
         return fits.open(filepath, *args, **kwargs)
 
     @classmethod
     def get_dataset(cls, filepath):
+        """Dataset selector for FITS files"""
         with cls.open(filepath) as f:
             if f[0].header["INSTRUME"] == "NenuFar" and filepath.stem.endswith("_BST"):
                 dataset = "srn_nenufar_bst"
@@ -209,6 +226,7 @@ class BinData(Data, dataset="bin"):
 
     @classmethod
     def get_dataset(cls, filepath):
+        """Dataset selector for Binary files"""
         filepath = Path(filepath)
         if filepath.stem.lower().startswith("wi_wa_rad1_l2_60s"):
             dataset = "cdpp_wi_wa_rad1_l2_60s_v2"

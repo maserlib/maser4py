@@ -25,14 +25,14 @@ def decode_instrument_mode(instrument_mode: int):
     }
 
 
-class MexMMarsis3RdrAisExt4V1Sweep(Sweep):
+class MexMMarsis3RdrAisV1Sweep(Sweep):
     def __init__(self, header, data, time, frequencies):
         super().__init__(header, data)
         self._time = time
         self._frequencies = frequencies
 
 
-class MexMMarsis3RdrAisExt4V1Sweeps(Sweeps):
+class MexMMarsis3RdrAisV1Sweeps(Sweeps):
     @property
     def generator(self):
         for sweep_id, sweep_mask in self.data_reference.sweep_mapping.items():
@@ -53,7 +53,7 @@ class MexMMarsis3RdrAisExt4V1Sweeps(Sweeps):
             header.update(
                 decode_instrument_mode(table["INSTRUMENT_MODE"][sweep_mask][0])
             )
-            yield MexMMarsis3RdrAisExt4V1Sweep(
+            yield MexMMarsis3RdrAisV1Sweep(
                 header,
                 table["SPECTRAL_DENSITY"][sweep_mask],
                 times[sweep_id],
@@ -61,11 +61,11 @@ class MexMMarsis3RdrAisExt4V1Sweeps(Sweeps):
             )
 
 
-class MexMMarsis3RdrAisExt4V1Data(
+class MexMMarsis3RdrAisV1Data(
     Pds3Data,
-    dataset="MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0",
+    dataset="MEX-M-MARSIS-3-RDR-AIS-V1.0",
 ):
-    _iter_sweep_class = MexMMarsis3RdrAisExt4V1Sweeps
+    _iter_sweep_class = MexMMarsis3RdrAisV1Sweeps
 
     def __init__(
         self,
@@ -77,7 +77,7 @@ class MexMMarsis3RdrAisExt4V1Data(
             filepath,
             dataset,
             access_mode,
-            fmt_label_dict=FMT_LABELS["MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0"],
+            fmt_label_dict=FMT_LABELS["MEX-M-MARSIS-3-RDR-AIS-V1.0"],
         )
         self.table = PDSDataTableObject(
             self.label["AIS_TABLE"], self.pointers["AIS_TABLE"]["file_name"]
@@ -140,3 +140,55 @@ class MexMMarsis3RdrAisExt4V1Data(
                     for sweep_mask in self._sweep_masks
                 ]
         return self._frequencies
+
+    def as_xarray(self):
+        import xarray
+
+        datasets = xarray.DataArray(
+            data=numpy.array([item.table for item in self.sweeps]).T,
+            name=self.dataset,
+            coords=[
+                ("frequency", self.frequencies, {"units": "kHz"}),
+                ("time", self.times.to_datetime()),
+            ],
+            dims=("frequency", "time"),
+            attrs={"units": "W m^-2 Hz^-1"},
+        )
+
+        return datasets
+
+
+class MexMMarsis3RdrAisExt1V1Data(
+    MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT1-V1.0"
+):
+    pass
+
+
+class MexMMarsis3RdrAisExt2V1Data(
+    MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT2-V1.0"
+):
+    pass
+
+
+class MexMMarsis3RdrAisExt3V1Data(
+    MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT3-V1.0"
+):
+    pass
+
+
+class MexMMarsis3RdrAisExt4V1Data(
+    MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0"
+):
+    pass
+
+
+class MexMMarsis3RdrAisExt5V1Data(
+    MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT5-V1.0"
+):
+    pass
+
+
+class MexMMarsis3RdrAisExt6V1Data(
+    MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT6-V1.0"
+):
+    pass

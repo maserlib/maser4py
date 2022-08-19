@@ -2,8 +2,14 @@
 from maser.data.base import BinData
 from .sweeps import InterballAuroralPolradRspSweeps
 from .records import InterballAuroralPolradRspRecords
+from pathlib import Path
+import numpy
 
+# from typing import Union, Dict
 from astropy.time import Time
+from ..const import CCSDS_CDS_FIELDS
+from ..utils import _read_sweep_length, _read_block
+import struct
 
 
 class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rspn2"):
@@ -11,6 +17,108 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
 
     _iter_sweep_class = InterballAuroralPolradRspSweeps
     _iter_record_class = InterballAuroralPolradRspRecords
+
+    def __init__(
+        self,
+        filepath: Path,
+        dataset: Union[None, str] = "__auto__",
+        access_mode: str = "sweeps",
+    ):
+        super().__init__(
+            filepath,
+            dataset,
+            access_mode,
+        )
+        self._data = None
+        self._nsweep = None
+        if self._load_data:
+            self.load_data()
+
+    def _loader(self, count_only=False):
+        data = []
+        nsweep = 0
+
+        ccsds_fields, ccsds_dtype = CCSDS_CDS_FIELDS
+        sfa_conf_fields, sfa_conf_dtype = (
+            ["STEPS", "FIRST_FREQ", "CHANNELS", "SWEEP_DURATION", "ATTENUATION"],
+            ">ififi",
+        )
+
+        while True:
+            try:
+                # Reading number of octets in the current sweep
+                loctets1 = _read_sweep_length(self.file)
+                if loctets1 is None:
+                    break
+
+                header_i = _read_block(self.file, ccsds_dtype, ccsds_fields)
+
+                # => Here we fix the `P_Field` which is corrupted
+                # First we reverse the order of the bits in the byte
+                P_Field_tmp = int("{:08b}".format(header_i["CCSDS_PREAMBLE"])[::-1], 2)
+                # Then we put back the initial 4-6 bits into bits 1-3 (defining the CSSDS code)
+                # as those bits are not in reverse order in the file...
+                P_Field_tmp = (P_Field_tmp & 241) + (
+                    header_i["CCSDS_PREAMBLE"] & 112
+                ) // 8
+
+                header_i["P_Field"] = P_Field_tmp
+                header_i["T_Field"] = bytearray(
+                    [
+                        header_i["CCSDS_JULIAN_DAY_B1"],
+                        header_i["CCSDS_JULIAN_DAY_B2"],
+                        header_i["CCSDS_JULIAN_DAY_B3"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B0"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B1"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B2"],
+                        header_i["CCSDS_MILLISECONDS_OF_DAY_B3"],
+                    ]
+                )
+
+                header_i["CCSDS_CDS_LEVEL2_EPOCH"] = Time("1950-01-01 00:00:00")
+                header_i["SESSION_NAME"] = "".join(
+                    [x.decode() for x in _read_block(self.file, ">cccccccc")]
+                )
+                header_i.update(_read_block(self.file, sfa_conf_dtype, sfa_conf_fields))
+                header_i["SWEEP_ID"] = nsweep
+
+                data_dtype = ">" + "f" * header_i["STEPS"]
+                sweep_length = struct.calcsize(data_dtype) * header_i["CHANNELS"]
+                if self._load_data or (not count_only):
+                    data_i = dict((("EX", None), ("EY", None), ("EZ", None)))
+                    data_i["EY"] = _read_block(self.file, data_dtype)
+                    if header_i["CHANNELS"] == 3:
+                        data_i["EZ"] = _read_block(self.file, data_dtype)
+                        data_i["EX"] = _read_block(self.file, data_dtype)
+                else:
+                    self.file.seek(sweep_length, 1)
+                    data_i = None
+
+                # Reading number of octets in the current sweep
+                loctets2 = _read_sweep_length(self.file)
+                if loctets2 != loctets1:
+                    print("Error reading file!")
+                    return None
+
+            except EOFError:
+                print("End of file reached")
+                break
+
+            else:
+                data.append((header_i, data_i))
+                nsweep += 1
+
+        self._nsweep = nsweep
+        return data
+
+    def load_data(self):
+        self._data = self._loader()
+        self._load_data = True
+
+    def __len__(self):
+        if self._nsweep is None:
+            self._loader(count_only=True)
+        return self._nsweep
 
     @property
     def times(self):
@@ -62,3 +170,21 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
             tmp["STATION_CODE"] = "unk"
 
         return tmp
+
+    def as_xarray(self):
+        import xarray
+
+        datasets = {}
+        for dataset_key in ["EX", "EY", "EZ"]:
+            datasets[dataset_key] = xarray.DataArray(
+                data=numpy.array([item.data[dataset_key] for item in self.sweeps]).T,
+                name=dataset_key,
+                coords=[
+                    ("frequency", self.frequencies, {"units": "kHz"}),
+                    ("time", self.times.to_datetime()),
+                ],
+                dims=("frequency", "time"),
+                attrs={"units": "W m^-2 Hz^-1"},
+            )
+
+        return datasets
