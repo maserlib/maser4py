@@ -91,3 +91,7 @@ Now you can use the `setup.py` file to install the package locally in editable m
 ```
 pip install -e path/to/project/folder
 ```
+
+## Build the documentation
+
+Use `sphinx-build docs/source docs/public` to build the documentation.
