@@ -2,8 +2,9 @@
 from .constants import BASEDIR
 from maser.data import Data
 from maser.data.psa import (
+    MexMMarsis3RdrAisV1Data,
     MexMMarsis3RdrAisExt4V1Data,
-    MexMMarsis3RdrAisExt4V1Sweep,
+    MexMMarsis3RdrAisV1Sweep,
 )
 from maser.data.pds import Pds3Data
 import pytest
@@ -26,6 +27,7 @@ def mex_data():
 def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__dataset(mex_data):
     data = mex_data
     assert data.dataset == "MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0"
+    assert isinstance(data, MexMMarsis3RdrAisV1Data)
     assert isinstance(data, MexMMarsis3RdrAisExt4V1Data)
     assert isinstance(data, Pds3Data)
 
@@ -52,7 +54,7 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__freqs(mex_data):
 def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__iter_method__sweeps(mex_data):
     data = mex_data
     sweep = next(data.sweeps)
-    assert isinstance(sweep, MexMMarsis3RdrAisExt4V1Sweep)
+    assert isinstance(sweep, MexMMarsis3RdrAisV1Sweep)
     assert sweep.time == data.times[0]
     assert len(sweep.frequencies) == len(data.frequencies)
     assert sweep.frequencies[0].value == 109377.0
