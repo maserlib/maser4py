@@ -225,6 +225,9 @@
       ["N3e_dsq2012181.23", "co_rpws_hfr_kronos_n3e_dsq"]
     ]
   },
+  "maser": {
+    "juno": [["jno_wav_cdr_lesia_20170329_v02.cdf", "jno_wav_cdr_lesia"]]
+  },
   "nda": {
     "routine": [
       ["J160131.RT1", "srn_nda_routine_jup_raw"],
