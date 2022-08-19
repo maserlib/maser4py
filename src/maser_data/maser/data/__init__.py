@@ -22,6 +22,12 @@ from .nancay import (  # noqa: F401
     SrnNdaRoutineJupEdrCdfData,
     NenufarBstFitsData,
 )
+
+# -*- coding: utf-8 -*-
+from .padc import (  # noqa: F401
+    JnoWavLesiaL3aV02Data,
+)
+
 from .pds import (  # noqa: F401
     Pds3Data,
     Vg1JPra3RdrLowband6secV1Data,
