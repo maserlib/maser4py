@@ -5,7 +5,7 @@ from .records import InterballAuroralPolradRspRecords
 from pathlib import Path
 import numpy
 
-# from typing import Union, Dict
+from typing import Union
 from astropy.time import Time
 from ..const import CCSDS_CDS_FIELDS
 from ..utils import _read_sweep_length, _read_block
