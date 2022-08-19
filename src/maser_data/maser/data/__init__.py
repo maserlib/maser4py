@@ -32,7 +32,15 @@ from .pds import (  # noqa: F401
     CoVEJSSSRpws2RefdrWbrFullV1Data,
     CoVEJSSSRpws3RdrLrFullV1Data,
 )
-from .psa import MexMMarsis3RdrAisExt4V1Data  # noqa: F401
+from .psa import (  # noqa: F401
+    MexMMarsis3RdrAisV1Data,
+    MexMMarsis3RdrAisExt1V1Data,
+    MexMMarsis3RdrAisExt2V1Data,
+    MexMMarsis3RdrAisExt3V1Data,
+    MexMMarsis3RdrAisExt4V1Data,
+    MexMMarsis3RdrAisExt5V1Data,
+    MexMMarsis3RdrAisExt6V1Data,
+)
 
 from .rpw import (  # noqa: F401
     RpwLfrSurvBp1,
