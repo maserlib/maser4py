@@ -17,13 +17,13 @@ class InterballAuroralPolradRspRecord(Record):
 class InterballAuroralPolradRspRecords(Records):
     @property
     def generator(self):
-        sweeps = InterballAuroralPolradRspSweeps(data_instance=self)
+        sweeps = InterballAuroralPolradRspSweeps(data_instance=self.data_reference)
         for sweep in sweeps:
             for i in range(sweep.header["STEPS"]):
                 data = {
                     "EX": sweep.data["EX"][i] if sweep.data["EX"] is not None else None,
-                    "EY": sweep.data["EY"][i] if sweep.data["EY"] is not None else None,
-                    "EZ": sweep.data["EZ"][i],
+                    "EY": sweep.data["EY"][i],
+                    "EZ": sweep.data["EZ"][i] if sweep.data["EZ"] is not None else None,
                 }
                 yield InterballAuroralPolradRspRecord(
                     sweep.header, data, sweep.time, sweep.frequencies[i]

@@ -9,7 +9,6 @@ from typing import Union
 from astropy.time import Time
 from ..const import CCSDS_CDS_FIELDS
 from ..utils import _read_sweep_length, _read_block
-import struct
 
 
 class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rspn2"):
@@ -31,8 +30,7 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
         )
         self._data = None
         self._nsweep = None
-        if self._load_data:
-            self.load_data()
+        self._data = self._loader()
 
     def _loader(self, count_only=False):
         data = []
@@ -83,16 +81,12 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
                 header_i["SWEEP_ID"] = nsweep
 
                 data_dtype = ">" + "f" * header_i["STEPS"]
-                sweep_length = struct.calcsize(data_dtype) * header_i["CHANNELS"]
-                if self._load_data or (not count_only):
-                    data_i = dict((("EX", None), ("EY", None), ("EZ", None)))
-                    data_i["EY"] = _read_block(self.file, data_dtype)
-                    if header_i["CHANNELS"] == 3:
-                        data_i["EZ"] = _read_block(self.file, data_dtype)
-                        data_i["EX"] = _read_block(self.file, data_dtype)
-                else:
-                    self.file.seek(sweep_length, 1)
-                    data_i = None
+
+                data_i = dict((("EX", None), ("EY", None), ("EZ", None)))
+                data_i["EY"] = _read_block(self.file, data_dtype)
+                if header_i["CHANNELS"] == 3:
+                    data_i["EZ"] = _read_block(self.file, data_dtype)
+                    data_i["EX"] = _read_block(self.file, data_dtype)
 
                 # Reading number of octets in the current sweep
                 loctets2 = _read_sweep_length(self.file)
@@ -111,10 +105,6 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
         self._nsweep = nsweep
         return data
 
-    def load_data(self):
-        self._data = self._loader()
-        self._load_data = True
-
     def __len__(self):
         if self._nsweep is None:
             self._loader(count_only=True)
@@ -124,20 +114,16 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
     def times(self):
         if self._times is None:
             times = []
-            _load_data, self._load_data = self._load_data, False
             for sweep in self.sweeps:
                 times.append(sweep.time)
-            self._load_data = _load_data
             self._times = Time(times)
         return self._times
 
     @property
     def frequencies(self):
         if self._frequencies is None:
-            _load_data, self._load_data = self._load_data, False
             sweep = next(self.sweeps)
             self._frequencies = sweep.frequencies
-            self._load_data = _load_data
         return self._frequencies
 
     @staticmethod
