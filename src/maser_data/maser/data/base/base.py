@@ -2,6 +2,7 @@
 from typing import Union, Dict, Type, cast
 
 from pathlib import Path
+import re
 from astropy.io import fits
 import numpy
 from .sweeps import Sweeps
@@ -155,6 +156,12 @@ class Data(BaseData, dataset="default"):
         if self._file:
             self.close(self._file)
 
+    @property
+    def file_size(self):
+        import os
+
+        return os.path.getsize(self.filepath)
+
     def __iter__(self):
         # get the reference to the right iterator (file, sweeps or records)
         ref = getattr(self, self.access_mode)
@@ -172,10 +179,8 @@ class Data(BaseData, dataset="default"):
             dataset = BaseData._registry["fits"].get_dataset(filepath)
         elif filepath.suffix.lower() == ".lbl":
             dataset = BaseData._registry["pds3"].get_dataset(filepath)
-        elif filepath.suffix.lower() in [".dat", ".b3e", ""]:
-            dataset = BaseData._registry["bin"].get_dataset(filepath)
         else:
-            raise NotImplementedError()
+            dataset = BaseData._registry["bin"].get_dataset(filepath)
         return dataset
 
 
@@ -250,6 +255,10 @@ class BinData(Data, dataset="bin"):
             dataset = "cdpp_viking_v4n_e5"
         elif filepath.stem.lower().startswith("polr_rspn2_"):
             dataset = "cdpp_int_aur_polrad_rspn2"
+        elif re.match("^R\d{7}\.\d{2}$", filepath.name) is not None:  # noqa: W605
+            dataset = "co_rpws_hfr_kronos_n1"
+        elif re.match("^P\d{7}\.\d{2}$", filepath.name) is not None:  # noqa: W605
+            dataset = "co_rpws_hfr_kronos_n2"
         else:
             raise NotImplementedError()
         return dataset

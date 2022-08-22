@@ -26,6 +26,8 @@ from .nancay import (  # noqa: F401
 # -*- coding: utf-8 -*-
 from .padc import (  # noqa: F401
     JnoWavLesiaL3aV02Data,
+    CoRpwsHfrKronosN1Data,
+    CoRpwsHfrKronosN2Data,
 )
 
 from .pds import (  # noqa: F401
