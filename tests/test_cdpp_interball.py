@@ -28,6 +28,14 @@ def test_int_aur_polrad_rsp_bin_dataset():
 
 
 @pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset__file_size():
+    file_sizes = [10038036, 1073108]
+    for filepath, file_size in zip(TEST_FILES["cdpp_int_aur_polrad_rspn2"], file_sizes):
+        data = Data(filepath=filepath)
+        assert data.file_size == file_size
+
+
+@pytest.mark.test_data_required
 def test_int_aur_polrad_rsp_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
         for sweep in Data(filepath=filepath):
