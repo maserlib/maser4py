@@ -180,9 +180,11 @@ def freq_abc(nfilt):
             305.7178,
             320.4303,
         ]
+    else:
+        raise ValueError("Wrong number of ABC channels (allowed values: 8, 16, 32).")
 
 
-def fi_freq(fi):
+def fi_freq(fi: int) -> float:
 
     fi_b = fi // 10000000
     fi_ccc = (fi % 10000000) // 10000
@@ -195,7 +197,7 @@ def fi_freq(fi):
         return (fi_ccc + (2 * fi_nn - fi_ff + 1) / (2 * fi_ff)) * 25
 
 
-def ti_datetime(ti, c):
+def ti_datetime(ti: int, c: int) -> datetime.datetime:
     yy = int(ti // 100000000) + 1996
     dd = int(ti % 100000000) // 100000
     ss = float(ti % 100000)
@@ -206,5 +208,13 @@ def ti_datetime(ti, c):
     )
 
 
-def t97_datetime(t97):
+def t97_datetime(t97: float) -> datetime.datetime:
     return datetime.datetime(1997, 1, 1) + datetime.timedelta(days=t97 - 1)
+
+
+def ydh_datetime(ydh: [int, str]):
+    if isinstance(ydh, str):
+        ydh_str = ydh
+    else:
+        ydh_str = f"{ydh//100}.{ydh%100}"
+    return datetime.datetime.strptime(ydh_str, "%Y%j.%H")
