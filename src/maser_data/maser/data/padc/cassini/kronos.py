@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 
 
 def freq_abc(nfilt):
@@ -195,13 +196,11 @@ def fi_freq(fi):
 
 
 def ti_datetime(ti, c):
-    import datetime
-
     yy = int(ti // 100000000) + 1996
     dd = int(ti % 100000000) // 100000
     ss = float(ti % 100000)
     ms = int(c) * 10000
 
     return datetime.datetime(yy, 1, 1) + datetime.timedelta(
-        days=dd, seconds=ss, microseconds=ms
+        days=(dd - 1), seconds=ss, microseconds=ms
     )
