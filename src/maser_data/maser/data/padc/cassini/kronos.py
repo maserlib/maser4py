@@ -204,3 +204,7 @@ def ti_datetime(ti, c):
     return datetime.datetime(yy, 1, 1) + datetime.timedelta(
         days=(dd - 1), seconds=ss, microseconds=ms
     )
+
+
+def t97_datetime(t97):
+    return datetime.datetime(1997, 1, 1) + datetime.timedelta(days=t97 - 1)
