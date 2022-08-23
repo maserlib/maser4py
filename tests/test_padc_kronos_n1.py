@@ -67,9 +67,9 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__times_sweeps():
     assert isinstance(data.times, Time)
     assert data._data["c"][0] == data.times[0].to_datetime().microsecond / 10000
     assert data._data["c"][-1] == data.times[-1].to_datetime().microsecond / 10000
-    assert data.times[0] == Time("2012-06-29T20:00:01.320")
-    assert data.times[200] == Time("2012-06-29T20:54:57.300")
-    assert data.times[-1] == Time("2012-06-29T20:59:45.300")
+    assert data.times[0] == Time("2012-06-28T20:00:01.320")
+    assert data.times[200] == Time("2012-06-28T20:54:57.300")
+    assert data.times[-1] == Time("2012-06-28T20:59:45.300")
 
 
 @pytest.mark.test_data_required
@@ -78,10 +78,10 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__times_records():
     data = Data(filepath=filepath, access_mode="records")
     assert len(data.times) == data._nrecord
     assert isinstance(data.times, Time)
-    assert data.times[0] == Time("2012-06-29T20:00:01.320")
-    assert data.times[200] == Time("2012-06-29T20:00:01.320")
-    assert data.times[2000] == Time("2012-06-29T20:01:37.320")
-    assert data.times[-1] == Time("2012-06-29T20:59:45.300")
+    assert data.times[0] == Time("2012-06-28T20:00:01.320")
+    assert data.times[200] == Time("2012-06-28T20:00:01.320")
+    assert data.times[2000] == Time("2012-06-28T20:01:37.320")
+    assert data.times[-1] == Time("2012-06-28T20:59:45.300")
 
 
 @pytest.mark.test_data_required
