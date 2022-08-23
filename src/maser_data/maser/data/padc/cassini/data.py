@@ -158,9 +158,7 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
     def as_xarray(self):
         import xarray
 
-        data_arr = numpy.full((self._nsweep, self._max_frequencies_len), numpy.nan)
         freq_arr = numpy.full((self._nsweep, self._max_frequencies_len), numpy.nan)
-
         for i in range(self._nsweep):
             f = self.frequencies[i].value
             freq_arr[i, : len(f)] = f
@@ -169,6 +167,7 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
 
         datasets = {}
         for dataset_key in self._format["record_def"]["fields"]:
+            data_arr = numpy.full((self._nsweep, self._max_frequencies_len), numpy.nan)
             for i, sweep in enumerate(self.sweeps):
                 d = sweep.data[dataset_key]
                 data_arr[i, : len(d)] = d
