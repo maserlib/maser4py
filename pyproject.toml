@@ -30,11 +30,11 @@ maser = 'maser.script:main'
 python = ">=3.8,<4"
 jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
-"maser.cdf" = { path = "src/maser_cdf", develop = false }
-"maser.das2" = { path = "src/maser_das2", develop = false }
-"maser.data" = { path = "src/maser_data", develop = false }
-"maser.plot" = { path = "src/maser_plot", develop = false }
-"maser.time" = { path = "src/maser_time", develop = false }
+"maser.cdf" = { path = "src/maser_cdf", develop = true }
+"maser.das2" = { path = "src/maser_das2", develop = true }
+"maser.data" = { path = "src/maser_data", develop = true }
+"maser.plot" = { path = "src/maser_plot", develop = true }
+"maser.time" = { path = "src/maser_time", develop = true }
 
 [tool.poetry.extras]
 jupyter = ["jupyter", "jupytext"]
@@ -95,4 +95,4 @@ ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry>=1.1.4", "setuptools"]
-build-backend = "poetry.masonry.api"
+build-backend = "poetry.core.masonry.api"
