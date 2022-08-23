@@ -121,7 +121,7 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
 
     @property
     def _decode_times(self):
-        return Time(list(map(t97_datetime, self._data["t97"])))
+        return []
 
     @property
     def times(self):
@@ -132,6 +132,20 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
             elif self.access_mode == "sweeps":
                 self._times = Time([times[mask][0] for mask in self.sweep_masks])
         return self._times
+
+    @property
+    def _decode_frequencies(self):
+        return []
+
+    @property
+    def frequencies(self):
+        if self._frequencies is None:
+            f = self._decode_frequencies
+            if self.access_mode == "records":
+                self._frequencies = f
+            if self.access_mode == "sweeps":
+                self._frequencies = [f[mask] for mask in self.sweep_masks]
+        return self._frequencies
 
     @property
     def _max_frequencies_len(self):
@@ -186,32 +200,15 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
         )
 
     @property
-    def frequencies(self):
-        if self._frequencies is None:
-            if self.access_mode == "records":
-                self._frequencies = numpy.array(
-                    list(map(fi_freq, self._data["fi"]))
-                ) * Unit("kHz")
-            if self.access_mode == "sweeps":
-                self._frequencies = [
-                    numpy.array(list(map(fi_freq, self._data[mask]["fi"])))
-                    * Unit("kHz")
-                    for mask in self.sweep_masks
-                ]
-        return self._frequencies
+    def _decode_frequencies(self):
+        return numpy.array(list(map(fi_freq, self._data["fi"]))) * Unit("kHz")
 
 
 class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"):
     @property
-    def frequencies(self):
-        if self._frequencies is None:
-            if self.access_mode == "records":
-                self._frequencies = numpy.array(
-                    list(map(fi_freq, self._data["f"]))
-                ) * Unit("kHz")
-            if self.access_mode == "sweeps":
-                self._frequencies = [
-                    numpy.array(list(map(fi_freq, self._data[mask]["f"]))) * Unit("kHz")
-                    for mask in self.sweep_masks
-                ]
-        return self._frequencies
+    def _decode_times(self):
+        return Time(list(map(t97_datetime, self._data["t97"])))
+
+    @property
+    def _decode_frequencies(self):
+        return self._data["f"] * Unit("kHz")
