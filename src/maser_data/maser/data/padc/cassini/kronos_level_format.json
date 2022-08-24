@@ -38,6 +38,21 @@
         "<i2",
         "<i2"
       ],
+      "units": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "cs",
+        "",
+        "ADU",
+        "ADU",
+        "ADU",
+        "ADU",
+        "ADU",
+        "ADU"
+      ],
       "length": 28
     },
     "description": "Cassini/RPWS/HFR Kronos Level 1 (Receiver units)",
@@ -72,6 +87,19 @@
         "<f4",
         "<f4",
         "i1"
+      ],
+      "units": [
+        "",
+        "",
+        "Day of year 1997",
+        "kHz",
+        "ms",
+        "kHz",
+        "V^2/Hz",
+        "V^2/Hz",
+        "%",
+        "%",
+        ""
       ],
       "length": 45
     },

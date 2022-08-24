@@ -134,7 +134,7 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__as_xarray():
     data = Data(filepath=filepath)
     xarr = data.as_xarray()
     xarr_keys = xarr.keys()
-    assert set(xarr_keys) == set(data._format["record_def"]["fields"])
+    assert set(xarr_keys) == set(data._format["vars"].keys())
     for k in xarr_keys:
         assert isinstance(xarr[k], DataArray)
 
