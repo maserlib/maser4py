@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Union
+from typing import Union, Sequence
 
 from maser.data.base import BinData, Sweeps, Records
 from maser.data.base.sweeps import Sweep
@@ -71,9 +71,16 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
         self.level = self.dataset[19:]
         self._data = self.read_data_binary()
         self._sweep_masks = None
-        self.__max_frequencies_len = None
+        self._sweep_mode_masks = None
+        self.__frequencies = None
+        self.__max_sweep_length = None
         self._nrecord = len(self._data)
         self._nsweep = len(self.sweep_masks)
+        self._depend_datasets = []
+
+    @property
+    def _ydh(self):
+        return self.filepath.name[-10:]
 
     @property
     def _format(self):
@@ -111,6 +118,18 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
             self._sweep_masks = sweep_masks
         return self._sweep_masks
 
+    @property
+    def sweep_mode_masks(self):
+        if self._sweep_mode_masks is None:
+            sweep_mode_masks = []
+            mode_hashes = numpy.array(
+                [hash(item.to_string()) for item in self.frequencies]
+            )
+            for mode_hash in numpy.unique(mode_hashes):
+                sweep_mode_masks.append(mode_hashes == mode_hash)
+            self._sweep_mode_masks = sweep_mode_masks
+        return self._sweep_mode_masks
+
     def __len__(self):
         if self.access_mode == "sweeps":
             return self._nsweep
@@ -119,55 +138,56 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
         else:
             return self.file_size
 
-    @property
-    def _decode_times(self):
-        return []
+    def _decode_times(self) -> Sequence:
+        pass
 
     @property
     def times(self):
         if self._times is None:
-            times = self._decode_times
+            times = self._decode_times()
             if self.access_mode == "records":
                 self._times = times
             elif self.access_mode == "sweeps":
                 self._times = Time([times[mask][0] for mask in self.sweep_masks])
         return self._times
 
-    @property
-    def _decode_frequencies(self):
-        return []
+    def _decode_frequencies(self) -> Sequence:
+        pass
 
     @property
     def frequencies(self):
         if self._frequencies is None:
-            f = self._decode_frequencies
+            self.__frequencies = self._decode_frequencies()
             if self.access_mode == "records":
-                self._frequencies = f
+                self._frequencies = self.__frequencies
             if self.access_mode == "sweeps":
-                self._frequencies = [f[mask] for mask in self.sweep_masks]
+                self._frequencies = [
+                    self.__frequencies[mask] for mask in self.sweep_masks
+                ]
         return self._frequencies
 
     @property
-    def _max_frequencies_len(self):
-        if self.__max_frequencies_len is None:
-            self.__max_frequencies_len = numpy.max(
+    def _max_sweep_length(self):
+        if self.__max_sweep_length is None:
+            self.__max_sweep_length = numpy.max(
                 [numpy.count_nonzero(mask) for mask in self.sweep_masks]
             )
-        return self.__max_frequencies_len
+        return self.__max_sweep_length
 
     def as_xarray(self):
         import xarray
 
-        freq_arr = numpy.full((self._nsweep, self._max_frequencies_len), numpy.nan)
+        freq_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
         for i in range(self._nsweep):
             f = self.frequencies[i].value
             freq_arr[i, : len(f)] = f
+            freq_arr[i, len(f) :] = f[-1]
 
-        freq_index = range(self._max_frequencies_len)
+        freq_index = range(self._max_sweep_length)
 
         datasets = {}
         for dataset_key in self._format["record_def"]["fields"]:
-            data_arr = numpy.full((self._nsweep, self._max_frequencies_len), numpy.nan)
+            data_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
             for i, sweep in enumerate(self.sweeps):
                 d = sweep.data[dataset_key]
                 data_arr[i, : len(d)] = d
@@ -186,7 +206,6 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
 
 
 class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"):
-    @property
     def _decode_times(self):
         return Time(
             list(
@@ -198,16 +217,13 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
             )
         )
 
-    @property
     def _decode_frequencies(self):
         return numpy.array(list(map(fi_freq, self._data["fi"]))) * Unit("kHz")
 
 
 class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"):
-    @property
     def _decode_times(self):
         return Time(list(map(t97_datetime, self._data["t97"])))
 
-    @property
     def _decode_frequencies(self):
         return self._data["f"] * Unit("kHz")
