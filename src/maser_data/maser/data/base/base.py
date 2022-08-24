@@ -8,6 +8,9 @@ import numpy
 from .sweeps import Sweeps
 from .records import Records
 
+from astropy.time import Time
+from astropy.units import Quantity
+
 
 class BaseData:
     """Base class for all data classes."""
@@ -133,18 +136,22 @@ class Data(BaseData, dataset="default"):
         return dict()
 
     @property
-    def times(self):
+    def times(self) -> [Time, None]:
         """Generic method to get the time axis."""
         return None
 
     @property
-    def frequencies(self):
+    def frequencies(self) -> [Quantity, dict, None]:
         """Generic method to get the spectral axis."""
         return None
 
     def as_array(self) -> numpy.ndarray:
         """Generic method to get the data as a numpy.array."""
-        return numpy.ndarray(0)
+        return numpy.ndarray({})
+
+    def as_xarray(self) -> dict:
+        """Generic method to get the data as a dict with xarray.DataArray values"""
+        pass
 
     def __enter__(self):
         if self.access_mode == "file":
@@ -171,7 +178,11 @@ class Data(BaseData, dataset="default"):
 
     @staticmethod
     def get_dataset(cls, filepath):
-        """Dataset selector method."""
+        """Dataset selector method.
+
+        This method identifies CdfData, FitsData and Pds3Data.
+        Other datasets are treated as BinData.
+        """
         filepath = Path(filepath)
         if filepath.suffix.lower() == ".cdf":
             dataset = BaseData._registry["cdf"].get_dataset(filepath)
@@ -231,34 +242,19 @@ class BinData(Data, dataset="bin"):
 
     @classmethod
     def get_dataset(cls, filepath):
-        """Dataset selector for Binary files"""
+        """Dataset selector for Binary files.
+
+        If the dataset is not recognized, a NotImplementedError is raised.
+        """
         filepath = Path(filepath)
-        if filepath.stem.lower().startswith("wi_wa_rad1_l2_60s"):
-            dataset = "cdpp_wi_wa_rad1_l2_60s_v2"
-        elif filepath.stem.lower().startswith("wi_wa_rad1_l2"):
-            dataset = "cdpp_wi_wa_rad1_l2"
-        elif filepath.stem.lower().startswith("wi_wa_rad2_l2_60s"):
-            dataset = "cdpp_wi_wa_rad2_l2_60s_v2"
-        elif filepath.stem.lower().startswith("wi_wa_tnr_l2_60s"):
-            dataset = "cdpp_wi_wa_tnr_l2_60s_v2"
-        elif filepath.stem.lower().startswith("wi_wa_tnr_l3_bqt"):
-            dataset = "cdpp_wi_wa_tnr_l3_bqt_1mn"
-        elif filepath.stem.lower().startswith("wi_wa_tnr_l3_nn"):
-            dataset = "cdpp_wi_wa_tnr_l3_nn"
-        elif filepath.stem.lower().startswith("win_rad1_60s"):
-            dataset = "cdpp_wi_wa_rad1_l2_60s_v1"
-        elif filepath.stem.lower().startswith("win_rad2_60s"):
-            dataset = "cdpp_wi_wa_rad2_l2_60s_v1"
-        elif filepath.stem.lower().startswith("win_tnr_60s"):
-            dataset = "cdpp_wi_wa_tnr_l2_60s_v1"
-        elif filepath.stem.lower().startswith("v4n_"):
-            dataset = "cdpp_viking_v4n_e5"
-        elif filepath.stem.lower().startswith("polr_rspn2_"):
-            dataset = "cdpp_int_aur_polrad_rspn2"
-        elif re.match("^R\d{7}\.\d{2}$", filepath.name) is not None:  # noqa: W605
-            dataset = "co_rpws_hfr_kronos_n1"
-        elif re.match("^P\d{7}\.\d{2}$", filepath.name) is not None:  # noqa: W605
-            dataset = "co_rpws_hfr_kronos_n2"
+
+        import json
+
+        with open(Path(__file__).parent / "dataset_filename_regex.json") as f:
+            filename_regex = json.load(f)
+
+        for dataset, regex in filename_regex["bin"]:
+            if re.match(regex, filepath.name) is not None:
+                return dataset
         else:
             raise NotImplementedError()
-        return dataset
