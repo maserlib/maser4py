@@ -95,3 +95,40 @@ pip install -e path/to/project/folder
 ## Build the documentation
 
 Use `sphinx-build docs/source docs/public` to build the documentation.
+
+## Manually Publish `maser` and generate a new DOI
+
+To publish `maser` with `poetry` you will have to build a `dist` package:
+
+```
+poetry build
+```
+
+And then publish the package on pypi (and/or on Gitlab, see https://python-poetry.org/docs/cli/#publish):
+
+```
+poetry publish
+```
+
+`maser` comes with a Python client (see `.ci/zenodo.py`) to interact with the Zenodo API and generate automaticaly a DOI for each new version of `maser`.
+
+To archive `maser` on Zenodo:
+
+1. [Create an access token](https://zenodo.org/account/settings/applications/tokens/new/)
+2. Is this the first maser deposit on Zenodo ?
+
+- Yes it's the first deposit, so you don't need any ID
+- No, it's a new version of `maser`. Then browse to the first record of maser on Zenodo and check the URL : `https://zenodo.org/record/<DEPOSITION_ID>` to get the `maser` deposition ID.
+
+3. Use the following command to deposit the package on Zenodo:
+
+```bash
+ python .ci/zenodo.py -p ./ -t <ACCESS_TOKEN> -a ./dist/maser4py-X.Y.Z.tar.gz  -id <DEPOSITION_ID>
+```
+
+4. Browse to the `maser` record on Zenodo, check the metadata/files and publish the package to finally generate the DOI.
+
+Notes :
+
+- the `--sandbox` keyword can be used to deposit files on the Zenodo test server
+- the `--publish` keyword can be used to automatically publish the new record and generate the DOI. But **be careful**, once published, there is no way to modify a record on Zenodo without publishing a new version.
