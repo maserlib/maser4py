@@ -39,6 +39,14 @@ class Zenodo:
     def depositions_base(self):
         return f"{self.api_base}/deposit/depositions"
 
+    def raise_for_status(self, response):
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            logger.error(f"An error occured: {err}")
+            logger.error(f"error message: {err.response.text}")
+            raise
+
     def _update(self, deposit_id: str) -> Tuple:
         """Create a new version of the given record with the given files."""
 
@@ -48,7 +56,7 @@ class Zenodo:
             f"{self.depositions_base}/{deposit_id}/actions/newversion",
             params={"access_token": self.access_token},
         )
-        response.raise_for_status()
+        self.raise_for_status(response)
 
         # parse the response to get the deposit if of the new version
         new_deposit_id = response.json()["links"]["latest_draft"].split("/")[-1]
@@ -59,7 +67,7 @@ class Zenodo:
             f"{self.depositions_base}/{new_deposit_id}",
             params={"access_token": self.access_token},
         )
-        response.raise_for_status()
+        self.raise_for_status(response)
         new_deposit_data = response.json()
 
         return new_deposit_id, new_deposit_data
@@ -72,7 +80,7 @@ class Zenodo:
             params={"access_token": self.access_token},
         )
 
-        response.raise_for_status()
+        self.raise_for_status(response)
 
         deposition_id = response.json()["id"]
 
@@ -108,9 +116,7 @@ class Zenodo:
             data = new_deposition_data
 
             # and update the dict with new values
-            data["metadata"] = {
-                "metadata": {**new_deposition_data["metadata"], **metadata}
-            }
+            data["metadata"] = {**new_deposition_data["metadata"], **metadata}
 
         else:
             data = {"metadata": metadata}
@@ -122,12 +128,7 @@ class Zenodo:
             params={"access_token": self.access_token},
         )
 
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-            logger.error(err.request.url)
-            logger.error(err.response.text)
-            raise
+        self.raise_for_status(response)
 
         json_response = response.json()
         bucket = json_response.get("links", {}).get("bucket")
@@ -148,7 +149,7 @@ class Zenodo:
             f"{self.depositions_base}/{deposit_id}/actions/publish",
             params={"access_token": self.access_token},
         )
-        response.raise_for_status()
+        self.raise_for_status(response)
         return response
 
     def _upload_files(
@@ -168,7 +169,7 @@ class Zenodo:
                     params={"access_token": self.access_token},
                 )
 
-            response.raise_for_status()
+            self.raise_for_status(response)
             response_list.append(response)
         return response_list
 
