@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from maser.data.base import Sweeps
-import struct
 from ..const import (
     CCSDS_CDS_FIELDS,
     CALDATE_FIELDS,
@@ -163,91 +162,7 @@ class WindWaves60sSweeps(Sweeps):
 
 
 class WindWavesL2HighResSweeps(Sweeps):
-    def _read_data_block(self, nbytes):
-        block = self.file.read(nbytes)
-        Vspal = struct.unpack(">" + "f" * (nbytes // 4), block)
-        block = self.file.read(nbytes)
-        Tspal = struct.unpack(">" + "f" * (nbytes // 4), block)
-        return Vspal, Tspal
-
     @property
     def generator(self):
-        ccsds_fields, ccsds_dtype = CCSDS_CDS_FIELDS
-        caldate_fields, caldate_dtype = CALDATE_FIELDS
-        header_fields = (
-            ccsds_fields
-            + ["RECEIVER_CODE", "JULIAN_SEC"]
-            + caldate_fields
-            + [
-                "JULIAN_SEC_FRAC",
-                "ISWEEP",
-                "IUNIT",
-                "NPBS",
-                "SUN_ANGLE",
-                "SPIN_RATE",
-                "KSPIN",
-                "MODE",
-                "LISTFR",
-                "NFREQ",
-                "ICAL",
-                "IANTEN",
-                "IPOLA",
-                "IDIPXY",
-                "SDURCY",
-                "SDURPA",
-                "NPALCY",
-                "NFRPAL",
-                "NPALIF",
-                "NSPALF",
-                "NZPALF",
-            ]
-        )
-        header_dtype = _merge_dtype(
-            (ccsds_dtype, ">hL", caldate_dtype, ">fihhffhhhhhhhhffhhhhh")
-        )
-        # nsweep = 1
-
-        while True:
-            try:
-                # Reading number of bytes in the current sweep
-                loctets1 = _read_sweep_length(self.file)
-                if loctets1 is None:
-                    break
-
-                # Reading header parameters in the current sweep
-                header_i = _read_block(self.file, header_dtype, header_fields)
-                npalf = header_i["NPALIF"]
-                nspal = header_i["NSPALF"]
-                nzpal = header_i["NZPALF"]
-
-                # Reading frequency list (kHz) in the current sweep
-                cur_dtype = ">" + "f" * npalf
-                freq = _read_block(self.file, cur_dtype)
-                print(npalf)
-                if self.load_data:
-                    # Reading intensity and time values for S/SP in the current sweep
-                    Vspal, Tspal = self._read_data_block(4 * npalf * nspal)
-                    # Reading intensity and time values for Z in the current sweep
-                    Vzpal, Tzpal = self._read_data_block(4 * npalf * nzpal)
-                    data_i = {
-                        "FREQ": freq,
-                        "VSPAL": Vspal,
-                        "VZPAL": Vzpal,
-                        "TSPAL": Tspal,
-                        "TZPAL": Tzpal,
-                    }
-                else:
-                    # Skip data section
-                    self.file.seek(8 * npalf * (nspal + nzpal), 1)
-                    data_i = None
-                # Reading number of octets in the current sweep
-                loctets2 = _read_sweep_length(self.file)
-                if loctets2 != loctets1:
-                    print("Error reading file!")
-                    return None
-            except EOFError:
-                print("End of file reached")
-                break
-            else:
-                yield header_i, data_i
-                # nsweep += 1
+        for sweep in self.data_reference._data:
+            yield sweep

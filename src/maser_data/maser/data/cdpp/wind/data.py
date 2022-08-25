@@ -10,6 +10,13 @@ from .sweeps import (
 from .records import WindWavesTnrL3Bqt1mnRecords
 from astropy.time import Time
 from astropy.units import Unit
+from ..utils import _read_sweep_length, _merge_dtype, _read_block
+from ..const import (
+    CCSDS_CDS_FIELDS,
+    CALDATE_FIELDS,
+    # ORBIT_FIELDS,
+)
+import numpy
 
 
 class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
@@ -29,11 +36,117 @@ class WindWavesRad1L2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2"):
 
     _iter_sweep_class = WindWavesL2HighResSweeps
 
+    def __init__(
+        self,
+        filepath: Path,
+        dataset: Union[None, str] = "__auto__",
+        access_mode: str = "sweeps",
+    ):
+        super().__init__(filepath, dataset, access_mode, fixed_frequencies=False)
+        self._data = None
+        self._nsweep = None
+        self.__max_sweep_length = None
+        self._data = self._loader()
+
+    def _read_data_block(self, nbytes):
+        import struct
+
+        block = self.file.read(nbytes)
+        Vspal = struct.unpack(">" + "f" * (nbytes // 4), block)
+        block = self.file.read(nbytes)
+        Tspal = struct.unpack(">" + "f" * (nbytes // 4), block)
+        return Vspal, Tspal
+
+    def _loader(self, count_only=False):
+        data = []
+        nsweep = 0
+
+        ccsds_fields, ccsds_dtype = CCSDS_CDS_FIELDS
+        caldate_fields, caldate_dtype = CALDATE_FIELDS
+        header_fields = (
+            ccsds_fields
+            + ["RECEIVER_CODE", "JULIAN_SEC"]
+            + caldate_fields
+            + [
+                "JULIAN_SEC_FRAC",
+                "ISWEEP",
+                "IUNIT",
+                "NPBS",
+                "SUN_ANGLE",
+                "SPIN_RATE",
+                "KSPIN",
+                "MODE",
+                "LISTFR",
+                "NFREQ",
+                "ICAL",
+                "IANTEN",
+                "IPOLA",
+                "IDIPXY",
+                "SDURCY",
+                "SDURPA",
+                "NPALCY",
+                "NFRPAL",
+                "NPALIF",
+                "NSPALF",
+                "NZPALF",
+            ]
+        )
+        header_dtype = _merge_dtype(
+            (ccsds_dtype, ">hL", caldate_dtype, ">fihhffhhhhhhhhffhhhhh")
+        )
+
+        while True:
+            try:
+                # Reading number of bytes in the current sweep
+                loctets1 = _read_sweep_length(self.file)
+                if loctets1 is None:
+                    break
+
+                # Reading header parameters in the current sweep
+                header_i = _read_block(self.file, header_dtype, header_fields)
+                npalf = header_i["NPALIF"]
+                nspal = header_i["NSPALF"]
+                nzpal = header_i["NZPALF"]
+
+                # Reading frequency list (kHz) in the current sweep
+                cur_dtype = ">" + "f" * npalf
+                freq = _read_block(self.file, cur_dtype)
+
+                if self.load_data:
+                    # Reading intensity and time values for S/SP in the current sweep
+                    Vspal, Tspal = self._read_data_block(4 * npalf * nspal)
+                    # Reading intensity and time values for Z in the current sweep
+                    Vzpal, Tzpal = self._read_data_block(4 * npalf * nzpal)
+                    data_i = {
+                        "FREQ": freq,
+                        "VSPAL": Vspal,
+                        "VZPAL": Vzpal,
+                        "TSPAL": Tspal,
+                        "TZPAL": Tzpal,
+                    }
+                else:
+                    # Skip data section
+                    self.file.seek(8 * npalf * (nspal + nzpal), 1)
+                    data_i = None
+                # Reading number of octets in the current sweep
+                loctets2 = _read_sweep_length(self.file)
+                if loctets2 != loctets1:
+                    print("Error reading file!")
+                    return None
+            except EOFError:
+                print("End of file reached")
+                break
+            else:
+                data.append((header_i, data_i))
+                nsweep += 1
+
+        self._nsweep = nsweep
+        return data
+
     @property
     def times(self):
         if self._times is None:
             times = []
-            _load_data, self._load_data = self._load_data, False
             for header, _ in self.sweeps:
                 times.append(
                     Time(
@@ -42,18 +155,57 @@ class WindWavesRad1L2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2"):
                         f"{header['CALEND_DATE_MINUTE']}:{header['CALEND_DATE_SECOND']}"
                     )
                 )
-            self._load_data = _load_data
             self._times = Time(times)
         return self._times
 
     @property
     def frequencies(self):
         if self._frequencies is None:
-            _load_data, self._load_data = self._load_data, True
-            _, data = next(self.sweeps)
-            self._frequencies = data["FREQ"] * Unit("kHz")
-            self._load_data = _load_data
+            self._frequencies = []
+            for _, data in self.sweeps:
+                self._frequencies.append(data["FREQ"] * Unit("kHz"))
         return self._frequencies
+
+    @property
+    def _max_sweep_length(self):
+        if self.__max_sweep_length is None:
+            self.__max_sweep_length = numpy.max([len(f) for f in self.frequencies])
+        return self.__max_sweep_length
+
+    def as_xarray(self):
+        import xarray
+
+        fields = ["VSPAL", "VZPAL", "TSPAL", "TZPAL"]
+
+        freq_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
+        for i in range(self._nsweep):
+            f = self.frequencies[i].value
+            freq_arr[i, : len(f)] = f
+            freq_arr[i, len(f) :] = f[-1]
+
+        freq_index = range(self._max_sweep_length)
+        data_unit = "V2/Hz"
+
+        datasets = {}
+        for dataset_key in fields:
+            data_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
+            for i, sweep in enumerate(self.sweeps):
+                d = sweep[1][dataset_key]
+                data_arr[i, : len(d)] = d
+
+            datasets[dataset_key] = xarray.DataArray(
+                data=data_arr,
+                name=dataset_key,
+                coords={
+                    "freq_index": freq_index,
+                    "time": self.times.to_datetime(),
+                    "frequency": (["time", "freq_index"], freq_arr, {"units": "kHz"}),
+                },
+                attrs={"units": data_unit},
+                dims=("time", "freq_index"),
+            )
+
+            return datasets
 
 
 class WindWavesRad2L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad2_l2_60s_v2"):
