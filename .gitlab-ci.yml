@@ -22,20 +22,6 @@ default:
     - apt-get update
     - apt-get install -y gfortran ncurses-dev
 
-.publish-job: &publish_job
-  stage: publish
-  before_script:
-    - !reference [.setup-poetry, before_script]
-  script:
-    # publish on a dedicated and centralized repository
-    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
-    - cd ${PACKAGE_DIR}
-    - poetry build
-    - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
-  only:
-    - tags
-    - web
-
 lint-job:
   stage: lint
   needs: []
@@ -107,19 +93,40 @@ test-job:
 
 # publish python package on gitlab registry
 publish-maser_data:
-  <<: *publish_job
+  stage: publish
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
   variables:
     PACKAGE_DIR: 'src/maser_data'
+  only:
+    - tags
+    - web
 
 publish-maser_plot:
-  <<: *publish_job
+  stage: publish
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
   variables:
     PACKAGE_DIR: 'src/maser_plot'
+  only:
+    - tags
+    - web
 
 publish-maser4py:
-  <<: *publish_job
+  stage: publish
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
   variables:
     PACKAGE_DIR: '.'
+    # TODO: This ID comes from the sandbox server.
+    # You will have to change it with one generated from the production server
+    ZENODO_DEPOSIT_ID: 1096032
+  only:
+    - tags
+    - web
 
 # deploy doc pages
 pages:
