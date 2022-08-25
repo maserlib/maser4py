@@ -96,28 +96,28 @@ publish-maser_data:
   stage: publish
   trigger:
     include: .ci/publish_package.yml
+    strategy: depend
   variables:
     PACKAGE_DIR: 'src/maser_data'
-  strategy: depend
 
 publish-maser_plot:
   stage: publish
   trigger:
     include: .ci/publish_package.yml
+    strategy: depend
   variables:
     PACKAGE_DIR: 'src/maser_plot'
-  strategy: depend
 
 publish-maser4py:
   stage: publish
   trigger:
     include: .ci/publish_package.yml
+    strategy: depend
   variables:
     PACKAGE_DIR: '.'
     # TODO: This ID comes from the sandbox server.
     # You will have to change it with one generated from the production server
     ZENODO_DEPOSIT_ID: 1096032
-  strategy: depend
 
 # deploy doc pages
 pages:
