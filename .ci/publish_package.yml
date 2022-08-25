@@ -24,9 +24,9 @@ publish-package: &publish_package
     - cd ${PACKAGE_DIR}
     - poetry build
     - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
-  only:
-    - tags
-    - web
+  # only:
+  #   - tags
+  #   - web
 
   artifacts:
     expire_in: 1 day
@@ -35,7 +35,8 @@ publish-package: &publish_package
 
 publish-zenodo:
   stage: publish
-
+  needs:
+    - publish-package
   dependencies:
     - publish-package
 
