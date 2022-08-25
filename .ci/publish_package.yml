@@ -41,7 +41,7 @@ publish-zenodo:
 
   before_script:
     - !reference [.setup-poetry, before_script]
-    - pip install requests
+    - pip install -r .ci/zenodo_requirements.txt
 
   # set the ZENODO_TOKEN on Gitlab: settings -> ci_cd -> variables
   # TODO: remove the sandbox argument and use the real Zenodo API
