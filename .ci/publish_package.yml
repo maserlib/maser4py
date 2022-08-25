@@ -1,0 +1,49 @@
+stages:
+  - publish
+
+default:
+  image: python:3.8
+  tags:
+    - docker_dio
+
+.setup-poetry:
+  before_script:
+    - python --version
+    - pip install --upgrade pip
+    - pip install poetry
+    - poetry --version
+    - poetry config virtualenvs.in-project true --local
+
+publish-package: &publish_package
+  stage: publish
+  before_script:
+    - !reference [.setup-poetry, before_script]
+  script:
+    # publish on a dedicated and centralized repository
+    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+    - cd ${PACKAGE_DIR}
+    - poetry build
+    - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
+  only:
+    - tags
+    - web
+
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - ${PACKAGE_DIR}/dist/*
+
+publish-zenodo:
+  stage: publish
+
+  dependencies:
+    - publish-package
+
+  before_script:
+    - !reference [.setup-poetry, before_script]
+    - pip install requests
+
+  # set the ZENODO_TOKEN on Gitlab: settings -> ci_cd -> variables
+  # TODO: remove the sandbox argument and use the real Zenodo API
+  script:
+    - python .ci/zenodo.py --p ${PACKAGE_DIR} -t ${ZENODO_TOKEN} --id ${ZENODO_DEPOSIT_ID} --sandbox
