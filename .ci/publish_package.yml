@@ -24,9 +24,6 @@ publish-package: &publish_package
     - cd ${PACKAGE_DIR}
     - poetry build
     - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
-  only:
-    - tags
-    - web
 
   artifacts:
     expire_in: 1 day
@@ -48,7 +45,3 @@ publish-zenodo:
   # TODO: remove the sandbox argument and use the real Zenodo API
   script:
     - python .ci/zenodo.py -p ${PACKAGE_DIR} -t ${ZENODO_TOKEN} -id ${ZENODO_DEPOSIT_ID} --sandbox
-
-  only:
-    - tags
-    - web

@@ -99,6 +99,9 @@ publish-maser_data:
     strategy: depend
   variables:
     PACKAGE_DIR: 'src/maser_data'
+  only:
+    - tags
+    - web
 
 publish-maser_plot:
   stage: publish
@@ -107,6 +110,9 @@ publish-maser_plot:
     strategy: depend
   variables:
     PACKAGE_DIR: 'src/maser_plot'
+  only:
+    - tags
+    - web
 
 publish-maser4py:
   stage: publish
@@ -118,6 +124,9 @@ publish-maser4py:
     # TODO: This ID comes from the sandbox server.
     # You will have to change it with one generated from the production server
     ZENODO_DEPOSIT_ID: 1096032
+  only:
+    - tags
+    - web
 
 # deploy doc pages
 pages:
