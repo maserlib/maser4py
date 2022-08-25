@@ -34,13 +34,13 @@ jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
 "maser.cdf" = { path = "src/maser_cdf", develop = true }
 "maser.das2" = { path = "src/maser_das2", develop = true }
-"maser.data" = { path = "src/maser_data", develop = true }
+"maser.data" = { path = "src/maser_data", develop = true , extras = ["spacepy"]}
 "maser.plot" = { path = "src/maser_plot", develop = true }
 "maser.time" = { path = "src/maser_time", develop = true }
 
 [tool.poetry.extras]
 jupyter = ["jupyter", "jupytext"]
-all = ["jupyter"]
+all = ["jupyter", "jupytext"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"

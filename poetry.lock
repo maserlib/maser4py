@@ -334,7 +334,7 @@ docs = ["sphinx-autodoc-typehints (>=1.19.1)", "sphinx (>=5.1.1)", "furo (>=2022
 
 [[package]]
 name = "fonttools"
-version = "4.36.0"
+version = "4.37.1"
 description = "Tools to manipulate font files"
 category = "main"
 optional = false
@@ -762,6 +762,7 @@ develop = true
 
 [package.dependencies]
 astropy = "^5.0.4"
+spacepy = {version = "^0.3.0", optional = true}
 xarray = "^2022.3.0"
 
 [package.extras]
@@ -1833,13 +1834,13 @@ docs = ["sphinx", "jaraco.packaging (>=9)", "rst.linker (>=1.9)", "jaraco.tideli
 testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.3)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)"]
 
 [extras]
-all = ["jupyter"]
+all = ["jupyter", "jupytext"]
 jupyter = ["jupyter", "jupytext"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4"
-content-hash = "af24f0fa17ff81eca81b97658e11d38ae3c78dd9c4e830fd626271e58c354f74"
+content-hash = "b8e15c33661cdda7d077748d6c33411ef43636a4590599e858dc2327dd5446f9"
 
 [metadata.files]
 alabaster = []
