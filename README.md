@@ -96,7 +96,7 @@ pip install -e path/to/project/folder
 
 Use `sphinx-build docs/source docs/public` to build the documentation.
 
-## Manually Publish `maser` and generate a new DOI
+## Manually publish `maser` and generate a new DOI
 
 To publish `maser` with `poetry` you will have to build a `dist` package:
 
