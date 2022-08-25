@@ -13,4 +13,7 @@ class Sweep(Record):
 
 
 class Sweeps(Records):
-    pass
+    @property
+    def generator(self):
+        for sweep in self.data_reference._data:
+            yield sweep
