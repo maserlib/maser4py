@@ -146,7 +146,7 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
         else:
             return self.file_size
 
-    def _decode_times(self) -> Sequence:
+    def _decode_times(self) -> Sequence:  # pragma: no cover
         pass
 
     @property
@@ -159,7 +159,7 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
                 self._times = Time([times[mask][0] for mask in self.sweep_masks])
         return self._times
 
-    def _decode_frequencies(self) -> Sequence:
+    def _decode_frequencies(self) -> Sequence:  # pragma: no cover
         pass
 
     @property
