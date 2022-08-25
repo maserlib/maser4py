@@ -187,10 +187,7 @@ def get_author_name(author):
     return name
 
 
-def make_metadata(project_root_path):
-    with open(project_root_path / "pyproject.toml", "rb") as f:
-        data = tomli.load(f)
-        project_metadata = data["tool"]["poetry"]
+def make_metadata(project_metadata):
 
     creators = [
         {"name": get_author_name(author)} for author in project_metadata["authors"]
@@ -217,11 +214,21 @@ def deposit(
     zenodo_url: Optional[str],
     access_token: str,
     deposit_id,
-    archive_filepath: pathlib.Path,
+    archive_filepath: Optional[pathlib.Path],
     publish=False,
     sandbox,
 ):
-    metadata = make_metadata(project_root_path)
+
+    with open(project_root_path / "pyproject.toml", "rb") as f:
+        data = tomli.load(f)
+        project_metadata = data["tool"]["poetry"]
+
+    if archive_filepath is None:
+        name = project_metadata["name"]
+        version = project_metadata["version"]
+        archive_filepath = project_root_path / "dist" / f"{name}-{version}.tar.gz"
+
+    metadata = make_metadata(project_metadata)
 
     client = Zenodo(access_token=access_token, sandbox=sandbox, zenodo_url=zenodo_url)
 
@@ -268,8 +275,8 @@ if __name__ == "__main__":
         "-a",
         "--archive-filepath",
         type=pathlib.Path,
-        required=True,
-        help="Path to the project archive file",
+        default=None,
+        help="Path to the project archive file. Default: use the project version to find the archive in the dist folder",
     )
 
     args = parser.parse_args()
