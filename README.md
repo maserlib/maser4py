@@ -30,14 +30,14 @@ filepath = "path/to/my/data/file.ext"
 data = Data(filepath=filepath)
 ```
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.obspm.fr%2Fcecconi%2Fmaser-data.git/dataset/rpw) You can also launch a Binder environment and browse through the notebook [examples](https://gitlab.obspm.fr/cecconi/maser-data/-/tree/master/examples).
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.obspm.fr%2Fmaser%2Fmaser4py.git/namespace) You can also launch a Binder environment and browse through the notebook [examples](https://gitlab.obspm.fr/maser/maser4py/-/tree/namespace/examples).
 
 # Development
 
 To contribute to the development of the package, you will need to install a local copy of maser.data
 
 ```
-git clone https://gitlab.obspm.fr/cecconi/maser-data.git
+git clone https://gitlab.obspm.fr/maser/maser4py.git
 ```
 
 Then, you can install the package locally
