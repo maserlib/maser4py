@@ -32,15 +32,15 @@ maser = 'maser.script:main'
 python = ">=3.8,<4"
 jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
-"maser.cdf" = { path = "src/maser_cdf", develop = true }
-"maser.das2" = { path = "src/maser_das2", develop = true }
-"maser.data" = { path = "src/maser_data", develop = true , extras = ["spacepy"]}
-"maser.plot" = { path = "src/maser_plot", develop = true }
-"maser.time" = { path = "src/maser_time", develop = true }
+"maser.data" = {version = "^0.1.0", optional = true, source="gitlab_obspm"}
+"maser.plot" = {version = "^0.2.0", optional = true, source="gitlab_obspm"}
 
 [tool.poetry.extras]
 jupyter = ["jupyter", "jupytext"]
+data = ["maser.data"]
+plot = ["maser.plot"]
 all = ["jupyter", "jupytext"]
+
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"
@@ -53,6 +53,16 @@ tomli = "^2.0.1"
 myst-parser = "^0.18.0"
 mypy = "^0.961"
 black = "^22.6.0"
+"maser.cdf" = { path = "src/maser_cdf", develop = true }
+"maser.das2" = { path = "src/maser_das2", develop = true }
+"maser.data" = { path = "src/maser_data", develop = true , extras = ["spacepy"]}
+"maser.plot" = { path = "src/maser_plot", develop = true }
+"maser.time" = { path = "src/maser_time", develop = true }
+
+[[tool.poetry.source]]
+name = "gitlab_obspm"
+url = "https://gitlab.obspm.fr/api/v4/projects/2910/packages/pypi/simple"
+secondary = true
 
 
 [tool.black]
