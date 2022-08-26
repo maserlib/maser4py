@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Union, Dict, Type, cast
+from typing import Union, Dict, Type, cast, Optional
 
 from pathlib import Path
 import re
@@ -136,12 +136,12 @@ class Data(BaseData, dataset="default"):
         return dict()
 
     @property
-    def times(self) -> [Time, None]:
+    def times(self) -> Optional[Time]:
         """Generic method to get the time axis."""
         return None
 
     @property
-    def frequencies(self) -> [Quantity, dict, None]:
+    def frequencies(self) -> Union[Quantity, Dict, None]:
         """Generic method to get the spectral axis."""
         return None
 

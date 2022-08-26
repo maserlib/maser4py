@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Union, Sequence
+from typing import Iterable, Union, Sequence
 
 from maser.data.base import BinData, Sweeps, Records
 from maser.data.base.sweeps import Sweep
@@ -78,7 +78,7 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
         self._data = self.read_data_binary()
         self._nrecord = len(self._data)
         self._nsweep = len(self.sweep_masks)
-        self._depend_datasets = []
+        self._depend_datasets: Iterable[str] = []
 
     @property
     def _ydh(self):
