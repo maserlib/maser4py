@@ -152,3 +152,7 @@ cython_debug/
 
 # CDF data
 *.cdf
+
+# Additional local folders
+local/
+tmp/
