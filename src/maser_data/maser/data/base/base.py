@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 from astropy.io import fits
 import numpy
+import numpy.typing as npt
 from .sweeps import Sweeps
 from .records import Records
 
@@ -147,7 +148,7 @@ class Data(BaseData, dataset="default"):
 
     def as_array(self) -> numpy.ndarray:
         """Generic method to get the data as a numpy.array."""
-        return numpy.ndarray({})
+        return numpy.ndarray(npt.ArrayLike)
 
     def as_xarray(self) -> dict:
         """Generic method to get the data as a dict with xarray.DataArray values"""
