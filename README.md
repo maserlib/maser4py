@@ -3,7 +3,7 @@
 To install the package, run the following command:
 
 ```
-pip install maser.data --extra-index-url https://gitlab.obspm.fr/api/v4/projects/2440/packages/pypi/simple
+pip install maser.data --extra-index-url https://gitlab.obspm.fr/api/v4/projects/2910/packages/pypi/simple
 ```
 
 or use one of the extra options:
@@ -16,7 +16,7 @@ or use one of the extra options:
 For example use `maser.data[jupyter,spacepy]` if you want to use `maser.data` with spacepy and jupyter notebooks:
 
 ```bash
-pip install maser.data[jupyter,spacepy] --extra-index-url https://gitlab.obspm.fr/api/v4/projects/2440/packages/pypi/simple
+pip install maser.data[jupyter,spacepy] --extra-index-url https://gitlab.obspm.fr/api/v4/projects/2910/packages/pypi/simple
 ```
 
 # Usage

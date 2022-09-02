@@ -49,7 +49,7 @@ tests = ["pytest"]
 name = "astropy"
 version = "5.1"
 description = "Astronomy and astrophysics core library"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8"
 
@@ -350,7 +350,7 @@ woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 name = "h5py"
 version = "3.7.0"
 description = "Read and write HDF5 files from Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -716,7 +716,7 @@ python-versions = ">=3.7"
 name = "maser-cdf"
 version = "0.1.0"
 description = ""
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8,<4"
 develop = true
@@ -732,7 +732,7 @@ url = "src/maser_cdf"
 name = "maser-das2"
 version = "0.1.0"
 description = ""
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8,<4"
 develop = true
@@ -748,7 +748,7 @@ url = "src/maser_das2"
 name = "maser-data"
 version = "0.1.0"
 description = ""
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8,<4"
 develop = true
@@ -788,7 +788,7 @@ url = "src/maser_plot"
 name = "maser-time"
 version = "0.1.0"
 description = ""
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8,<4"
 develop = true
@@ -1054,7 +1054,7 @@ pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 name = "pandas"
 version = "1.4.4"
 description = "Powerful data structures for data analysis, time series, and statistics"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8"
 
@@ -1250,7 +1250,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "pyerfa"
 version = "2.0.0.1"
 description = "Python bindings for ERFA"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -1341,7 +1341,7 @@ six = ">=1.5"
 name = "pytz"
 version = "2022.2.1"
 description = "World timezone definitions, modern and historical"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -1439,7 +1439,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 name = "scipy"
 version = "1.6.1"
 description = "SciPy: Scientific Library for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -1517,7 +1517,7 @@ python-versions = ">=3.6"
 name = "spacepy"
 version = "0.3.0"
 description = "SpacePy: Tools for Space Science Applications"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.1"
 
@@ -1794,7 +1794,7 @@ python-versions = ">=3.7"
 name = "xarray"
 version = "2022.6.0"
 description = "N-D labeled arrays and datasets in Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8"
 
@@ -1825,12 +1825,14 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 
 [extras]
 all = ["jupyter", "jupytext"]
+data = []
 jupyter = ["jupyter", "jupytext"]
+plot = ["maser.plot"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4"
-content-hash = "7c4b43ae56969df9bebb7a7df5d91c266764082ac126379c999db8d882e1eda4"
+content-hash = "901093bf0783862baeed8baab80f39e6acbbe9899361acf4c46a359ac40311b7"
 
 [metadata.files]
 alabaster = [

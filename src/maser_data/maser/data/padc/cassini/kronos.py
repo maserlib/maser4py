@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from typing import Union
 
 
 def freq_abc(nfilt):
@@ -212,7 +213,7 @@ def t97_datetime(t97: float) -> datetime.datetime:
     return datetime.datetime(1997, 1, 1) + datetime.timedelta(days=t97 - 1)
 
 
-def ydh_datetime(ydh: [int, str]):
+def ydh_datetime(ydh: Union[int, str]):
     if isinstance(ydh, str):
         ydh_str = ydh
     else:
