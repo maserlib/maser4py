@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 from typing import Union, Type
-from maser.data.base import BinData
+from maser.data.base import BinData, RecordsOnly
 from .records import VikingV4nE5Records
 
 from astropy.time import Time
 
 
-class VikingV4nE5BinData(BinData, dataset="cdpp_viking_v4n_e5"):
+class VikingV4nE5BinData(RecordsOnly, BinData, dataset="cdpp_viking_v4n_e5"):
     _iter_sweep_class = Type[VikingV4nE5Records]
-    _access_modes = ["file", "records"]
 
     def __init__(
         self,
@@ -19,10 +18,6 @@ class VikingV4nE5BinData(BinData, dataset="cdpp_viking_v4n_e5"):
         load_data: bool = True,
     ) -> None:
         super().__init__(filepath, dataset, access_mode, load_data)
-
-    @property
-    def sweeps(self):
-        raise ValueError("Illegal access mode.")
 
     @property
     def times(self):

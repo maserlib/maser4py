@@ -27,5 +27,10 @@ from .base import (  # noqa: F401
     CdfData,
     FitsData,
 )
+from .mixins import (  # noqa: F401
+    RecordsOnly,
+    FixedFrequencies,
+    VariableFrequencies,
+)
 from .sweeps import Sweeps  # noqa: F401
 from .records import Records  # noqa: F401

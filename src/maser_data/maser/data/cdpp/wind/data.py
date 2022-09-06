@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Union
 from pathlib import Path
-from maser.data.base import BinData
+from maser.data.base import BinData, RecordsOnly, VariableFrequencies
 from .sweeps import (
     WindWavesL260sSweeps,
     WindWavesL2HighResSweeps,
@@ -31,7 +31,7 @@ class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
     _iter_sweep_class = WindWavesL260sSweeps
 
 
-class WindWavesL2BinData(BinData, dataset="cdpp_wi_wa___l2"):
+class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa___l2"):
     """Placeholder class for `cdpp_wi_wa_XXX_l2` binary data."""
 
     _iter_sweep_class = WindWavesL2HighResSweeps
@@ -42,11 +42,13 @@ class WindWavesL2BinData(BinData, dataset="cdpp_wi_wa___l2"):
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
     ):
-        super().__init__(filepath, dataset, access_mode, fixed_frequencies=False)
+        BinData.__init__(self, filepath, dataset, access_mode)
+        VariableFrequencies.__init__(self)
         self._data = None
         self._nsweep = None
-        self.__max_sweep_length = None
         self._data = self._loader()
+        self.fields = ["VSPAL", "VZPAL", "TSPAL", "TZPAL"]
+        self.units = ["V2/Hz", "V2/Hz", "V2/Hz", "V2/Hz"]
 
     def _read_data_block(self, nbytes):
         import struct
@@ -172,41 +174,6 @@ class WindWavesL2BinData(BinData, dataset="cdpp_wi_wa___l2"):
             self.__max_sweep_length = numpy.max([len(f) for f in self.frequencies])
         return self.__max_sweep_length
 
-    def as_xarray(self):
-        import xarray
-
-        fields = ["VSPAL", "VZPAL", "TSPAL", "TZPAL"]
-
-        freq_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
-        for i in range(self._nsweep):
-            f = self.frequencies[i].value
-            freq_arr[i, : len(f)] = f
-            freq_arr[i, len(f) :] = f[-1]
-
-        freq_index = range(self._max_sweep_length)
-        data_unit = "V2/Hz"
-
-        datasets = {}
-        for dataset_key in fields:
-            data_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
-            for i, sweep in enumerate(self.sweeps):
-                d = sweep[1][dataset_key]
-                data_arr[i, : len(d)] = d
-
-            datasets[dataset_key] = xarray.DataArray(
-                data=data_arr,
-                name=dataset_key,
-                coords={
-                    "freq_index": freq_index,
-                    "time": self.times.to_datetime(),
-                    "frequency": (["time", "freq_index"], freq_arr, {"units": "kHz"}),
-                },
-                attrs={"units": data_unit},
-                dims=("time", "freq_index"),
-            )
-
-            return datasets
-
 
 class WindWavesRad1L2BinData(WindWavesL2BinData, dataset="cdpp_wi_wa_rad1_l2"):
     """Class for `cdpp_wi_wa_rad1_l2` binary data."""
@@ -226,10 +193,11 @@ class WindWavesTnrL260sV2BinData(BinData, dataset="cdpp_wi_wa_tnr_l2_60s_v2"):
     pass
 
 
-class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_bqt_1mn"):
+class WindWavesTnrL3Bqt1mnBinData(
+    RecordsOnly, BinData, dataset="cdpp_wi_wa_tnr_l3_bqt_1mn"
+):
     """Class for `cdpp_wi_wa_tnr_l3_bqt_1mn` data."""
 
-    _access_modes = ["records", "file"]
     _iter_record_class = WindWavesTnrL3Bqt1mnRecords
 
     def __init__(
@@ -240,10 +208,6 @@ class WindWavesTnrL3Bqt1mnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_bqt_1mn"):
         load_data: bool = True,
     ) -> None:
         super().__init__(filepath, dataset, access_mode, load_data)
-
-    @property
-    def sweeps(self):
-        raise ValueError("Illegal access mode.")
 
 
 class WindWavesTnrL3NnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_nn"):
