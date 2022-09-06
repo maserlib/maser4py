@@ -21,52 +21,44 @@ class RpwTnrSurvSweeps(Sweeps):
 
         """
 
-        for band_index in range(
-            4
-        ):  # 0 for band A, 1 for band B, 2 for band C and 3 for band D
-            array_band_index = (
-                self.data_reference.TNR_CURRENT_BAND_WORKING_ON == band_index
-            ).nonzero()[0]
-            auto_1 = self.data_reference.auto1[array_band_index]
-            auto_2 = self.data_reference.auto2[array_band_index]
-            sensor_config = self.data_reference.sensor_config[array_band_index]
-            phase = self.data_reference.PHASE[array_band_index]
-            flux_1 = self.data_reference.flux1[array_band_index]
-            flux_2 = self.data_reference.flux2[array_band_index]
-            magnetic_1 = self.data_reference.magnetic1[array_band_index]
-            magnetic_2 = self.data_reference.magnetic2[array_band_index]
-            times = self.data_reference.epoch[array_band_index]
-            for time, a1, a2, sc, ph, f1, f2, m1, m2 in zip(
-                times,
-                auto_1,
-                auto_2,
-                sensor_config,
-                phase,
-                flux_1,
-                flux_2,
-                magnetic_1,
-                magnetic_2,
-            ):
-                yield (
-                    {
-                        "AUTO1": a1,
-                        "AUTO2": a2,
-                        "SENSOR_CONFIG": sc,
-                        "PHASE": ph,
-                        "FlUX_DENSITY1": f1,
-                        "FLUX_DENSITY2": f2,
-                        "MAGNETIC_SPECTRAL_POWER1": m1,
-                        "MAGNETIC_SPECTRAL_POWER2": m2,
-                    },
-                    Time(time),
-                    band_index,
-                )
+        for time, freq, a1, a2, sc, ph, f1, f2, m1, m2, band_index, survey_mode in zip(
+            self.file["Epoch"][...],
+            self.file["TNR_BAND_FREQ"][...],
+            self.file["AUTO1"][...],
+            self.file["AUTO2"][...],
+            self.file["SENSOR_CONFIG"][...],
+            self.file["PHASE"],
+            self.file["FLUX_DENSITY1"][...],
+            self.file["FLUX_DENSITY1"][...],
+            self.file["MAGNETIC_SPECTRAL_POWER1"],
+            self.file["MAGNETIC_SPECTRAL_POWER2"],
+            self.file["TNR_BAND"],
+            self.file["SURVEY_MODE"],
+        ):
+            yield (
+                {
+                    "AUTO1": a1,
+                    "AUTO2": a2,
+                    "SENSOR_CONFIG": sc,
+                    "PHASE": ph,
+                    "FlUX_DENSITY1": f1,
+                    "FLUX_DENSITY2": f2,
+                    "MAGNETIC_SPECTRAL_POWER1": m1,
+                    "MAGNETIC_SPECTRAL_POWER2": m2,
+                },
+                Time(time),
+                freq,
+                self.data_reference.frequency_band_labels[band_index],
+                self.data_reference.survey_mode_labels[survey_mode],
+            )
 
 
 class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     _iter_sweep_class = RpwTnrSurvSweeps
 
     frequency_band_labels = ["A", "B", "C", "D"]
+
+    survey_mode_labels = ["SURVEY_NORMAL", "SURVEY_BURST"]
 
     channel_labels = ["1", "2"]
 
@@ -83,17 +75,17 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         11: "HF_V3-V1",
     }
 
-    # @property
+    @property
     def frequencies(self):
         if self._frequencies is None:
 
             self._frequencies = {}
             with self.open(self.filepath) as cdf_file:
-                for band_label, frequency_band in enumerate(self.frequency_bands):
+                for band_index, band_label in enumerate(self.frequency_band_labels):
                     # if units are not specified, assume Hz
                     units = cdf_file["TNR_BAND_FREQ"].attrs["UNITS"].strip() or "Hz"
-                    freq = cdf_file["TNR_BAND_FREQ"][band_label, :] * Unit(units)
-                    self._frequencies[frequency_band] = freq
+                    freq = cdf_file["TNR_BAND_FREQ"][band_index, :] * Unit(units)
+                    self._frequencies[band_label] = freq
 
         return self._frequencies
 
@@ -101,9 +93,9 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     def times(self):
         if self._times is None:
             self._times = {}
-            for band_index, frequency_band in enumerate(self.frequency_bands):
-                mask = self.TNR_CURRENT_BAND_WORKING_ON == band_index
-                self._times[frequency_band] = Time(self.epoch[mask])
+            for band_index, frequency_band in enumerate(self.frequency_band_labels):
+                mask = (self.file["TNR_BAND"][...] == band_index)[0]
+                self._times[frequency_band] = Time(self.file["Epoch"][mask])
         return self._times
 
     def as_xarray(self):
