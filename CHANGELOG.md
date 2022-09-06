@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 0.11.1
+
+- Add mixins
+- Upgrade sweep method and plot_auto for tnr data
+
+## 0.11.0
+
+- Split maser into several submodules by namespace
+
 ## 0.10.0
 
 - Update package dependencies in pyproject.toml
