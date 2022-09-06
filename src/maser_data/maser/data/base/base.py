@@ -5,7 +5,6 @@ from pathlib import Path
 import re
 from astropy.io import fits
 import numpy
-import numpy.typing as npt
 from .sweeps import Sweeps
 from .records import Records
 
@@ -75,7 +74,15 @@ class BaseData:
 
 
 class Data(BaseData, dataset="default"):
-    """Generic Data class"""
+    """Generic Data class
+    =====================
+
+    Objects of this class are instanciated from a data file. An internal resolver will detect the
+    dataset and provide adequate support. If the file is not recognized, an NotImplementedError is
+    raised.
+
+
+    """
 
     def __new__(
         cls, filepath: Path, dataset: Union[None, str] = "__auto__", *args, **kwargs
@@ -148,7 +155,7 @@ class Data(BaseData, dataset="default"):
 
     def as_array(self) -> numpy.ndarray:
         """Generic method to get the data as a numpy.array."""
-        return numpy.ndarray(npt.ArrayLike)
+        pass
 
     def as_xarray(self) -> dict:
         """Generic method to get the data as a dict with xarray.DataArray values"""

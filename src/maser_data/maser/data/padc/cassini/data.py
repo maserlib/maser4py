@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Iterable, Union, Sequence
 
-from maser.data.base import BinData, Sweeps, Records
+from maser.data.base import BinData, Sweeps, Records, VariableFrequencies
 from maser.data.base.sweeps import Sweep
 from .kronos import fi_freq, ti_datetime, t97_datetime
 
@@ -51,7 +51,7 @@ class CoRpwsHfrKronosDataRecords(Records):
             yield self.data_reference._data[i]
 
 
-class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
+class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kronos"):
 
     _iter_sweep_class = CoRpwsHfrKronosDataSweeps
     _iter_record_class = CoRpwsHfrKronosDataRecords
@@ -62,23 +62,22 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
     ):
-        super().__init__(
+        BinData.__init__(
+            self,
             filepath,
             dataset,
             access_mode,
-            fixed_frequencies=False,
         )
-        self.__format = None
-        self._sweep_masks = None
-        self._sweep_mode_masks = None
-        self.__frequencies = None
-        self.__max_sweep_length = None
+        VariableFrequencies.__init__(self)
 
+        self.__format = None
         self.level = self.dataset[19:]
         self._data = self.read_data_binary()
         self._nrecord = len(self._data)
         self._nsweep = len(self.sweep_masks)
         self._depend_datasets: Iterable[str] = []
+        self.fields = self._format["vars"].keys()
+        self.units = [self._format["vars"][field][1] for field in self.fields]
 
     @property
     def _ydh(self):
@@ -138,6 +137,14 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
             self._sweep_mode_masks = sweep_mode_masks
         return self._sweep_mode_masks
 
+    @property
+    def _max_sweep_length(self):
+        if self.__max_sweep_length is None:
+            self.__max_sweep_length = numpy.max(
+                [numpy.count_nonzero(mask) for mask in self.sweep_masks]
+            )
+        return self.__max_sweep_length
+
     def __len__(self):
         if self.access_mode == "sweeps":
             return self._nsweep
@@ -173,51 +180,6 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
                     self.__frequencies[mask] for mask in self.sweep_masks
                 ]
         return self._frequencies
-
-    @property
-    def _max_sweep_length(self):
-        if self.__max_sweep_length is None:
-            self.__max_sweep_length = numpy.max(
-                [numpy.count_nonzero(mask) for mask in self.sweep_masks]
-            )
-        return self.__max_sweep_length
-
-    def as_xarray(self, dB=False):
-        import xarray
-
-        freq_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
-        for i in range(self._nsweep):
-            f = self.frequencies[i].value
-            freq_arr[i, : len(f)] = f
-            freq_arr[i, len(f) :] = f[-1]
-
-        freq_index = range(self._max_sweep_length)
-
-        datasets = {}
-        for dataset_key in self._format["vars"].keys():
-            data_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
-            for i, sweep in enumerate(self.sweeps):
-                d = sweep.data[dataset_key]
-                data_arr[i, : len(d)] = d
-
-            data_unit = self._format["vars"][dataset_key][1]
-            if dB:
-                data_arr = 10.0 * numpy.log10(data_arr)
-                data_unit = f"dB({data_unit})"
-
-            datasets[dataset_key] = xarray.DataArray(
-                data=data_arr,
-                name=dataset_key,
-                coords={
-                    "freq_index": freq_index,
-                    "time": self.times.to_datetime(),
-                    "frequency": (["time", "freq_index"], freq_arr, {"units": "kHz"}),
-                },
-                attrs={"units": data_unit},
-                dims=("time", "freq_index"),
-            )
-
-        return datasets
 
 
 class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"):
