@@ -155,4 +155,5 @@ cython_debug/
 
 # Ignore some local folders
 workspace/
+local/
 tmp/
