@@ -33,6 +33,7 @@ def plot_auto(
         "norm": "log",
         "vmin": vmin,
         "vmax": vmax,
+        "cbar_ax": cbar_ax,
         **kwargs,
     }
 
@@ -55,7 +56,7 @@ def plot_auto(
                 x="time",
                 y="frequency",
                 yscale="log",
-                add_colorbar=False,
+                add_colorbar=True,
                 **plot_kwargs,
             )
 
