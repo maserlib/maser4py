@@ -19,13 +19,13 @@ publish-package: &publish_package
   before_script:
     - !reference [.setup-poetry, before_script]
   script:
-    # publish on a dedicated and centralized repository
-    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
     - cd ${PACKAGE_DIR}
     - poetry build
-    - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
     # Publish on pypi
-    - poetry publish --repository pypi -u __token__ -p $PYPI_TOKEN
+    - poetry publish -u __token__ -p $PYPI_TOKEN
+    # publish on a dedicated and centralized repository
+    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+    - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
 
   artifacts:
     expire_in: 1 day
