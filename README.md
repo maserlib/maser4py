@@ -110,7 +110,7 @@ And then publish the package on pypi (and/or on Gitlab, see https://python-poetr
 poetry publish
 ```
 
-`maser` comes with a Python client (see `.ci/zenodo.py`) to interact with the Zenodo API and generate automaticaly a DOI for each new version of `maser`.
+`maser` comes with a Python client (see `.ci/zenodo.py`) to interact with the Zenodo API and generate automatically a DOI for each new version of `maser`.
 
 To archive `maser` on Zenodo:
 

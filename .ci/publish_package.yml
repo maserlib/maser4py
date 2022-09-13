@@ -24,6 +24,9 @@ publish-package: &publish_package
     - cd ${PACKAGE_DIR}
     - poetry build
     - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
+    # Publish on pypi
+    - poetry config pypi-token.pypi $PYPI_TOKEN
+    - poetry publish --build --repository pypi
 
   artifacts:
     expire_in: 1 day

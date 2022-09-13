@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.11.2
+
+- Update pypi publish process
+- Update documentation
+
 ## 0.11.1
 
 - Add mixins
