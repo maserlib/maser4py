@@ -28,13 +28,11 @@ def test_int_aur_polrad_rsp_bin_dataset():
 
 
 @pytest.mark.test_data_required
-def test_int_aur_polrad_rsp_bin_dataset__sweeps__load_data_false():
-    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
-        sweeps = Data(filepath=filepath, load_data=False).sweeps
-        sweep = next(sweeps)
-        assert isinstance(sweep, InterballAuroralPolradRspSweep)
-        data_i = sweep.data
-        assert data_i is None
+def test_int_aur_polrad_rsp_bin_dataset__file_size():
+    file_sizes = [10038036, 1073108]
+    for filepath, file_size in zip(TEST_FILES["cdpp_int_aur_polrad_rspn2"], file_sizes):
+        data = Data(filepath=filepath)
+        assert data.file_size == file_size
 
 
 @pytest.mark.test_data_required
@@ -74,10 +72,10 @@ def test_int_aur_polrad_rsp_bin_dataset__sweeps_next__file0():
     data_i = sweep.data
     assert header_i == header_result
     assert list(data_i.keys()) == ["EX", "EY", "EZ"]
-    assert len(data_i["EZ"]) == 240
+    assert len(data_i["EY"]) == 240
     assert header_i["CHANNELS"] == 1
     assert data_i["EX"] is None
-    assert data_i["EY"] is None
+    assert data_i["EZ"] is None
 
 
 @pytest.mark.test_data_required

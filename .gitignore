@@ -153,6 +153,7 @@ cython_debug/
 # CDF data
 *.cdf
 
-# Additional local folders
+# Ignore some local folders
+workspace/
 local/
 tmp/

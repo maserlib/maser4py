@@ -21,8 +21,7 @@ from maser.utils.cdf.serializer import Skeleton
 # Mandatory
 __version__ = "0.3.0"
 __author__ = "X.Bonnin"
-__date__ = "2019-04-23" \
-           ""
+__date__ = "2019-04-23" ""
 
 # Optional
 __license__ = "MIT"
@@ -31,9 +30,11 @@ __maintainer__ = "X.Bonnin"
 __email__ = ""
 __project__ = "RPW Operations Centre"
 __institute__ = "LESIA"
-__changes__ = {"0.1.0": "First release",
-               "0.2.0": "Add new change possibilities",
-               "0.3.0": "Update to be consistent with new Skeleton instance"}
+__changes__ = {
+    "0.1.0": "First release",
+    "0.2.0": "Add new change possibilities",
+    "0.3.0": "Update to be consistent with new Skeleton instance",
+}
 
 
 # ________________ Global Variables _____________
@@ -49,6 +50,7 @@ CURDIR = os.curdir
 # ________________ Global Functions __________
 # (If required, define here global functions)
 
+
 def rm_zvar(skeleton, zvars):
     """
     Remove zvariables
@@ -60,6 +62,7 @@ def rm_zvar(skeleton, zvars):
     for zvar in zvars:
         skeleton.rm_zvar(zvar)
     return skeleton
+
 
 def add_zvar(skeleton, zvars):
     """
@@ -77,6 +80,7 @@ def add_zvar(skeleton, zvars):
         skeleton.add_zvar(zvar["Variable Name"], zvar, vattrs=vattrs)
 
     return skeleton
+
 
 def rename_zvar(skeleton, zvars):
     """
@@ -104,6 +108,7 @@ def set_zvar(skeleton, zvars):
         skeleton.set_zvar(zvar["Variable Name"], zvar)
     return skeleton
 
+
 def add_gattr(skeleton, gattrs):
     """
     Add g.attribute(s)
@@ -130,6 +135,7 @@ def rm_gattr(skeleton, gattrs):
         skeleton.rm_gattr(gattr)
     return skeleton
 
+
 def rename_gattr(skeleton, gattrs):
     """
     Rename g.attribute(s)
@@ -141,6 +147,7 @@ def rename_gattr(skeleton, gattrs):
     for gattr in gattrs:
         skeleton.rename_gattr(gattr["Attribute Name"], gattr["New Attribute Name"])
     return skeleton
+
 
 def set_gattr(skeleton, gattrs):
     """
@@ -169,8 +176,7 @@ def add_vattr(skeleton, vattrs):
             varname = vattr["Variable Name"]
         else:
             varname = None
-        skeleton.add_vattr(vattr["Attribute Name"], vattr,
-                           varname=[varname])
+        skeleton.add_vattr(vattr["Attribute Name"], vattr, varname=[varname])
     return skeleton
 
 
@@ -187,9 +193,9 @@ def rm_vattr(skeleton, vattrs):
             varname = vattr["Variable Name"]
         else:
             varname = None
-        skeleton.rm_vattr(vattr["Attribute Name"],
-                          varname=[varname])
+        skeleton.rm_vattr(vattr["Attribute Name"], varname=[varname])
     return skeleton
+
 
 def rename_vattr(skeleton, vattrs):
     """
@@ -204,8 +210,9 @@ def rename_vattr(skeleton, vattrs):
             varname = vattr["Variable Name"]
         else:
             varname = None
-        skeleton.rename_vattr(vattr["Attribute Name"], vattr["New Attribute Name"],
-                              varname=[varname])
+        skeleton.rename_vattr(
+            vattr["Attribute Name"], vattr["New Attribute Name"], varname=[varname]
+        )
     return skeleton
 
 
@@ -225,6 +232,7 @@ def set_vattr(skeleton, vattrs):
         skeleton.set_vattr(vattr["Attribute Name"], vattr, varname=[varname])
     return skeleton
 
+
 def reform_gattr(gattr):
     """
     Re-format input gattr dictionary to be passed as an argument
@@ -238,31 +246,55 @@ def reform_gattr(gattr):
     # Re-format for set_gattr method
     for i, value in enumerate(gattr["Value"]):
         gattr_entries.append(
-            {"Attribute Name": gattr["Attribute Name"],
-             "Entry Number": str(i+1),
-             "Data Type": gattr["Data Type"],
-             "Value": value
-             }
+            {
+                "Attribute Name": gattr["Attribute Name"],
+                "Entry Number": str(i + 1),
+                "Data Type": gattr["Data Type"],
+                "Value": value,
+            }
         )
 
     return gattr_entries
 
+
 def main():
     """Main program."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("setting", nargs=1, type=str,
-                        help="JSON file or stream containing the CDF "
-                        "header/attributes/zvariables to set")
-    parser.add_argument("skeleton_files", type=Path, nargs='+',
-                        help="CDF skeleton file(s) to update. Can be .skt or .xlsx format file(s).")
-    parser.add_argument("-o", "--output-dir", nargs=1, type=Path,
-                        default=[CURDIR], help="output directory")
-    parser.add_argument("-O", "--overwrite", action='store_true',
-                        help="Overwrite existing output file(s)")
-    parser.add_argument("-F", "--force-add", action='store_true',
-                        help="Force global attribute adding if not "
-                        "found when setting is requested "
-                        "(use CDF_CHAR data type by default).")
+    parser.add_argument(
+        "setting",
+        nargs=1,
+        type=str,
+        help="JSON file or stream containing the CDF "
+        "header/attributes/zvariables to set",
+    )
+    parser.add_argument(
+        "skeleton_files",
+        type=Path,
+        nargs="+",
+        help="CDF skeleton file(s) to update. Can be .skt or .xlsx format file(s).",
+    )
+    parser.add_argument(
+        "-o",
+        "--output-dir",
+        nargs=1,
+        type=Path,
+        default=[CURDIR],
+        help="output directory",
+    )
+    parser.add_argument(
+        "-O",
+        "--overwrite",
+        action="store_true",
+        help="Overwrite existing output file(s)",
+    )
+    parser.add_argument(
+        "-F",
+        "--force-add",
+        action="store_true",
+        help="Force global attribute adding if not "
+        "found when setting is requested "
+        "(use CDF_CHAR data type by default).",
+    )
 
     args = parser.parse_args()
     outdir = args.output_dir[0]
@@ -310,6 +342,8 @@ def main():
             skeleton.to_xlsx(output, overwrite=overwrite)
 
     # _________________ Main ____________________________
+
+
 if __name__ == "__main__":
     # print ""
     main()

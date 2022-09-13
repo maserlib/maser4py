@@ -36,5 +36,3 @@ excel=$inputdir/converter_example.xlsx
 
 echo "Converting Excel file "$excel" into master binary CDF"
 maser -D skeletoncdf -I -A -e -o $outputdir $excel
-
-

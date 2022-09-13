@@ -17,6 +17,11 @@ default:
     - poetry --version
     - poetry config virtualenvs.in-project true --local
 
+.install-fortran:
+  before_script:
+    - apt-get update
+    - apt-get install -y gfortran ncurses-dev
+
 lint-job:
   stage: lint
   needs: []
@@ -39,11 +44,12 @@ type-check-job:
   needs: []
   before_script:
     - !reference [.setup-poetry, before_script]
+    - !reference [.install-fortran, before_script]
     # install maser and dependencies (including mypy)
     - poetry install
   script:
     # run mypy
-    - poetry run mypy maser
+    - poetry run mypy src/maser_data #
   only:
     - develop
     - master
@@ -59,18 +65,17 @@ test-job:
   before_script:
     - !reference [.setup-poetry, before_script]
     # install cdf and spacepy.pycdf
-    - apt-get update
-    - apt-get install -y gfortran ncurses-dev
+    - !reference [.install-fortran, before_script]
     - wget $CDF_URL
     - tar -xf cdf38_1-dist-all.tar.gz && cd ./cdf38_1-dist
     - make OS=linux ENV=gnu CURSES=yes FORTRAN=no UCOPTIONS=-O2 SHARED=yes all
     - make install
-    # install maser data
-    - cd .. && poetry install -E spacepy
+    # install maser
+    - cd .. && poetry install
   script:
     # source the CDF lib and run the test
     - . ./cdf38_1-dist/bin/definitions.B
-    - poetry run pytest --cov=maser.data --junitxml=report.xml -m "not test_data_required"
+    - poetry run pytest tests/ --cov=maser.data --junitxml=report.xml -m "not test_data_required"
     - poetry run coverage xml
   artifacts:
     when: always
@@ -87,15 +92,38 @@ test-job:
     - web
 
 # publish python package on gitlab registry
-publish-job:
+publish-maser_data:
   stage: publish
-  before_script:
-    - !reference [.setup-poetry, before_script]
-  script:
-    # publish on a dedicated and centralized repository
-    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
-    - poetry build
-    - poetry publish -r gitlab -u gitlab-ci-token -p $CI_JOB_TOKEN
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
+  variables:
+    PACKAGE_DIR: 'src/maser_data'
+  only:
+    - tags
+    - web
+
+publish-maser_plot:
+  stage: publish
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
+  variables:
+    PACKAGE_DIR: 'src/maser_plot'
+  only:
+    - tags
+    - web
+
+publish-maser4py:
+  stage: publish
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
+  variables:
+    PACKAGE_DIR: '.'
+    # TODO: This ID comes from the sandbox server.
+    # You will have to change it with one generated from the production server
+    ZENODO_DEPOSIT_ID: 1096032
   only:
     - tags
     - web
@@ -105,6 +133,7 @@ pages:
   stage: publish
   before_script:
     - !reference [.setup-poetry, before_script]
+    - !reference [.install-fortran, before_script]
   script:
     - poetry install
     - poetry run sphinx-build -b html docs/source public

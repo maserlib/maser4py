@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "maser.das2"
+version = "0.1.0"
+description = ""
+authors = ["MASER Team"]
+license = "CeCILL"
+
+# handle namespace with poetry
+packages = [
+    { include = "maser" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4"
+python-dateutil = "^2.8.2"
+
+[build-system]
+requires = ["poetry>=1.1.4", "setuptools"]
+build-backend = "poetry.core.masonry.api"
