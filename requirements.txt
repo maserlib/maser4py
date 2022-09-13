@@ -1,9 +1,0 @@
-astropy
-jinja2
-numpy
-openpyxl
-python-dateutil
-pytz
-scipy
-spacepy
-toml

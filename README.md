@@ -1,107 +1,134 @@
-[![PyPI version](https://badge.fury.io/py/maser4py.svg)](https://img.shields.io/pypi/pyversions/maser4py)
-[![license](https://img.shields.io/pypi/l/maser4py)](https://pypi.python.org/pypi/maser4py)
-[![Documentation Status](https://readthedocs.org/projects/maser/badge/?version=latest)](https://maser.readthedocs.io)
+# Installation
 
-About maser4py
-==============
+To install the package, run the following command:
 
-**maser4py** python package offers tools for radioastronomy at low frequency.
+```
+pip install maser.data --extra-index-url https://gitlab.obspm.fr/api/v4/projects/2910/packages/pypi/simple
+```
 
-It contains modules to deal with services, data and tools provided in the framework
-of the MASER portal (http://maser.lesia.obspm.fr).
+or use one of the extra options:
 
-Read maser4py [documentation][maser4py readthedocs] for more information.
+- `jupyter` for Jupyter notebook support
+- `spacepy` for CDF data format support (note that this requires the [CDF library](https://cdf.gsfc.nasa.gov/html/sw_and_docs.html))
+- `nenupy` for NenuFAR data products support
+- `all` to install all the above
 
-[maser4py readthedocs]: https://maser.readthedocs.io/en/latest
+For example use `maser.data[jupyter,spacepy]` if you want to use `maser.data` with spacepy and jupyter notebooks:
 
-Installation
-==============
+```bash
+pip install maser.data[jupyter,spacepy] --extra-index-url https://gitlab.obspm.fr/api/v4/projects/2910/packages/pypi/simple
+```
 
-Prerequisites
---------------
+# Usage
 
+The `Data` class is a wrapper around several classes that allow you to read data from many different formats, including CDF, Fits, and some custom binary formats. By default, the class will try to automagically detect the format of the file and use the appropriate class to read the data.
 
-Python 3 must be available (tested with 3.6 and 3.8).
+```python
+from maser.data import Data
 
-The maser4py also requires the NASA CDF software to be run (visit http://cdf.gsfc.nasa.gov/ for more details). Especially the CDFLeapSeconds.txt file
-should be on the local disk and reachable from the $CDF_LEAPSECONDSTABLE env. variable. If it is not the case, maser4py offers tools to read and/or download
-this file from the NASA Web site (see user manual for more details).
+filepath = "path/to/my/data/file.ext"
+data = Data(filepath=filepath)
+```
 
-Using pip
-----------
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.obspm.fr%2Fmaser%2Fmaser4py.git/namespace) You can also launch a Binder environment and browse through the notebook [examples](https://gitlab.obspm.fr/maser/maser4py/-/tree/namespace/examples).
 
-From a terminal, enter:
+# Development
 
-   pip install maser4py
+To contribute to the development of the package, you will need to install a local copy of maser.data
 
-Using source
--------------
+```
+git clone https://gitlab.obspm.fr/maser/maser4py.git
+```
 
-From a terminal, enter:
+Then, you can install the package locally
 
-    git clone https://github.com/maserlib/maser4py
+## Requirements
 
-Then, from the maser4py directory, enter:
+`maser.data` requirements are detailed in the `pyproject.toml` file
 
-    pip install -r requirements.txt
+### poetry
 
-Then,
+To install the package, it is recommended to use [poetry](https://python-poetry.org/docs/#installing-with-pip):
 
-    python3 setup.py install
+```
+pip install poetry
+```
 
+### CDF file format
 
-Usage
-======
+To use `maser.data` to read CDF files you have to install the [CDF library](https://cdf.gsfc.nasa.gov/html/sw_and_docs.html) and the [spacepy.pycdf](https://spacepy.github.io/install.html) package.
 
-From Python, enter "import maser".
-The module also offers specific command line interfaces.
+## Installing a local copy of maser.data
 
-For more details, see the maser4py user manual.
+Use the following command to install the package:
 
-Content
-=========
+```bash
+poetry install
+```
 
-The maser4py directory contains the following items:
+or this one if you want to use `maser.data` with spacepy to handle CDF files:
 
-::
+```bash
+poetry install --extras "spacepy"
+```
 
-    doc/  stores the maser4py documentation (source and build)
+## Tests
 
-    maser/ stores the maser4py source files
+Use `pytest -m "not test_data_required"` to skip tests that require test data (and to skip auto download).
 
-    scripts/ store scripts to run/test/manage maser4py
+## Generate setup.py for editable local installation
 
-    __main__.py python script to run maser.main program
+The `setup.py` file have to be updated after any changes to the `pyproject.toml` file.
 
-    CHANGELOG.rst software change history log
+To generate a new `setup.py` file, go to the top level of the `maser.data` project folder and run:
 
-    MANIFEST.in files to be included to the package installation (used by   tup.py)
+```
+python generate_setup.py
+```
 
-    pyproject.tom Python package pyproject file
+Now you can use the `setup.py` file to install the package locally in editable mode:
 
-    README.md current file
+```
+pip install -e path/to/project/folder
+```
 
-    requirements.txt list of python package dependencies and versions
+## Build the documentation
 
-    setup.cfg file used by sphinx to build the maser4py doc.
+Use `sphinx-build docs/source docs/public` to build the documentation.
 
-    setup.py maser4py package setup file
+## Manually publish `maser` and generate a new DOI
 
-About MASER project
-====================
+To publish `maser` with `poetry` you will have to build a `dist` package:
 
-The MASER (Measuring, Analyzing & Simulating Emissions in the Radio range) portal is offering access to a series of tools and databases linked to low frequency radioastronomy (a few kilohertz to a few tens of megahertz). Radio measurements in this spectral range are done with ground based observatories (for frequencies above the terrestrial ionosphere cutoff at 10 MHz) or from space based platforms (at low frequencies).
+```
+poetry build
+```
 
-In this frequency range, the main radio sources are the Sun and the magnetized planets. Measurements of the low frequency electric and magnetic field fluctuations can also provide local plasma diagnostics and in-situ observations of plasma waves phenomena in the Solar Wind or in planetary environments.
+And then publish the package on pypi (and/or on Gitlab, see https://python-poetry.org/docs/cli/#publish):
 
-* For more information about the MASER project: http://maser.lesia.obspm.fr/
-* For more information about MASER4PY: https://github.com/maserlib/maser4py
+```
+poetry publish
+```
 
-Acknowledgements
-==================
+`maser` comes with a Python client (see `.ci/zenodo.py`) to interact with the Zenodo API and generate automatically a DOI for each new version of `maser`.
 
-The development of the MASER library is supported by Observatoire de Paris, CNRS (Centre National de la Recherche Scientique) and CNES (Centre National d'Etudes Spatiales). The technical support from PADC (Paris Astronomical Data Centre) and CDPP (Centre de Données de la Physique des Plasmas) is also acknowledged.
+To archive `maser` on Zenodo:
 
-The project has also received support from the European Union through:
-* HELIO (Heliophysics Integrated Observatory), which received funding from Capacities Specific Programme of the European Commission's Seventh Framework Programme (FP7) under grant agreement No 238969;
-* EPN2020RI (Europlanet 2020 Research Infrastructure project), which received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 654208.
+1. [Create an access token](https://zenodo.org/account/settings/applications/tokens/new/)
+2. Is this the first maser deposit on Zenodo ?
+
+- Yes it's the first deposit, so you don't need any ID
+- No, it's a new version of `maser`. Then browse to the first record of maser on Zenodo and check the URL : `https://zenodo.org/record/<DEPOSITION_ID>` to get the `maser` deposition ID.
+
+3. Use the following command to deposit the package on Zenodo:
+
+```bash
+ python .ci/zenodo.py -p ./ -t <ACCESS_TOKEN> -a ./dist/maser4py-X.Y.Z.tar.gz  -id <DEPOSITION_ID>
+```
+
+4. Browse to the `maser` record on Zenodo, check the metadata/files and publish the package to finally generate the DOI.
+
+Notes :
+
+- the `--sandbox` keyword can be used to deposit files on the Zenodo test server
+- the `--publish` keyword can be used to automatically publish the new record and generate the DOI. But **be careful**, once published, there is no way to modify a record on Zenodo without publishing a new version.

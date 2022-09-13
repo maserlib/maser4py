@@ -1,0 +1,223 @@
+{
+  "k": {
+    "format-type": "byte-stream",
+    "description": "Cassini/RPWS/HFR Kronos Level 0 (Telemetry)",
+    "depend": [null]
+  },
+  "n1": {
+    "format-type": "binary-fixed-record-length",
+    "record_def": {
+      "fields": [
+        "ydh",
+        "num",
+        "ti",
+        "fi",
+        "dti",
+        "c",
+        "ant",
+        "agc1",
+        "agc2",
+        "auto1",
+        "auto2",
+        "cross1",
+        "cross2"
+      ],
+      "dtype": "<LLLLhbbbbbbhh",
+      "np_dtype": [
+        "<u4",
+        "<u4",
+        "<u4",
+        "<u4",
+        "<i2",
+        "u1",
+        "u1",
+        "u1",
+        "u1",
+        "u1",
+        "u1",
+        "<i2",
+        "<i2"
+      ],
+      "units": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "cs",
+        "",
+        "ADU",
+        "ADU",
+        "ADU",
+        "ADU",
+        "ADU",
+        "ADU"
+      ],
+      "length": 28
+    },
+    "description": "Cassini/RPWS/HFR Kronos Level 1 (Receiver units)",
+    "depend": [null]
+  },
+  "n2": {
+    "file_format": "binary-fixed-record-length",
+    "record_def": {
+      "fields": [
+        "ydh",
+        "num",
+        "t97",
+        "f",
+        "dt",
+        "df",
+        "autoX",
+        "autoZ",
+        "crossR",
+        "crossI",
+        "ant"
+      ],
+      "dtype": "<LLdfffffffb",
+      "np_dtype": [
+        "<u4",
+        "<u4",
+        "<f8",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "i1"
+      ],
+      "units": [
+        "",
+        "",
+        "Day of year 1997",
+        "kHz",
+        "ms",
+        "kHz",
+        "V^2/Hz",
+        "V^2/Hz",
+        "%",
+        "%",
+        ""
+      ],
+      "length": 45
+    },
+    "description": "Cassini/RPWS/HFR Kronos Level 2 (Physical units)",
+    "depends": ["n1"]
+  },
+  "n3b": {
+    "file-format": "binary-fixed-record-length",
+    "record_def": {
+      "fields": [
+        "ydh",
+        "num",
+        "s",
+        "q",
+        "u",
+        "v",
+        "th",
+        "ph",
+        "zr",
+        "snx",
+        "snz"
+      ],
+      "dtype": "<LLLfffffffffffffff",
+      "np_dtype": [
+        "<u4",
+        ["<u4", 2],
+        ["<f4", 2],
+        ["<f4", 2],
+        ["<f4", 2],
+        ["<f4", 2],
+        "<f4",
+        "<f4",
+        "<f4",
+        ["<f4", 2],
+        ["<f4", 2]
+      ],
+      "length": 72
+    },
+    "description": "Cassini/RPWS/HFR Kronos Level 3b (Generic 3 antenna GP)",
+    "depends": ["n1", "n2"]
+  },
+  "n3c": {
+    "file-format": "binary-fixed-record-length",
+    "record_def": {
+      "fields": [
+        "ydh",
+        "num",
+        "s",
+        "q",
+        "u",
+        "v",
+        "th",
+        "ph",
+        "zr",
+        "snx",
+        "snz"
+      ],
+      "dtype": "<LLLffffffffffffff",
+      "np_dtype": [
+        "<u4",
+        ["<u4", 2],
+        "<f4",
+        "<f4",
+        "<f4",
+        ["<f4", 2],
+        ["<f4", 2],
+        ["<f4", 2],
+        "<f4",
+        ["<f4", 2],
+        ["<f4", 2]
+      ],
+      "length": 68
+    },
+    "description": "Cassini/RPWS/HFR Kronos Level 3c (Circular polarization 3 antenna GP)",
+    "depends": ["n1", "n2"]
+  },
+  "n3d": {
+    "file-format": "binary-fixed-record-length",
+    "record_def": {
+      "fields": ["ydh", "num", "s", "q", "u", "v", "th", "ph", "snx", "snz"],
+      "dtype": "<LLffffffff",
+      "np_dtype": [
+        "<u4",
+        "<u4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4"
+      ],
+      "length": 38
+    },
+    "description": "Cassini/RPWS/HFR Kronos Level 3d (Known source position 2 antenna GP)",
+    "depends": ["n1", "n2"]
+  },
+  "n3e": {
+    "file-format": "binary-fixed-record-length",
+    "record_def": {
+      "fields": ["ydh", "num", "s", "q", "u", "v", "th", "ph", "snx", "snz"],
+      "dtype": "<LLffffffff",
+      "np_dtype": [
+        "<u4",
+        "<u4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4",
+        "<f4"
+      ],
+      "length": 38
+    },
+    "description": "Cassini/RPWS/HFR Kronos Level 3e (Circular polarization 2 antenna GP)",
+    "depends": ["n1", "n2"]
+  }
+}

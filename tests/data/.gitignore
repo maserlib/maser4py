@@ -1,0 +1,5 @@
+*
+!.gitignore
+!collections.json
+!not_implemented.json
+!cdf

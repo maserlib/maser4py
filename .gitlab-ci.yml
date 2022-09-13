@@ -1,0 +1,145 @@
+stages:
+  - lint
+  - test
+  - publish
+  - deploy
+
+default:
+  image: python:3.8
+  tags:
+    - docker_dio
+
+.setup-poetry:
+  before_script:
+    - python --version
+    - pip install --upgrade pip
+    - pip install poetry
+    - poetry --version
+    - poetry config virtualenvs.in-project true --local
+
+.install-fortran:
+  before_script:
+    - apt-get update
+    - apt-get install -y gfortran ncurses-dev
+
+lint-job:
+  stage: lint
+  needs: []
+  before_script:
+    - !reference [.setup-poetry, before_script]
+    # install pre-commit
+    - poetry run pip install pre-commit
+  script:
+    # run pre-commit
+    - poetry run pre-commit run -a
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web
+
+type-check-job:
+  stage: lint
+  needs: []
+  before_script:
+    - !reference [.setup-poetry, before_script]
+    - !reference [.install-fortran, before_script]
+    # install maser and dependencies (including mypy)
+    - poetry install
+  script:
+    # run mypy
+    - poetry run mypy src/maser_data #
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web
+
+test-job:
+  stage: test
+  needs: []
+  variables:
+    CDF_URL: 'https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/cdf38_1-dist-all.tar.gz'
+  before_script:
+    - !reference [.setup-poetry, before_script]
+    # install cdf and spacepy.pycdf
+    - !reference [.install-fortran, before_script]
+    - wget $CDF_URL
+    - tar -xf cdf38_1-dist-all.tar.gz && cd ./cdf38_1-dist
+    - make OS=linux ENV=gnu CURSES=yes FORTRAN=no UCOPTIONS=-O2 SHARED=yes all
+    - make install
+    # install maser
+    - cd .. && poetry install
+  script:
+    # source the CDF lib and run the test
+    - . ./cdf38_1-dist/bin/definitions.B
+    - poetry run pytest tests/ --cov=maser.data --junitxml=report.xml -m "not test_data_required"
+    - poetry run coverage xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      coverage_report:
+        path: coverage.xml
+        coverage_format: cobertura
+  only:
+    - develop
+    - master
+    - tags
+    - merge_requests
+    - web
+
+# publish python package on gitlab registry
+publish-maser_data:
+  stage: publish
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
+  variables:
+    PACKAGE_DIR: 'src/maser_data'
+  only:
+    - tags
+    - web
+
+publish-maser_plot:
+  stage: publish
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
+  variables:
+    PACKAGE_DIR: 'src/maser_plot'
+  only:
+    - tags
+    - web
+
+publish-maser4py:
+  stage: publish
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
+  variables:
+    PACKAGE_DIR: '.'
+    # TODO: This ID comes from the sandbox server.
+    # You will have to change it with one generated from the production server
+    ZENODO_DEPOSIT_ID: 1096032
+  only:
+    - tags
+    - web
+
+# deploy doc pages
+pages:
+  stage: publish
+  before_script:
+    - !reference [.setup-poetry, before_script]
+    - !reference [.install-fortran, before_script]
+  script:
+    - poetry install
+    - poetry run sphinx-build -b html docs/source public
+  artifacts:
+    paths:
+      - public
+  only:
+    - tags
+    - web

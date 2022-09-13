@@ -1,0 +1,18 @@
+{
+  "bin": [
+    ["cdpp_wi_wa_rad1_l2", "^wi_wa_rad1_l2_\\d{8}_v\\d{2}.dat$"],
+    ["cdpp_wi_wa_rad1_l2_60s_v2", "^wi_wa_rad1_l2_60s_\\d{8}_v\\d{2}.dat$"],
+    ["cdpp_wi_wa_rad2_l2", "^wi_wa_rad2_l2_\\d{8}_v\\d{2}.dat$"],
+    ["cdpp_wi_wa_rad2_l2_60s_v2", "^wi_wa_rad2_l2_60s_\\d{8}_v\\d{2}.dat$"],
+    ["cdpp_wi_wa_tnr_l2_60s_v2", "^wi_wa_tnr_l2_60s_\\d{8}_v\\d{2}.dat$"],
+    ["cdpp_wi_wa_tnr_l3_bqt_1mn", "^WI_WA_TNR_L3_BQT_\\d{8}_1MN.DAT$"],
+    ["cdpp_wi_wa_tnr_l3_nn", "^WI_WA_TNR_L3_NN_\\d{8}_V\\d{2}.DAT$"],
+    ["cdpp_wi_wa_rad1_l2_60s_v1", "^WIN_RAD1_60S_\\d{8}.B3E$"],
+    ["cdpp_wi_wa_rad2_l2_60s_v1", "^WIN_RAD2_60S_\\d{8}.B3E$"],
+    ["cdpp_wi_wa_tnr_l2_60s_v1", "^WIN_TNR_60S_\\d{8}.B3E$"],
+    ["cdpp_viking_v4n_e5", "^V4N_\\d{4}_\\d{3}$"],
+    ["cdpp_int_aur_polrad_rspn2", "^POLR_RSPN2_\\d{8}$"],
+    ["co_rpws_hfr_kronos_n1", "^R\\d{7}\\.\\d{2}$"],
+    ["co_rpws_hfr_kronos_n2", "^P\\d{7}\\.\\d{2}$"]
+  ]
+}
