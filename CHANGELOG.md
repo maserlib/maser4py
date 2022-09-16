@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.12.0
+
+- Add SOLO/RPW/HFR Data class in maser.data
+- Update SOLO/RPW/TNR Data.sweep method in maser.data
+- Update README
+- Update pyproject.toml (tool.poetry.source gitlab_obspm not required anymore)
+
 ## 0.11.2
 
 - Update pypi publish process
