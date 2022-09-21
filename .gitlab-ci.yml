@@ -77,6 +77,7 @@ test-job:
     - . ./cdf38_1-dist/bin/definitions.B
     - poetry run pytest tests/ --cov=maser.data --junitxml=report.xml -m "not test_data_required"
     - poetry run coverage xml
+  coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
   artifacts:
     when: always
     reports:

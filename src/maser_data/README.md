@@ -1,45 +1,57 @@
-# About maser4py
+# About maser.data
 
-maser4py offers modules to hande data from several space and ground radio observatory.
+maser.data is a submodule of [maser4py](https://pypi.org/project/maser4py/).
 
-It comes with the following submodules:
+It offers programs to handle radio data from the following missions:
 
-- [maser.data](https://pypi.org/project/maser.data/) for radio data parsing features
-- [maser.plot](https://pypi.org/project/maser.plot/) for radio data plotting features
-
-maser4py is developed in the framework of the [MASER project](https://maser.lesia.obspm.fr).
+- Cassini
+- Ecallisto
+- Interball
+- Juno
+- Mars Express
+- nancay decametric array (Jupiter only)
+- Nancay NenuFAR/BST
+- Solar orbiter
+- Viking
+- Wind
 
 # Installation
 
 To install the package, run the following command:
 
 ```
-pip install maser4py
+pip install maser.data
 ```
 
 or use one of the extra options:
 
 - `jupyter` for Jupyter notebook support
-- `jupytext` for Jupyter notebook text support
-- `data` for [maser.data](https://pypi.org/project/maser.data/) submodule features
-- `plot` for [maser.plot](https://pypi.org/project/maser.plot/) submodule features
+- `spacepy` for CDF data format support (note that this requires the [CDF library](https://cdf.gsfc.nasa.gov/html/sw_and_docs.html))
+- `nenupy` for NenuFAR data products support
 - `all` to install all the above
 
-For example if you want to use `maser4py` with maser.data and maser.plot submodules:
+For example use `maser.data[jupyter,spacepy]` if you want to use `maser.data` with spacepy and jupyter notebooks:
 
 ```bash
-pip install maser4py[data,plot]
+pip install maser.data[jupyter,spacepy]
 ```
 
 # Usage
 
-Examples of usage can be found in the `examples` folder.
+The `Data` class is a wrapper around several classes that allow you to read data from many different formats, including CDF, Fits, and some custom binary formats. By default, the class will try to automagically detect the format of the file and use the appropriate class to read the data.
 
-Examples can also be run as Jupyter notebooks on Binder [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.obspm.fr%2Fmaser%2Fmaser4py.git/namespace) You can also launch a Binder environment and browse through the notebook [examples](https://gitlab.obspm.fr/maser/maser4py/-/tree/namespace/examples).
+```python
+from maser.data import Data
+
+filepath = "path/to/my/data/file.ext"
+data = Data(filepath=filepath)
+```
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.obspm.fr%2Fmaser%2Fmaser4py.git/namespace) You can also launch a Binder environment and browse through the notebook [examples](https://gitlab.obspm.fr/maser/maser4py/-/tree/namespace/examples).
 
 # Development
 
-To contribute to the development of the package, you will need to install a local copy of maser4py:
+To contribute to the development of the package, you will need to install a local copy of maser.data
 
 ```
 git clone https://gitlab.obspm.fr/maser/maser4py.git
@@ -49,7 +61,7 @@ Then, you can install the package locally
 
 ## Requirements
 
-`maser4py` requirements are detailed in the `pyproject.toml` file
+`maser.data` requirements are detailed in the `pyproject.toml` file
 
 ### poetry
 
@@ -61,14 +73,20 @@ pip install poetry
 
 ### CDF file format
 
-To use `maser4py` to read CDF files you have to install the [CDF library](https://cdf.gsfc.nasa.gov/html/sw_and_docs.html) and the [spacepy.pycdf](https://spacepy.github.io/install.html) package.
+To use `maser.data` to read CDF files you have to install the [CDF library](https://cdf.gsfc.nasa.gov/html/sw_and_docs.html) and the [spacepy.pycdf](https://spacepy.github.io/install.html) package.
 
-## Installing a local copy of maser4py
+## Installing a local copy of maser.data
 
 Use the following command to install the package:
 
 ```bash
 poetry install
+```
+
+or this one if you want to use `maser.data` with spacepy to handle CDF files:
+
+```bash
+poetry install --extras "spacepy"
 ```
 
 ## Tests
@@ -79,7 +97,7 @@ Use `pytest -m "not test_data_required"` to skip tests that require test data (a
 
 The `setup.py` file have to be updated after any changes to the `pyproject.toml` file.
 
-To generate a new `setup.py` file, go to the top level of the `maser4py` project folder and run:
+To generate a new `setup.py` file, go to the top level of the `maser.data` project folder and run:
 
 ```
 python generate_setup.py
