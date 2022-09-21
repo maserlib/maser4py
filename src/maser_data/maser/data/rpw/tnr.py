@@ -7,72 +7,104 @@ from astropy.units import Unit
 from maser.data.base import CdfData
 from maser.data.base.sweeps import Sweeps
 
+TNR_SWEEP_DTYPE = [
+    ("Epoch", ("datetime64[ns]", 4)),
+    ("VOLTAGE_SPECTRAL_POWER1", ("float32", 128)),
+    ("VOLTAGE_SPECTRAL_POWER2", ("float32", 128)),
+    ("FLUX_DENSITY1", ("float32", 128)),
+    ("FLUX_DENSITY2", ("float32", 128)),
+    ("MAGNETIC_SPECTRAL_POWER1", ("float32", 128)),
+    ("MAGNETIC_SPECTRAL_POWER2", ("float32", 128)),
+]
+
 
 class RpwTnrSurvSweeps(Sweeps):
     @property
     def generator(self):
         """
         For each time, yield a frequency range and a dictionary with the following keys:
-        - AUTO1 : Power spectral density at receiver + PA for channel 1 before applying antenna gain (V²/Hz)
-        - AUTO2 : Power spectral density at receiver + PA for channel 2 before applying antenna gain (V²/Hz)
-        - PHASE : TNR Phase in degrees, computed from the cross-correlation Im. And Real. Parts [Phase=atan2(CROSS_I/CROSS_R)*180/pi]
+        - VOLTAGE_SPECTRAL_POWER1 : Power spectral density at receiver + PA for channel 1 before applying antenna gain (V²/Hz)
+        - VOLTAGE_SPECTRAL_POWER2 : Power spectral density at receiver + PA for channel 2 before applying antenna gain (V²/Hz)
         - FLUX_DENSITY1 : Flux of the power spectral density for channel 1 with antenna gain (W/m²/Hz)
         - FLUX_DENSITY2 : Flux of the power spectral density for channel 2 with antenna gain (W/m²/Hz)
         - MAGNETIC_SPECTRAL_POWER1 : Magnetic power spectral density from 1 search coil axis in channel 1
         - MAGNETIC_SPECTRAL_POWER1 : Magnetic power spectral density from 1 search coil axis in channel 2
-        - SENSOR_CONFIG : Indicates the THR sensor configuration
-
         """
 
-        def increment_sweep(sweep_mask, i):
-            if self.file["SWEEP_NUM"][i] != self.file["SWEEP_NUM"][i - 1]:
-                sweep_mask[-1].sort()
-                sweep_mask.append([i])
-            else:
-                sweep_mask[-1].append(i)
+        def add_rec(in_data, out_data, rec_index):
 
-        # First generate a mask for each sweep
-        sweep_mask = [[0]]
-        _ = [
-            increment_sweep(sweep_mask, i)
-            for i in range(1, self.file["SWEEP_NUM"].shape[0])
-        ]
+            # Get frequency band range
+            i_band = self.file["TNR_BAND"][rec_index]
+            i0, i1 = self.data_reference.frequency_band_indices[i_band]
 
-        for indices in sweep_mask:
-            yield (
-                {
-                    "VOLTAGE_SPECTRAL_POWER1": np.take(
-                        self.file["AUTO1"], indices, axis=0
-                    ).flatten(),
-                    "VOLTAGE_SPECTRAL_POWER2": np.take(
-                        self.file["AUTO2"], indices, axis=0
-                    ).flatten(),
-                    "SENSOR_CONFIG": np.take(self.file["SENSOR_CONFIG"], indices),
-                    "PHASE": np.take(self.file["PHASE"], indices, axis=0).flatten(),
-                    "FlUX_DENSITY1": np.take(
-                        self.file["FLUX_DENSITY1"], indices, axis=0
-                    ).flatten(),
-                    "FlUX_DENSITY2": np.take(
-                        self.file["FLUX_DENSITY2"], indices, axis=0
-                    ).flatten(),
-                    "MAGNETIC_SPECTRAL_POWER1": np.take(
-                        self.file["MAGNETIC_SPECTRAL_POWER1"], indices, axis=0
-                    ).flatten(),
-                    "MAGNETIC_SPECTRAL_POWER2": np.take(
-                        self.file["MAGNETIC_SPECTRAL_POWER2"], indices, axis=0
-                    ).flatten(),
-                    "TNR_BAND": np.take(self.file["TNR_BAND"], indices),
-                    "SURVEY_MODE": np.take(self.file["SURVEY_MODE"], indices),
-                },
-                Time(self.file["Epoch"][indices[0]]),
-                np.take(self.file["FREQUENCY"], indices, axis=0).flatten(),
-            )
+            # Fill values
+            out_data["Epoch"][0, i_band] = in_data["Epoch"][rec_index]
+            out_data["VOLTAGE_SPECTRAL_POWER1"][0, i0 : i1 + 1] = in_data["AUTO1"][
+                rec_index, :
+            ]
+            out_data["VOLTAGE_SPECTRAL_POWER2"][0, i0 : i1 + 1] = in_data["AUTO2"][
+                rec_index, :
+            ]
+            out_data["FLUX_DENSITY1"][0, i0 : i1 + 1] = in_data["FLUX_DENSITY1"][
+                rec_index, :
+            ]
+            out_data["FLUX_DENSITY2"][0, i0 : i1 + 1] = in_data["FLUX_DENSITY2"][
+                rec_index, :
+            ]
+            out_data["MAGNETIC_SPECTRAL_POWER1"][0, i0 : i1 + 1] = in_data[
+                "MAGNETIC_SPECTRAL_POWER1"
+            ][rec_index, :]
+            out_data["MAGNETIC_SPECTRAL_POWER2"][0, i0 : i1 + 1] = in_data[
+                "MAGNETIC_SPECTRAL_POWER2"
+            ][rec_index, :]
+
+            return out_data
+
+        # First build list of frequency values for TNR (A+B+C+D bands)
+        freq = self.data_reference.frequencies
+
+        # Initialize output data vector for the first sweep
+        sweep_data = np.zeros(1, dtype=TNR_SWEEP_DTYPE)
+
+        # Loop over each record in the CDF
+        sweep_completed = False
+        for i in range(self.file["SWEEP_NUM"].shape[0]):
+            try:
+                if self.file["SWEEP_NUM"][i] != self.file["SWEEP_NUM"][i + 1]:
+                    sweep_data = add_rec(self.file, sweep_data, i)
+                    sweep_completed = True
+                    yield (
+                        sweep_data,
+                        Time(sweep_data["Epoch"][0, 0]),
+                        freq,
+                        self.file["SENSOR_CONFIG"][i],
+                        self.file["SURVEY_MODE"][i],
+                    )
+                else:
+                    if sweep_completed:
+                        sweep_completed = False
+                        sweep_data = np.empty(1, dtype=TNR_SWEEP_DTYPE)
+
+                    sweep_data = add_rec(self.file, sweep_data, i)
+            except IndexError:
+                # End of CDF file is reached, force yield for last record
+                yield (
+                    sweep_data,
+                    Time(sweep_data["Epoch"][0, 0]),
+                    freq,
+                    self.file["SENSOR_CONFIG"][i],
+                    self.file["SURVEY_MODE"][i],
+                )
 
 
 class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     _iter_sweep_class = RpwTnrSurvSweeps
 
+    # Define TNR frequency band names
     frequency_band_labels = ["A", "B", "C", "D"]
+
+    # Define range of indices for each TNR frequency band
+    frequency_band_indices = [[0, 31], [32, 63], [64, 95], [96, 127]]
 
     survey_mode_labels = ["SURVEY_NORMAL", "SURVEY_BURST"]
 
@@ -95,23 +127,21 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     def frequencies(self):
         if self._frequencies is None:
 
-            self._frequencies = {}
             with self.open(self.filepath) as cdf_file:
-                for band_index, band_label in enumerate(self.frequency_band_labels):
-                    # if units are not specified, assume Hz
-                    units = cdf_file["TNR_BAND_FREQ"].attrs["UNITS"].strip() or "Hz"
-                    freq = cdf_file["TNR_BAND_FREQ"][band_index, :] * Unit(units)
-                    self._frequencies[band_label] = freq
+                # if units are not specified, assume Hz
+                units = Unit(cdf_file["TNR_BAND_FREQ"].attrs["UNITS"].strip() or "Hz")
+                self._frequencies = (
+                    np.sort(self.file["TNR_BAND_FREQ"][...].flatten()) * units
+                )
 
         return self._frequencies
 
     @property
     def times(self):
         if self._times is None:
-            self._times = {}
-            for band_index, frequency_band in enumerate(self.frequency_band_labels):
-                mask = (self.file["TNR_BAND"][...] == band_index)[0]
-                self._times[frequency_band] = Time(self.file["Epoch"][mask])
+            # Get Epoch time values for Band A
+            mask = self.file["TNR_BAND"] == 0
+            self._times = Time(self.file["Epoch"][mask])
         return self._times
 
     def as_xarray(self):

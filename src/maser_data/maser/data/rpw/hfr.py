@@ -5,48 +5,77 @@ from astropy.units import Unit
 from maser.data.base.sweeps import Sweeps
 import numpy as np
 
+HFR_SWEEP_DTYPE = [
+    ("Epoch", ("datetime64[ns]", 192)),
+    ("VOLTAGE_SPECTRAL_POWER1", ("float32", 192)),
+    ("VOLTAGE_SPECTRAL_POWER2", ("float32", 192)),
+]
+
 
 class RpwHfrSurvSweeps(Sweeps):
     @property
     def generator(self):
         """
         For each time, yield a frequency range and a dictionary with the following keys:
-        - AGC1 : Power spectral density at receiver + PA for channel 1 before applying antenna gain (V²/Hz)
-        - AGC2 : Power spectral density at receiver + PA for channel 2 before applying antenna gain (V²/Hz)
+        - VOLTAGE_SPECTRAL_POWER1 : Power spectral density at receiver + PA for channel 1 before applying antenna gain (V²/Hz)
+        - VOLTAGE_SPECTRAL_POWER2 : Power spectral density at receiver + PA for channel 2 before applying antenna gain (V²/Hz)
         - SENSOR_CONFIG : Indicates the THR sensor configuration
         - SURVEY_MODE : normal (=0) or burst (=1) acquisition mode
 
         """
 
-        def increment_sweep(sweep_mask, i):
-            if self.file["SWEEP_NUM"][i] != self.file["SWEEP_NUM"][i - 1]:
-                sweep_mask[-1].sort()
-                sweep_mask.append([i])
+        def add_rec(in_data, out_data, rec_index):
+
+            # Get frequency band index
+            if in_data["HFR_BAND"][rec_index] == 1:
+                i_band = int((in_data["FREQUENCY"][rec_index] - 375.0) / 50.0)
+            elif in_data["HFR_BAND"][rec_index] == 2:
+                i_band = int((in_data["FREQUENCY"][rec_index] - 3625.0) / 100.0) + 64
             else:
-                sweep_mask[-1].append(i)
+                return out_data
 
-        # First generate a mask for each sweep
-        sweep_mask = [[0]]
-        _ = [
-            increment_sweep(sweep_mask, i)
-            for i in range(1, self.file["SWEEP_NUM"].shape[0])
-        ]
+            # Fill values
+            out_data["Epoch"][0, i_band] = in_data["Epoch"][rec_index]
+            out_data["VOLTAGE_SPECTRAL_POWER1"][0, i_band] = in_data["AGC1"][rec_index]
+            out_data["VOLTAGE_SPECTRAL_POWER2"][0, i_band] = in_data["AGC2"][rec_index]
 
-        for indices in sweep_mask:
-            yield (
-                {
-                    "VOLTAGE_SPECTRAL_POWER1": np.take(
-                        self.file["AGC1"], indices, axis=0
-                    ).flatten(),
-                    "VOLTAGE_SPECTRAL_POWER2": np.take(
-                        self.file["AGC2"], indices, axis=0
-                    ).flatten(),
-                    "SENSOR_CONFIG": np.take(self.file["SENSOR_CONFIG"], indices),
-                    "SURVEY_MODE": np.take(self.file["SURVEY_MODE"], indices),
-                },
-                Time(self.file["Epoch"][indices[0]]),
-                np.take(self.file["FREQUENCY"], indices, axis=0).flatten(),
-            )
+            return out_data
+
+        # First build list of frequency values for HFR (HF1+HF2 bands)
+        freq = self.data_reference.frequencies
+
+        # Initialize output data vector for the first sweep
+        sweep_data = np.zeros(1, dtype=HFR_SWEEP_DTYPE)
+
+        # Loop over each record in the CDF
+        sweep_completed = False
+        for i in range(self.file["SWEEP_NUM"].shape[0]):
+            try:
+                if self.file["SWEEP_NUM"][i] != self.file["SWEEP_NUM"][i + 1]:
+                    sweep_data = add_rec(self.file, sweep_data, i)
+                    sweep_completed = True
+                    yield (
+                        sweep_data,
+                        Time(sweep_data["Epoch"][0, 0]),
+                        freq,
+                        self.file["SENSOR_CONFIG"][i],
+                        self.file["SURVEY_MODE"][i],
+                    )
+                else:
+                    if sweep_completed:
+                        sweep_completed = False
+                        sweep_data = np.empty(1, dtype=HFR_SWEEP_DTYPE)
+
+                    sweep_data = add_rec(self.file, sweep_data, i)
+            except IndexError:
+                # End of CDF file is reached, force yield for last record
+                yield (
+                    sweep_data,
+                    Time(sweep_data["Epoch"][0, 0]),
+                    freq,
+                    self.file["SENSOR_CONFIG"][i],
+                    self.file["SURVEY_MODE"][i],
+                )
 
 
 class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
@@ -74,13 +103,13 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
     @property
     def frequencies(self):
         if self._frequencies is None:
-
             with self.open(self.filepath) as cdf_file:
-                for band_index, band_label in enumerate(self.frequency_band_labels):
-                    # if units are not specified, assume Hz
-                    units = cdf_file["FREQUENCY"].attrs["UNITS"].strip() or "kHz"
-                    freq = np.unique(cdf_file["FREQUENCY"][...]) * Unit(units)
-                    self._frequencies = freq
+                # if units are not specified, assume kHz
+                units = Unit(cdf_file["FREQUENCY"].attrs["UNITS"].strip() or "kHz")
+                # Compute frequency values for HF1 and HF2 bands
+                f1 = 375 + 50 * np.arange(64)
+                f2 = 3625 + 100 * np.arange(128)
+                self._frequencies = np.concatenate((f1, f2)) * units
 
         return self._frequencies
 
