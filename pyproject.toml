@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "maser4py"
-version = "0.12.0"
+version = "0.13.0"
 description = "maser4py offers tools to handle low frequency radioastronomy data"
 authors = ["Xavier BONNIN <xavier.bonnin@obspm.fr>","Baptiste CECCONI <baptiste.cecconi@obspm.fr>", "Sonny LION <sonny.lion@obspm.fr>", "Alan Loh <alan.loh@obspm.fr>", "Quynh Nhu Nguyen <quynh-nhu.nguyen@obspm.fr>"]
 readme = "README.md"
@@ -32,7 +32,7 @@ maser = 'maser.script:main'
 python = ">=3.8,<4"
 jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
-"maser.data" = {version = "^0.1.0", optional = true}
+"maser.data" = {version = "^0.3.0", optional = true}
 "maser.plot" = {version = "^0.2.0", optional = true}
 
 [tool.poetry.extras]
