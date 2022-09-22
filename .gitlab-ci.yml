@@ -124,7 +124,7 @@ publish-maser4py:
     strategy: depend
   variables:
     PACKAGE_DIR: '.'
-    PYPI_TOKEN: $MASER4PY_TOKEN
+    PYPI_TOKEN: $MASER4PY_PYPI_TOKEN
     # TODO: This ID comes from the sandbox server.
     # You will have to change it with one generated from the production server
     ZENODO_DEPOSIT_ID: 1096032
