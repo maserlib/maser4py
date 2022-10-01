@@ -28,7 +28,26 @@ def get_cdf(raw_cdf_version, install_dir, cdf_url=DEFAULT_CDF_URL):
 
     response = requests.get(url)
     with tarfile.open(fileobj=BytesIO(response.content), mode="r:gz") as tar:
-        tar.extractall(path=install_dir)
+        def is_within_directory(directory, target):
+            
+            abs_directory = os.path.abspath(directory)
+            abs_target = os.path.abspath(target)
+        
+            prefix = os.path.commonprefix([abs_directory, abs_target])
+            
+            return prefix == abs_directory
+        
+        def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+        
+            for member in tar.getmembers():
+                member_path = os.path.join(path, member.name)
+                if not is_within_directory(path, member_path):
+                    raise Exception("Attempted Path Traversal in Tar File")
+        
+            tar.extractall(path, members, numeric_owner) 
+            
+        
+        safe_extract(tar, path=install_dir)
 
 
 def make_cdf(raw_cdf_version, install_dir):
