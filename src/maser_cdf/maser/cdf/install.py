@@ -44,7 +44,7 @@ def get_cdf(raw_cdf_version, install_dir, cdf_url=DEFAULT_CDF_URL):
                 if not is_within_directory(path, member_path):
                     raise Exception("Attempted Path Traversal in Tar File")
         
-            tar.extractall(path, members, numeric_owner) 
+            tar.extractall(path, members, numeric_owner=numeric_owner) 
             
         
         safe_extract(tar, path=install_dir)
