@@ -167,12 +167,6 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                 self._frequencies.append(data["FREQ"] * Unit("kHz"))
         return self._frequencies
 
-    @property
-    def _max_sweep_length(self):
-        if self.__max_sweep_length is None:
-            self.__max_sweep_length = numpy.max([len(f) for f in self.frequencies])
-        return self.__max_sweep_length
-
 
 class WindWavesRad1L2BinData(WindWavesL2BinData, dataset="cdpp_wi_wa_rad1_l2"):
     """Class for `cdpp_wi_wa_rad1_l2` binary data."""
