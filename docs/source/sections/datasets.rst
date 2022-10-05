@@ -4,6 +4,8 @@ Dataset Reference
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | Facility          | Instrument | Dataset                                                                | Format | Data Center |
 +===================+============+========================================================================+========+=============+
+| E-Callisto        | E-Callisto | :ref:`ecallisto <ecallisto>`                                           | FITS   | E-Callisto  |
++-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | Interball-Auroral | POLRAD     | :ref:`cdpp_int_aur_polrad_rspn2 <cdpp_int_aur_polrad_rspn2>`           | Binary | CDPP        |
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | Juno              | Waves      | :ref:`jno_wav_cdr_lesia <jno_wav_cdr_lesia>`                           | CDF    | PADC        |
@@ -228,3 +230,29 @@ jno_wav_cdr_lesia
 .. image:: figures/jno_wav_cdr_lesia.png
    :width: 400
    :alt: jno_wav_cdr_lesia example plot
+
+
+E-Callisto
+----------
+
+
+.. _ecallisto:
+
+ecallisto
+.........
+
+* **Data Centre**: E-Callisto
+
+.. code-block:: python
+
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data("tests/data/e-callisto/BIR/BIR_20220130_111500_01.fit")
+   xd = data.as_xarray()
+   xd.plot(vmin=100, vmax=110)
+   plt.title(xd.attrs['title'])
+   plt.show()
+
+.. image:: figures/ecallisto.png
+   :width: 400
+   :alt: ecallisto example plot
