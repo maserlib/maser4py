@@ -1,11 +1,22 @@
 # CHANGELOG
 
-## 0.12.0
+## 0.14.0
+
+- Add maser-tools as a new maser4py submodule
+- Replace "." by "-" in maser4py submodule package names
+- Update README for each maser4py, maser-data, maser-plot and maser-tools
+- Update documentation
+
+## 0.13.0
 
 - Add SOLO/RPW/HFR Data class in maser.data
 - Update SOLO/RPW/TNR Data.sweep method in maser.data
 - Update README
 - Update pyproject.toml (tool.poetry.source gitlab_obspm not required anymore)
+
+## 0.12.0
+
+- Internal updates
 
 ## 0.11.2
 
