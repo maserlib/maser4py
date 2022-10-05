@@ -16,7 +16,6 @@ from ..const import (
     CALDATE_FIELDS,
     ORBIT_FIELDS,
 )
-import numpy
 
 
 class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
