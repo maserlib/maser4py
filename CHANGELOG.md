@@ -2,7 +2,10 @@
 
 ## 0.14.0
 
--
+- Add maser-tools as a new maser4py submodule
+- Replace "." by "-" in maser4py submodule package names
+- Update README for each maser4py, maser-data, maser-plot and maser-tools
+- Update documentation
 
 ## 0.13.0
 

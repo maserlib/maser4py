@@ -744,7 +744,7 @@ url = "src/maser_das2"
 
 [[package]]
 name = "maser-data"
-version = "0.3.1"
+version = "0.3.2"
 description = "Maser4py submodule to handle radio data"
 category = "main"
 optional = false
@@ -769,7 +769,7 @@ url = "src/maser_data"
 
 [[package]]
 name = "maser-plot"
-version = "0.2.3"
+version = "0.2.4"
 description = "Maser4py submodule to plot radio data"
 category = "main"
 optional = false
@@ -785,7 +785,7 @@ url = "src/maser_plot"
 
 [[package]]
 name = "maser-tools"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 category = "main"
 optional = false
