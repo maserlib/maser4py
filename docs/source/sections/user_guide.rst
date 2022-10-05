@@ -1,10 +1,8 @@
 User guide
 =============
 
-maser-data
------------
-
-TOTO
+Read radio data with maser-data
+-------------------------------------
 
 Quickstart
 ~~~~~~~~~~~
@@ -255,13 +253,13 @@ jno_wav_cdr_lesia
 
 
 
-maser-plot
------------
+Plot radio data with maser-plot
+-------------------------------------
 
 TBW
 
 
-maser-tools
-------------
+Extra tools from maser-tools
+-----------------------------
 
 TBW

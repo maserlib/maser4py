@@ -33,7 +33,7 @@ For instance, to install only ``maser-data`` and ``maser-plot`` submodules:
 
 .. code:: bash
 
-    pip install maser4py[data, plot]
+    pip install maser4py[data,plot]
 
 
 Following options are currently available:
@@ -45,8 +45,8 @@ Following options are currently available:
 - ``jupytext`` to install Jupyter for notebook text support
 - ``all`` to install all the submodules above
 
-From
----------------
+From source files
+-------------------
 
 To retrieve maser4py source files:
 
