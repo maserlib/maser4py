@@ -117,6 +117,19 @@ publish-maser_plot:
     - tags
     - web
 
+# publish python package on gitlab registry
+publish-maser_tools:
+  stage: publish
+  trigger:
+    include: .ci/publish_package.yml
+    strategy: depend
+  variables:
+    PACKAGE_DIR: 'src/user_guide.rst'
+    PYPI_TOKEN: $MASER_TOOLS_PYPI_TOKEN
+  only:
+    - tags
+    - web
+
 publish-maser4py:
   stage: publish
   trigger:

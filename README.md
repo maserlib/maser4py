@@ -1,31 +1,35 @@
 # About maser4py
 
-maser4py offers modules to hande data from several space and ground radio observatory.
+maser4py offers modules to handle data from several space and ground radio observatory.
 
 It comes with the following submodules:
 
-- [maser.data](https://pypi.org/project/maser.data/) for radio data parsing features
-- [maser.plot](https://pypi.org/project/maser.plot/) for radio data plotting features
+- [maser-data](https://pypi.org/project/maser-data/) for radio data parsing features
+- [maser-plot](https://pypi.org/project/maser-plot/) for radio data plotting features
+- [maser-tools](https://pypi.org/project/maser-tools/) for additional support programs
+
+Read maser4py [main documentation](https://maser.pages.obspm.fr/maser4py/) for details.
 
 maser4py is developed in the framework of the [MASER project](https://maser.lesia.obspm.fr).
 
 # Installation
 
-To install the package, run the following command:
+To install the full package, run the following command:
 
 ```
-pip install maser4py
+pip install maser4py[all]
 ```
 
 or use one of the extra options:
 
+- `data` to get [maser-data](https://pypi.org/project/maser-data/) submodule features
+- `plot` to get [maser-plot](https://pypi.org/project/maser-plot/) submodule features
+- `tools` to get [maser-tools](https://pypi.org/project/maser-tools/) submodule features
 - `jupyter` for Jupyter notebook support
 - `jupytext` for Jupyter notebook text support
-- `data` for [maser.data](https://pypi.org/project/maser.data/) submodule features
-- `plot` for [maser.plot](https://pypi.org/project/maser.plot/) submodule features
-- `all` to install all the above
+- `all` to install all the submodules above
 
-For example if you want to use `maser4py` with maser.data and maser.plot submodules:
+For example if you want to use `maser4py` with maser-data and maser-plot submodules:
 
 ```bash
 pip install maser4py[data,plot]
@@ -35,7 +39,7 @@ pip install maser4py[data,plot]
 
 Examples of usage can be found in the `examples` folder.
 
-Examples can also be run as Jupyter notebooks on Binder [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.obspm.fr%2Fmaser%2Fmaser4py.git/namespace) You can also launch a Binder environment and browse through the notebook [examples](https://gitlab.obspm.fr/maser/maser4py/-/tree/namespace/examples).
+Examples can also be run as Jupyter notebooks on Binder [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.obspm.fr%2Fmaser%2Fmaser4py.git/master) You can also launch a Binder environment and browse through the notebook [examples](https://gitlab.obspm.fr/maser/maser4py/-/tree/namespace/examples).
 
 # Development
 
@@ -65,7 +69,7 @@ To use `maser4py` to read CDF files you have to install the [CDF library](https:
 
 ## Installing a local copy of maser4py
 
-Use the following command to install the package:
+Use the following command to install the package from a local copy:
 
 ```bash
 poetry install
@@ -74,18 +78,6 @@ poetry install
 ## Tests
 
 Use `pytest -m "not test_data_required"` to skip tests that require test data (and to skip auto download).
-
-## Generate setup.py for editable local installation
-
-The `setup.py` file have to be updated after any changes to the `pyproject.toml` file.
-
-To generate a new `setup.py` file, go to the top level of the `maser4py` project folder and run:
-
-```
-python generate_setup.py
-```
-
-Now you can use the `setup.py` file to install the package locally in editable mode:
 
 ```
 pip install -e path/to/project/folder

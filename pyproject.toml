@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "maser4py"
-version = "0.13.0"
+version = "0.14.0"
 description = "maser4py offers tools to handle low frequency radioastronomy data"
 authors = ["Xavier BONNIN <xavier.bonnin@obspm.fr>","Baptiste CECCONI <baptiste.cecconi@obspm.fr>", "Sonny LION <sonny.lion@obspm.fr>", "Alan Loh <alan.loh@obspm.fr>", "Quynh Nhu Nguyen <quynh-nhu.nguyen@obspm.fr>"]
 readme = "README.md"
@@ -17,7 +17,7 @@ packages = [
 ]
 
 [tool.poetry.urls]
-"Documentation" = "https://maser.readthedocs.io/en/latest/"
+"Documentation" = "https://maser.pages.obspm.fr/maser4py"
 "Tracker" = "https://gitlab.obspm.fr/maser/maser4py/-/issues"
 
 # [[tool.poetry.source]]
@@ -27,19 +27,20 @@ packages = [
 [tool.poetry.scripts]
 maser = 'maser.script:main'
 
-
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
 jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
-"maser.data" = {version = "^0.3.0", optional = true}
-"maser.plot" = {version = "^0.2.0", optional = true}
+maser-data = {version = "^0.3.0", optional = true}
+maser-plot = {version = "^0.2.0", optional = true}
+maser-tools = {version = "^0.1.0", optional = true}
 
 [tool.poetry.extras]
 jupyter = ["jupyter", "jupytext"]
-data = ["maser.data"]
-plot = ["maser.plot"]
-all = ["jupyter", "jupytext", "maser.data", "maser.plot"]
+data = ["maser-data"]
+plot = ["maser-plot"]
+tools = ['maser-tools']
+all = ["jupyter", "jupytext", "maser-data", "maser-plot", "maser-tools"]
 
 
 [tool.poetry.dev-dependencies]
@@ -53,11 +54,10 @@ tomli = "^2.0.1"
 myst-parser = "^0.18.0"
 mypy = "^0.961"
 black = "^22.6.0"
-"maser.cdf" = { path = "src/maser_cdf", develop = true }
-"maser.das2" = { path = "src/maser_das2", develop = true }
-"maser.data" = { path = "src/maser_data", develop = true , extras = ["spacepy"]}
-"maser.plot" = { path = "src/maser_plot", develop = true }
-"maser.time" = { path = "src/maser_time", develop = true }
+"maser-tools" = { path = "src/maser_tools", develop = true }
+"maser-das2" = { path = "src/maser_das2", develop = true }
+"maser-data" = { path = "src/maser_data", develop = true, extras = ["spacepy"]}
+"maser-plot" = { path = "src/maser_plot", develop = true }
 
 #[[tool.poetry.source]]
 #name = "gitlab_obspm"
