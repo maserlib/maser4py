@@ -7,6 +7,8 @@
 # (Include here the modules to import, e.g. import sys)
 import os
 
+from maser.tools.settings import SUPPORT_DIR
+
 # ________________ HEADER _________________________
 
 
@@ -15,9 +17,7 @@ import os
 LS_FILENAME = "CDFLeapSeconds.txt"
 
 CURDIR = os.path.dirname(os.path.abspath(__file__))
-LS_FILE_DEF_DIR = os.path.join(
-    CURDIR, "../../../../maser_time/maser", "..", "support", "data"
-)
+LS_FILE_DEF_DIR = os.path.join(SUPPORT_DIR, "data")
 if not os.path.isdir(LS_FILE_DEF_DIR):
     os.makedirs(LS_FILE_DEF_DIR)
 LS_FILE_DEF_PATH = os.path.join(LS_FILE_DEF_DIR, LS_FILENAME)
