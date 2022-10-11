@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.15.1
+
+- Add as_xarray() for ecallisto in maser-data
+- Update data.py for wind, cassini and nda
+- Update mixin classes
+- Add spacepy as an extra in maser4py pyproject.toml
+
 ## 0.15.0
 
 - Add as_xarray() for NDA/Routine (CDF) in maser-data

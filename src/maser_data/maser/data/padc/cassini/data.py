@@ -62,14 +62,8 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
     ):
-        BinData.__init__(
-            self,
-            filepath,
-            dataset,
-            access_mode,
-        )
+        BinData.__init__(self, filepath, dataset, access_mode)
         VariableFrequencies.__init__(self)
-
         self.__format = None
         self.level = self.dataset[19:]
         self._data = self.read_data_binary()
@@ -138,12 +132,12 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         return self._sweep_mode_masks
 
     @property
-    def _max_sweep_length(self):
-        if self.__max_sweep_length is None:
-            self.__max_sweep_length = numpy.max(
+    def max_sweep_length(self):
+        if self._max_sweep_length is None:
+            self._max_sweep_length = numpy.max(
                 [numpy.count_nonzero(mask) for mask in self.sweep_masks]
             )
-        return self.__max_sweep_length
+        return self._max_sweep_length
 
     def __len__(self):
         if self.access_mode == "sweeps":
@@ -172,12 +166,12 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
     @property
     def frequencies(self):
         if self._frequencies is None:
-            self.__frequencies = self._decode_frequencies()
+            self._frequencies_ = self._decode_frequencies()
             if self.access_mode == "records":
-                self._frequencies = self.__frequencies
+                self._frequencies = self._frequencies_
             if self.access_mode == "sweeps":
                 self._frequencies = [
-                    self.__frequencies[mask] for mask in self.sweep_masks
+                    self._frequencies_[mask] for mask in self.sweep_masks
                 ]
         return self._frequencies
 

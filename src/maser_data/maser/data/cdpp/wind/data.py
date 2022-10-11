@@ -16,7 +16,6 @@ from ..const import (
     CALDATE_FIELDS,
     ORBIT_FIELDS,
 )
-import numpy
 
 
 class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
@@ -31,7 +30,7 @@ class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
     _iter_sweep_class = WindWavesL260sSweeps
 
 
-class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa___l2"):
+class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
     """Placeholder class for `cdpp_wi_wa_XXX_l2` binary data."""
 
     _iter_sweep_class = WindWavesL2HighResSweeps
@@ -167,12 +166,6 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa___l2"
             for _, data in self.sweeps:
                 self._frequencies.append(data["FREQ"] * Unit("kHz"))
         return self._frequencies
-
-    @property
-    def _max_sweep_length(self):
-        if self.__max_sweep_length is None:
-            self.__max_sweep_length = numpy.max([len(f) for f in self.frequencies])
-        return self.__max_sweep_length
 
 
 class WindWavesRad1L2BinData(WindWavesL2BinData, dataset="cdpp_wi_wa_rad1_l2"):
