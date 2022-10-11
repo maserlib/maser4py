@@ -26,3 +26,23 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
             with self.open(self.filepath) as f:
                 self._frequencies = f[1].data["FREQUENCY"][0] * Unit("MHz")
         return self._frequencies
+
+    def as_xarray(self):
+        import xarray
+
+        dataset = xarray.DataArray(
+            data=self.file[0].data,
+            name="Flux Density",
+            coords=[
+                ("frequency", self.frequencies.value, {"units": self.frequencies.unit}),
+                ("time", self.times.to_datetime()),
+            ],
+            dims=("frequency", "time"),
+            attrs={
+                "unit": "digits",
+                "title": self.file[0].header["CONTENT"],
+                "instrument": self.file[0].header["INSTRUME"].strip(),
+                "target": self.file[0].header["OBJECT"].strip(),
+            },
+        )
+        return dataset

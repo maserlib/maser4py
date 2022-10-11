@@ -13,30 +13,51 @@ class RecordsOnly:
 
 
 class FixedFrequencies:
-    pass
+    """This mixin class defines the attributes, properties and methods for datasets
+    with fixed spectral sampling.
+    """
+
+    def __init__(self):
+        self.fixed_frequencies = False
 
 
 class VariableFrequencies:
+    """This mixin class defines the attributes, properties and methods for datasets
+    with variable spectral sampling.
+    """
+
     def __init__(self):
         self.fixed_frequencies = False
         self._sweep_masks = None
         self._sweep_mode_masks = None
-        self.__frequencies = None
-        self.__max_sweep_length = None
+        self._frequencies_ = None
+        self._max_sweep_length = None
 
     @property
     def sweep_masks(self) -> Union[list, None]:
+        """This property contains a list numpy.ma (masked arrays). Each item of
+        the list corresponds to a sweep. Each mask has to be applied onto
+        the self._data attribute.
+
+        :return: list of sweep masks
+        """
         return None
 
     @property
     def sweep_mode_masks(self) -> Union[list, None]:
+        """This property contains a list of numpy.ma (masked arrays). Each item of
+        the list corresponds to a sweeping mode. Each mask has to be applied onto
+        the self.sweep_masks property.
+
+        :return: list of sweep mode masks
+        """
         return None
 
     @property
-    def _max_sweep_length(self):
-        if self.__max_sweep_length is None:
-            self.__max_sweep_length = numpy.max([len(f) for f in self.frequencies])
-        return self.__max_sweep_length
+    def max_sweep_length(self):
+        if self._max_sweep_length is None:
+            self._max_sweep_length = numpy.max([len(f) for f in self.frequencies])
+        return self._max_sweep_length
 
     def as_xarray(self):
         import xarray
@@ -44,17 +65,17 @@ class VariableFrequencies:
         fields = self.fields
         units = self.units
 
-        freq_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
+        freq_arr = numpy.full((self._nsweep, self.max_sweep_length), numpy.nan)
         for i in range(self._nsweep):
             f = self.frequencies[i].value
             freq_arr[i, : len(f)] = f
             freq_arr[i, len(f) :] = f[-1]
 
-        freq_index = range(self._max_sweep_length)
+        freq_index = range(self.max_sweep_length)
 
         datasets = {}
         for dataset_key, dataset_unit in zip(fields, units):
-            data_arr = numpy.full((self._nsweep, self._max_sweep_length), numpy.nan)
+            data_arr = numpy.full((self._nsweep, self.max_sweep_length), numpy.nan)
             for i, sweep in enumerate(self.sweeps):
                 d = sweep.data[dataset_key]
                 data_arr[i, : len(d)] = d
