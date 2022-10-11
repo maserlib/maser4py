@@ -17,24 +17,11 @@ import logging
 from datetime import datetime
 
 from maser.tools.toolbox import download_data, print_exception
+from maser.tools.settings import SUPPORT_DIR
 
 __all__ = ["Lstable"]
 
 # ________________ HEADER _________________________
-
-# Mandatory
-__version__ = "0.2.0"
-__author__ = "X.Bonnin"
-__date__ = "2017-03-30"
-
-# Optional
-__license__ = ""
-__credit__ = [""]
-__maintainer__ = ""
-__email__ = ""
-__project__ = "MASER"
-__institute__ = "LESIA"
-__changes__ = ""
 
 
 # ________________ Global Variables _____________
@@ -48,10 +35,7 @@ LS_FILENAME = "CDFLeapSeconds.txt"
 
 INPUT_DATE = "%Y-%m-%dT%H:%M:%S"
 
-CURDIR = os.path.dirname(os.path.abspath(__file__))
-LS_FILE_DEF_DIR = os.path.join(
-    CURDIR, "../../../../maser_time/maser", "..", "support", "data"
-)
+LS_FILE_DEF_DIR = os.path.join(SUPPORT_DIR, "data")
 if not os.path.isdir(LS_FILE_DEF_DIR):
     os.makedirs(LS_FILE_DEF_DIR)
 LS_FILE_DEF_PATH = os.path.join(LS_FILE_DEF_DIR, LS_FILENAME)
@@ -183,7 +167,9 @@ class Lstable:
             self.lstable = self._parse_lstable(data)
             return True
         else:
-            logger.error("CDFLeapSeconds.txt cannot be loaded!")
+            logger.error(
+                "CDFLeapSeconds.txt cannot be loaded! Make sure file exists locally or download it first using command 'maser leapsec -D'"
+            )
             return False
 
     def _parse_lstable(self, data):
