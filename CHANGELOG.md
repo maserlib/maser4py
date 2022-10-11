@@ -1,5 +1,36 @@
 # CHANGELOG
 
+## 0.15.0
+
+- Add as_xarray() for NDA/Routine (CDF) in maser-data
+- Reduce processing time for in RpwHfrSurvSweeps class in maser-data
+- Fix bug in RpwHfrSurv.as_xarray() in maser-data
+- Make maser command line works with new architecture
+- Update documentation
+
+## 0.14.0
+
+- Add maser-tools as a new maser4py submodule
+- Replace "." by "-" in maser4py submodule package names
+- Update README for each maser4py, maser-data, maser-plot and maser-tools
+- Update documentation
+
+## 0.13.0
+
+- Add SOLO/RPW/HFR Data class in maser.data
+- Update SOLO/RPW/TNR Data.sweep method in maser.data
+- Update README
+- Update pyproject.toml (tool.poetry.source gitlab_obspm not required anymore)
+
+## 0.12.0
+
+- Internal updates
+
+## 0.11.2
+
+- Update pypi publish process
+- Update documentation
+
 ## 0.11.1
 
 - Add mixins

@@ -77,7 +77,7 @@ class Data(BaseData, dataset="default"):
     """Generic Data class
     =====================
 
-    Objects of this class are instanciated from a data file. An internal resolver will detect the
+    Objects of this class are instantiated from a data file. An internal resolver will detect the
     dataset and provide adequate support. If the file is not recognized, an NotImplementedError is
     raised.
 

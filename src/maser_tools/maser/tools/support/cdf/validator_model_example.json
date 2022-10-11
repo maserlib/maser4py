@@ -1,0 +1,61 @@
+{
+  "Freezone": {
+    "author": "Toto",
+    "purpose": "The validator model is a json format file that can be used to check the content of a given CDF format file. See howto.txt file for more details.",
+    "about-this-model": "The current model example is based on the converter_example.model.cdf CDF format file. It can be used to test the validator module."
+  },
+  "GLOBALattributes": [
+    {
+      "name": "Project",
+      "type": "CDF_CHAR",
+      "entries": [
+        "MASER>Mesure Analyse et Simulations d'Emissions Radio",
+        "Python>Python 2"
+      ]
+    },
+    {
+      "name": "PI_name",
+      "entries": ["Toto"]
+    },
+    {
+      "name": "TEXT",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    }
+  ],
+  "zVariables": [
+    {
+      "name": "Epoch",
+      "type": "CDF_EPOCH",
+      "dims": 0
+    },
+    {
+      "name": "Variable2",
+      "sizes": [3, 5],
+      "attributes": [
+        {
+          "name": "DEPEND_0",
+          "type": "CDF_CHAR",
+          "entry": ["Epoch"]
+        }
+      ]
+    }
+  ],
+  "VARIABLEattributes": [
+    {
+      "name": "FIELDNAM",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "CATDESC",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "VAR_TYPE",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    }
+  ]
+}

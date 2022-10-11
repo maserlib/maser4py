@@ -1,5 +1,26 @@
+User guide
+=============
+
+Read radio data with maser-data
+-------------------------------------
+
+Quickstart
+~~~~~~~~~~~
+
+The `Data` class is a wrapper around several classes that allow you to read data supported by maser4py from various formats,
+including CDF, FITS, and some custom binary formats. By default, the class will try to automagically detect the
+format of the file and use the appropriate class to read the data.
+
+.. code:: python
+
+    from maser.data import Data
+
+    filepath = "path/to/my/data/file.ext"
+    data = Data(filepath=filepath)
+
+
 Dataset Reference
-=================
+~~~~~~~~~~~~~~~~~~
 
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | Facility          | Instrument | Dataset                                                                | Format | Data Center |
@@ -41,7 +62,7 @@ Dataset Reference
 
 
 Interball-Auroral / POLRAD
---------------------------
+""""""""""""""""""""""""""""""
 
 All descriptions in this section are adapted from the `CDPP Data Archive portal <https://cdpp-archive.cnes.fr>`_.
 
@@ -87,7 +108,7 @@ the lowest (which is always 4 kHz), and information on the instrument status.
 
 
 WIND/Waves
-----------
+""""""""""""""""""""""""""""""
 
 The WAVES experiment exploits instrumentation developed jointly by the Observatoire de Paris, the
 University of Minnesota, and the Goddard Space Flight Center. The Radio and Plasma WAVES investigation
@@ -192,7 +213,7 @@ cdpp_wi_wa_rad1_l2
 
 
 Mars-Express / MARSIS
----------------------
+""""""""""""""""""""""""""""""
 
 .. _MEX-M-MARSIS-3-RDR-AIS-V1.0:
 
@@ -207,7 +228,7 @@ Sub-collections from ESA/PSA archive: ``MEX-M-MARSIS-3-RDR-AIS-V1.0``, ``MEX-M-M
 
 
 Juno / Waves
-------------
+""""""""""""""""""""""""""""""
 
 
 .. _jno_wav_cdr_lesia:
@@ -235,7 +256,7 @@ jno_wav_cdr_lesia
 
 
 E-Callisto
-----------
+""""""""""""""""""""""""""""""
 
 
 .. _ecallisto:
@@ -260,7 +281,7 @@ ecallisto
    :alt: ecallisto example plot
 
 Nançay Decameter Array (NDA)
-----------------------------
+""""""""""""""""""""""""""""""
 
 .. _srn_nda_routine_jup_edr:
 
@@ -279,3 +300,137 @@ Nançay Decameter Array (NDA)
 .. image:: figures/srn_nda_routine_jup_edr.png
    :width: 400
    :alt: NDA Routine example plot
+
+
+
+
+
+Plot radio data with maser-plot
+-------------------------------------
+
+Quickstart
+~~~~~~~~~~~
+
+maser-plot offers "read-to-use" data plotting capabilities in complement to maser-data.
+
+For the moment it only works with data from Solar Orbiter/RPW, but additional data should be added later.
+
+Here is a example to read and plot Solar Orbiter/RPW TNR receiver dynamical spectrum using maser-data, maser-plot and matplotlib:
+
+.. code:: python
+
+    from maser.data import Data
+    from maser.plot.rpw.tnr import plot_auto
+
+    # Parse TNR CDF file with maser.data.Data class
+    tnr_filepath = "solo_L2_rpw-tnr-surv_20211009_V02.cdf"
+    tnr_data = Data(filepath=tnr_filepath)
+
+     # Plot data "as is" (i.e., without any post-processing or filters)
+    import matplotlib.pyplot as plt
+    import matplotlib.colorbar as cbar
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    # Define plot main title
+    #fig.suptitle("RPW Tuto")
+    fig.tight_layout()
+    cbar_ax, kw = cbar.make_axes(ax, shrink=1.4)
+    # plot AUTO
+    plot_auto(tnr_data, ax=ax, figure=fig, cbar_ax=cbar_ax)
+    # Define plot subtitle
+    ax.set_title('RPW TNR spectral power density from ' + filepath.name)
+    plt.show()
+
+Which should give:
+
+.. image:: figures/solo_L2_rpw-tnr-surv_20211009_V02.png
+   :width: 400
+   :alt: solo_L2_rpw-tnr-surv_20211009 example plot
+
+.. note:: using matplotlib is not mandatory here, but permits to refine plotting options.
+
+Extra tools from maser-tools
+-----------------------------
+
+Quickstart
+~~~~~~~~~~~
+
+maser-tools offers methods to handle radio data file format and time.
+
+It currently contains programs to :
+    - handle [CDF file format](https://cdf.gsfc.nasa.gov/)
+    - Ensure conversions between time bases (i.e. TT2000<->UTC)
+
+Examples
+"""""""""""""""
+
+Compare two CDF files content with ``cdf_compare``
+.....................................................
+
+.. code:: python
+
+    from maser.tools.cdf.cdf_compare import cdf_compare
+
+    # Define paths of the two CDF files to compare
+    cdf_file1 = 'cdf_file1_path'
+    cdf_file2 = 'cdf_file2_path'
+
+    # Run cdf_compare
+    results = cdf_compare(cdf_file1, cdf_file2)
+
+    if results:
+        # If differences are found, print them
+        print(results)
+    else:
+        print('No difference found between {0} and {1}'.format(cdf_file1, cdf_file2))
+
+If no discrepancy is found between the two input CDF files, the dictionary `results` should be empty. Otherwise, it should contain differences found between both CDF files.
+
+.. note::
+
+    - By default ``cdf_compare`` also checks the CDF attributes.
+    - ``cdf_compare`` can also be run as a command line tool. Run `maser cdf_compare --help` from a terminal for more information.
+
+
+Convert master binary CDF into MS Excel sheet file
+.....................................................
+
+Here is an example to export a master CDF binary file into
+a MS Excel sheet file using maser-tool:
+
+.. code:: bash
+
+    cdf_file=master_binary.cdf
+    build_dir=./build
+    maser skeletontable --to-xlsx -o $build_dir $cdf_file
+
+Running the command below should create a new file `master_binary.xlsx` in the `build` folder.
+
+.. note::
+
+    - It is also possible to provide a Skeleton table file as an input (instead of master CDF binary file)
+    - Use `maser skeletoncdf` command to generate skeleton table and master CDF files from an MS Excel file.
+    - Example of export Excel file can be found in `support/cdf/convert_example.xlsx`
+
+Download and show the leap seconds table (`CDFLeapSeconds.txt`)
+.................................................................
+
+maser-tools allows users to retrive and show the content of the `CDFLeapSeconds.txt` file, as provided by the NASA CDF Team (i.e., https://cdf.gsfc.nasa.gov/html/CDFLeapSeconds.txt).
+
+To download the `CDFLeapSeconds.txt` file:
+
+.. code:: bash
+
+    maser leapsec -D
+
+To print leap seconds table:
+
+.. code:: bash
+
+    maser leapsec -S
+
+Run ``maser leapsec --help`` to see the command help.
+
+.. note::
+
+    By default, the `CDFLeapSeconds.txt` file is downloaded in the `support/data` sub-folder of the `maser-tools` directory.

@@ -1,8 +1,9 @@
 [tool.poetry]
-name = "maser.plot"
-version = "0.2.1"
-description = ""
-authors = ["MASER Team"]
+name = "maser-plot"
+version = "0.2.4"
+description = "Maser4py submodule to plot radio data"
+readme = "README.md"
+authors = ["Baptiste Cecconi <baptiste.cecconi@obspm.fr>", "Sonny Lion <sonny.lion@obspm.fr>", "Xavier Bonnin <xavier.bonnin@obspm.fr>"]
 license = "CeCILL"
 
 # handle namespace with poetry

@@ -1,0 +1,144 @@
+{
+  "General": {
+    "project": "MASER",
+    "author": "Xavier Bonnin",
+    "institute": "LESIA, Observatoire de Paris, CNRS",
+    "description": "cdfvalidator mode file for ISTP compliance"
+  },
+  "GLOBALattributes": [
+    {
+      "name": "Data_type",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Data_version",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Descriptor",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Discipline",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Instrument_type",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Logical_file_id",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Logical_source",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Logical_source_description",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Mission_group",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "PI_affiliation",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "PI_name",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Project",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "Source_name",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "TEXT",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    }
+  ],
+  "VARIABLEattributes": [
+    {
+      "name": "FIELDNAM",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "CATDESC",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "DEPEND_0",
+      "type": "CDF_CHAR",
+      "entries": ["Epoch"]
+    },
+    {
+      "name": "DISPLAY_TYPE",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "FILLVAL",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "VALIDMIN",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "VALIDMAX",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    },
+    {
+      "name": "VAR_TYPE",
+      "type": "CDF_CHAR",
+      "hasvalue": true
+    }
+  ],
+  "zVariables": [
+    {
+      "name": "Epoch",
+      "dims": 0
+    }
+  ],
+  "ISTPMapping": {
+    "FILLVAL": {
+      "CDF_EPOCH": "31-Dec-9999 23:59:59.999",
+      "CDF_TIME_TT2000": "9999-12-31T23:59:59.999999999",
+      "CDF_BYTE": "255",
+      "CDF_UINT1": "255",
+      "CDF_UINT2": "65535",
+      "CDF_UINT4": "4294967295 ",
+      "CDF_INT2": "-32768",
+      "CDF_INT4": "-2147483648",
+      "CDF_FLOAT": "-1.0e31",
+      "CDF_REAL4": "-1.0e31",
+      "CDF_DOUBLE": "-1.0e31",
+      "CDF_REAL8": "-1.0e31"
+    }
+  }
+}
