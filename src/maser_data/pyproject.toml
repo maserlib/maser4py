@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "maser-data"
-version = "0.3.2"
+version = "0.3.3"
 description = "Maser4py submodule to handle radio data"
 readme = "README.md"
 authors = ["Baptiste Cecconi <baptiste.cecconi@obspm.fr>", "Sonny Lion <sonny.lion@obspm.fr>", "Xavier Bonnin <xavier.bonnin@obspm.fr>"]

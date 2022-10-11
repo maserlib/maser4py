@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.15.0
+
+- Add as_xarray() for NDA/Routine (CDF) in maser-data
+- Reduce processing time for in RpwHfrSurvSweeps class in maser-data
+- Fix bug in RpwHfrSurv.as_xarray() in maser-data
+- Make maser command line works with new architecture
+- Update documentation
+
 ## 0.14.0
 
 - Add maser-tools as a new maser4py submodule
