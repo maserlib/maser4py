@@ -22,11 +22,10 @@ format of the file and use the appropriate class to read the data.
 Dataset Reference
 ~~~~~~~~~~~~~~~~~~
 
-
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | Facility          | Instrument | Dataset                                                                | Format | Data Center |
 +===================+============+========================================================================+========+=============+
-| E-Callisto        | E-Callisto | :ref:`ecallisto <ecallisto>`                                           | FITS   | E-Callisto  |
+| Birr              | E-Callisto | :ref:`ecallisto <ecallisto>`                                           | FITS   | E-Callisto  |
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | Interball-Auroral | POLRAD     | :ref:`cdpp_int_aur_polrad_rspn2 <cdpp_int_aur_polrad_rspn2>`           | Binary | CDPP        |
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
@@ -45,6 +44,8 @@ Dataset Reference
 | Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT5-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`  | PDS3   | PSA         |
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT6-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`  | PDS3   | PSA         |
++-------------------+------------+------------------------------------------------------------------------+--------+-------------+
+| NDA               | Routine    | :ref:`srn_nda_routine_jup_edr <Msrn_nda_routine_jup_edr>`              | CDF    | CDN         |
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | Wind              | Waves      | :ref:`cdpp_wi_wa_rad1_l2_60s_v1 <cdpp_wi_wa_rad1_l2_60s_v1>`           | Binary | CDPP        |
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
@@ -255,7 +256,7 @@ jno_wav_cdr_lesia
 
 
 E-Callisto
-----------
+""""""""""""""""""""""""""""""
 
 
 .. _ecallisto:
@@ -278,6 +279,28 @@ ecallisto
 .. image:: figures/ecallisto.png
    :width: 400
    :alt: ecallisto example plot
+
+Nançay Decameter Array (NDA)
+""""""""""""""""""""""""""""""
+
+.. _srn_nda_routine_jup_edr:
+
+* **Data Centre**: Centre de Données de Nançay (CDN)
+
+.. code-block:: python
+
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data("tests/data/nda/routine/srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf")
+   xd = data.as_xarray()
+   xd.plot(vmin=40, vmax=120)
+   plt.title(xd.attrs['title'])
+   plt.show()
+
+.. image:: figures/srn_nda_routine_jup_edr.png
+   :width: 400
+   :alt: NDA Routine example plot
+
 
 
 
