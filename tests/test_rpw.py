@@ -2,7 +2,7 @@
 from .constants import BASEDIR
 import pytest
 from maser.data import Data
-from maser.data.rpw import RpwLfrSurvBp1, RpwTnrSurv
+from maser.data.rpw import RpwLfrSurvBp1, RpwTnrSurv, RpwHfrSurv
 from astropy.time import Time
 from astropy.units import Quantity, Unit
 import xarray
@@ -101,7 +101,7 @@ def test_rpw_lfr_surv_bp1_dataset__as_xarray(filepath):
         assert test_array.data[0][0] == pytest.approx(5.73584540e-08)
 
 
-# TEST solo_L2_rpw-lfr-surv-bp1
+# TEST solo_L2_rpw-tnr-surv
 # =============================
 
 # create a decorator to test each file in the list
@@ -184,3 +184,85 @@ def test_rpw_tnr_surv_data__as_xarray(filepath):
         assert test_array.coords["frequency"][0][0] == pytest.approx(3991)
         assert test_array.attrs["units"] == "V^2/Hz"
         assert test_array.data[0][0] == pytest.approx(2.1229058431454354e-11)
+
+
+# TEST solo_L2_rpw-hfr-surv
+# =============================
+
+# create a decorator to test each file in the list
+for_each_test_file = pytest.mark.parametrize(
+    "filepath", TEST_FILES["solo_L2_rpw-hfr-surv"]
+)
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_hfr_surv_dataset(filepath):
+    data = Data(filepath=filepath)
+    assert isinstance(data, RpwHfrSurv)
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_hfr_surv_dataset__times(filepath):
+    with Data(filepath=filepath) as data:
+        assert isinstance(data.times, Time)
+        assert len(data.times) == 26871
+        assert data.times[0] == Time("2021-12-31 23:56:21.686369")
+        assert data.times[-1] == Time("2022-01-01 23:56:13.127199")
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_hfr_surv_dataset__frequencies(filepath):
+    with Data(filepath=filepath) as data:
+        assert isinstance(data.frequencies, Quantity)
+        assert len(data.frequencies) == 192
+        assert data.frequencies[0].to(Unit("Hz")).value == pytest.approx(375000)
+        assert data.frequencies[-1].to(Unit("Hz")).value == pytest.approx(16325000)
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_hfr_surv_dataset__sweeps(filepath):
+    with Data(filepath=filepath) as data:
+        # get only the first sweep
+        sweep = next(data.sweeps)
+
+        # check the sweep content
+        assert len(sweep) == 5
+        assert isinstance(sweep[0], dict)
+        assert isinstance(sweep[1], Time)
+        assert isinstance(sweep[2], Quantity)
+        assert list(sweep[0].keys()) == [
+            "VOLTAGE_SPECTRAL_POWER1",
+            "VOLTAGE_SPECTRAL_POWER2",
+        ]
+        assert len(sweep[2]) == 192
+        assert list(sweep[3]) == [5, 10]
+        assert sweep[4] == 1
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_hfr_surv_data__as_xarray(filepath):
+    with Data(filepath=filepath) as data:
+        # get only the first sweep
+        datasets = data.as_xarray()
+
+        expected_keys = ["VOLTAGE_SPECTRAL_POWER"]
+
+        # check the sweep content
+        assert len(datasets.keys()) == 1
+        assert sorted(list(datasets.keys())) == sorted(expected_keys)
+
+        test_array = datasets[expected_keys[0]][0]
+        assert isinstance(test_array, xarray.DataArray)
+        assert test_array.coords["frequency"][0] == pytest.approx(6525)
+        assert test_array.attrs["units"] == "V^2/Hz"
+        assert test_array.data[110000] == pytest.approx(4.8739396889859025e-15)

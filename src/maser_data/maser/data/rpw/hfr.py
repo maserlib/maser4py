@@ -169,6 +169,13 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
 
         frequency = self.file["FREQUENCY"][...]
 
+        try:
+            units = self.file["AGC1"].attrs["UNITS"]
+        except KeyError:
+            # If UNITS not found in variable attribute
+            # assume V^2/Hz
+            units = "V^2/Hz"
+
         agc = xarray.DataArray(
             [self.file["AGC1"][...], self.file["AGC2"][...]],
             coords={
@@ -178,6 +185,8 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                 "sensor": (["time", "channel"], sensor_config),
             },
             dims=["channel", "time"],
+            attrs={"units": units},
+            name="VOLTAGE_SPECTRAL_POWER",
         )
 
         return xarray.Dataset({"VOLTAGE_SPECTRAL_POWER": agc})
