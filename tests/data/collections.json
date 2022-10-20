@@ -308,7 +308,9 @@
   },
   "solo": {
     "rpw": [
-      ["solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf", "solo_L2_rpw-lfr-surv-bp1"]
+      ["solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf", "solo_L2_rpw-lfr-surv-bp1"],
+      ["solo_L2_rpw-tnr-surv_20220101_V02.cdf", "solo_L2_rpw-tnr-surv"],
+      ["solo_L2_rpw-hfr-surv_20220101_V01.cdf", "solo_L2_rpw-hfr-surv"]
     ]
   }
 }

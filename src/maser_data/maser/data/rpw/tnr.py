@@ -74,7 +74,7 @@ class RpwTnrSurvSweeps(Sweeps):
                     sweep_data = add_rec(self.file, sweep_data, i)
                     sweep_completed = True
                     yield (
-                        sweep_data,
+                        {key: sweep_data[key][...] for key in sweep_data.dtype.names},
                         Time(sweep_data["Epoch"][0, 0]),
                         freq,
                         self.file["SENSOR_CONFIG"][i],
@@ -89,7 +89,7 @@ class RpwTnrSurvSweeps(Sweeps):
             except IndexError:
                 # End of CDF file is reached, force yield for last record
                 yield (
-                    sweep_data,
+                    {key: sweep_data[key][...] for key in sweep_data.dtype.names},
                     Time(sweep_data["Epoch"][0, 0]),
                     freq,
                     self.file["SENSOR_CONFIG"][i],
@@ -140,8 +140,8 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     def times(self):
         if self._times is None:
             # Get Epoch time values for Band A
-            mask = self.file["TNR_BAND"] == 0
-            self._times = Time(self.file["Epoch"][mask])
+            mask = self.file["TNR_BAND"][...] == 0
+            self._times = Time(np.take(self.file["Epoch"][...], mask, axis=0))
         return self._times
 
     def as_xarray(self):
@@ -170,6 +170,13 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
         frequency = self.file["FREQUENCY"][...]  # (n_time, n_freq)
 
+        try:
+            units = self.file["AUTO1"].attrs["UNITS"]
+        except KeyError:
+            # If UNITS not found in variable attribute
+            # assume V^2/Hz
+            units = "V^2/Hz"
+
         auto = xarray.DataArray(
             [self.file["AUTO1"][...], self.file["AUTO2"][...]],
             coords={
@@ -181,6 +188,8 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
                 "sensor": (["time", "channel"], sensor_config),
             },
             dims=["channel", "time", "freq_index"],
+            attrs={"units": units},
+            name="VOLTAGE_SPECTRAL_POWER",
         )
 
-        return xarray.Dataset({"auto": auto})
+        return xarray.Dataset({"VOLTAGE_SPECTRAL_POWER": auto})

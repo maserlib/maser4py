@@ -358,7 +358,7 @@ Quickstart
 maser-tools offers methods to handle radio data file format and time.
 
 It currently contains programs to :
-    - handle [CDF file format](https://cdf.gsfc.nasa.gov/)
+    - handle `CDF file format <https://cdf.gsfc.nasa.gov/>`_
     - Ensure conversions between time bases (i.e. TT2000<->UTC)
 
 Examples
