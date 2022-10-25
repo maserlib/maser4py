@@ -18,7 +18,7 @@ def plot_auto(
     if cbar_ax is None:
         cbar_ax, kw = cbar.make_axes(ax)
 
-    auto = data_wrapper.as_xarray()["auto"]
+    auto = data_wrapper.as_xarray()["VOLTAGE_SPECTRAL_POWER"]
 
     # keep only V1-V2 sensor
     v1_v2_auto = auto.where(auto.sensor == sensor, drop=True)

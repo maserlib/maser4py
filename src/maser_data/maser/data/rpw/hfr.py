@@ -5,14 +5,62 @@ from astropy.units import Unit
 import numpy as np
 
 from maser.data.base.sweeps import Sweeps
-from maser.data.base.cdf_fill import fill_records
 
+# ________________ Global Variables _____________
+# (define here the global variables)
+
+FREQUENCY_BAND_LABELS = ["HF1", "HF2"]
+SURVEY_MODE_LABELS = ["SURVEY_NORMAL", "SURVEY_BURST"]
+CHANNEL_LABELS = ["1", "2"]
+SENSOR_MAPPING = {
+    1: "V1",
+    2: "V2",
+    3: "V3",
+    4: "V1-V2",
+    5: "V2-V3",
+    6: "V3-V1",
+    7: "B_MF",
+    9: "HF_V1-V2",
+    10: "HF_V2-V3",
+    11: "HF_V3-V1",
+}
+
+# Total number of frequencies for HFR
+N_FREQ = 192
+
+# Initialize data type for output ndarray
 HFR_SWEEP_DTYPE = [
-    ("VOLTAGE_SPECTRAL_POWER1", ("float32", 192)),
-    ("VOLTAGE_SPECTRAL_POWER2", ("float32", 192)),
+    ("VOLTAGE_SPECTRAL_POWER1", ("float32", N_FREQ)),
+    ("VOLTAGE_SPECTRAL_POWER2", ("float32", N_FREQ)),
 ]
 
+# Lambda functions to return
+GET_FREQ_INDEX = {
+    1: lambda f: int((f - 375.0) / 50.0),
+    "HF1": lambda f: int((f - 375.0) / 50.0),
+    2: lambda f: int(((f - 3625.0) / 100.0) + 64),
+    "HF2": lambda f: int(((f - 3625.0) / 100.0) + 64),
+}
 
+# ________________ Global Functions __________
+# (If required, define here global functions)
+
+
+def get_freq_indices(freq, band):
+    return list(map(lambda freq, band: (GET_FREQ_INDEX[band](freq)), freq, band))
+
+
+def get_sweep_start_index(sweep_num):
+    # Look for sweep start indices in SWEEP_NUM input array
+    # (np.diff() is used to find where SWEEP_NUM value changes, i.e. != 0)
+    sweep_start_index = np.asarray(np.diff(sweep_num) != 0).nonzero()
+    sweep_start_index = np.insert((sweep_start_index[0] + 1), 0, 0)
+
+    return list(sweep_start_index)
+
+
+# ________________ Class Definition __________
+# (If required, define here classes)
 class RpwHfrSurvSweeps(Sweeps):
     @property
     def generator(self):
@@ -25,42 +73,6 @@ class RpwHfrSurvSweeps(Sweeps):
 
         """
 
-        def get_sweep_data(i_sweep_start, i_sweep_end):
-
-            # Initialize output data vector for the current sweep
-            sweep_data = np.zeros(1, dtype=HFR_SWEEP_DTYPE)
-            fill_records(sweep_data)
-
-            # Extract HFR band and frequency values from sweep subset
-            band = self.file["HFR_BAND"][i_sweep_start:i_sweep_end]
-            freq = self.file["FREQUENCY"][i_sweep_start:i_sweep_end]
-
-            # Identify HF1 and HF2 band cases
-            where_hf1 = np.where(band == 1)[0]
-            where_hf2 = np.where(band == 2)[0]
-
-            # If there are HF1 band samples
-            if where_hf1.shape[0] > 0:
-                i_freq = ((freq[where_hf1] - 375.0) / 50.0).astype(int)
-                sweep_data["VOLTAGE_SPECTRAL_POWER1"][0, i_freq] = self.file["AGC1"][
-                    i_sweep_start:i_sweep_end
-                ][where_hf1]
-                sweep_data["VOLTAGE_SPECTRAL_POWER2"][0, i_freq] = self.file["AGC2"][
-                    i_sweep_start:i_sweep_end
-                ][where_hf1]
-
-            # If there are HF2 band samples
-            if where_hf2.shape[0] > 0:
-                i_freq = (((freq[where_hf2] - 3625.0) / 100.0) + 64).astype(int)
-                sweep_data["VOLTAGE_SPECTRAL_POWER1"][0, i_freq] = self.file["AGC1"][
-                    i_sweep_start:i_sweep_end
-                ][where_hf2]
-                sweep_data["VOLTAGE_SPECTRAL_POWER2"][0, i_freq] = self.file["AGC2"][
-                    i_sweep_start:i_sweep_end
-                ][where_hf2]
-
-            return sweep_data
-
         # Get total number of records in the CDF file
         n_rec = self.file["Epoch"].shape
 
@@ -71,53 +83,43 @@ class RpwHfrSurvSweeps(Sweeps):
         # (needed to avoid loop failure below)
         sweep_start_index = np.insert(sweep_start_index, n_sweeps, n_rec)
 
+        # Get frequency and corresponding HFR band values
+        freq = self.file["FREQUENCY"][...]
+        band = self.file["HFR_BAND"][...]
+
         # Loop over each sweep in the CDF
         for i in range(n_sweeps):
             # Get start/end indices of the current sweep
-            i_sweep_start = sweep_start_index[i]
-            i_sweep_end = sweep_start_index[i + 1]
+            i0 = sweep_start_index[i]
+            i1 = sweep_start_index[i + 1]
 
-            sweep_data = get_sweep_data(i_sweep_start, i_sweep_end)
+            # Define indices of the frequencies for current sweep
+            freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1])
 
             yield (
                 {
-                    "VOLTAGE_SPECTRAL_POWER1": sweep_data["VOLTAGE_SPECTRAL_POWER1"][
-                        0, :
-                    ],
-                    "VOLTAGE_SPECTRAL_POWER2": sweep_data["VOLTAGE_SPECTRAL_POWER2"][
-                        0, :
-                    ],
+                    "VOLTAGE_SPECTRAL_POWER1": self.file["AGC1"][i0:i1],
+                    "VOLTAGE_SPECTRAL_POWER2": self.file["AGC2"][i0:i1],
                 },
                 # Return the time of the first sample of the current sweep
-                Time(self.file["Epoch"][i_sweep_start]),
-                # Return the full list of available frequencies for HFR (192)
-                self.data_reference.frequencies,
-                self.file["SENSOR_CONFIG"][i],
-                self.file["SURVEY_MODE"][i],
+                Time(self.file["Epoch"][i0]),
+                # Return the list of frequencies
+                self.data_reference.frequencies[freq_indices],
+                (
+                    SENSOR_MAPPING[self.file["SENSOR_CONFIG"][i][0]],
+                    SENSOR_MAPPING[self.file["SENSOR_CONFIG"][i][1]],
+                ),
+                SURVEY_MODE_LABELS[self.file["SURVEY_MODE"][i]],
             )
 
 
 class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
     _iter_sweep_class = RpwHfrSurvSweeps
 
-    frequency_band_labels = ["HF1", "HF2"]
-
-    survey_mode_labels = ["SURVEY_NORMAL", "SURVEY_BURST"]
-
-    channel_labels = ["1", "2"]
-
-    sensor_mapping = {
-        1: "V1",
-        2: "V2",
-        3: "V3",
-        4: "V1-V2",
-        5: "V2-V3",
-        6: "V3-V1",
-        7: "B_MF",
-        9: "HF_V1-V2",
-        10: "HF_V2-V3",
-        11: "HF_V3-V1",
-    }
+    frequency_band_labels = FREQUENCY_BAND_LABELS
+    survey_mode_labels = SURVEY_MODE_LABELS
+    channel_labels = CHANNEL_LABELS
+    sensor_mapping = SENSOR_MAPPING
 
     @property
     def frequencies(self):
@@ -149,44 +151,120 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
         # Return resulting index array as a list
         return list(self._sweep_start_index)
 
-    def as_xarray(self):
+    def as_xarray(self, as_is=True):
         """
-        Return the data as a xarray
+        Return the HFR data as a xarray
+
+        :param as_is: If True, returns HFR data is stored in the CDF. Otherwise build and return power as a 3D array
+                      as a function of channel[2], time and frequency[192].
+        :return: xarray containing HFR data
         """
         import xarray
 
-        time = self.file["Epoch"][...]
+        try:
+            units = self.file["AGC1"].attrs["UNITS"]
+        except KeyError:
+            # If UNITS not found in variable attribute
+            # assume V^2/Hz
+            units = "V^2/Hz"
 
-        sensor_config = list(
-            map(
-                lambda configs: (
-                    self.sensor_mapping[configs[0]],
-                    self.sensor_mapping[configs[1]],
-                ),
-                self.file["SENSOR_CONFIG"][...],
+        if as_is:
+            time = self.file["Epoch"][...]
+            # Return HFR data as is
+            sensor_config = list(
+                map(
+                    lambda configs: (
+                        self.sensor_mapping[configs[0]],
+                        self.sensor_mapping[configs[1]],
+                    ),
+                    self.file["SENSOR_CONFIG"][...],
+                )
             )
-        )
 
-        frequency = self.file["FREQUENCY"][...]
+            # Get vector of frequencies in the file
+            frequency = self.file["FREQUENCY"][...]
 
-        agc = xarray.DataArray(
-            [self.file["AGC1"][...], self.file["AGC2"][...]],
-            coords={
-                "channel": self.channel_labels,
-                "time": time,
-                "frequency": (["time"], frequency),
-                "sensor": (["time", "channel"], sensor_config),
-            },
-            dims=["channel", "time"],
-        )
+            # Build xarray
+            V_da = xarray.DataArray(
+                [self.file["AGC1"][...], self.file["AGC2"][...]],
+                coords={
+                    "channel": self.channel_labels,
+                    "time": time,
+                    "frequency": (["time"], frequency),
+                    "sensor": (["time", "channel"], sensor_config),
+                },
+                dims=["channel", "time"],
+            )
+        else:
 
-        return xarray.Dataset({"VOLTAGE_SPECTRAL_POWER": agc})
+            # Extract frequency and corresponding band values from file
+            freq = self.file["FREQUENCY"][...]
+            band = self.file["HFR_BAND"][...]
 
+            # Define number of records
+            n_rec = band.shape[0]
+            # Get Epoch times of first sample of each sweep in the file
+            sweep_times = self.times
+            nt = len(sweep_times)
+            # Get complete list of HFR frequency values
+            hfr_frequency = self.frequencies
+            nf = len(hfr_frequency)
 
-def get_sweep_start_index(sweep_num):
-    # Look for sweep start indices in SWEEP_NUM input array
-    # (np.diff() is used to find where SWEEP_NUM value changes, i.e. != 0)
-    sweep_start_index = np.asarray(np.diff(sweep_num) != 0).nonzero()
-    sweep_start_index = np.insert((sweep_start_index[0] + 1), 0, 0)
+            # Initialize output 2D array containing voltage spectral power values in V^2/Hz
+            # Dims = (channels[2], time of the first sweep sample[len(time)], frequency[192])
+            V_2d = np.empty((2, nt, nf))
+            # Fill 2D array with NaN for HRF frequencies not actually measured in the file
+            V_2d[:] = np.nan
 
-    return list(sweep_start_index)
+            # Get list of first index of sweeps
+            isweep = self.sweep_start_index
+            # Get number of sweeps
+            n_sweeps = len(isweep)
+            # Insert an element in the end of the isweep list
+            # containing the end of the latest sweep
+            # (required for the loop below, in order to have
+            # a start/end index range for each sweep)
+            isweep = np.insert(isweep, n_sweeps, n_rec)
+
+            # Initialize sensor_config
+            sensor_config = np.zeros((2, nt), dtype=object)
+
+            # Perform a loop on each sweep
+            for i in range(n_sweeps):
+                # Get first and last index of the sweep
+                i0 = isweep[i]
+                i1 = isweep[i + 1]
+
+                # Get indices of the actual frequency values in the 192 frequency vector
+                freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1])
+
+                # fill output 2D array
+                V_2d[0, i, freq_indices] = self.file["AGC1"][i0:i1]
+                V_2d[1, i, freq_indices] = self.file["AGC2"][i0:i1]
+
+                # Fill sensor config
+                sensor_config[0, i] = self.sensor_mapping[
+                    self.file["SENSOR_CONFIG"][i0, 0]
+                ]
+                sensor_config[1, i] = self.sensor_mapping[
+                    self.file["SENSOR_CONFIG"][i0, 1]
+                ]
+
+            # Define hfr bands
+            hfr_band = (["HF1"] * 64) + (["HF2"] * 128)
+
+            V_da = xarray.DataArray(
+                V_2d,
+                coords={
+                    "channel": self.channel_labels,
+                    "time": sweep_times.value,
+                    "frequency": hfr_frequency,
+                    "band": (["frequency"], hfr_band),
+                    "sensor": (["channel", "time"], sensor_config),
+                },
+                dims=["channel", "time", "frequency"],
+                attrs={"units": units},
+                name="VOLTAGE_SPECTRAL_POWER",
+            )
+
+        return xarray.Dataset({"VOLTAGE_SPECTRAL_POWER": V_da})

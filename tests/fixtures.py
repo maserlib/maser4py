@@ -82,6 +82,7 @@ def test_filepaths():
                 elif file_dataset in [
                     "srn_nda_routine_jup_edr",
                     "solo_L2_rpw-lfr-surv-bp1",
+                    "solo_L2_rpw-tnr-surv",
                 ]:
                     pytest_param = pytest.param(
                         cur_dir_name / file_name,
