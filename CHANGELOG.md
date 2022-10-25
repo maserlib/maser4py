@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.15.2
+
+- Update solo/rpw tnr and hfr reader in maser-data
+- Update maser-plots to be compatible with new RpwTnrSurv.as_xarray()
+- Update docs
+
 ## 0.15.1
 
 - Add as_xarray() for ecallisto in maser-data
