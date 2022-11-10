@@ -2,7 +2,7 @@
 import os
 from maser.tools.settings import SUPPORT_DIR
 
-JINJA_TEMPLATE_DIR = os.path.join(SUPPORT_DIR, "tools")
+JINJA_TEMPLATE_DIR = os.path.join(SUPPORT_DIR, "cdf")
 
 SHEETS = {
     "header": [
