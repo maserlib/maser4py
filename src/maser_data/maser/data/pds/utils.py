@@ -447,4 +447,4 @@ class PDSDataTableObject(dict):
                         self[cur_name][ii, :] = line
 
     def __repr__(self):
-        return f"<PDSTableObject: {self.label['NAME']} ({self.n_rows} rows x {self.n_columns} columns)>"
+        return f"<PDSTableObject: {self.label['DATA_SET_ID']} ({self.n_rows} rows x {self.n_columns} columns)>"
