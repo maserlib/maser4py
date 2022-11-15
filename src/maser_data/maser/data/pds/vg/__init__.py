@@ -6,3 +6,7 @@ from .data import (  # noqa: F401
     Vg2NPra2RdrHighrate60msV1Data,
     Vg2NPra3RdrLowband6secV1Data,
 )
+from .sweeps import (  # noqa: F401
+    VgPra3RdrLowband6secV1Sweep,
+    VgPra3RdrLowband6secV1Sweeps,
+)

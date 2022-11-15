@@ -5,12 +5,22 @@ from maser.data import Data
 from maser.data.pds import (
     Pds3Data,
     Vg1JPra3RdrLowband6secV1Data,
+    Vg1SPra3RdrLowband6secV1Data,
+    Vg2NPra3RdrLowband6secV1Data,
 )
 import pytest
+from astropy.time import Time
+from astropy.units import Quantity
 
 TEST_FILES = {
     "vg1_j_pra_3_rdr_lowband_6sec_v1": [
         BASEDIR / "pds" / "VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA_I.LBL"
+    ],
+    "vg1_s_pra_3_rdr_lowband_6sec_v1": [
+        BASEDIR / "pds" / "VG1-S-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA.LBL"
+    ],
+    "vg2_n_pra_3_rdr_lowband_6sec_v1": [
+        BASEDIR / "pds" / "VG2-N-PRA-3-RDR-LOWBAND-6SEC-V1" / "VG2_NEP_PRA_6SEC.LBL"
     ],
 }
 
@@ -42,7 +52,41 @@ def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
 
 
 @pytest.mark.test_data_required
+def test_vg1_s_pra_3_rdr_lowband_6sec_v1_dataset():
+    for filepath in TEST_FILES["vg1_s_pra_3_rdr_lowband_6sec_v1"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, Vg1SPra3RdrLowband6secV1Data)
+
+
+@pytest.mark.test_data_required
+def test_vg2_n_pra_3_rdr_lowband_6sec_v1_dataset():
+    for filepath in TEST_FILES["vg2_n_pra_3_rdr_lowband_6sec_v1"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, Vg2NPra3RdrLowband6secV1Data)
+
+
+@pytest.mark.test_data_required
 def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__access_mode_file():
     for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
         with Data(filepath=filepath, access_mode="file") as data:
             assert isinstance(data, dict)
+
+
+@pytest.mark.test_data_required
+def test_vg_rdr_lowband_6sec_v1_dataset__times():
+    for dataset in TEST_FILES.keys():
+        for filepath in TEST_FILES[dataset]:
+            data = Data(filepath=filepath)
+            times = data.times
+            assert isinstance(times, Time)
+            assert len(times) == data._nsweep
+
+
+@pytest.mark.test_data_required
+def test_vg_rdr_lowband_6sec_v1_dataset__frequencies():
+    for dataset in TEST_FILES.keys():
+        for filepath in TEST_FILES[dataset]:
+            data = Data(filepath=filepath)
+            freqs = data.frequencies
+            assert isinstance(freqs, Quantity)
+            assert len(freqs) == 70
