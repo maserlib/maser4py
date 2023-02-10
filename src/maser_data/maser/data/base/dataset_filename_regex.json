@@ -13,6 +13,10 @@
     ["cdpp_viking_v4n_e5", "^V4N_\\d{4}_\\d{3}$"],
     ["cdpp_int_aur_polrad_rspn2", "^POLR_RSPN2_\\d{8}$"],
     ["co_rpws_hfr_kronos_n1", "^R\\d{7}\\.\\d{2}$"],
-    ["co_rpws_hfr_kronos_n2", "^P\\d{7}\\.\\d{2}$"]
+    ["co_rpws_hfr_kronos_n2", "^P\\d{7}\\.\\d{2}$"],
+    ["cdpp_sta_l2_wav_h_res_lfr", "^STA_WAV_LFR_\\d{8}\\.B3E$"],
+    ["cdpp_stb_l2_wav_h_res_lfr", "^STB_WAV_LFR_\\d{8}\\.B3E$"],
+    ["cdpp_sta_l2_wav_h_res_hfr", "^STA_WAV_HFR_\\d{8}\\.B3E$"],
+    ["cdpp_stb_l2_wav_h_res_hfr", "^STB_WAV_HFR_\\d{8}\\.B3E$"]
   ]
 }
