@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import xarray
 from maser.data.pds.utils import PDSLabelDict
 from .constants import BASEDIR
 from maser.data import Data
@@ -67,6 +68,14 @@ def test_vg2_n_pra_3_rdr_lowband_6sec_v1_dataset():
 
 @pytest.mark.test_data_required
 def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__access_mode_file():
+    for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
+        data = Data(filepath=filepath)
+        x = data.as_xarray()
+        assert isinstance(x, xarray.Dataset)
+
+
+@pytest.mark.test_data_required
+def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__as_xarray():
     for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
         with Data(filepath=filepath, access_mode="file") as data:
             assert isinstance(data, dict)
