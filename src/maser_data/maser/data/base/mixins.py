@@ -18,7 +18,7 @@ class FixedFrequencies:
     """
 
     def __init__(self):
-        self.fixed_frequencies = False
+        self.fixed_frequencies = True
 
 
 class VariableFrequencies:

@@ -30,7 +30,7 @@ skip_if_nenupy_not_available = pytest.mark.skipif(
 
 skip_if_spacepy_not_available = pytest.mark.skipif(
     spacepy is None,
-    reason="the nenupy package is required to run nenufar dataset tests",
+    reason="the spacepy package is required to run CDF dataset tests",
 )
 
 

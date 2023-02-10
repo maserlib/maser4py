@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 from maser.data.base import CdfData
-from .sweeps import SrnNdaRoutineJupEdrSweeps
+from maser.data.base import FitsData
+from .sweeps import SrnNdaRoutineEdrSweeps
 
 from astropy.time import Time
 from astropy.units import Unit
 
 
-class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
+class SrnNdaRoutineEdrCdfData(CdfData, dataset="srn_nda_routine_edr"):
     """ORN NDA Routine Jupiter dataset"""
 
-    _iter_sweep_class = SrnNdaRoutineJupEdrSweeps
+    _iter_sweep_class = SrnNdaRoutineEdrSweeps
 
     @property
     def frequencies(self):
@@ -52,3 +53,49 @@ class SrnNdaRoutineJupEdrCdfData(CdfData, dataset="srn_nda_routine_jup_edr"):
                 },
             )
         return datasets
+
+
+class SrnNdaRoutineJupEdrCdfData(
+    SrnNdaRoutineEdrCdfData, dataset="srn_nda_routine_jup_edr"
+):
+    """ORN NDA Routine Jupiter dataset"""
+
+    pass
+
+
+class SrnNdaRoutineSunEdrCdfData(
+    SrnNdaRoutineEdrCdfData, dataset="srn_nda_routine_sun_edr"
+):
+    """ORN NDA Routine Sun dataset"""
+
+    pass
+
+
+class SrnNdaNewRoutineEdrCdfData(FitsData, dataset="orn_nda_newroutine_edr"):
+    """ORN NDA NewRoutine dataset"""
+
+    pass
+
+
+class SrnNdaNewRoutineSunEdrCdfData(
+    SrnNdaNewRoutineEdrCdfData, dataset="orn_nda_newroutine_sun_edr"
+):
+    """ORN NDA NewRoutine Sun dataset"""
+
+    pass
+
+
+class SrnNdaNewRoutineJupEdrCdfData(
+    SrnNdaNewRoutineEdrCdfData, dataset="orn_nda_newroutine_jup_edr"
+):
+    """ORN NDA NewRoutine Jupiter dataset"""
+
+    pass
+
+
+class SrnNdaNewRoutineTransitEdrCdfData(
+    SrnNdaNewRoutineEdrCdfData, dataset="orn_nda_newroutine_transit_edr"
+):
+    """ORN NDA NewRoutine Radio Source Transit dataset"""
+
+    pass

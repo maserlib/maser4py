@@ -14,6 +14,7 @@ from .cdpp import (  # noqa: F401
     WindWavesTnrL260sV1BinData,
     VikingV4nE5BinData,
     InterballAuroralPolradRspBinData,
+    StereoAWavesL2HighResLfrBinData,
 )
 from .ecallisto import (  # noqa: F401
     ECallistoFitsData,
@@ -22,12 +23,14 @@ from .nancay import (  # noqa: F401
     SrnNdaRoutineJupEdrCdfData,
     NenufarBstFitsData,
 )
-
-# -*- coding: utf-8 -*-
 from .padc import (  # noqa: F401
     JnoWavLesiaL3aV02Data,
     CoRpwsHfrKronosN1Data,
     CoRpwsHfrKronosN2Data,
+    StaWavLfrL3DfCdf,
+    StbWavLfrL3DfCdf,
+    StaWavHfrL3DfCdf,
+    StbWavHfrL3DfCdf,
 )
 
 from .pds import (  # noqa: F401
@@ -41,7 +44,6 @@ from .pds import (  # noqa: F401
     CoVEJSSSRpws3RdrLrFullV1Data,
 )
 from .psa import MexMMarsis3RdrAisExt4V1Data  # noqa: F401
-
 from .rpw import (  # noqa: F401
     RpwLfrSurvBp1,
 )
