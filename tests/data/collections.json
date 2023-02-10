@@ -12,6 +12,12 @@
     ],
     "isee3": [["SBH_ISEE3_19780820", "cdpp_isee3_sbh"]],
     "viking": [["V4N_0101_003", "cdpp_viking_v4n_e5"]],
+    "stereo": [
+      ["STA_WAV_LFR_20070131.B3E", "cdpp_sta_l2_wav_h_res_lfr"],
+      ["STB_WAV_LFR_20070131.B3E", "cdpp_stb_l2_wav_h_res_lfr"],
+      ["STA_WAV_HFR_20070131.B3E", "cdpp_sta_l2_wav_h_res_hfr"],
+      ["STB_WAV_HFR_20070131.B3E", "cdpp_stb_l2_wav_h_res_hfr"]
+    ],
     "wind": [
       ["wi_wa_rad1_l2_60s_19941114_v01.dat", "cdpp_wi_wa_rad1_l2_60s_v2"],
       ["wi_wa_rad1_l2_19941110_v01.dat", "cdpp_wi_wa_rad1_l2"],
@@ -311,6 +317,14 @@
       ["solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf", "solo_L2_rpw-lfr-surv-bp1"],
       ["solo_L2_rpw-tnr-surv_20220101_V02.cdf", "solo_L2_rpw-tnr-surv"],
       ["solo_L2_rpw-hfr-surv_20220101_V01.cdf", "solo_L2_rpw-hfr-surv"]
+    ]
+  },
+  "swaves": {
+    "l3_cdf": [
+      ["sta_l3_wav_lfr_20200711_v01.cdf", "sta_l3_wav_lfr"],
+      ["stb_l3_wav_lfr_20200711_v01.cdf", "stb_l3_wav_lfr"],
+      ["sta_l3_wav_hfr_20200711_v01.cdf", "sta_l3_wav_hfr"],
+      ["stb_l3_wav_hfr_20200711_v01.cdf", "stb_l3_wav_hfr"]
     ]
   }
 }

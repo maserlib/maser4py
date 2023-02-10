@@ -7,9 +7,9 @@ Read radio data with maser-data
 Quickstart
 ~~~~~~~~~~~
 
-The `Data` class is a wrapper around several classes that allow you to read data supported by maser4py from various formats,
-including CDF, FITS, and some custom binary formats. By default, the class will try to automagically detect the
-format of the file and use the appropriate class to read the data.
+The `Data` class is a wrapper around several classes that allow you to read data supported by maser4py from various
+formats, including CDF, FITS, and some custom binary formats. By default, the class will try to automagically detect
+the format of the file and use the appropriate class to read the data.
 
 .. code:: python
 
@@ -46,6 +46,14 @@ Dataset Reference
 | Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT6-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`  | PDS3   | PSA         |
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | NDA               | Routine    | :ref:`srn_nda_routine_jup_edr <Msrn_nda_routine_jup_edr>`              | CDF    | CDN         |
++-------------------+------------+------------------------------------------------------------------------+--------+-------------+
+| STEREO-A          | Waves      | :ref:`sta_l3_wav_lfr <sta_l3_wav_lfr>`                                 | CDF    | PADC        |
++-------------------+------------+------------------------------------------------------------------------+--------+-------------+
+| STEREO-A          | Waves      | :ref:`sta_l3_wav_hfr <sta_l3_wav_hfr>`                                 | CDF    | PADC        |
++-------------------+------------+------------------------------------------------------------------------+--------+-------------+
+| STEREO-B          | Waves      | :ref:`stb_l3_wav_lfr <stb_l3_wav_lfr>`                                 | CDF    | PADC        |
++-------------------+------------+------------------------------------------------------------------------+--------+-------------+
+| STEREO-B          | Waves      | :ref:`stb_l3_wav_hfr <stb_l3_wav_hfr>`                                 | CDF    | PADC        |
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
 | Wind              | Waves      | :ref:`cdpp_wi_wa_rad1_l2_60s_v1 <cdpp_wi_wa_rad1_l2_60s_v1>`           | Binary | CDPP        |
 +-------------------+------------+------------------------------------------------------------------------+--------+-------------+
@@ -285,6 +293,9 @@ Nançay Decameter Array (NDA)
 
 .. _srn_nda_routine_jup_edr:
 
+srn_nda_routine_jup_edr
+.......................
+
 * **Data Centre**: Centre de Données de Nançay (CDN)
 
 .. code-block:: python
@@ -301,6 +312,31 @@ Nançay Decameter Array (NDA)
    :width: 400
    :alt: NDA Routine example plot
 
+
+
+STEREO-A and STEREO-B / Waves / LFR and HFR
+"""""""""""""""""""""""""""""""""""""""""""
+
+.. _sta_l3_wav_lfr:
+
+sta_l3_wav_lfr
+...............
+
+* **Data Centre**: Paris Astronomical Data Centre (PADC)
+
+.. code-block:: python
+
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data("tests/data/swaves/l3_cdf/sta_l3_wav_lfr_20200711_v01.cdf")
+   xd = data.as_xarray()
+   xd.plot(vmin=40, vmax=120)
+   plt.title(xd.attrs['title'])
+   plt.show()
+
+.. image:: figures/srn_nda_routine_jup_edr.png
+   :width: 400
+   :alt: STEREO-A LFR example plot
 
 
 

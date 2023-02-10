@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.15.3
+
+- Release maser-data 0.3.5
+- Release maser-plot 0.2.6
+
 ## 0.15.2
 
 - Update solo/rpw tnr and hfr reader in maser-data
