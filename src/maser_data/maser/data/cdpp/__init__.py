@@ -32,3 +32,9 @@ from .interball import (  # noqa: F401
     InterballAuroralPolradRspRecords,
     InterballAuroralPolradRspRecord,
 )
+from .stereo import (  # noqa: F401
+    StereoAWavesL2HighResLfrBinData,
+    StereoAWavesL2HighResHfrBinData,
+    StereoBWavesL2HighResLfrBinData,
+    StereoBWavesL2HighResHfrBinData,
+)
