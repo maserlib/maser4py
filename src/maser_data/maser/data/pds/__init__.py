@@ -8,6 +8,7 @@ from .vg import (  # noqa: F401
     Vg1SPra3RdrLowband6secV1Data,
     Vg2NPra2RdrHighrate60msV1Data,
     Vg2NPra3RdrLowband6secV1Data,
+    Vg2UPra3RdrLowband6secV1Data,
     VgPra3RdrLowband6secV1Sweep,
     VgPra3RdrLowband6secV1Sweeps,
 )
