@@ -160,3 +160,13 @@ class Vg2NPra3RdrLowband6secV1Data(
     PDS3 DATASET-ID: `VG2-N-PRA-3-RDR-LOWBAND-6SEC-V1.0`."""
 
     pass
+
+
+class Vg2UPra3RdrLowband6secV1Data(
+    VgPra3RdrLowband6secV1Data, dataset="VG2-U-PRA-3-RDR-LOWBAND-6SEC-V1.0"
+):
+    """Class for the Voyager-2/PRA Uranus Level 3 RDR LowBand 6sec PDS3 dataset.
+
+    PDS3 DATASET-ID: `VG2-U-PRA-3-RDR-LOWBAND-6SEC-V1.0`."""
+
+    pass
