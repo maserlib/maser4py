@@ -9,7 +9,7 @@ from .sweeps import Sweeps
 from .records import Records
 
 from astropy.time import Time
-from astropy.units import Quantity
+from astropy.units import Quantity, Unit
 
 
 class BaseData:
@@ -172,10 +172,14 @@ class Data(BaseData, dataset="default"):
             self.close(self._file)
 
     @property
-    def file_size(self):
+    def file_size(self) -> Quantity:
         import os
 
-        return os.path.getsize(self.filepath)
+        return os.path.getsize(self.filepath) * Unit("byte")
+
+    @property
+    def mime_type(self) -> str:
+        return "application/octet-stream"
 
     def __iter__(self):
         # get the reference to the right iterator (file, sweeps or records)
@@ -183,6 +187,21 @@ class Data(BaseData, dataset="default"):
         print(ref)
         for item in ref:
             yield item
+
+    def get_epncore_meta(self):
+        """
+        Method to get EPNcore metadata from the MaserData object instance. This method is extended in classes inheriting
+        from MaserData.
+        :return md: a dict with time_min, time_max and granule_gid (from dataset_name attribute) keys.
+        """
+        md = dict()
+        md["time_min"] = self.times[0]
+        md["time_max"] = self.times[-1]
+        md["granule_gid"] = self.dataset
+        md["file_name"] = self.filepath.name
+        md["access_format"] = self.mime_type
+        md["access_estsize"] = self.file_size.to("KiB").value
+        return md
 
     @staticmethod
     def get_dataset(cls, filepath):
@@ -220,6 +239,10 @@ class CdfData(Data, dataset="cdf"):
             dataset = c.attrs["Logical_source"][...][0]
         return dataset
 
+    @property
+    def mime_type(self) -> str:
+        return "application/cdf"
+
 
 class FitsData(Data, dataset="fits"):
     """Base class for FITS formatted data. FITS formatted NenuFAR data requires `nenupy`."""
@@ -238,6 +261,10 @@ class FitsData(Data, dataset="fits"):
             elif "e-CALLISTO" in f[0].header["CONTENT"]:
                 dataset = "ecallisto"
         return dataset
+
+    @property
+    def mime_type(self) -> str:
+        return "application/fits"
 
 
 class BinData(Data, dataset="bin"):
