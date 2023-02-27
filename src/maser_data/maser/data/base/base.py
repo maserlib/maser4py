@@ -3,6 +3,7 @@ from typing import Union, Dict, Type, cast, Optional
 
 from pathlib import Path
 import re
+import math
 from astropy.io import fits
 import numpy
 from .sweeps import Sweeps
@@ -195,12 +196,12 @@ class Data(BaseData, dataset="default"):
         :return md: a dict with time_min, time_max and granule_gid (from dataset_name attribute) keys.
         """
         md = dict()
-        md["time_min"] = self.times[0]
-        md["time_max"] = self.times[-1]
+        md["time_min"] = self.times[0].jd
+        md["time_max"] = self.times[-1].jd
         md["granule_gid"] = self.dataset
         md["file_name"] = self.filepath.name
         md["access_format"] = self.mime_type
-        md["access_estsize"] = self.file_size.to("KiB").value
+        md["access_estsize"] = math.ceil(self.file_size.to("KiB").value)
         return md
 
     @staticmethod
