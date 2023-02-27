@@ -83,6 +83,53 @@ class VgPra3RdrLowband6secV1Data(
             self._frequencies = numpy.arange(1326, -18, -19.2) * Unit("kHz")
         return self._frequencies
 
+    def get_epncore_meta(self):
+        md = dict()
+        md["granule_uid"] = f"{self.label['DATA_SET_ID']}:{self.label['PRODUCT_ID']}"
+        md["granule_gid"] = self.label["DATA_SET_ID"]
+        md["instrument_host_name"] = self.label.get("SPACECRAFT_NAME", None)
+        md["instrument_name"] = self.label.get("INSTRUMENT_ID", None)
+
+        targets = {"name": set(), "class": set(), "region": set()}
+        if "JUPITER" in self.label["TARGET_NAME"]:
+            targets["name"].add("Jupiter")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        if "SATURN" in self.label["TARGET_NAME"]:
+            targets["name"].add("Saturn")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        if "EARTH" in self.label["TARGET_NAME"]:
+            targets["name"].add("Earth")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        if "NEPTUNE" in self.label["TARGET_NAME"]:
+            targets["name"].add("Neptune")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        if "URANUS" in self.label["TARGET_NAME"]:
+            targets["name"].add("Uranus")
+            targets["class"].add("planet")
+            targets["region"].add("magnetosphere")
+        md["target_name"] = "#".join(targets["name"])
+        md["target_class"] = "#".join(targets["class"])
+        md["target_region"] = "#".join(targets["region"])
+
+        md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = min(self.frequencies.to(Unit("Hz")).value)
+        md["spectral_range_max"] = max(self.frequencies.to(Unit("Hz")).value)
+
+        if "PRODUCT_CREATION_TIME" in self.label.keys():
+            if self.label["PRODUCT_CREATION_TIME"] != "N/A":
+                md["creation_date"] = Time(self.label["PRODUCT_CREATION_TIME"]).iso
+                md["modification_date"] = Time(self.label["PRODUCT_CREATION_TIME"]).iso
+                md["release_date"] = Time(self.label["PRODUCT_CREATION_TIME"]).iso
+
+        md["publisher"] = "NASA/PDS/PPI"
+
+        return md
+
     def as_xarray(self):
         import xarray
 
