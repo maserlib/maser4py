@@ -86,7 +86,6 @@ class VgPra3RdrLowband6secV1Data(
     def get_epncore_meta(self):
         md = Pds3Data.get_epncore_meta(self)
         md["granule_uid"] = f"{self.label['DATA_SET_ID']}:{self.label['PRODUCT_ID']}"
-        md["granule_gid"] = self.label["DATA_SET_ID"]
         md["instrument_host_name"] = self.label.get(
             "SPACECRAFT_NAME", self.label.get("INSTRUMENT_HOST_NAME", None)
         )
