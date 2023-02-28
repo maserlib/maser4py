@@ -40,6 +40,7 @@ def test_swaves_l2_bin_dataset(filepath):
     assert isinstance(data, StereoWavesL2HighResBinData)
 
 
+@pytest.mark.test_data_required
 def test_swaves_l2_bin_dataset__frequencies():
     filepath = TEST_FILES["cdpp_sta_l2_wav_h_res_lfr"][0]
     data = Data(filepath)
