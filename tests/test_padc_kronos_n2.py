@@ -35,7 +35,7 @@ def test_co_rpws_hfr_kronos_n2_bin_dataset__len():
     data = Data(filepath=filepath)
     assert data._nsweep == 219
     assert data._nrecord == 78621
-    assert data.file_size == 3537945
+    assert data.file_size.value == 3537945
 
 
 @pytest.mark.test_data_required
@@ -56,7 +56,7 @@ def test_co_rpws_hfr_kronos_n2_bin_dataset__len_sweeps():
 def test_co_rpws_hfr_kronos_n2_bin_dataset__len_file():
     for filepath in TEST_FILES["co_rpws_hfr_kronos_n2"]:
         data = Data(filepath=filepath, access_mode="file")
-        assert len(data) == data.file_size
+        assert len(data) == data.file_size.value
 
 
 @pytest.mark.test_data_required

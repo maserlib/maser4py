@@ -91,7 +91,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         return self.__format
 
     def read_data_binary(self):
-        file_size = self.file_size
+        file_size = self.file_size.value
         rec_size = self._format["length"]
         dtype = [
             (key, self._format["vars"][key][0]) for key in self._format["vars"].keys()
@@ -145,7 +145,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         elif self.access_mode == "records":
             return self._nrecord
         else:
-            return self.file_size
+            return self.file_size.value
 
     def _decode_times(self) -> Sequence:  # pragma: no cover
         pass
