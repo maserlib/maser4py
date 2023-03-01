@@ -280,6 +280,9 @@ class PDSDataTableColumnHeader:
             endianess = ">"
         elif self.label["DATA_TYPE"].startswith("LSB"):
             endianess = "<"
+        else:
+            # default is MSB
+            endianess = ">"
 
         if self.label["DATA_TYPE"].endswith("INTEGER"):
             if int(self.item_bytes) == 1:
@@ -324,10 +327,20 @@ class PDSDataTableColumnHeader:
 
 
 class PDSDataTableObject(dict):
-    def __init__(self, obj_label, data_file, data_offset=0, verbose=False):
+    def __init__(
+        self,
+        obj_label,
+        data_file,
+        data_offset=0,
+        data_set_id=None,
+        product_id=None,
+        verbose=False,
+    ):
         super().__init__(self)
         self.verbose = verbose
         self.filepath = data_file
+        self.data_set_id = data_set_id
+        self.product_id = product_id
         self.offset = data_offset
         self.label = obj_label
         self.n_columns = int(obj_label["COLUMNS"])
@@ -447,4 +460,4 @@ class PDSDataTableObject(dict):
                         self[cur_name][ii, :] = line
 
     def __repr__(self):
-        return f"<PDSTableObject: {self.label['DATA_SET_ID']} ({self.n_rows} rows x {self.n_columns} columns)>"
+        return f"<PDSTableObject: {self.data_set_id}/{self.product_id} ({self.n_rows} rows x {self.n_columns} columns)>"

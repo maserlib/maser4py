@@ -7,6 +7,7 @@ from maser.data.pds import (
     Vg1JPra3RdrLowband6secV1Data,
     Vg1SPra3RdrLowband6secV1Data,
     Vg2NPra3RdrLowband6secV1Data,
+    Vg1JPra4SummBrowse48secV1Data,
 )
 import pytest
 from astropy.time import Time
@@ -15,6 +16,9 @@ from astropy.units import Quantity
 TEST_FILES = {
     "vg1_j_pra_3_rdr_lowband_6sec_v1": [
         BASEDIR / "pds" / "VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA_I.LBL"
+    ],
+    "vg1_j_pra_4_summ_browse_48sec_v1": [
+        BASEDIR / "pds" / "VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1" / "T790306.LBL"
     ],
     "vg1_s_pra_3_rdr_lowband_6sec_v1": [
         BASEDIR / "pds" / "VG1-S-PRA-3-RDR-LOWBAND-6SEC-V1" / "PRA.LBL"
@@ -49,6 +53,13 @@ def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset():
     for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
         data = Data(filepath=filepath)
         assert isinstance(data, Vg1JPra3RdrLowband6secV1Data)
+
+
+@pytest.mark.test_data_required
+def test_vg1_j_pra_4_summ_browse_48sec_v1_dataset():
+    for filepath in TEST_FILES["vg1_j_pra_4_summ_browse_48sec_v1"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, Vg1JPra4SummBrowse48secV1Data)
 
 
 @pytest.mark.test_data_required
@@ -105,7 +116,7 @@ def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__epncore():
     data = Data(filepath=filepath)
     md = data.epncore()
     expected_md = {
-        "access_estsize": 24,
+        "access_estsize": 79406,
         "access_format": "application/octet-stream",
         "creation_date": "1997-10-01 00:00:00.000",
         "dataproduct_type": "ds",
@@ -124,8 +135,40 @@ def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__epncore():
         "target_region": "magnetosphere",
         "time_max": 2443904.500380787,
         "time_min": 2443879.5004386576,
-        "time_sampling_step_max": pytest.approx(43254.0),
-        "time_sampling_step_min": pytest.approx(-27.0),
+        "time_sampling_step_max": 6.0,
+        "time_sampling_step_min": 6.0,
+    }
+    assert isinstance(md, dict)
+    assert md == expected_md
+
+
+@pytest.mark.test_data_required
+def test_vg1_j_pra_4_summ_browse_48sec_v1_dataset__epncore():
+    filepath = TEST_FILES["vg1_j_pra_4_summ_browse_48sec_v1"][0]
+    data = Data(filepath=filepath)
+    md = data.epncore()
+    expected_md = {
+        "access_estsize": 484,
+        "access_format": "application/octet-stream",
+        "creation_date": "1998-05-01 00:00:00.000",
+        "dataproduct_type": "ds",
+        "file_name": "T790306.LBL",
+        "granule_gid": "VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1.0",
+        "granule_uid": "VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1.0:T790306.DAT",
+        "instrument_host_name": "voyager-1",
+        "instrument_name": "pra#planetary-radio-astronomy",
+        "modification_date": "1998-05-01 00:00:00.000",
+        "publisher": "NASA/PDS/PPI",
+        "release_date": "1998-05-01 00:00:00.000",
+        "spectral_range_max": pytest.approx(1326000.0),
+        "spectral_range_min": pytest.approx(1200.0),
+        "target_name": "Jupiter",
+        "target_class": "planet",
+        "target_region": "magnetosphere",
+        "time_max": 2443939.4994444447,
+        "time_min": 2443938.5005555553,
+        "time_sampling_step_max": 48.0,
+        "time_sampling_step_min": 48.0,
     }
     assert isinstance(md, dict)
     assert md == expected_md
