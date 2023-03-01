@@ -2,18 +2,19 @@
 
 maser-data is a submodule of [maser4py](https://pypi.org/project/maser4py/).
 
-It offers programs to handle radio data from the following missions:
+It offers programs to handle radio data from the following instruments:
 
-- Cassini
-- Ecallisto
-- Interball
-- Juno
-- Mars Express
-- nancay decametric array (Jupiter only)
-- Nancay NenuFAR/BST
-- Solar orbiter
+- Cassini/RPWS/HFR
+- E-Callisto
+- Interball-Auroral/POLRAD
+- Juno/Waves
+- Mars Express/MARSIS
+- Nançay Decameter Array (Jupiter only)
+- Nançay NenuFAR/BST
+- Solar Orbiter/RPW
 - Viking
-- Wind
+- Voyager/PRA
+- Wind/Waves
 
 Read maser4py [main documentation](https://maser.pages.obspm.fr/maser4py/) for details.
 
