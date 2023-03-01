@@ -86,6 +86,10 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
         #    datasets[key] = datasets[key].where(datasets[key] != self.file[key].attrs["FILLVAL"])
         return datasets
 
+    def quicklook(self, output_format="png"):
+        xr = self.as_xarray()
+        xr["L"].plot(vmin=40, vmax=70)
+
 
 class StaWavLfrL3DfCdf(StWavL3Cdf, dataset="sta_l3_wav_lfr"):
     """PADC/MASER STEREO-A Waves LFR Level 3 Direction-Finding dataset
