@@ -60,6 +60,9 @@ class BaseData:
         self._times = None
         self._frequencies = None
 
+        # store the EPNcore metadata
+        self._epncore = None
+
         # flag used to determine if are in lazy mode or not
         self._load_data = load_data
 
@@ -189,23 +192,42 @@ class Data(BaseData, dataset="default"):
         for item in ref:
             yield item
 
-    def get_epncore_meta(self):
+    def tfcat(self):
+        """Method to get a TFCat feature for the file spectral-temporal coverage using the TFCat format.
+
+        :return tfcat: a FeatureCollection object
+        """
+        pass
+
+    def ftmoc(self):
+        """Method to get a FTMOC object containing the spectral-temporal coverage.
+
+        :return ftmoc: an FTMOC string representation
+        """
+        pass
+
+    def epncore(self) -> dict:
         """
         Method to get EPNcore metadata from the MaserData object instance. This method is extended in classes inheriting
         from MaserData.
-        :return md: a dict with time_min, time_max and granule_gid (from dataset_name attribute) keys.
+
+        :returns: a dict with time_min, time_max and granule_gid (from dataset_name attribute) keys.
         """
-        md = dict()
-        md["time_min"] = self.times[0].jd.astype(float)
-        md["time_max"] = self.times[-1].jd.astype(float)
-        sampling_step = (self.times[1:] - self.times[:-1]).to("s")
-        md["time_sampling_step_min"] = numpy.min(sampling_step)
-        md["time_sampling_step_max"] = numpy.max(sampling_step)
-        md["granule_gid"] = self.dataset
-        md["file_name"] = self.filepath.name
-        md["access_format"] = self.mime_type
-        md["access_estsize"] = math.ceil(self.file_size.to("KiB").value)
-        return md
+
+        if self._epncore is None:
+            sampling_step = (self.times[1:] - self.times[:-1]).to("s").value
+            self._epncore = {
+                "time_min": self.times[0].jd.astype(float),
+                "time_max": self.times[-1].jd.astype(float),
+                "time_sampling_step_min": numpy.min(sampling_step),
+                "time_sampling_step_max": numpy.max(sampling_step),
+                "granule_gid": self.dataset,
+                "file_name": self.filepath.name,
+                "access_format": self.mime_type,
+                "access_estsize": math.ceil(self.file_size.to("KiB").value),
+            }
+
+        return self._epncore
 
     @staticmethod
     def get_dataset(cls, filepath):

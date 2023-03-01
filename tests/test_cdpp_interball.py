@@ -235,3 +235,33 @@ def test_int_aur_polrad_rsp_bin_dataset__records_for_loop__file0():
         counter += 1
         if counter > 300:
             break
+
+
+@pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset__epncore():
+    filepath = TEST_FILES["cdpp_int_aur_polrad_rspn2"][0]
+    data = Data(filepath=filepath)
+    md = data.epncore()
+    expected_md = {
+        "access_estsize": 9803,
+        "access_format": "application/octet-stream",
+        "file_name": "POLR_RSPN2_19971116",
+        "granule_gid": "cdpp_int_aur_polrad_rspn2",
+        "granule_uid": "cdpp_int_aur_polrad_rspn2:POLR_RSPN2_19971116",
+        "time_max": 2450769.480166875,
+        "time_min": 2450768.4997039004,
+        "time_sampling_step_max": pytest.approx(32783.499999),
+        "time_sampling_step_min": pytest.approx(4.2509999),
+        "instrument_host_name": "interball-auroral",
+        "instrument_name": "polrad",
+        "target_name": "Earth",
+        "target_class": "planet",
+        "target_region": "magnetosphere",
+        "feature_name": "AKR#Auroral Kilometric Radiation",
+        "dataproduct_type": "ds",
+        "spectral_range_min": pytest.approx(4096.0),
+        "spectral_range_max": pytest.approx(983040.0),
+        "publisher": "CNES/CDPP",
+    }
+    assert isinstance(md, dict)
+    assert md == expected_md

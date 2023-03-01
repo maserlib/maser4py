@@ -167,6 +167,32 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                 self._frequencies.append(data["FREQ"] * Unit("kHz"))
         return self._frequencies
 
+    def epncore(self):
+
+        md = BinData.epncore(self)
+        md["granule_uid"] = f"{self.dataset}:{self.filepath.stem}"
+
+        md["instrument_host_name"] = "wind"
+        md["instrument_name"] = "waves"
+        md["target_name"] = "Earth#Sun"
+        md["target_class"] = "planet#star"
+        md["target_region"] = "magnetosphere#heliopshere"
+        md[
+            "feature_name"
+        ] = "AKR#Auroral Kilometric Radiation#Solar bursts#Type II#Type III"
+
+        md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = min(
+            [min(item.to("Hz").value) for item in self.frequencies]
+        )
+        md["spectral_range_max"] = max(
+            [max(item.to("Hz").value) for item in self.frequencies]
+        )
+
+        md["publisher"] = "CNES/CDPP"
+        return md
+
 
 class WindWavesRad1L2BinData(WindWavesL2BinData, dataset="cdpp_wi_wa_rad1_l2"):
     """Class for `cdpp_wi_wa_rad1_l2` binary data."""

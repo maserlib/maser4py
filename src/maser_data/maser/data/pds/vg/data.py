@@ -83,15 +83,11 @@ class VgPra3RdrLowband6secV1Data(
             self._frequencies = numpy.arange(1326, -18, -19.2) * Unit("kHz")
         return self._frequencies
 
-    def get_epncore_meta(self):
-        md = Pds3Data.get_epncore_meta(self)
+    def epncore(self):
+        md = Pds3Data.epncore(self)
         md["granule_uid"] = f"{self.label['DATA_SET_ID']}:{self.label['PRODUCT_ID']}"
-        md["instrument_host_name"] = self.label.get(
-            "SPACECRAFT_NAME", self.label.get("INSTRUMENT_HOST_NAME", None)
-        )
-        md["instrument_name"] = self.label.get(
-            "INSTRUMENT_ID", self.label.get("INSTRUMENT_NAME", None)
-        )
+        md["instrument_host_name"] = "voyager-1"
+        md["instrument_name"] = "pra#planetary-radio-astronomy"
 
         targets = {"name": set(), "class": set(), "region": set()}
         if "JUPITER" in self.label["TARGET_NAME"]:

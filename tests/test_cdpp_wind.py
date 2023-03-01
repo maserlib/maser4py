@@ -403,3 +403,33 @@ def test_win_tnr_60s_bin_dataset__sweeps_next():
             "GSE_Y": -5.07206392288208,
             "GSE_Z": -2.4311723709106445,
         }
+
+
+@pytest.mark.test_data_required
+def test_wi_wa_rad1_l2_bin_dataset__epncore():
+    filepath = TEST_FILES["cdpp_wi_wa_rad1_l2"][0]
+    data = Data(filepath=filepath)
+    md = data.epncore()
+    expected_md = {
+        "access_estsize": 1428,
+        "access_format": "application/octet-stream",
+        "file_name": "wi_wa_rad1_l2_19941110_v01.dat",
+        "granule_gid": "cdpp_wi_wa_rad1_l2",
+        "granule_uid": "cdpp_wi_wa_rad1_l2:wi_wa_rad1_l2_19941110_v01",
+        "time_max": 2449667.4968402777,
+        "time_min": 2449667.193125,
+        "time_sampling_step_max": pytest.approx(2092.0),
+        "time_sampling_step_min": pytest.approx(91.0),
+        "instrument_host_name": "wind",
+        "instrument_name": "waves",
+        "target_name": "Earth#Sun",
+        "target_class": "planet#star",
+        "target_region": "magnetosphere#heliopshere",
+        "feature_name": "AKR#Auroral Kilometric Radiation#Solar bursts#Type II#Type III",
+        "dataproduct_type": "ds",
+        "spectral_range_min": 20000.0,
+        "spectral_range_max": 1040000.0,
+        "publisher": "CNES/CDPP",
+    }
+    assert isinstance(md, dict)
+    assert md == expected_md

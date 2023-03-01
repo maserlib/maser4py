@@ -157,8 +157,8 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
 
         return tmp
 
-    def get_epncore_meta(self):
-        md = BinData.get_epncore_meta(self)
+    def epncore(self):
+        md = BinData.epncore(self)
         md["granule_uid"] = f"{self.dataset}:{self.filepath.name}"
         md["instrument_host_name"] = "interball-auroral"
         md["instrument_name"] = "polrad"
@@ -173,6 +173,8 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
         md["spectral_range_max"] = max(self.frequencies.to("Hz").value)
 
         md["publisher"] = "CNES/CDPP"
+
+        return md
 
     def as_xarray(self):
         import xarray
