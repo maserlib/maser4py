@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Union, Dict, Type, cast, Optional
+from typing import Union, Dict, Type, cast
 
 from pathlib import Path
 import re
@@ -61,7 +61,7 @@ class BaseData:
         self._frequencies = None
 
         # store the EPNcore metadata
-        self._epncore = None
+        self._epncore: Union[Dict, None] = None
 
         # flag used to determine if are in lazy mode or not
         self._load_data = load_data
@@ -148,14 +148,14 @@ class Data(BaseData, dataset="default"):
         return dict()
 
     @property
-    def times(self) -> Optional[Time]:
+    def times(self) -> Time:
         """Generic method to get the time axis."""
-        return None
+        pass
 
     @property
-    def frequencies(self) -> Union[Quantity, Dict, None]:
+    def frequencies(self) -> Union[Quantity, Dict]:
         """Generic method to get the spectral axis."""
-        return None
+        pass
 
     def as_array(self) -> numpy.ndarray:
         """Generic method to get the data as a numpy.array."""
@@ -206,7 +206,7 @@ class Data(BaseData, dataset="default"):
         """
         pass
 
-    def epncore(self) -> dict:
+    def epncore(self) -> Dict:
         """
         Method to get EPNcore metadata from the MaserData object instance. This method is extended in classes inheriting
         from MaserData.
