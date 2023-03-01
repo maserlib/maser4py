@@ -199,10 +199,10 @@ class Data(BaseData, dataset="default"):
         """
         pass
 
-    def ftmoc(self):
-        """Method to get a FTMOC object containing the spectral-temporal coverage.
+    def moc(self):
+        """Method to get a MOC (T-MOC ot FT-MOC) object containing the spectral-temporal coverage.
 
-        :return ftmoc: an FTMOC string representation
+        :return moc: an MOC string representation
         """
         pass
 
