@@ -92,16 +92,24 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
 
     def read_data_binary(self):
         file_size = self.file_size.value
-        rec_size = self._format["length"]
+
+        # size of 1 record of the structure:
         dtype = [
             (key, self._format["vars"][key][0]) for key in self._format["vars"].keys()
         ]
+        rec_size = numpy.dtype(dtype).itemsize
+
+        assert rec_size == self._format["length"]
+
         if file_size % rec_size != 0:
             raise IOError("Corrupted file...")
 
-        data = numpy.fromfile(
+        # opening binary data file:
+        # (swapping byte order if CPU is big endian)
+        data = numpy.memmap(
             self.filepath,
             dtype=dtype,
+            mode="r",
         )
         return data
 
