@@ -269,6 +269,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
             plt.show()
         else:
             plt.savefig(file_png)
+            plt.close(fig)
 
 
 class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"):
