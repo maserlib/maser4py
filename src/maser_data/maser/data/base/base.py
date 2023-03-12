@@ -229,6 +229,9 @@ class Data(BaseData, dataset="default"):
 
         return self._epncore
 
+    def quicklook(self):
+        pass
+
     @staticmethod
     def get_dataset(cls, filepath):
         """Dataset selector method.
