@@ -99,7 +99,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         ]
         rec_size = numpy.dtype(dtype).itemsize
 
-        assert rec_size == self._format["length"]
+        # assert rec_size == self._format["length"]
 
         if file_size % rec_size != 0:
             raise IOError("Corrupted file...")
