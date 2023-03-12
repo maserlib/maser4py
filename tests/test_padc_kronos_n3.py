@@ -119,6 +119,14 @@ def test_co_rpws_hfr_kronos_n3_frequencies():
         assert freqs[0].unit == "kHz"
 
 
+@pytest.mark.test_data_required
+def test_co_rpws_hfr_kronos_n3_quicklook():
+    for filepath in TEST_FILES["co_rpws_hfr_kronos_n3d"]:
+        ql_path = BASEDIR.parent / "quicklook" / "kronos" / f"{filepath.name}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path)
+
+
 # Cassini/RPWS/HFR Kronos N3e TESTS ==== co_rpws_hfr_kronos_n3e
 
 
