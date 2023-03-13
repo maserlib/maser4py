@@ -28,3 +28,7 @@ class SrnNdaRoutineEdrSweeps(Sweeps):
                 self.file["Frequency"][...]
                 * Unit(self.file["Frequency"].attrs["UNITS"]),
             )
+
+
+class SrnNdaNewRoutineEdrSweeps(Sweeps):
+    pass

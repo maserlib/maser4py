@@ -287,8 +287,22 @@ class FitsData(Data, dataset="fits"):
         with cls.open(filepath) as f:
             if f[0].header["INSTRUME"] == "NenuFar" and filepath.stem.endswith("_BST"):
                 dataset = "srn_nenufar_bst"
+            elif (
+                f[0].header["INSTRUME"] == "newroutine"
+                and f[0].header["TELESCOP"] == "NDA"
+                and f[0].header["OBJECT"] == "Jupiter"
+            ):
+                dataset = "orn_nda_newroutine_sun_edr"
+            elif (
+                f[0].header["INSTRUME"] == "newroutine"
+                and f[0].header["TELESCOP"] == "NDA"
+                and f[0].header["OBJECT"] == "Sun"
+            ):
+                dataset = "orn_nda_newroutine_jup_edr"
             elif "e-CALLISTO" in f[0].header["CONTENT"]:
                 dataset = "ecallisto"
+            else:
+                raise NotImplementedError()
         return dataset
 
     @property
