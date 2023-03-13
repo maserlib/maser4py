@@ -5,7 +5,7 @@ from pathlib import Path
 from maser.data.base import FitsData
 
 
-class NenufarBstFitsData(FitsData, dataset="srn_nenufar_bst"):
+class OrnNenufarBstFitsData(FitsData, dataset="orn_nenufar_bst"):
     """NenuFAR/BST (Beam Statistics) dataset"""
 
     @classmethod
@@ -30,7 +30,7 @@ class NenufarBstFitsData(FitsData, dataset="srn_nenufar_bst"):
 
     @beam.setter
     def beam(self, beam):
-        data = NenufarBstFitsData._nenupy_open(self.filepath)
+        data = OrnNenufarBstFitsData._nenupy_open(self.filepath)
         if beam <= len(data.dbeams):
             self._beam = beam
         else:
@@ -39,7 +39,7 @@ class NenufarBstFitsData(FitsData, dataset="srn_nenufar_bst"):
     @property
     def times(self):
         if self._times is None:
-            bst = NenufarBstFitsData._nenupy_open(self.filepath)
+            bst = OrnNenufarBstFitsData._nenupy_open(self.filepath)
             bst.dbeam = self.beam
             self._times = bst.time
         return self._times
@@ -47,7 +47,10 @@ class NenufarBstFitsData(FitsData, dataset="srn_nenufar_bst"):
     @property
     def frequencies(self):
         if self._frequencies is None:
-            bst = NenufarBstFitsData._nenupy_open(self.filepath)
+            bst = OrnNenufarBstFitsData._nenupy_open(self.filepath)
             bst.dbeam = self.beam
             self._frequencies = bst.freqs
         return self._frequencies
+
+    def as_xarray(self):
+        pass

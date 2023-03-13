@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 from maser.data.base import CdfData
 from maser.data.base import FitsData
-from .sweeps import SrnNdaRoutineEdrSweeps, SrnNdaNewRoutineEdrSweeps
+from .sweeps import OrnNdaRoutineEdrSweeps, OrnNdaNewRoutineEdrSweeps
 
 from astropy.time import Time
 from astropy.units import Unit
 
 
-class SrnNdaRoutineEdrCdfData(CdfData, dataset="srn_nda_routine_edr"):
+class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
     """ORN NDA Routine Jupiter dataset"""
 
-    _iter_sweep_class = SrnNdaRoutineEdrSweeps
+    _iter_sweep_class = OrnNdaRoutineEdrSweeps
 
     @property
     def frequencies(self):
@@ -55,26 +55,26 @@ class SrnNdaRoutineEdrCdfData(CdfData, dataset="srn_nda_routine_edr"):
         return datasets
 
 
-class SrnNdaRoutineJupEdrCdfData(
-    SrnNdaRoutineEdrCdfData, dataset="srn_nda_routine_jup_edr"
+class OrnNdaRoutineJupEdrCdfData(
+    OrnNdaRoutineEdrCdfData, dataset="orn_nda_routine_jup_edr"
 ):
     """ORN NDA Routine Jupiter dataset"""
 
     pass
 
 
-class SrnNdaRoutineSunEdrCdfData(
-    SrnNdaRoutineEdrCdfData, dataset="srn_nda_routine_sun_edr"
+class OrnNdaRoutineSunEdrCdfData(
+    OrnNdaRoutineEdrCdfData, dataset="orn_nda_routine_sun_edr"
 ):
     """ORN NDA Routine Sun dataset"""
 
     pass
 
 
-class SrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
+class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
     """ORN NDA NewRoutine dataset"""
 
-    _iter_sweep_class = SrnNdaNewRoutineEdrSweeps
+    _iter_sweep_class = OrnNdaNewRoutineEdrSweeps
 
     @property
     def frequencies(self):
@@ -117,25 +117,31 @@ class SrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
         return datasets
 
 
-class SrnNdaNewRoutineSunEdrFitsData(
-    SrnNdaNewRoutineEdrFitsData, dataset="orn_nda_newroutine_sun_edr"
+class OrnNdaNewRoutineSunEdrFitsData(
+    OrnNdaNewRoutineEdrFitsData, dataset="orn_nda_newroutine_sun_edr"
 ):
     """ORN NDA NewRoutine Sun dataset"""
 
     pass
 
 
-class SrnNdaNewRoutineJupEdrFitsData(
-    SrnNdaNewRoutineEdrFitsData, dataset="orn_nda_newroutine_jup_edr"
+class OrnNdaNewRoutineJupEdrFitsData(
+    OrnNdaNewRoutineEdrFitsData, dataset="orn_nda_newroutine_jup_edr"
 ):
     """ORN NDA NewRoutine Jupiter dataset"""
 
     pass
 
 
-class SrnNdaNewRoutineTransitEdrFitsData(
-    SrnNdaNewRoutineEdrFitsData, dataset="orn_nda_newroutine_transit_edr"
+class OrnNdaNewRoutineTransitEdrFitsData(
+    OrnNdaNewRoutineEdrFitsData, dataset="orn_nda_newroutine_transit_edr"
 ):
     """ORN NDA NewRoutine Radio Source Transit dataset"""
+
+    pass
+
+
+class OrnNdaMefistoSunEdrFitsData(FitsData, dataset="orn_nda_mefisto_sun_edr"):
+    """ORN NDA Mefisto Sun dataset"""
 
     pass

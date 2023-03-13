@@ -3,5 +3,9 @@
 """Classes for ORN NDA datasets"""
 
 from .data import (  # noqa: F401
-    SrnNdaRoutineJupEdrCdfData,
+    OrnNdaRoutineJupEdrCdfData,
+    OrnNdaRoutineSunEdrCdfData,
+    OrnNdaNewRoutineJupEdrFitsData,
+    OrnNdaNewRoutineSunEdrFitsData,
+    OrnNdaNewRoutineTransitEdrFitsData,
 )

@@ -5,9 +5,10 @@
   "co_rpws_hfr_kronos_n0",
   "co_rpws_hfr_kronos_n3b",
   "co_rpws_hfr_kronos_n3c",
-  "srn_nda_routine_jup_raw",
-  "srn_nda_newroutine_dat",
-  "srn_nda_junon_dat",
-  "srn_nda_mefisto_dat",
+  "orn_nda_routine_jup_raw",
+  "orn_nda_newroutine_dat",
+  "orn_nda_junon_dat",
+  "orn_nda_mefisto_dat",
+  "orn_nda_mefisto_sun_edr",
   "radiojove_sps"
 ]

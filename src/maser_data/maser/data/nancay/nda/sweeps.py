@@ -11,7 +11,7 @@ class SrnNdaRoutineEdrSweep(Sweep):
         self._frequencies = frequencies
 
 
-class SrnNdaRoutineEdrSweeps(Sweeps):
+class OrnNdaRoutineEdrSweeps(Sweeps):
     @property
     def generator(self):
         for time, rr, ll, status, rr_t_offset in zip(
@@ -30,5 +30,5 @@ class SrnNdaRoutineEdrSweeps(Sweeps):
             )
 
 
-class SrnNdaNewRoutineEdrSweeps(Sweeps):
+class OrnNdaNewRoutineEdrSweeps(Sweeps):
     pass

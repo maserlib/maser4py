@@ -20,8 +20,12 @@ from .ecallisto import (  # noqa: F401
     ECallistoFitsData,
 )
 from .nancay import (  # noqa: F401
-    SrnNdaRoutineJupEdrCdfData,
-    NenufarBstFitsData,
+    OrnNdaRoutineJupEdrCdfData,
+    OrnNdaRoutineSunEdrCdfData,
+    OrnNdaNewRoutineJupEdrFitsData,
+    OrnNdaNewRoutineSunEdrFitsData,
+    OrnNdaNewRoutineTransitEdrFitsData,
+    OrnNenufarBstFitsData,
 )
 from .padc import (  # noqa: F401
     JnoWavLesiaL3aV02Data,

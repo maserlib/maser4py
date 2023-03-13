@@ -266,6 +266,9 @@ class CdfData(Data, dataset="cdf"):
         """Dataset selector for CDF files (must be ISTP compliant)"""
         with cls.open(filepath) as c:
             dataset = c.attrs["Logical_source"][...][0]
+            # Temporary fix:
+            if dataset == "srn_nda_routine_jup_edr":
+                dataset = "orn_nda_routine_jup_edr"
         return dataset
 
     @property
@@ -286,19 +289,25 @@ class FitsData(Data, dataset="fits"):
         """Dataset selector for FITS files"""
         with cls.open(filepath) as f:
             if f[0].header["INSTRUME"] == "NenuFar" and filepath.stem.endswith("_BST"):
-                dataset = "srn_nenufar_bst"
+                dataset = "orn_nenufar_bst"
             elif (
                 f[0].header["INSTRUME"] == "newroutine"
                 and f[0].header["TELESCOP"] == "NDA"
                 and f[0].header["OBJECT"] == "Jupiter"
             ):
-                dataset = "orn_nda_newroutine_sun_edr"
+                dataset = "orn_nda_newroutine_jup_edr"
             elif (
                 f[0].header["INSTRUME"] == "newroutine"
                 and f[0].header["TELESCOP"] == "NDA"
                 and f[0].header["OBJECT"] == "Sun"
             ):
-                dataset = "orn_nda_newroutine_jup_edr"
+                dataset = "orn_nda_newroutine_sun_edr"
+            elif (
+                f[0].header["INSTRUME"] == "mefisto"
+                and f[0].header["TELESCOP"] == "NDA"
+                and f[0].header["OBJECT"] == "Sun"
+            ):
+                dataset = "orn_nda_mefisto_sun_edr"
             elif "e-CALLISTO" in f[0].header["CONTENT"]:
                 dataset = "ecallisto"
             else:

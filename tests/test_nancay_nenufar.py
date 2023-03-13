@@ -4,7 +4,7 @@ from astropy.units import Quantity, Unit
 from .constants import BASEDIR
 from maser.data import Data
 from maser.data.nancay import (
-    NenufarBstFitsData,
+    OrnNenufarBstFitsData,
 )
 from astropy.io import fits
 import pytest
@@ -27,7 +27,7 @@ TEST_FILES = {
 def test_nenufar_bst_dataset():
     for filepath in TEST_FILES["srn_nenufar_bst"]:
         data = Data(filepath=filepath)
-        assert isinstance(data, NenufarBstFitsData)
+        assert isinstance(data, OrnNenufarBstFitsData)
 
 
 @pytest.mark.test_data_required
