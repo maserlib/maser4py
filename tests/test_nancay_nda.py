@@ -24,6 +24,18 @@ TEST_FILES = {
         / "newroutine"
         / "orn_nda_newroutine_jup_edr_202303060945_202303061745_v1.1.fits",
     ],
+    "orn_nda_newroutine_sun_edr": [
+        BASEDIR
+        / "nda"
+        / "newroutine"
+        / "orn_nda_newroutine_sun_edr_202303070802_202303070936_v1.1.fits",
+    ],
+    "orn_nda_mefisto_sun_edr": [
+        BASEDIR
+        / "nda"
+        / "mefisto"
+        / "orn_nda_mefisto_sun_edr_202303070802_202303070937_v1.0.fits",
+    ],
 }
 
 
@@ -98,6 +110,21 @@ def test_srn_nda_routine_jup_edr_dataset__access_mode_error():
         )
 
 
+@pytest.mark.test_data_required
+def test_orn_nda_routine_jup_edr_dataset_as_xarray():
+    for filepath in TEST_FILES["orn_nda_routine_jup_edr"]:
+        data = Data(filepath=filepath)
+        xr = data.as_xarray()
+        assert isinstance(xr, dict)
+        assert set(xr.keys()) == {"LL", "RR"}
+        assert xr["LL"].shape == (400, 28734)
+        assert xr["LL"].attrs["unit"] == "dB"
+        assert (
+            xr["LL"].attrs["title"]
+            == "Flux density spectrogram measured on the LH polarized array."
+        )
+
+
 # NDA NewRoutine TESTS
 
 
@@ -106,3 +133,73 @@ def test_orn_nda_newroutine_jup_edr_dataset():
     for filepath in TEST_FILES["orn_nda_newroutine_jup_edr"]:
         data = Data(filepath=filepath)
         assert isinstance(data, OrnNdaNewRoutineJupEdrFitsData)
+
+
+@pytest.mark.test_data_required
+def test_orn_nda_newroutine_jup_edr_dataset_times():
+    for filepath in TEST_FILES["orn_nda_newroutine_jup_edr"]:
+        data = Data(filepath=filepath)
+        times = data.times
+        assert isinstance(times, Time)
+        assert len(times) == 58186
+        assert times[0].iso == "2023-03-06 09:45:15.260"
+        assert times[-1].iso == "2023-03-06 17:45:00.246"
+
+
+@pytest.mark.test_data_required
+def test_orn_nda_newroutine_jup_edr_dataset_frequencies():
+    for filepath in TEST_FILES["orn_nda_newroutine_jup_edr"]:
+        data = Data(filepath=filepath)
+        freqs = data.frequencies
+        assert isinstance(freqs, Quantity)
+        assert len(freqs) == 615
+        assert freqs[0].value == pytest.approx(10.009766)
+        assert freqs[-1].value == pytest.approx(39.990234)
+        assert freqs.unit == "MHz"
+
+
+@pytest.mark.test_data_required
+def test_orn_nda_newroutine_jup_edr_dataset_as_xarray():
+    for filepath in TEST_FILES["orn_nda_newroutine_jup_edr"]:
+        data = Data(filepath=filepath)
+        xr = data.as_xarray()
+        assert isinstance(xr, dict)
+        assert set(xr.keys()) == {"LL", "RR", "LR_RE", "LR_IM"}
+        assert xr["LL"].shape == (615, 58186)
+        assert xr["LL"].attrs["unit"] == "V**2/Hz"
+        assert (
+            xr["LL"].attrs["title"]
+            == "ORN NDA newroutine JUPITER EDR Dataset (LL component)"
+        )
+
+
+@pytest.mark.test_data_required
+def test_orn_nda_newroutine_sun_edr_dataset_as_xarray():
+    for filepath in TEST_FILES["orn_nda_newroutine_sun_edr"]:
+        data = Data(filepath=filepath)
+        xr = data.as_xarray()
+        assert isinstance(xr, dict)
+        assert set(xr.keys()) == {"LL", "RR"}
+        assert xr["LL"].shape == (1598, 11538)
+        assert xr["LL"].attrs["unit"] == "V**2/Hz"
+        assert (
+            xr["LL"].attrs["title"]
+            == "ORN NDA newroutine SUN EDR Dataset (LL component)"
+        )
+
+
+# NDA Mefisto TESTS
+
+
+@pytest.mark.test_data_required
+def test_orn_nda_mefisto_sun_edr_dataset_as_xarray():
+    for filepath in TEST_FILES["orn_nda_mefisto_sun_edr"]:
+        data = Data(filepath=filepath)
+        xr = data.as_xarray()
+        assert isinstance(xr, dict)
+        assert set(xr.keys()) == {"LL", "RR"}
+        assert xr["LL"].shape == (390, 53066)
+        assert xr["LL"].attrs["unit"] == "V**2/Hz"
+        assert (
+            xr["LL"].attrs["title"] == "ORN NDA mefisto SUN EDR Dataset (LL component)"
+        )

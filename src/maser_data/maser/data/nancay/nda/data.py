@@ -3,6 +3,8 @@ from maser.data.base import CdfData
 from maser.data.base import FitsData
 from .sweeps import OrnNdaRoutineEdrSweeps, OrnNdaNewRoutineEdrSweeps
 
+from typing import Union
+from pathlib import Path
 from astropy.time import Time
 from astropy.units import Unit
 
@@ -76,6 +78,15 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
 
     _iter_sweep_class = OrnNdaNewRoutineEdrSweeps
 
+    def __init__(
+        self,
+        filepath: Path,
+        dataset: Union[None, str] = "__auto__",
+        access_mode: str = "sweeps",
+    ):
+        FitsData.__init__(self, filepath, dataset, access_mode)
+        self._fields = None
+
     @property
     def frequencies(self):
         if self._frequencies is None:
@@ -93,7 +104,7 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
     def as_xarray(self):
         import xarray
 
-        dataset_keys = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(4)]
+        dataset_keys = self.fields
         datasets = {}
 
         for i, dataset_key in enumerate(dataset_keys):
@@ -111,7 +122,7 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
                 dims=("frequency", "time"),
                 attrs={
                     "unit": Unit("V**2/Hz"),
-                    "title": f"{self.file[0].header['TITLE']} {dataset_key}",
+                    "title": f"{self.file[0].header['TITLE']} ({dataset_key} component)",
                 },
             )
         return datasets
@@ -122,7 +133,11 @@ class OrnNdaNewRoutineSunEdrFitsData(
 ):
     """ORN NDA NewRoutine Sun dataset"""
 
-    pass
+    @property
+    def fields(self):
+        if self._fields is None:
+            self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
+        return self._fields
 
 
 class OrnNdaNewRoutineJupEdrFitsData(
@@ -130,7 +145,11 @@ class OrnNdaNewRoutineJupEdrFitsData(
 ):
     """ORN NDA NewRoutine Jupiter dataset"""
 
-    pass
+    @property
+    def fields(self):
+        if self._fields is None:
+            self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(4)]
+        return self._fields
 
 
 class OrnNdaNewRoutineTransitEdrFitsData(
@@ -138,10 +157,20 @@ class OrnNdaNewRoutineTransitEdrFitsData(
 ):
     """ORN NDA NewRoutine Radio Source Transit dataset"""
 
-    pass
+    @property
+    def fields(self):
+        if self._fields is None:
+            self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
+        return self._fields
 
 
-class OrnNdaMefistoSunEdrFitsData(FitsData, dataset="orn_nda_mefisto_sun_edr"):
+class OrnNdaMefistoSunEdrFitsData(
+    OrnNdaNewRoutineEdrFitsData, dataset="orn_nda_mefisto_sun_edr"
+):
     """ORN NDA Mefisto Sun dataset"""
 
-    pass
+    @property
+    def fields(self):
+        if self._fields is None:
+            self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
+        return self._fields
