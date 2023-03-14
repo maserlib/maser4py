@@ -9,6 +9,7 @@ from maser.data.cdpp import (
     InterballAuroralPolradRspRecord,
 )
 import pytest
+from pathlib import Path
 
 
 TEST_FILES = {
@@ -265,3 +266,25 @@ def test_int_aur_polrad_rsp_bin_dataset__epncore():
     }
     assert isinstance(md, dict)
     assert md == expected_md
+
+
+@pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset__as_xarray():
+    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
+        data = Data(filepath=filepath)
+        xr = data.as_xarray()
+        assert isinstance(xr, dict)
+        assert set(xr.keys()) == {"EX", "EY", "EZ"}
+        assert xr["EY"].shape == (240, 367)
+        assert xr["EY"].attrs["units"] == "W m^-2 Hz^-1"
+
+
+@pytest.mark.test_data_required
+def test_int_aur_polrad_rsp_bin_dataset__quicklook():
+    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
+        ql_path = BASEDIR.parent / "quicklook" / "cdpp" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        ql_path_tmp.unlink()
