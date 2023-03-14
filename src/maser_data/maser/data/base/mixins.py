@@ -81,7 +81,7 @@ class VariableFrequencies:
                 data_arr[i, : len(d)] = d
 
             datasets[dataset_key] = xarray.DataArray(
-                data=data_arr,
+                data=data_arr.T,
                 name=dataset_key,
                 coords={
                     "freq_index": freq_index,
@@ -89,7 +89,7 @@ class VariableFrequencies:
                     "frequency": (["time", "freq_index"], freq_arr, {"units": "kHz"}),
                 },
                 attrs={"units": dataset_unit},
-                dims=("time", "freq_index"),
+                dims=("freq_index", "time"),
             )
 
         return datasets
