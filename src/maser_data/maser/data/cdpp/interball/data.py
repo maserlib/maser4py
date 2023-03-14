@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from maser.data.base import BinData
+from maser.data.base.mixins import FixedFrequencies
 from .sweeps import InterballAuroralPolradRspSweeps
 from .records import InterballAuroralPolradRspRecords
 from pathlib import Path
@@ -11,7 +12,9 @@ from ..const import CCSDS_CDS_FIELDS
 from ..utils import _read_sweep_length, _read_block
 
 
-class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rspn2"):
+class InterballAuroralPolradRspBinData(
+    BinData, FixedFrequencies, dataset="cdpp_int_aur_polrad_rspn2"
+):
     """Class for `cdpp_int_aur_polrad_rspn2` binary data"""
 
     _iter_sweep_class = InterballAuroralPolradRspSweeps
@@ -23,11 +26,15 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
     ):
-        super().__init__(
+        BinData.__init__(
+            self,
             filepath,
             dataset,
             access_mode,
         )
+        FixedFrequencies.__init__(self)
+        self.fields = ["EX", "EY", "EZ"]
+        self.units = ["W.m**-2.Hz**-1", "W.m**-2.Hz**-1", "W.m**-2.Hz**-1"]
         self._data = None
         self._nsweep = None
         self._data = self._loader()
@@ -181,11 +188,18 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
 
         datasets = {}
         for dataset_key in ["EX", "EY", "EZ"]:
+            data = numpy.zeros((len(self.times), len(self.frequencies)))
+            for i, sweep in enumerate(self.sweeps):
+                data[i, :] = sweep.data[dataset_key]
             datasets[dataset_key] = xarray.DataArray(
-                data=numpy.array([item.data[dataset_key] for item in self.sweeps]).T,
+                data=data.T,
                 name=dataset_key,
                 coords=[
-                    ("frequency", self.frequencies, {"units": "kHz"}),
+                    (
+                        "frequency",
+                        self.frequencies.value,
+                        {"units": self.frequencies.unit},
+                    ),
                     ("time", self.times.to_datetime()),
                 ],
                 dims=("frequency", "time"),
@@ -193,3 +207,10 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
             )
 
         return datasets
+
+    def quicklook(self, file_png=None):
+        self._quicklook(
+            keys=["EX", "EY", "EZ"],
+            file_png=file_png,
+            db=[True, True, True],
+        )
