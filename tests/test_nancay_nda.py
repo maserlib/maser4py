@@ -9,7 +9,7 @@ from maser.data.nancay import (
 )
 import pytest
 from .fixtures import skip_if_spacepy_not_available
-
+from pathlib import Path
 
 TEST_FILES = {
     "orn_nda_routine_jup_edr": [
@@ -118,11 +118,22 @@ def test_orn_nda_routine_jup_edr_dataset_as_xarray():
         assert isinstance(xr, dict)
         assert set(xr.keys()) == {"LL", "RR"}
         assert xr["LL"].shape == (400, 28734)
-        assert xr["LL"].attrs["unit"] == "dB"
+        assert xr["LL"].attrs["units"] == "dB"
         assert (
             xr["LL"].attrs["title"]
             == "Flux density spectrogram measured on the LH polarized array."
         )
+
+
+@pytest.mark.test_data_required
+def test_orn_nda_routine_jup_edr_dataset_quicklook():
+    for filepath in TEST_FILES["orn_nda_routine_jup_edr"]:
+        ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        ql_path_tmp.unlink()
 
 
 # NDA NewRoutine TESTS
@@ -166,11 +177,22 @@ def test_orn_nda_newroutine_jup_edr_dataset_as_xarray():
         assert isinstance(xr, dict)
         assert set(xr.keys()) == {"LL", "RR", "LR_RE", "LR_IM"}
         assert xr["LL"].shape == (615, 58186)
-        assert xr["LL"].attrs["unit"] == "V**2/Hz"
+        assert xr["LL"].attrs["units"] == "V**2/Hz"
         assert (
             xr["LL"].attrs["title"]
             == "ORN NDA newroutine JUPITER EDR Dataset (LL component)"
         )
+
+
+@pytest.mark.test_data_required
+def test_orn_nda_newroutine_jup_edr_dataset_quicklook():
+    for filepath in TEST_FILES["orn_nda_newroutine_jup_edr"]:
+        ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        ql_path_tmp.unlink()
 
 
 @pytest.mark.test_data_required
@@ -181,11 +203,22 @@ def test_orn_nda_newroutine_sun_edr_dataset_as_xarray():
         assert isinstance(xr, dict)
         assert set(xr.keys()) == {"LL", "RR"}
         assert xr["LL"].shape == (1598, 11538)
-        assert xr["LL"].attrs["unit"] == "V**2/Hz"
+        assert xr["LL"].attrs["units"] == "V**2/Hz"
         assert (
             xr["LL"].attrs["title"]
             == "ORN NDA newroutine SUN EDR Dataset (LL component)"
         )
+
+
+@pytest.mark.test_data_required
+def test_orn_nda_newroutine_sun_edr_dataset_quicklook():
+    for filepath in TEST_FILES["orn_nda_newroutine_sun_edr"]:
+        ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        ql_path_tmp.unlink()
 
 
 # NDA Mefisto TESTS
@@ -199,7 +232,18 @@ def test_orn_nda_mefisto_sun_edr_dataset_as_xarray():
         assert isinstance(xr, dict)
         assert set(xr.keys()) == {"LL", "RR"}
         assert xr["LL"].shape == (390, 53066)
-        assert xr["LL"].attrs["unit"] == "V**2/Hz"
+        assert xr["LL"].attrs["units"] == "V**2/Hz"
         assert (
             xr["LL"].attrs["title"] == "ORN NDA mefisto SUN EDR Dataset (LL component)"
         )
+
+
+@pytest.mark.test_data_required
+def test_orn_nda_mefisto_sun_edr_dataset_quicklook():
+    for filepath in TEST_FILES["orn_nda_mefisto_sun_edr"]:
+        ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        ql_path_tmp.unlink()
