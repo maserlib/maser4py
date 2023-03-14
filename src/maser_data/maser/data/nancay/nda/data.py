@@ -107,6 +107,11 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
                 self._times = Time(f[2].data["jd"], format="jd")
         return self._times
 
+    def epncore(self):
+        md = FitsData.epncore(self)
+        md["granule_uid"] = f"{self.dataset}:{self.filepath.stem}"
+        return md
+
     def as_xarray(self):
         import xarray
 
