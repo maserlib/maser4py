@@ -177,22 +177,23 @@ class StereoWavesL2HighResBinData(
                 print("End of file reached")
                 break
             else:
-                data.append((header_i, data_i))
+                data.append({"hdr": header_i, "dat": data_i})
             nsweep += 1
 
-        self._nsweep = nsweep
+        self._nsweep = nsweep // 3
         return data
 
     @property
     def times(self):
         if self._times is None:
             times = []
-            for header, _ in self.sweeps:
+            for s in self.sweeps:
+                k0 = list(s.header.keys())[0]
                 times.append(
                     Time(
-                        f"{header['CALEND_DATE_YEAR']}-{header['CALEND_DATE_MONTH']}-"
-                        f"{header['CALEND_DATE_DAY']} {header['CALEND_DATE_HOUR']}:"
-                        f"{header['CALEND_DATE_MINUTE']}:{header['CALEND_DATE_SECOND']}"
+                        f"{s.header[k0]['CALEND_DATE_YEAR']}-{s.header[k0]['CALEND_DATE_MONTH']}-"
+                        f"{s.header[k0]['CALEND_DATE_DAY']} {s.header[k0]['CALEND_DATE_HOUR']}:"
+                        f"{s.header[k0]['CALEND_DATE_MINUTE']}:{s.header[k0]['CALEND_DATE_SECOND']}"
                     )
                 )
             self._times = Time(times)
