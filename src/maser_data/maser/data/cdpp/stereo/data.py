@@ -44,8 +44,8 @@ class StereoWavesL2HighResBinData(
         self._data = None
         self._nsweep = None
         self._data = self._loader()
-        self.fields = ["AGC1", "AGC2", "AUTO1", "AUTO2", "CROSS_R", "CROSS_I"]
-        self.units = ["", "", "", "", "", ""]
+        self.fields = ["agc1", "agc2", "auto1", "auto2", "crossr", "crossi"]
+        self.units = ["ADU", "ADU", "ADU", "ADU", "ADU", "ADU"]
 
     def _read_array_block(self, n1, n2):
         import struct
