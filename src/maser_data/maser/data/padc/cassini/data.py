@@ -207,6 +207,28 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
                 ]
         return self._frequencies
 
+    def epncore(self):
+        md = BinData.epncore(self)
+        md["obs_id"] = f"K{self._ydh}"
+        md["instrument_host_name"] = "cassini-orbiter"
+        md["instrument_name"] = "rpws"
+        md["target_name"] = "Saturn"
+        md["target_class"] = "planet"
+        md["target_region"] = "magnetosphere"
+        md["feature_name"] = "SKR#Saturn Auroral Kilometric Radiation"
+
+        md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = min(
+            [min(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+        md["spectral_range_max"] = max(
+            [max(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+
+        md["publisher"] = "PADC"
+        return md
+
 
 class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"):
     def _decode_times(self) -> Time:
