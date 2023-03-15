@@ -166,7 +166,7 @@ class InterballAuroralPolradRspBinData(
 
     def epncore(self):
         md = BinData.epncore(self)
-        md["granule_uid"] = f"{self.dataset}:{self.filepath.name}"
+        md["obs_id"] = self.filepath.name
         md["instrument_host_name"] = "interball-auroral"
         md["instrument_name"] = "polrad"
         md["target_name"] = "Earth"
