@@ -138,7 +138,7 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                 print("End of file reached")
                 break
             else:
-                data.append((header_i, data_i))
+                data.append({"hdr": header_i, "dat": data_i})
                 nsweep += 1
 
         self._nsweep = nsweep
@@ -148,7 +148,8 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
     def times(self):
         if self._times is None:
             times = []
-            for header, _ in self.sweeps:
+            for s in self.sweeps:
+                header = s.header
                 times.append(
                     Time(
                         f"{header['CALEND_DATE_YEAR']}-{header['CALEND_DATE_MONTH']}-"
@@ -163,12 +164,11 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
     def frequencies(self):
         if self._frequencies is None:
             self._frequencies = []
-            for _, data in self.sweeps:
-                self._frequencies.append(data["FREQ"] * Unit("kHz"))
+            for s in self.sweeps:
+                self._frequencies.append(s.data["FREQ"] * Unit("kHz"))
         return self._frequencies
 
     def epncore(self):
-
         md = BinData.epncore(self)
         md["granule_uid"] = f"{self.dataset}:{self.filepath.stem}"
 
@@ -254,7 +254,6 @@ class WindWavesL260sV1BinData(BinData, dataset="cdpp_wi_wa___l2_60s_v1"):
 
     def _loader(self):
         data = []
-        nsweep = 0
 
         ccsds_fields, ccsds_dtype = CCSDS_CDS_FIELDS
 
@@ -319,7 +318,7 @@ class WindWavesL260sV1BinData(BinData, dataset="cdpp_wi_wa___l2_60s_v1"):
                 break
 
             else:
-                data.append((header_i, data_i))
+                data.append({"hdr": header_i, "dat": data_i})
                 nsweep += 1
 
         self._nsweep = nsweep
