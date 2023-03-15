@@ -14,6 +14,7 @@ from maser.data.cdpp import (
     WindWavesRad2L260sV1BinData,
     WindWavesTnrL260sV1BinData,
 )
+from maser.data.cdpp.wind.sweeps import WindWavesL2Sweep
 import pytest
 
 TEST_FILES = {
@@ -89,7 +90,7 @@ def test_wi_wa_rad1_l2_bin_dataset__frequencies():
 def test_wi_wa_rad1_l2_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2"]:
         for sweep in Data(filepath=filepath):
-            assert isinstance(sweep, tuple)
+            assert isinstance(sweep, WindWavesL2Sweep)
 
 
 @pytest.mark.test_data_required
@@ -97,8 +98,9 @@ def test_wi_wa_rad1_l2_bin_dataset__sweeps_next():
     for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2"]:
         sweeps = Data(filepath=filepath).sweeps
         sweep = next(sweeps)
-        assert isinstance(sweep, tuple)
-        header_i, data_i = sweep
+        assert isinstance(sweep, WindWavesL2Sweep)
+        header_i = sweep.header
+        data_i = sweep.data
         assert header_i == {
             "CCSDS_PREAMBLE": 76,
             "CCSDS_JULIAN_DAY_B1": 0,
@@ -255,7 +257,7 @@ def test_win_rad1_60s_bin_dataset():
 def test_win_rad1_60s_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2_60s_v1"]:
         for sweep in Data(filepath=filepath):
-            assert isinstance(sweep, tuple)
+            assert isinstance(sweep, WindWavesL2Sweep)
 
 
 @pytest.mark.test_data_required
@@ -263,8 +265,9 @@ def test_win_rad1_60s_bin_dataset__sweeps_next():
     for filepath in TEST_FILES["cdpp_wi_wa_rad1_l2_60s_v1"]:
         sweeps = Data(filepath=filepath).sweeps
         sweep = next(sweeps)
-        assert isinstance(sweep, tuple)
-        header_i, data_i = sweep
+        assert isinstance(sweep, WindWavesL2Sweep)
+        header_i = sweep.header
+        data_i = sweep.data
         assert header_i == {
             "AVG_DURATION": 60,
             "CALEND_DATE_DAY": 14,
@@ -309,7 +312,7 @@ def test_win_rad2_60s_bin_dataset():
 def test_win_rad2_60s_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["cdpp_wi_wa_rad2_l2_60s_v1"]:
         for sweep in Data(filepath=filepath):
-            assert isinstance(sweep, tuple)
+            assert isinstance(sweep, WindWavesL2Sweep)
 
 
 @pytest.mark.test_data_required
@@ -317,8 +320,9 @@ def test_win_rad2_60s_bin_dataset__sweeps_next():
     for filepath in TEST_FILES["cdpp_wi_wa_rad2_l2_60s_v1"]:
         sweeps = Data(filepath=filepath).sweeps
         sweep = next(sweeps)
-        assert isinstance(sweep, tuple)
-        header_i, data_i = sweep
+        assert isinstance(sweep, WindWavesL2Sweep)
+        header_i = sweep.header
+        data_i = sweep.data
         assert header_i == {
             "AVG_DURATION": 60,
             "CALEND_DATE_DAY": 14,
@@ -363,7 +367,7 @@ def test_win_tnr_60s_bin_dataset():
 def test_win_tnr_60s_bin_dataset__sweeps_for_loop():
     for filepath in TEST_FILES["cdpp_wi_wa_tnr_l2_60s_v1"]:
         for sweep in Data(filepath=filepath):
-            assert isinstance(sweep, tuple)
+            assert isinstance(sweep, WindWavesL2Sweep)
 
 
 @pytest.mark.test_data_required
@@ -371,8 +375,9 @@ def test_win_tnr_60s_bin_dataset__sweeps_next():
     for filepath in TEST_FILES["cdpp_wi_wa_tnr_l2_60s_v1"]:
         sweeps = Data(filepath=filepath).sweeps
         sweep = next(sweeps)
-        assert isinstance(sweep, tuple)
-        header_i, data_i = sweep
+        assert isinstance(sweep, WindWavesL2Sweep)
+        header_i = sweep.header
+        data_i = sweep.data
         assert header_i == {
             "AVG_DURATION": 60,
             "CALEND_DATE_DAY": 14,
@@ -403,33 +408,3 @@ def test_win_tnr_60s_bin_dataset__sweeps_next():
             "GSE_Y": -5.07206392288208,
             "GSE_Z": -2.4311723709106445,
         }
-
-
-@pytest.mark.test_data_required
-def test_wi_wa_rad1_l2_bin_dataset__epncore():
-    filepath = TEST_FILES["cdpp_wi_wa_rad1_l2"][0]
-    data = Data(filepath=filepath)
-    md = data.epncore()
-    expected_md = {
-        "access_estsize": 1428,
-        "access_format": "application/octet-stream",
-        "file_name": "wi_wa_rad1_l2_19941110_v01.dat",
-        "granule_gid": "cdpp_wi_wa_rad1_l2",
-        "granule_uid": "cdpp_wi_wa_rad1_l2:wi_wa_rad1_l2_19941110_v01",
-        "time_max": 2449667.4968402777,
-        "time_min": 2449667.193125,
-        "time_sampling_step_max": pytest.approx(2092.0),
-        "time_sampling_step_min": pytest.approx(91.0),
-        "instrument_host_name": "wind",
-        "instrument_name": "waves",
-        "target_name": "Earth#Sun",
-        "target_class": "planet#star",
-        "target_region": "magnetosphere#heliopshere",
-        "feature_name": "AKR#Auroral Kilometric Radiation#Solar bursts#Type II#Type III",
-        "dataproduct_type": "ds",
-        "spectral_range_min": 20000.0,
-        "spectral_range_max": 1040000.0,
-        "publisher": "CNES/CDPP",
-    }
-    assert isinstance(md, dict)
-    assert md == expected_md

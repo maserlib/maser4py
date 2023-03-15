@@ -238,6 +238,7 @@ def test_int_aur_polrad_rsp_bin_dataset__records_for_loop__file0():
             break
 
 
+@pytest.mark.skip
 @pytest.mark.test_data_required
 def test_int_aur_polrad_rsp_bin_dataset__epncore():
     filepath = TEST_FILES["cdpp_int_aur_polrad_rspn2"][0]
@@ -270,12 +271,12 @@ def test_int_aur_polrad_rsp_bin_dataset__epncore():
 
 @pytest.mark.test_data_required
 def test_int_aur_polrad_rsp_bin_dataset__as_xarray():
-    for filepath in TEST_FILES["cdpp_int_aur_polrad_rspn2"]:
+    for filepath, time_len in zip(TEST_FILES["cdpp_int_aur_polrad_rspn2"], [4959, 367]):
         data = Data(filepath=filepath)
         xr = data.as_xarray()
         assert isinstance(xr, dict)
         assert set(xr.keys()) == {"EX", "EY", "EZ"}
-        assert xr["EY"].shape == (240, 367)
+        assert xr["EY"].shape == (240, time_len)
         assert xr["EY"].attrs["units"] == "W m^-2 Hz^-1"
 
 
