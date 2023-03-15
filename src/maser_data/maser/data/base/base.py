@@ -85,7 +85,6 @@ class Data(BaseData, dataset="default"):
     dataset and provide adequate support. If the file is not recognized, an NotImplementedError is
     raised.
 
-
     """
 
     def __new__(
@@ -222,6 +221,7 @@ class Data(BaseData, dataset="default"):
                 "time_sampling_step_min": numpy.min(sampling_step),
                 "time_sampling_step_max": numpy.max(sampling_step),
                 "granule_gid": self.dataset,
+                "granule_uid": f"{self.dataset}:{self.filepath.name}",
                 "file_name": self.filepath.name,
                 "access_format": self.mime_type,
                 "access_estsize": math.ceil(self.file_size.to("KiB").value),
