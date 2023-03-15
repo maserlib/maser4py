@@ -168,6 +168,12 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                 self._frequencies.append(s.data["FREQ"] * Unit("kHz"))
         return self._frequencies
 
+    def quicklook(self, file_png=None):
+        self._quicklook(
+            file_png=file_png,
+            keys=["VSPAL", "VZPAL"],
+        )
+
     def epncore(self):
         md = BinData.epncore(self)
         md["granule_uid"] = f"{self.dataset}:{self.filepath.stem}"
