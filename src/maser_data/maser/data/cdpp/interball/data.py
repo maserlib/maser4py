@@ -34,7 +34,7 @@ class InterballAuroralPolradRspBinData(
         )
         FixedFrequencies.__init__(self)
         self.fields = ["EX", "EY", "EZ"]
-        self.units = ["W.m**-2.Hz**-1", "W.m**-2.Hz**-1", "W.m**-2.Hz**-1"]
+        self.units = ["W m^-2 Hz^-1", "W m^-2 Hz^-1", "W m^-2 Hz^-1"]
         self._data = None
         self._nsweep = None
         self._data = self._loader()
@@ -187,7 +187,7 @@ class InterballAuroralPolradRspBinData(
         import xarray
 
         datasets = {}
-        for dataset_key in ["EX", "EY", "EZ"]:
+        for dataset_key, dataset_unit in zip(self.fields, self.units):
             data = numpy.zeros((len(self.times), len(self.frequencies)))
             for i, sweep in enumerate(self.sweeps):
                 data[i, :] = sweep.data[dataset_key]
@@ -203,7 +203,7 @@ class InterballAuroralPolradRspBinData(
                     ("time", self.times.to_datetime()),
                 ],
                 dims=("frequency", "time"),
-                attrs={"units": "W m^-2 Hz^-1"},
+                attrs={"units": dataset_unit},
             )
 
         return datasets
