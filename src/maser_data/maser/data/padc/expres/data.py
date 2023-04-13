@@ -60,7 +60,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
         filepath: Path,
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
-        source: str = None,
+        source: Union[None, str] = None,
         # hemisphere: str = None
     ) -> None:
         super().__init__(filepath, dataset, access_mode)
@@ -102,11 +102,11 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
         return self._times
 
     @property
-    def source(self) -> str:
+    def source(self) -> Union[None, str]:
         return self._source
 
     @source.setter
-    def source(self, source_name: str) -> None:
+    def source(self, source_name: Union[None, str]) -> None:
         """Select one source or all (None)."""
         available_source_values = self.file["Src_ID_Label"][...]
         if source_name is None:

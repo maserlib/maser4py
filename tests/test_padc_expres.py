@@ -21,7 +21,6 @@ TEST_FILES = {
 }
 
 
-@pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @pytest.fixture(scope="class", params=TEST_FILES.values(), ids=TEST_FILES.keys())
 def get_data_instance(request):
@@ -35,30 +34,36 @@ def _use_data(request, get_data_instance):
 
 @pytest.mark.usefixtures("_use_data")
 class TestExpres:
+    @pytest.mark.test_data_required
     def test_data_instance(self) -> None:
         assert isinstance(self.data, ExpresCdfData)
 
+    @pytest.mark.test_data_required
     def test_access_mode(self) -> None:
         assert self.data.access_mode == "sweeps"
 
+    @pytest.mark.test_data_required
     def test_frequencies(self) -> None:
         frequencies = self.data.frequencies
         assert isinstance(frequencies, Quantity)
         assert frequencies.ndim == 1
         assert frequencies.size == 781
 
+    @pytest.mark.test_data_required
     def test_times(self) -> None:
         times = self.data.times
         assert isinstance(times, Time)
         assert times.ndim == 1
         assert times.size == 1440
 
+    @pytest.mark.test_data_required
     def test_as_xarray(self) -> None:
         xarrays = self.data.as_xarray()
         assert isinstance(xarrays, dict)
         assert xarrays["CML"].units == "deg"
         assert xarrays["CML"].coords["time"].values.dtype.str == "<M8[ns]"
 
+    @pytest.mark.test_data_required
     @pytest.mark.parametrize(
         "source_id,expected_shape",
         [(0, (781, 1440)), (1, (781, 1440)), (None, (781, 1440, 2))],
@@ -68,10 +73,12 @@ class TestExpres:
         self.data.source = None if source_id is None else sources[source_id]
         assert self.data.as_xarray()["Theta"].shape == expected_shape
 
+    @pytest.mark.test_data_required
     def test_source_selection_error(self):
         with pytest.raises(ValueError):
             self.data.source = "bad_value"
 
+    @pytest.mark.test_data_required
     def test_sweep(self):
         for sweep in self.data.sweeps:
             assert isinstance(sweep, Sweep)
