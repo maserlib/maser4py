@@ -8,7 +8,7 @@ Quickstart
 ~~~~~~~~~~~
 
 The `Data` class is a wrapper around several classes that allow you to read data supported by maser4py from various
-formats, including CDF, FITS, and some custom binary formats. By default, the class will try to automagically detect
+formats, including CDF, FITS, and some custom binary formats. By default, the class will try to automatically detect
 the format of the file and use the appropriate class to read the data.
 
 .. code:: python
@@ -26,6 +26,8 @@ Dataset Reference
 | Facility          | Instrument | Dataset                                                                      | Format | Data Center |
 +===================+============+==============================================================================+========+=============+
 | Birr              | E-Callisto | :ref:`ecallisto <ecallisto>`                                                 | FITS   | E-Callisto  |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| ExPRES            |            | expres_<observer>_<target>                                                   | CDF    | PADC        |
 +-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
 | Interball-Auroral | POLRAD     | :ref:`cdpp_int_aur_polrad_rspn2 <cdpp_int_aur_polrad_rspn2>`                 | Binary | CDPP        |
 +-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
@@ -69,6 +71,31 @@ Dataset Reference
 +-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
 | Wind              | Waves      | :ref:`cdpp_wi_wa_tnr_l2_60s_v2 <cdpp_wi_wa_tnr_l2_60s_v2>`                   | Binary | CDPP        |
 +-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+
+ExPRES
+""""""""""""""""""""""""""""""
+
+`ExPRES <https://maser.lesia.obspm.fr/task-2-modeling-tools/expres/?lang=en>`_ (Exoplanetary and Planetary Radio
+Emission Simulator) simulations are stored in CDF files. They can be automatically read by `Data`.
+
+A specificity for the ExPRES dataset classes is the additional attribute `source`, which is dataset-dependent.
+It can either be specified as an argument (e.g., `Data('<expres_file.cdf>', source='Io NORTH')`) or as an attribute (see the following
+example). If set to `None` (by default), the 'extra' dimension is kept.
+
+.. code-block:: python
+
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   expres_data = Data('tests/data/maser/expres/expres_earth_jupiter_io_jrm09_lossc-wid1deg_3kev_20220801_v01.cdf')
+   expres_data.source = 'Io NORTH'
+   data = expres_data.as_xarray()
+   data['Theta'].plot()
+   plt.show()
+
+
+.. image:: figures/expres_example.png
+   :width: 500
+   :alt: expres example plot
 
 
 Interball-Auroral / POLRAD

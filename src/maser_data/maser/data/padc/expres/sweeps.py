@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
+
 from maser.data.base.sweeps import Sweeps, Sweep
-from astropy.time import Time
-from astropy.units import Unit
 
 
 class ExpresCdfDataSweep(Sweep):
@@ -12,7 +11,6 @@ class ExpresCdfDataSweep(Sweep):
 
 
 class ExpresCdfDataSweeps(Sweeps):
-
     @property
     def generator(self):
         frequencies = self.data_reference.frequencies
@@ -22,9 +20,8 @@ class ExpresCdfDataSweeps(Sweeps):
 
         for i, time in enumerate(self.data_reference.times):
             yield ExpresCdfDataSweep(
-                header={'header_keyword': 'x-array generate data'},
+                header={"header_keyword": "x-array generate data"},
                 data={datakey: xdata[datakey].isel(time=[i]) for datakey in xdata},
                 time=time,
-                frequencies=frequencies
+                frequencies=frequencies,
             )
-
