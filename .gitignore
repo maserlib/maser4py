@@ -157,3 +157,6 @@ cython_debug/
 workspace/
 local/
 tmp/
+
+# Mac
+.DS_Store

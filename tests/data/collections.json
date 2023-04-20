@@ -232,7 +232,17 @@
     ]
   },
   "maser": {
-    "juno": [["jno_wav_cdr_lesia_20170329_v02.cdf", "jno_wav_cdr_lesia"]]
+    "juno": [["jno_wav_cdr_lesia_20170329_v02.cdf", "jno_wav_cdr_lesia"]],
+    "expres": [
+      [
+        "expres_juno_jupiter_ganymede_jrm09_lossc-wid1deg_3kev_20211218_v11.cdf",
+        "expres_juno_jupiter_ganymede"
+      ],
+      [
+        "expres_earth_jupiter_io_jrm09_lossc-wid1deg_3kev_20220801_v01.cdf",
+        "expres_earth_jupiter_io"
+      ]
+    ]
   },
   "nda": {
     "routine": [
