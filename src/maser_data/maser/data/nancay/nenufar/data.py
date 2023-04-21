@@ -9,10 +9,6 @@ from astropy.time import Time
 import xarray
 
 
-class Test(FitsData, dataset="nenufar"):
-    pass
-
-
 class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
     """NenuFAR/BST (Beamlet Statistics) dataset"""
 
@@ -44,11 +40,10 @@ class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
 
     @property
     def frequencies(self) -> Quantity:
-        if self._frequencies is None:
-            beamlets = self.file[4].data["nbBeamlet"][self.beam]
-            subband_half_width = 195.3125 * Unit("kHz")
-            freqs = self.file[4].data["freqList"][self.beam][:beamlets] * Unit("MHz")
-            self._frequencies = freqs - subband_half_width / 2
+        beamlets = self.file[4].data["nbBeamlet"][self.beam]
+        subband_half_width = 195.3125 * Unit("kHz")
+        freqs = self.file[4].data["freqList"][self.beam][:beamlets] * Unit("MHz")
+        self._frequencies = freqs - subband_half_width / 2
         return self._frequencies
 
     @property
