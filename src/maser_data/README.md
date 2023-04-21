@@ -30,7 +30,6 @@ or use one of the extra options:
 
 - `jupyter` for Jupyter notebook support
 - `spacepy` for CDF data format support (note that this requires the [CDF library](https://cdf.gsfc.nasa.gov/html/sw_and_docs.html))
-- `nenupy` for NenuFAR data products support
 - `all` to install all the above
 
 For example use `maser-data[jupyter,spacepy]` if you want to use `maser-data` with spacepy and jupyter notebooks:

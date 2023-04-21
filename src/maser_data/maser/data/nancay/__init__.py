@@ -25,7 +25,6 @@ distributed by CDN (Centre de Données de Nançay).
      - CDN
      - `srn_nenufar_bst`
      - FITS
-     - `nenupy`
 
 """
 

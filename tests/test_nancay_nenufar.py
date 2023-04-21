@@ -8,7 +8,6 @@ from maser.data.nancay import (
 )
 from astropy.io import fits
 import pytest
-from .fixtures import skip_if_nenupy_not_available
 
 
 TEST_FILES = {
@@ -23,7 +22,6 @@ TEST_FILES = {
 
 
 @pytest.mark.test_data_required
-@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset():
     for filepath in TEST_FILES["srn_nenufar_bst"]:
         data = Data(filepath=filepath)
@@ -31,7 +29,6 @@ def test_nenufar_bst_dataset():
 
 
 @pytest.mark.test_data_required
-@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__beam():
     for filepath in TEST_FILES["srn_nenufar_bst"]:
         data = Data(filepath=filepath, beam=1)
@@ -39,7 +36,6 @@ def test_nenufar_bst_dataset__beam():
 
 
 @pytest.mark.test_data_required
-@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__beam__value_error():
     for filepath in TEST_FILES["srn_nenufar_bst"]:
         with pytest.raises(ValueError):
@@ -47,7 +43,6 @@ def test_nenufar_bst_dataset__beam__value_error():
 
 
 @pytest.mark.test_data_required
-@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__access_mode_file():
     for filepath in TEST_FILES["srn_nenufar_bst"]:
         with Data(filepath=filepath, access_mode="file") as data:
@@ -55,7 +50,6 @@ def test_nenufar_bst_dataset__access_mode_file():
 
 
 @pytest.mark.test_data_required
-@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__times():
     filepath = TEST_FILES["srn_nenufar_bst"][0]
     with Data(filepath=filepath) as data:
@@ -66,7 +60,6 @@ def test_nenufar_bst_dataset__times():
 
 
 @pytest.mark.test_data_required
-@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__times__other_beam():
     filepath = TEST_FILES["srn_nenufar_bst"][0]
     with Data(filepath=filepath, beam=1) as data:
@@ -77,7 +70,6 @@ def test_nenufar_bst_dataset__times__other_beam():
 
 
 @pytest.mark.test_data_required
-@skip_if_nenupy_not_available
 def test_nenufar_bst_dataset__frequencies():
     filepath = TEST_FILES["srn_nenufar_bst"][0]
     with Data(filepath=filepath) as data:

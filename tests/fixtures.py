@@ -4,13 +4,6 @@ import json
 import pytest
 import requests
 
-# try importing nenupy
-try:
-    import nenupy
-except ImportError:
-    # if nenupy is not available, skip the corresponding tests
-    nenupy = None
-
 # try importing spacepy
 try:
     import spacepy
@@ -19,14 +12,9 @@ except ImportError:
     spacepy = None
 
 __all__ = [
-    "skip_if_nenupy_not_available",
     "skip_if_spacepy_not_available",
     "load_test_data",
 ]
-
-skip_if_nenupy_not_available = pytest.mark.skipif(
-    nenupy is None, reason="the nenupy package is required to run nenufar dataset tests"
-)
 
 skip_if_spacepy_not_available = pytest.mark.skipif(
     spacepy is None,
@@ -69,17 +57,7 @@ def test_filepaths():
             cur_dir_name = cur_db_name / dataset_name
             for file_data in DATA_FILES[database_name][dataset_name]:
                 file_name, file_dataset = file_data[0:2]
-                if file_dataset == "srn_nenufar_bst":
-
-                    pytest_param = pytest.param(
-                        cur_dir_name / file_name,
-                        file_dataset,
-                        marks=pytest.mark.skipif(
-                            nenupy is None,
-                            reason="the nenupy package is required to run nenufar dataset tests",
-                        ),
-                    )
-                elif file_dataset in [
+                if file_dataset in [
                     "srn_nda_routine_jup_edr",
                     "solo_L2_rpw-lfr-surv-bp1",
                     "solo_L2_rpw-tnr-surv",
