@@ -86,6 +86,29 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
         #    datasets[key] = datasets[key].where(datasets[key] != self.file[key].attrs["FILLVAL"])
         return datasets
 
+    @property
+    def epncore(self):
+        md = BinData.epncore(self)
+        md["obs_id"] = md["granule_uid"]
+        md["instrument_host_name"] = f"stereo-{self.dataset[3]}"
+        md["instrument_name"] = "waves"
+        md["target_name"] = "Sun"
+        md["target_class"] = "star"
+        md["target_region"] = "Heliosphere"
+        md["feature_name"] = "Radio Emission#Type II#Type III"
+
+        md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = min(
+            [min(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+        md["spectral_range_max"] = max(
+            [max(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+
+        md["publisher"] = "PADC"
+        return md
+
     def quicklook(self, output_format="png"):
         xr = self.as_xarray()
         xr["L"].plot(vmin=40, vmax=70)

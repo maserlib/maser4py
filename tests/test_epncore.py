@@ -4,6 +4,31 @@ from .constants import BASEDIR
 import pytest
 from maser.data import Data
 
+EPNCORE_TYPES = {
+    "_dataset": str,
+    "_file": str,
+    "access_estsize": int,
+    "access_format": str,
+    "dataproduct_type": str,
+    "feature_name": str,
+    "file_name": str,
+    "granule_gid": str,
+    "granule_uid": str,
+    "obs_id": str,
+    "instrument_host_name": str,
+    "instrument_name": str,
+    "publisher": str,
+    "spectral_range_max": float,
+    "spectral_range_min": float,
+    "target_class": str,
+    "target_name": str,
+    "target_region": str,
+    "time_max": float,
+    "time_min": float,
+    "time_sampling_step_max": float,
+    "time_sampling_step_min": float,
+}
+
 
 @pytest.fixture
 def epncore_expected():
@@ -11,7 +36,7 @@ def epncore_expected():
 
     data = {}
     with open(BASEDIR / "epncore.csv") as csvfile:
-        # load EPNcore data from `epncore.csv` (with option to treat non-quoted elements as floats)pi
+        # load EPNcore data from `epncore.csv` (with option to treat non-quoted elements as floats)
         reader = csv.DictReader(csvfile, quoting=csv.QUOTE_NONNUMERIC)
         for row in reader:
             # set the `dataset` and `file` names
@@ -22,7 +47,11 @@ def epncore_expected():
                 data[_dataset] = {}
             # fill in for each `file`, removing empty keywords on the fly
             data[_dataset][_file] = dict(
-                [(k, v) for k, v in row.items() if v is not None]
+                [
+                    (k, EPNCORE_TYPES[k](v))
+                    for k, v in row.items()
+                    if ((v != "") and (v is not None))
+                ]
             )
     return data
 
@@ -32,7 +61,7 @@ def epncore_expected():
 def test_any_dataset(filepath, dataset, epncore_expected):
     if (expected_md := epncore_expected[dataset][filepath.name])[
         "granule_uid"
-    ] is not None:
+    ] != "__skip__":
         data = Data(filepath)
         md = data.epncore()
         assert isinstance(md, dict)
@@ -41,6 +70,10 @@ def test_any_dataset(filepath, dataset, epncore_expected):
         # Check metadata (key,value) are as expected
         print(md)
         print(expected_md)
-        assert md == pytest.approx(expected_md)
-        # Check mandatory keys are present
+        for k, v in expected_md.items():
+            if isinstance(v, float):
+                assert md[k] == pytest.approx(v, rel=1e-5)
+            else:
+                assert md[k] == v
+                # Check mandatory keys are present
         assert {"granule_uid", "granule_gid", "obs_id"}.issubset(md_keys)

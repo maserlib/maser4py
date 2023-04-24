@@ -177,6 +177,7 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
     def epncore(self):
         md = BinData.epncore(self)
         md["granule_uid"] = f"{self.dataset}:{self.filepath.stem}"
+        md["obs_id"] = self.filepath.stem
 
         md["instrument_host_name"] = "wind"
         md["instrument_name"] = "waves"
