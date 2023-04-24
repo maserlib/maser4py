@@ -173,7 +173,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
             # Sort out data and attributes
             data_ext = self.file[dataset_key]
             data_attr = self.file[dataset_key].attrs
-            # exctract the data and replace the values at FILLVAL by NaN
+            # extract the data and replace the values at FILLVAL by NaN
             data = data_ext[...]
             data = np.where(data == data_attr["FILLVAL"], np.nan, data)
 
