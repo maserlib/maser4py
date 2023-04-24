@@ -341,7 +341,7 @@ class CdfData(Data, dataset="cdf"):
 
 
 class FitsData(Data, dataset="fits"):
-    """Base class for FITS formatted data. FITS formatted NenuFAR data requires `nenupy`."""
+    """Base class for FITS formatted data."""
 
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):

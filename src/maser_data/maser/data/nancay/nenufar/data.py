@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from abc import ABC
 from typing import Union
 from pathlib import Path
 from maser.data.base import FitsData
+from astropy.units import Unit, Quantity
+from astropy.time import Time
+import xarray
 
 
-class OrnNenufarBstFitsData(FitsData, dataset="orn_nenufar_bst"):
-    """NenuFAR/BST (Beam Statistics) dataset"""
+class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
+    """NenuFAR/BST (Beamlet Statistics) dataset"""
 
-    @classmethod
-    def _nenupy_open(cls, filepath):
-        from nenupy.beamlet import BST_Data
-
-        return BST_Data(str(filepath))
+    _dataset_keys = ["NW", "NE"]
 
     def __init__(
         self,
@@ -25,32 +25,77 @@ class OrnNenufarBstFitsData(FitsData, dataset="orn_nenufar_bst"):
         self.beam = beam
 
     @property
-    def beam(self):
+    def beam(self) -> int:
+        """Returns the selected beam index."""
         return self._beam
 
     @beam.setter
-    def beam(self, beam):
-        data = OrnNenufarBstFitsData._nenupy_open(self.filepath)
-        if beam <= len(data.dbeams):
-            self._beam = beam
-        else:
-            raise ValueError(f"Beam #{beam} doesn't exist.")
+    def beam(self, b: int) -> None:
+        available_beam_indices = self.file[4].data["noBeam"]
+        if b not in available_beam_indices:
+            raise ValueError(
+                f"Unknown beam index {b}. Please select one from {available_beam_indices}."
+            )
+        self._beam = b
 
     @property
-    def times(self):
-        if self._times is None:
-            bst = OrnNenufarBstFitsData._nenupy_open(self.filepath)
-            bst.dbeam = self.beam
-            self._times = bst.time
-        return self._times
-
-    @property
-    def frequencies(self):
-        if self._frequencies is None:
-            bst = OrnNenufarBstFitsData._nenupy_open(self.filepath)
-            bst.dbeam = self.beam
-            self._frequencies = bst.freqs
+    def frequencies(self) -> Quantity:
+        beamlets = self.file[4].data["nbBeamlet"][self.beam]
+        subband_half_width = 195.3125 * Unit("kHz")
+        freqs = self.file[4].data["freqList"][self.beam][:beamlets] * Unit("MHz")
+        self._frequencies = freqs - subband_half_width / 2
         return self._frequencies
 
+    @property
+    def times(self) -> Time:
+        if self._times is None:
+            self._times = Time(self.file[7].data["jd"], format="jd")
+        return self._times
+
     def as_xarray(self):
-        pass
+        """Transform the data in x-arrays."""
+
+        # Data axes should not be put in __init__ because frequencies
+        # depends on the beam index selection
+        _dataset_axes = {
+            "Frequency": {
+                "name": "frequency",
+                "value": self.frequencies.value,
+                "metadata": {"units": self.frequencies.unit},
+            },
+            "Time": {"name": "time", "value": self.times.datetime, "metadata": {}},
+        }
+
+        datasets = {}
+
+        # Select the correct beamlets wrt. the selected beam
+        n_beamlets = self.file[4].data["nbBeamlet"][self.beam]
+        beamlets = self.file[4].data["BeamletList"][self.beam][:n_beamlets]
+
+        available_polarizations = list(self.file[1].data["spol"][0])
+
+        for dataset_key in self._dataset_keys:
+
+            polar_index = available_polarizations.index(dataset_key)
+
+            datasets[dataset_key] = xarray.DataArray(
+                data=self.file[7].data["DATA"][:, polar_index, beamlets].T,
+                name=dataset_key,
+                coords=[
+                    (
+                        dim_name,
+                        _dataset_axes[dim_name]["value"],
+                        _dataset_axes[dim_name]["metadata"],
+                    )
+                    for dim_name in _dataset_axes.keys()
+                ],
+                dims=[
+                    _dataset_axes[dim_name]["name"] for dim_name in _dataset_axes.keys()
+                ],
+                attrs={
+                    "units": "",
+                    "title": "",
+                },
+            )
+
+        return datasets
