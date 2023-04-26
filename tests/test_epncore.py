@@ -3,6 +3,7 @@ from .fixtures import test_filepaths
 from .constants import BASEDIR
 import pytest
 from maser.data import Data
+import numpy
 
 EPNCORE_TYPES = {
     "_dataset": str,
@@ -68,12 +69,12 @@ def test_any_dataset(filepath, dataset, epncore_expected):
         print(dataset, filepath)
         md_keys = set(md.keys())
         # Check metadata (key,value) are as expected
-        print(md)
-        print(expected_md)
         for k, v in expected_md.items():
-            if isinstance(v, float):
+            if isinstance(v, float) or isinstance(v, numpy.float64):
                 assert md[k] == pytest.approx(v, rel=1e-5)
-            else:
+            elif isinstance(v, int):
                 assert md[k] == v
+            else:
+                assert set(md[k].split("#")) == set(v.split("#"))
                 # Check mandatory keys are present
         assert {"granule_uid", "granule_gid", "obs_id"}.issubset(md_keys)
