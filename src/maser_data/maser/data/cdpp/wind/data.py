@@ -49,6 +49,16 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
         self.fields = ["VSPAL", "VZPAL", "TSPAL", "TZPAL"]
         self.units = ["V2/Hz", "V2/Hz", "V2/Hz", "V2/Hz"]
 
+    @property
+    def _parse_file_name(self):
+        pieces = self.filepath.stem.split("_")
+        return dict(
+            zip(
+                ["facility", "instrument", "receiver", "level", "date", "version"],
+                ["wind", "waves", pieces[2], pieces[3], pieces[4], pieces[5]],
+            )
+        )
+
     def _read_data_block(self, nbytes):
         import struct
 
@@ -177,7 +187,9 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
     def epncore(self):
         md = BinData.epncore(self)
         md["granule_uid"] = f"{self.dataset}:{self.filepath.stem}"
-        md["obs_id"] = self.filepath.stem
+        md[
+            "obs_id"
+        ] = f"wi_wa_{self._parse_file_name['receiver']}_{self._parse_file_name['date']}"
 
         md["instrument_host_name"] = "wind"
         md["instrument_name"] = "waves"
