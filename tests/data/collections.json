@@ -242,6 +242,10 @@
         "expres_earth_jupiter_io_jrm09_lossc-wid1deg_3kev_20220801_v01.cdf",
         "expres_earth_jupiter_io"
       ]
+    ],
+    "wind": [
+      ["wi_wa_rad1_l3_df_19950119_v01.cdf", "wi_wav_rad1_l3_df"],
+      ["wi_wa_rad1_l3-akr_19990101_v01.cdf", "wi_wa_rad1_l3-akr"]
     ]
   },
   "nda": {
