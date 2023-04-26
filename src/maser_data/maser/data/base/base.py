@@ -339,6 +339,78 @@ class CdfData(Data, dataset="cdf"):
     def mime_type(self) -> str:
         return "application/cdf"
 
+    def _convert_epncore_ranges(self, k, v, range_type):
+        range_types = ["time_sampling_step", "spectral_range", "spectral_sampling_step"]
+        range_units = {
+            "time_sampling_step": "s",
+            "spectral_range": "Hz",
+            "spectral_sampling_step": "Hz",
+        }
+        md = {}
+
+        if range_type in range_types:
+            _range_min = f"{range_type}_min"
+            _range_max = f"{range_type}_max"
+            _range_unit = f"{range_type}_unit"
+            _u = range_units[range_type]
+            if f"VESPA_{_range_unit}_unit" in self.file.attrs.keys():
+                u = Unit(self.file.attrs[f"VESPA_{_range_unit}_unit"][0])
+            else:
+                u = Unit(_u)
+            _v = (float(v) * u).to(_u).value
+            if k == range_type:
+                md[_range_min] = _v
+                md[_range_max] = md[_range_min]
+            elif k in [_range_min, _range_max]:
+                md[k] = _v
+        else:
+            raise ValueError()
+        return md
+
+    def epncore(self):
+        if self._epncore is None:
+            self._epncore = Data.epncore(self)
+
+        for _k, _v in self.file.attrs.items():
+
+            if _k.upper().startswith("VESPA"):
+                k = _k.replace("VESPA_", "").lower()
+
+                if k == "dataproduct_type":
+                    self._epncore["dataproduct_type"] = "#".join(
+                        [v.split(">")[0].lower() for v in _v]
+                    )
+                elif k in [
+                    "instrument_name",
+                    "instrument_host_name",
+                    "target_class",
+                    "target_name",
+                    "target_region",
+                    "feature_name",
+                    "receiver_name",
+                    "measurement_type",
+                    "time_origin",
+                    "bib_reference",
+                    "time_scale",
+                ]:
+                    values = set()
+                    for v in _v:
+                        values.update(v.split(">"))
+                    self._epncore[k] = "#".join(values)
+                elif k.startswith("time_sampling_step") and not k.endswith("unit"):
+                    self._epncore.update(
+                        self._convert_epncore_ranges(k, _v[0], "time_sampling_step")
+                    )
+                elif k.startswith("spectral_range") and not k.endswith("unit"):
+                    self._epncore.update(
+                        self._convert_epncore_ranges(k, _v[0], "spectral_range")
+                    )
+                elif k.startswith("spectral_sampling_step") and not k.endswith("unit"):
+                    self._epncore.update(
+                        self._convert_epncore_ranges(k, _v[0], "spectral_sampling_step")
+                    )
+        return self._epncore
+
 
 class FitsData(Data, dataset="fits"):
     """Base class for FITS formatted data."""
