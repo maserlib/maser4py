@@ -330,9 +330,13 @@ class CdfData(Data, dataset="cdf"):
         """Dataset selector for CDF files (must be ISTP compliant)"""
         with cls.open(filepath) as c:
             dataset = c.attrs["Logical_source"][...][0]
-            # Temporary fix:
+
+            # required dataset mapping
             if dataset == "srn_nda_routine_jup_edr":
                 dataset = "orn_nda_routine_jup_edr"
+            if dataset == "wi_wav_rad1_l3_df":
+                dataset = f"{dataset}_v{c.attrs['Skeleton_version']}"
+
         return dataset
 
     @property

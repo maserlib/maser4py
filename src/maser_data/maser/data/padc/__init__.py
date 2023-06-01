@@ -21,6 +21,7 @@ from .stereo import (  # noqa: F401
 from .expres import *  # noqa: F401, F403
 
 from .wind import (  # noqa: F401
-    WindWavesRad1L3DfData,
     WindWavesRad1L3AkrData,
+    WindWavesRad1L3DfV01Data,
+    WindWavesRad1L3DfV02Data,
 )

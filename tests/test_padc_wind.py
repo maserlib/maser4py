@@ -3,7 +3,7 @@ from .constants import BASEDIR
 import pytest
 from maser.data import Data
 from maser.data.base import CdfData
-from maser.data.padc.wind.data import WindWavesRad1L3AkrData, WindWavesRad1L3DfData
+from maser.data.padc.wind.data import WindWavesRad1L3AkrData, WindWavesRad1L3DfV01Data
 from astropy.units import Quantity
 from astropy.time import Time
 import xarray
@@ -15,7 +15,7 @@ TEST_FILES = {
     "wi_wa_rad1_l3-akr": [
         BASEDIR / "maser" / "wind" / "wi_wa_rad1_l3-akr_19990101_v01.cdf",
     ],
-    "wi_wav_rad1_l3_df": [
+    "wi_wav_rad1_l3_df_v01": [
         BASEDIR / "maser" / "wind" / "wi_wa_rad1_l3_df_19950119_v01.cdf",
     ],
 }
@@ -28,7 +28,7 @@ def wind_waves_l3_akr_file():
 
 @pytest.fixture
 def wind_waves_l3_df_file():
-    return TEST_FILES["wi_wav_rad1_l3_df"][0]
+    return TEST_FILES["wi_wav_rad1_l3_df_v01"][0]
 
 
 @skip_if_spacepy_not_available
@@ -78,7 +78,7 @@ def test_wind_waves_l3_akr_dataset__as_xarray(wind_waves_l3_akr_file):
 def test_wind_waves_l3_df_dataset(wind_waves_l3_df_file):
     data = Data(filepath=wind_waves_l3_df_file)
     assert isinstance(data, CdfData)
-    assert isinstance(data, WindWavesRad1L3DfData)
+    assert isinstance(data, WindWavesRad1L3DfV01Data)
 
 
 @skip_if_spacepy_not_available

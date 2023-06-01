@@ -244,7 +244,7 @@
       ]
     ],
     "wind": [
-      ["wi_wa_rad1_l3_df_19950119_v01.cdf", "wi_wav_rad1_l3_df"],
+      ["wi_wa_rad1_l3_df_19950119_v01.cdf", "wi_wav_rad1_l3_df_v01"],
       ["wi_wa_rad1_l3-akr_19990101_v01.cdf", "wi_wa_rad1_l3-akr"]
     ]
   },
