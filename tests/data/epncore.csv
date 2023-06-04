@@ -143,4 +143,5 @@
 "solo_L2_rpw-tnr-surv","solo_L2_rpw-tnr-surv_20220101_V02.cdf",,,,,,,"__skip__"
 "solo_L2_rpw-hfr-surv","solo_L2_rpw-hfr-surv_20220101_V01.cdf",,,,,,,"__skip__"
 "wi_wa_rad1_l3-akr","wi_wa_rad1_l3-akr_19990101_v01.cdf",163,"application/cdf","ds","Auroral Kilometric Radiation#AKR","wi_wa_rad1_l3-akr_19990101_v01.cdf","wi_wa_rad1_l3-akr","wi_wa_rad1_l3-akr:wi_wa_rad1_l3-akr_19990101_v01.cdf","wi_wa_rad1_19990101","Wind","Waves","PADC",1040.0,20.0,"planet","Earth","magnetosphere",2451180.4975194205,2451179.500608853,183.0,183.0
-"wi_wav_rad1_l3_df","wi_wa_rad1_l3_df_19950119_v01.cdf",,,,,,,"__skip__"
+"wi_wav_rad1_l3_df_v01","wi_wa_rad1_l3_df_19950119_v01.cdf",,,,,,,"__skip__"
+"wi_wav_rad1_l3_df_v02","wi_wa_rad1_l3_df_19950119_v02.cdf",,,,,,,"__skip__"

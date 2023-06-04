@@ -35,6 +35,8 @@ from .padc import (  # noqa: F401
     StbWavLfrL3DfCdf,
     StaWavHfrL3DfCdf,
     StbWavHfrL3DfCdf,
+    WindWavesRad1L3DfV01Data,
+    WindWavesRad1L3DfV02Data,
 )
 
 from .pds import (  # noqa: F401
