@@ -245,13 +245,19 @@
     ],
     "wind": [
       ["wi_wa_rad1_l3_df_19950119_v01.cdf", "wi_wav_rad1_l3_df_v01"],
+      ["wi_wa_rad1_l3_df_19941110_v02.cdf", "wi_wav_rad1_l3_df_v02"],
       ["wi_wa_rad1_l3_df_20230523_v02.cdf", "wi_wav_rad1_l3_df_v02"],
       ["wi_wa_rad1_l3-akr_19990101_v01.cdf", "wi_wa_rad1_l3-akr"]
     ]
   },
   "nda": {
     "routine": [
+      ["S230523.RT1", "orn_nda_routine_sun_raw"],
       ["J160131.RT1", "orn_nda_routine_jup_raw"],
+      [
+        "srn_nda_routine_sun_edr_202305231352_202305231534_V17.cdf",
+        "orn_nda_routine_sun_edr"
+      ],
       [
         "srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf",
         "orn_nda_routine_jup_edr"
