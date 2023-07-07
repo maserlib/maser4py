@@ -242,9 +242,9 @@ def test_rpw_hfr_surv_dataset__sweeps(filepath):
             "VOLTAGE_SPECTRAL_POWER1",
             "VOLTAGE_SPECTRAL_POWER2",
         ]
-        assert len(sweep[2]) == 192
-        assert list(sweep[3]) == [5, 10]
-        assert sweep[4] == 1
+        assert len(sweep[2]) == 40
+        assert list(sweep[3]) == ["V2-V3", "HF_V2-V3"]
+        assert sweep[4] == "SURVEY_BURST"
 
 
 @pytest.mark.test_data_required

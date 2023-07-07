@@ -194,6 +194,7 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                     "sensor": (["time", "channel"], sensor_config),
                 },
                 dims=["channel", "time"],
+                attrs={"units": units},
             )
         else:
 
