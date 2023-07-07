@@ -5,7 +5,8 @@ from astropy.time import Time
 import numpy as np
 import xarray
 from .sweeps import WindWavesRad1Sweeps
-from functools import lru_cache
+
+# from functools import lru_cache
 from .utils import get_indices
 
 
@@ -119,15 +120,10 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
     ]
 
     @property
-    @lru_cache(maxsize=32)
-    def dirty_sorting(self):
-        return np.argsort(self.file["Epoch"][...])
-
-    @property
     def frequencies(self):
         if self._frequencies is None:
             units = self.file["FREQUENCY"].attrs["UNITS"]
-            freq = self.file["FREQUENCY"][...][self.dirty_sorting]
+            freq = self.file["FREQUENCY"][...]
             if self.access_mode == "sweeps":
                 freq = np.unique(np.sort(freq[:64]))
             self._frequencies = freq * Unit(units)
@@ -137,7 +133,7 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
     def times(self):
         if self._times is None:
             with self.open(self.filepath) as cdf_file:
-                times = Time(cdf_file["Epoch"][...])[self.dirty_sorting]
+                times = Time(cdf_file["Epoch"][...])
                 if self.access_mode == "sweeps":
                     times = times[::16]
                 self._times = times
@@ -154,7 +150,7 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
         for dataset_key in self._dataset_keys:
             data_ext = self.file[dataset_key]
             data_attr = data_ext.attrs
-            data_raw = data_ext[...][self.dirty_sorting].reshape(nsweep_raw, nstep_raw)
+            data_raw = data_ext[...].reshape(nsweep_raw, nstep_raw)
             data_raw = np.where(data_raw == data_attr["FILLVAL"], np.nan, data_raw)
 
             data = np.zeros((nstep, nsweep))
