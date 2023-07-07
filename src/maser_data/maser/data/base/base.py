@@ -334,6 +334,8 @@ class CdfData(Data, dataset="cdf"):
             # required dataset mapping
             if dataset == "srn_nda_routine_jup_edr":
                 dataset = "orn_nda_routine_jup_edr"
+            if dataset == "srn_nda_routine_sun_edr":
+                dataset = "orn_nda_routine_sun_edr"
             if dataset == "wi_wav_rad1_l3_df":
                 dataset = f"{dataset}_v{c.attrs['Skeleton_version']}"
 
