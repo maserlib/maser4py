@@ -31,10 +31,10 @@ maser = 'maser.script:main'
 python = ">=3.8,<4"
 jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
-spacepy = {version = "^0.4.0", optional = true}
-maser-data = {version = "^0.3.0", optional = true}
-maser-plot = {version = "^0.2.0", optional = true}
-maser-tools = {version = "^0.1.0", optional = true}
+spacepy = {version = "^0.4", optional = true}
+maser-data = {version = ">=0.3.4,<1.0", optional = true}
+maser-plot = {version = ">=0.2.0,<1.0", optional = true}
+maser-tools = {version = ">=0.1.0,<1.0", optional = true}
 
 [tool.poetry.extras]
 jupyter = ["jupyter", "jupytext"]

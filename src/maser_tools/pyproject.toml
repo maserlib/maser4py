@@ -13,10 +13,14 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
 numpy = "^1.23.3"
-spacepy = "^0.4.0"
+spacepy = {version = "^0.4", optional = true}
 openpyxl = "^3.0.10"
 pytz = "^2022.4"
 jinja2 = "^3.1.2"
+
+[tool.poetry.extras]
+spacepy = ["spacepy"]
+all = ["spacepy"]
 
 [build-system]
 requires = ["poetry>=1.1.4", "setuptools"]
