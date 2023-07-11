@@ -78,7 +78,11 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
         datasets = xarray.Dataset(
             data_vars=data_vars,
             coords={
-                "frequency": (["frequency"],self.frequencies.value, {"units": self.frequencies.unit}),
+                "frequency": (
+                    ["frequency"],
+                    self.frequencies.value,
+                    {"units": self.frequencies.unit},
+                ),
                 "time": self.times.to_datetime(),
             },
         ).sortby("frequency")
@@ -109,18 +113,19 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
         md["publisher"] = "PADC"
         return md
 
-    #def quicklook(self, output_format="png"):
+    # def quicklook(self, output_format="png"):
     #    xr = self.as_xarray()
     #    #xr["L"].plot(vmin=40, vmax=70)
     #    xr["STOKES_I"].plot()
     def quicklook(self, file_png=None):
         self._quicklook(
-            keys=["STOKES_I", "STOKES_Q"],
+            keys=["PSD_FLUX", "STOKES_I"],
             file_png=file_png,
-            #vmin=[68, 68],
-            #vmax=[94, 94],
+            # vmin=[68, 68],
+            # vmax=[94, 94],
             db=[True, True],
         )
+
 
 class StaWavLfrL3DfCdf(StWavL3Cdf, dataset="sta_l3_wav_lfr"):
     """PADC/MASER STEREO-A Waves LFR Level 3 Direction-Finding dataset
