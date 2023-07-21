@@ -16,6 +16,7 @@ from maser.data.cdpp import (
 )
 from maser.data.cdpp.wind.sweeps import WindWavesL2Sweep
 import pytest
+from pathlib import Path
 
 TEST_FILES = {
     "cdpp_wi_wa_rad1_l2_60s_v2": [
@@ -84,6 +85,16 @@ def test_wi_wa_rad1_l2_bin_dataset__frequencies():
     assert len(data.frequencies) == 120
     assert data.frequencies[0][0] == 1040 * Unit("kHz")
     assert data.frequencies[0][-1] == 20 * Unit("kHz")
+
+
+@pytest.mark.test_data_required
+def test_wi_wa_rad1_l2_bin_dataset_quicklook():
+    filepath = TEST_FILES["cdpp_wi_wa_rad1_l2"][0]
+    ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+    data = Data(filepath=filepath)
+    data.quicklook(ql_path_tmp)
+    assert ql_path_tmp.is_file()
+    ql_path_tmp.unlink()
 
 
 @pytest.mark.test_data_required

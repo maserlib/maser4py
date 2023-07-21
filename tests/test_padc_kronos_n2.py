@@ -7,6 +7,7 @@ from maser.data.padc.cassini.data import CoRpwsHfrKronosN2Data
 
 from astropy.time import Time
 from astropy.units import Quantity
+from pathlib import Path
 
 # import xarray
 
@@ -104,3 +105,13 @@ def test_co_rpws_hfr_kronos_n2_bin_dataset__frequencies_records():
     assert data.frequencies[0].value == pytest.approx(3.6856)
     assert data.frequencies[-1].value == pytest.approx(16025)
     assert data.frequencies.unit == "kHz"
+
+
+@pytest.mark.test_data_required
+def test_co_rpws_hfr_kronos_n2_bin_dataset_quicklook():
+    for filepath in TEST_FILES["co_rpws_hfr_kronos_n2"]:
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()

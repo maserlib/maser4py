@@ -9,6 +9,7 @@ from astropy.time import Time
 from astropy.units import Quantity, Unit
 
 from xarray.core.dataarray import DataArray
+from pathlib import Path
 
 TEST_FILES = {
     "co_rpws_hfr_kronos_n1": [
@@ -144,3 +145,13 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__records_data():
     filepath = TEST_FILES["co_rpws_hfr_kronos_n1"][0]
     data = Data(filepath=filepath)
     assert all(dd == rd for dd, rd in zip(data._data, data.records))
+
+
+@pytest.mark.test_data_required
+def test_co_rpws_hfr_kronos_n1_bin_dataset_quicklook():
+    for filepath in TEST_FILES["co_rpws_hfr_kronos_n1"]:
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
