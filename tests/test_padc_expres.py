@@ -7,6 +7,7 @@ from maser.data.base.sweeps import Sweep
 from maser.data.padc import ExpresCdfData
 import pytest
 from .fixtures import skip_if_spacepy_not_available
+from pathlib import Path
 
 
 TEST_FILES = {
@@ -86,3 +87,12 @@ class TestExpres:
             assert isinstance(sweep_data, dict)
             assert sweep.data["Theta"].shape == (781, 1, 2)
             break
+
+    @pytest.mark.test_data_required
+    def test_express_quicklook(self):
+        filepath = TEST_FILES["expres_juno_jupiter_ganymede"]
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath, source="Ganymede NORTH")
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()

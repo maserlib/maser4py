@@ -11,6 +11,7 @@ from maser.data.padc.wind.data import (
 from astropy.units import Quantity
 from astropy.time import Time
 import xarray
+from pathlib import Path
 
 
 from .fixtures import skip_if_spacepy_not_available
@@ -115,3 +116,13 @@ def test_wind_waves_l3_df_dataset__times(wind_waves_l3_df_files):
         data = Data(filepath=data_file)
         assert isinstance(data.times, Time)
         assert len(data.times) == int(len(data.file["Epoch"][...]) / 16)
+
+
+@pytest.mark.test_data_required
+def test_wind_waves_l3_df_dataset_quicklook(wind_waves_l3_df_files):
+    for filepath in wind_waves_l3_df_files:
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()

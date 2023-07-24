@@ -8,6 +8,7 @@ from astropy.units import Quantity
 from astropy.time import Time
 
 from .fixtures import skip_if_spacepy_not_available
+from pathlib import Path
 
 TEST_FILES = {
     "sta_l3_wav_lfr": [
@@ -60,3 +61,14 @@ def test_swaves_l3_cdf_dataset__times():
     data = Data(filepath=filepath)
     assert isinstance(data.times, Time)
     assert len(data.times) == 2476
+
+
+@pytest.mark.test_data_required
+#  @for_each_test_l3_file
+def test_swaves_l3_cdf_dataset_quicklook():
+    filepath = TEST_FILES["sta_l3_wav_hfr"][0]
+    ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+    data = Data(filepath=filepath)
+    data.quicklook(ql_path_tmp)
+    assert ql_path_tmp.is_file()
+    ql_path_tmp.unlink()
