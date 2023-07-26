@@ -10,6 +10,7 @@ from maser.data.nancay import (
 )
 import pytest
 from .fixtures import skip_if_spacepy_not_available
+import xarray
 from pathlib import Path
 
 TEST_FILES = {
@@ -122,7 +123,7 @@ def test_orn_nda_routine_jup_edr_dataset_as_xarray():
     for filepath in TEST_FILES["orn_nda_routine_jup_edr"]:
         data = Data(filepath=filepath)
         xr = data.as_xarray()
-        assert isinstance(xr, dict)
+        assert isinstance(xr, xarray.Dataset)
         assert set(xr.keys()) == {"LL", "RR"}
         assert xr["LL"].shape == (400, 28734)
         assert xr["LL"].attrs["units"] == "dB"
@@ -217,7 +218,7 @@ def test_orn_nda_routine_sun_edr_dataset_as_xarray():
     for filepath in TEST_FILES["orn_nda_routine_sun_edr"]:
         data = Data(filepath=filepath)
         xr = data.as_xarray()
-        assert isinstance(xr, dict)
+        assert isinstance(xr, xarray.Dataset)
         assert set(xr.keys()) == {"LL", "RR"}
         assert xr["LL"].shape == (400, 6169)  # 28734)
         assert xr["LL"].attrs["units"] == "dB"
@@ -277,7 +278,7 @@ def test_orn_nda_newroutine_jup_edr_dataset_as_xarray():
     for filepath in TEST_FILES["orn_nda_newroutine_jup_edr"]:
         data = Data(filepath=filepath)
         xr = data.as_xarray()
-        assert isinstance(xr, dict)
+        assert isinstance(xr, xarray.Dataset)
         assert set(xr.keys()) == {"LL", "RR", "LR_RE", "LR_IM"}
         assert xr["LL"].shape == (615, 58186)
         assert xr["LL"].attrs["units"] == "V**2/Hz"
@@ -304,7 +305,7 @@ def test_orn_nda_newroutine_sun_edr_dataset_as_xarray():
     for filepath in TEST_FILES["orn_nda_newroutine_sun_edr"]:
         data = Data(filepath=filepath)
         xr = data.as_xarray()
-        assert isinstance(xr, dict)
+        assert isinstance(xr, xarray.Dataset)
         assert set(xr.keys()) == {"LL", "RR"}
         assert xr["LL"].shape == (1598, 11538)
         assert xr["LL"].attrs["units"] == "V**2/Hz"
@@ -334,7 +335,7 @@ def test_orn_nda_mefisto_sun_edr_dataset_as_xarray():
     for filepath in TEST_FILES["orn_nda_mefisto_sun_edr"]:
         data = Data(filepath=filepath)
         xr = data.as_xarray()
-        assert isinstance(xr, dict)
+        assert isinstance(xr, xarray.Dataset)
         assert set(xr.keys()) == {"LL", "RR"}
         assert xr["LL"].shape == (390, 53066)
         assert xr["LL"].attrs["units"] == "V**2/Hz"

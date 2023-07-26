@@ -19,6 +19,10 @@ class JnoWavLesiaL3aV02Sweeps(Sweeps):
 class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
     _iter_sweep_class = JnoWavLesiaL3aV02Sweeps
 
+    _dataset_keys = [
+        "DEFAULT",
+    ]
+
     @property
     def frequencies(self):
         if self._frequencies is None:
@@ -38,15 +42,22 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
     def as_xarray(self):
         import xarray
 
-        datasets = xarray.DataArray(
-            data=self.file["Data"][...].T,
-            name=self.dataset,
-            coords=[
-                ("frequency", self.frequencies.value, {"units": self.frequencies.unit}),
-                ("time", self.times.to_datetime()),
-            ],
-            dims=("frequency", "time"),
-            attrs={"units": self.file["Data"].attrs["UNITS"]},
-        )
+        datasets = {}
 
-        return datasets.sortby("frequency")
+        for dataset_key in self._dataset_keys:
+            dataset = xarray.DataArray(
+                data=self.file["Data"][...].T,
+                name=self.dataset,
+                coords=[
+                    (
+                        "frequency",
+                        self.frequencies.value,
+                        {"units": self.frequencies.unit},
+                    ),
+                    ("time", self.times.to_datetime()),
+                ],
+                dims=("frequency", "time"),
+                attrs={"units": self.file["Data"].attrs["UNITS"]},
+            )
+            datasets[dataset_key] = dataset.sortby("frequency")
+        return xarray.Dataset(data_vars=datasets)

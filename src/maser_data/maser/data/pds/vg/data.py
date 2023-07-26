@@ -171,7 +171,7 @@ class VgPra3RdrLowband6secV1Data(
                 dims=("time", "frequency"),
             )
 
-        return datasets
+        return xarray.Dataset(data_vars=datasets)
 
 
 class Vg1JPra3RdrLowband6secV1Data(
@@ -338,7 +338,7 @@ class VgPra4RSummBrowse48secV1Data(
                 dims=("frequency", "time"),
             )
 
-        return datasets
+        return xarray.Dataset(data_vars=datasets)
 
     def epncore(self):
         md = Pds3DataTimeSeries.epncore(self)

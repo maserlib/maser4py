@@ -206,7 +206,7 @@ class InterballAuroralPolradRspBinData(
                 attrs={"units": dataset_unit},
             )
 
-        return datasets
+        return xarray.Dataset(data_vars=datasets)
 
     def quicklook(self, file_png=None):
         self._quicklook(

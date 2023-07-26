@@ -10,6 +10,7 @@ from maser.data.pds import (
     Vg1JPra4SummBrowse48secV1Data,
 )
 import pytest
+import xarray
 from astropy.time import Time
 from astropy.units import Quantity
 
@@ -88,6 +89,9 @@ def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__as_xarray():
     for filepath in TEST_FILES["vg1_j_pra_3_rdr_lowband_6sec_v1"]:
         with Data(filepath=filepath, access_mode="file") as data:
             assert isinstance(data, dict)
+        datax = Data(filepath=filepath)
+        xr = datax.as_xarray()
+        assert isinstance(xr, xarray.Dataset)
 
 
 @pytest.mark.test_data_required

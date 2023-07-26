@@ -136,7 +136,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
     #         _hemisphere_id = np.argwhere(available_hemisphere_values == hemisphere_name)[0, 0]
     #         self._hemisphere = self.file['Hemisphere_ID_Label'][...][_hemisphere_id]
 
-    def as_xarray(self) -> dict:
+    def as_xarray(self) -> xarray.Dataset:
         """ """
 
         datasets = {}
@@ -215,7 +215,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
                 # No dependency based on source
                 pass
 
-        return datasets
+        return xarray.Dataset(data_vars=datasets)
 
     def quicklook(self, file_png: Union[str, Path, None] = None, **kwargs) -> None:
         if self.source is None:

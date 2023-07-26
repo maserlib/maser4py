@@ -45,4 +45,4 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
                 "target": self.file[0].header["OBJECT"].strip(),
             },
         )
-        return dataset
+        return xarray.Dataset(data_vars=dataset)

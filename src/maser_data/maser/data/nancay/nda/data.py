@@ -54,7 +54,7 @@ class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
                     "title": self.file[dataset_key].attrs["CATDESC"],
                 },
             )
-        return datasets
+        return xarray.Dataset(data_vars=datasets)
 
     def quicklook(self, file_png: Union[str, Path, None] = None):
         self._quicklook(
@@ -136,7 +136,7 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
                     "title": f"{self.file[0].header['TITLE']} ({dataset_key} component)",
                 },
             )
-        return datasets
+        return xarray.Dataset(data_vars=datasets)
 
 
 class OrnNdaNewRoutineSunEdrFitsData(

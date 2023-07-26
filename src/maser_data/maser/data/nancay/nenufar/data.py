@@ -98,4 +98,4 @@ class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
                 },
             )
 
-        return datasets
+        return xarray.Dataset(data_vars=datasets)

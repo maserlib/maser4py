@@ -77,7 +77,7 @@ def test_jno_wav_cdr_lesia__as_xarray(filepath):
         test_array = data.as_xarray()
 
         # check the sweep content
-        assert isinstance(test_array, xarray.DataArray)
+        assert isinstance(test_array, xarray.Dataset)
         assert test_array.coords["frequency"].data[0] == pytest.approx(0.048828)
-        assert test_array.attrs["units"] == "V**2 m**-2 Hz**-1"
-        assert test_array.data[0][0] == pytest.approx(3.211884e-06)
+        assert test_array["DEFAULT"].attrs["units"] == "V**2 m**-2 Hz**-1"
+        assert test_array["DEFAULT"].data[0][0] == pytest.approx(3.211884e-06)

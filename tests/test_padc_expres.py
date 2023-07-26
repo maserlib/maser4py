@@ -7,6 +7,7 @@ from maser.data.base.sweeps import Sweep
 from maser.data.padc import ExpresCdfData
 import pytest
 from .fixtures import skip_if_spacepy_not_available
+import xarray
 from pathlib import Path
 
 
@@ -60,7 +61,7 @@ class TestExpres:
     @pytest.mark.test_data_required
     def test_as_xarray(self) -> None:
         xarrays = self.data.as_xarray()
-        assert isinstance(xarrays, dict)
+        assert isinstance(xarrays, xarray.Dataset)
         assert xarrays["CML"].units == "deg"
         assert xarrays["CML"].coords["time"].values.dtype.str == "<M8[ns]"
 

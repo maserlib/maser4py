@@ -67,6 +67,10 @@ class MexMMarsis3RdrAisV1Data(
 ):
     _iter_sweep_class = MexMMarsis3RdrAisV1Sweeps
 
+    _dataset_keys = [
+        "DEFAULT",
+    ]
+
     def __init__(
         self,
         filepath: Path,
@@ -144,18 +148,21 @@ class MexMMarsis3RdrAisV1Data(
     def as_xarray(self):
         import xarray
 
-        datasets = xarray.DataArray(
-            data=numpy.array([item.table for item in self.sweeps]).T,
-            name=self.dataset,
-            coords=[
-                ("frequency", self.frequencies, {"units": "kHz"}),
-                ("time", self.times.to_datetime()),
-            ],
-            dims=("frequency", "time"),
-            attrs={"units": "W m^-2 Hz^-1"},
-        )
+        datasets = {}
 
-        return datasets
+        for dataset_key in self._dataset_keys:
+            datasets[dataset_key] = xarray.DataArray(
+                data=numpy.array([item.table for item in self.sweeps]).T,
+                name=self.dataset,
+                coords=[
+                    ("frequency", self.frequencies, {"units": "kHz"}),
+                    ("time", self.times.to_datetime()),
+                ],
+                dims=("frequency", "time"),
+                attrs={"units": "W m^-2 Hz^-1"},
+            )
+
+        return xarray.Dataset(data_vars=datasets)
 
 
 class MexMMarsis3RdrAisExt1V1Data(

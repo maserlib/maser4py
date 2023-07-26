@@ -9,6 +9,7 @@ from maser.data.cdpp import (
     InterballAuroralPolradRspRecord,
 )
 import pytest
+import xarray
 from pathlib import Path
 
 
@@ -274,7 +275,7 @@ def test_int_aur_polrad_rsp_bin_dataset__as_xarray():
     for filepath, time_len in zip(TEST_FILES["cdpp_int_aur_polrad_rspn2"], [4959, 367]):
         data = Data(filepath=filepath)
         xr = data.as_xarray()
-        assert isinstance(xr, dict)
+        assert isinstance(xr, xarray.Dataset)
         assert set(xr.keys()) == {"EX", "EY", "EZ"}
         assert xr["EY"].shape == (240, time_len)
         assert xr["EY"].attrs["units"] == "W m^-2 Hz^-1"

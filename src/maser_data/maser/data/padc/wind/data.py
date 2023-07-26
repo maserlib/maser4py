@@ -177,7 +177,7 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
                 },
             )
 
-        return datasets
+        return xarray.Dataset(data_vars=datasets)
 
     def quicklook(self, file_png=None):
         self._quicklook(
