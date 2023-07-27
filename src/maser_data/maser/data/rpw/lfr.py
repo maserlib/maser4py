@@ -78,6 +78,8 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
             "SX_REA": {},
         }
 
+        datasets = {}
+
         default_units = {"PB": "nT^2/Hz"}
 
         for frequency_band in self.frequency_band_labels:
@@ -112,7 +114,8 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                 if not attrs["units"].strip():
                     attrs["units"] = default_units.get(dataset_key, "")
 
-                dataset[dataset_key][frequency_band] = xarray.DataArray(
+                # dataset[dataset_key][frequency_band] = xarray.DataArray(
+                datasets[dataset_key + "_" + frequency_band] = xarray.DataArray(
                     values,
                     coords=[
                         ("time", times, time_attrs),
@@ -122,4 +125,4 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                     name=f"{dataset_key}_{frequency_band}",
                 )
 
-        return dataset
+        return xarray.Dataset(data_vars=datasets)

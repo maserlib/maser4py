@@ -11,6 +11,7 @@ from .records import Records
 
 from astropy.time import Time
 from astropy.units import Quantity, Unit
+import xarray
 
 
 class BaseData:
@@ -160,8 +161,8 @@ class Data(BaseData, dataset="default"):
         """Generic method to get the data as a numpy.array."""
         pass
 
-    def as_xarray(self) -> dict:
-        """Generic method to get the data as a dict with xarray.DataArray values"""
+    def as_xarray(self) -> xarray.Dataset:
+        """Generic method to get the data as a xarray.Dataset (a more efficient dict with xarray.DataArray) values"""
         pass
 
     def __enter__(self):

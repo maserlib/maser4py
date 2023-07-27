@@ -88,17 +88,24 @@ def test_rpw_lfr_surv_bp1_dataset__as_xarray(filepath):
 
         expected_keys = ["PB", "PE", "DOP", "ELLIP", "SX_REA"]
         expected_frequency_ranges = ["B_F1", "B_F0"]
+        expected_full_keys = []
+        for keys in expected_keys:
+            for freq in expected_frequency_ranges:
+                expected_full_keys.append(keys + "_" + freq)
 
         # check the sweep content
-        assert len(datasets.keys()) == 5
-        assert sorted(list(datasets.keys())) == sorted(expected_keys)
-        assert list(datasets[expected_keys[0]].keys()) == expected_frequency_ranges
+        assert len(datasets.keys()) == 5 * 2
+        # assert sorted(list(datasets.keys())) == sorted(expected_keys)
+        # assert list(datasets[expected_keys[0]].keys()) == expected_frequency_ranges
+        assert sorted(list(datasets.keys())) == sorted(expected_full_keys)
 
-        test_array = datasets[expected_keys[0]][expected_frequency_ranges[0]]
+        test_array = datasets[expected_keys[0] + "_" + expected_frequency_ranges[0]]
         assert isinstance(test_array, xarray.DataArray)
         assert test_array.coords["frequency"][0] == pytest.approx(120)
         assert test_array.attrs["units"] == "nT^2/Hz"
-        assert test_array.data[0][0] == pytest.approx(5.73584540e-08)
+        assert test_array.dropna(dim="time", how="all").data[0][0] == pytest.approx(
+            5.73584540e-08
+        )
 
 
 # TEST solo_L2_rpw-tnr-surv
