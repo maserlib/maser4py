@@ -6,6 +6,7 @@ from maser.data.base import CdfData
 from maser.data.padc.juno import JnoWavLesiaL3aV02Data
 from astropy.time import Time
 from astropy.units import Quantity, Unit
+from pathlib import Path
 import xarray
 from .fixtures import skip_if_spacepy_not_available
 
@@ -81,3 +82,16 @@ def test_jno_wav_cdr_lesia__as_xarray(filepath):
         assert test_array.coords["frequency"].data[0] == pytest.approx(0.048828)
         assert test_array["DEFAULT"].attrs["units"] == "V**2 m**-2 Hz**-1"
         assert test_array["DEFAULT"].data[0][0] == pytest.approx(3.211884e-06)
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_jno_wav_cdr_lesia_quicklook(filepath):
+    with Data(filepath=filepath) as data:
+        #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data.quicklook(ql_path_tmp)
+        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()

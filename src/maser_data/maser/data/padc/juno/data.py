@@ -2,6 +2,8 @@
 from maser.data.base import CdfData, Sweeps
 from astropy.units import Unit
 from astropy.time import Time
+from typing import Union
+from pathlib import Path
 
 
 class JnoWavLesiaL3aV02Sweeps(Sweeps):
@@ -61,3 +63,9 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
             )
             datasets[dataset_key] = dataset.sortby("frequency")
         return xarray.Dataset(data_vars=datasets)
+
+    def quicklook(self, file_png: Union[str, Path, None] = None):
+        self._quicklook(
+            keys=["DEFAULT", "DEFAULT"],
+            file_png=file_png,
+        )
