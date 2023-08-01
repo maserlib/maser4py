@@ -6,6 +6,7 @@ from maser.data import Data
 from maser.data.ecallisto import (
     ECallistoFitsData,
 )
+from pathlib import Path
 from astropy.io import fits
 import pytest
 
@@ -49,3 +50,15 @@ def test_ecallisto_dataset__frequencies():
             assert len(data.frequencies) == 200
             assert data.frequencies[0] == 105.5 * Unit("MHz")
             assert data.frequencies[-1] == 10 * Unit("MHz")
+
+
+@pytest.mark.test_data_required
+def test_ecallisto_dataset_quicklook():
+    for filepath in TEST_FILES["ecallisto"]:
+        #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
