@@ -57,7 +57,7 @@ from .psa import MexMMarsis3RdrAisExt4V1Data  # noqa: F401
 from .rpw import (  # noqa: F401
     RpwLfrSurvBp1,
 )
-
+from .sorbet import SorbetCdfData  # noqa: F401
 
 if __name__ == "__main__":
     data = Data(filepath=Path("toto.txt"), dataset="cdf")
