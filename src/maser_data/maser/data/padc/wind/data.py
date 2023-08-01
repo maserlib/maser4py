@@ -66,6 +66,15 @@ class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):
             ).transpose("frequency", "time")
         return xarray.Dataset(data_vars=datasets)
 
+    def quicklook(self, file_png=None):
+        self._quicklook(
+            keys=["FLUX_DENSITY", "SNR"],
+            file_png=file_png,
+            # vmin=[68, 68],
+            # vmax=[94, 94],
+            db=[True, True],
+        )
+
     def epncore(self):
         if self._epncore is None:
             self._epncore = CdfData.epncore(self)

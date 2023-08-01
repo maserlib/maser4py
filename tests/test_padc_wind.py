@@ -87,6 +87,17 @@ def test_wind_waves_l3_akr_dataset__as_xarray(wind_waves_l3_akr_files):
 
 @skip_if_spacepy_not_available
 @pytest.mark.test_data_required
+def test_wind_waves_l3_akr_dataset_quicklook(wind_waves_l3_akr_files):
+    for filepath in wind_waves_l3_akr_files:
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+
+@skip_if_spacepy_not_available
+@pytest.mark.test_data_required
 def test_wind_waves_l3_df_dataset(wind_waves_l3_df_files):
     for data_file in wind_waves_l3_df_files:
         data = Data(filepath=data_file)
