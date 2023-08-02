@@ -169,9 +169,15 @@ class VgPra3RdrLowband6secV1Data(
                 ],
                 attrs={"units": dataset_unit},
                 dims=("time", "frequency"),
-            )
+            ).sortby("time")
 
         return xarray.Dataset(data_vars=datasets)
+
+    def quicklook(self, file_png: Union[str, Path, None] = None):
+        self._quicklook(
+            keys=["L", "R"],
+            file_png=file_png,
+        )
 
 
 class Vg1JPra3RdrLowband6secV1Data(
@@ -339,6 +345,12 @@ class VgPra4RSummBrowse48secV1Data(
             )
 
         return xarray.Dataset(data_vars=datasets)
+
+    def quicklook(self, file_png: Union[str, Path, None] = None):
+        self._quicklook(
+            keys=["L", "R"],
+            file_png=file_png,
+        )
 
     def epncore(self):
         md = Pds3DataTimeSeries.epncore(self)

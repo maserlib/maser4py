@@ -11,6 +11,7 @@ from maser.data.pds import (
 )
 import pytest
 import xarray
+from pathlib import Path
 from astropy.time import Time
 from astropy.units import Quantity
 
@@ -112,6 +113,35 @@ def test_vg_rdr_lowband_6sec_v1_dataset__frequencies():
             freqs = data.frequencies
             assert isinstance(freqs, Quantity)
             assert len(freqs) == 70
+
+
+@pytest.mark.test_data_required
+def test_vg_rdr_lowband_6sec_v1_dataset_as_xarray():
+    for dataset in TEST_FILES.keys():
+        for filepath in TEST_FILES[dataset]:
+            data = Data(filepath=filepath)
+            xr = data.as_xarray()
+            assert isinstance(xr, xarray.Dataset)
+            if "rdr_lowband_6sec_v1" in dataset:
+                assert set(xr.keys()) == {"L", "R", "any"}
+                #  assert xr["L"].shape == (284552, 70)
+            elif "summ_browse_48sec_v1" in dataset:
+                assert set(xr.keys()) == {"L", "R"}
+                #  assert xr["L"].shape == (70, 1661)
+            assert xr["L"].attrs["units"] == "dB"
+
+
+@pytest.mark.test_data_required
+def test_vg_rdr_lowband_6sec_v1_dataset_quicklook():
+    for dataset in TEST_FILES.keys():
+        for filepath in TEST_FILES[dataset]:
+            #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+            ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+            data = Data(filepath=filepath)
+            data.quicklook(ql_path_tmp)
+            #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+            assert ql_path_tmp.is_file()
+            ql_path_tmp.unlink()
 
 
 @pytest.mark.test_data_required
