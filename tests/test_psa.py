@@ -8,6 +8,7 @@ from maser.data.psa import (
 )
 from maser.data.pds import Pds3Data
 import pytest
+from pathlib import Path
 from astropy.units import Quantity
 
 
@@ -67,3 +68,16 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__iter_method__sweeps(mex_data):
         "data_type",
         "mode_selection",
     }
+
+
+@pytest.mark.test_data_required
+def test_mex_m_marsis_3_rdr_ais_ext4_v1_0_quicklook():
+    for dataset in TEST_FILES.keys():
+        for filepath in TEST_FILES[dataset]:
+            #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+            ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+            data = Data(filepath=filepath)
+            data.quicklook(ql_path_tmp)
+            #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+            assert ql_path_tmp.is_file()
+            ql_path_tmp.unlink()

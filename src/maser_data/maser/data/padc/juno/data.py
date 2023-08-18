@@ -65,7 +65,4 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(self, file_png: Union[str, Path, None] = None):
-        self._quicklook(
-            keys=["DEFAULT", "DEFAULT"],
-            file_png=file_png,
-        )
+        self._quicklook(keys=["DEFAULT", "DEFAULT"], file_png=file_png, db=[True, True])

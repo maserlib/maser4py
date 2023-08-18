@@ -164,6 +164,12 @@ class MexMMarsis3RdrAisV1Data(
 
         return xarray.Dataset(data_vars=datasets)
 
+    def quicklook(self, file_png: Union[str, Path, None] = None):
+        self._quicklook(
+            keys=["DEFAULT", "DEFAULT"],
+            file_png=file_png,
+        )
+
 
 class MexMMarsis3RdrAisExt1V1Data(
     MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT1-V1.0"
