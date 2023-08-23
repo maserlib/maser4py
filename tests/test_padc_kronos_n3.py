@@ -123,10 +123,10 @@ def test_co_rpws_hfr_kronos_n3_frequencies():
 @pytest.mark.test_data_required
 def test_co_rpws_hfr_kronos_n3d_quicklook():
     for filepath in TEST_FILES["co_rpws_hfr_kronos_n3d"]:
-        ql_path = BASEDIR.parent / "quicklook" / "kronos" / f"{filepath.name}.png"
+        # ql_path = BASEDIR.parent / "quicklook" / "kronos" / f"{filepath.name}.png"
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
-        data.quicklook(ql_path)
+        # data.quicklook(ql_path)
         data.quicklook(ql_path_tmp)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
@@ -147,10 +147,10 @@ def test_co_rpws_hfr_kronos_n3e_bin_dataset():
 @pytest.mark.test_data_required
 def test_co_rpws_hfr_kronos_n3e_quicklook():
     for filepath in TEST_FILES["co_rpws_hfr_kronos_n3e"]:
-        ql_path = BASEDIR.parent / "quicklook" / "kronos" / f"{filepath.name}.png"
+        # ql_path = BASEDIR.parent / "quicklook" / "kronos" / f"{filepath.name}.png"
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
-        data.quicklook(ql_path)
+        # data.quicklook(ql_path)
         data.quicklook(ql_path_tmp)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
