@@ -10,6 +10,7 @@ from maser.data.pds import Pds3Data
 import pytest
 from pathlib import Path
 from astropy.units import Quantity
+import xarray
 
 
 TEST_FILES = {
@@ -68,6 +69,18 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__iter_method__sweeps(mex_data):
         "data_type",
         "mode_selection",
     }
+
+
+@pytest.mark.test_data_required
+def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__as_xarray(mex_data):
+    data = mex_data
+    xr = data.as_xarray()
+    assert isinstance(xr, xarray.Dataset)
+    assert set(xr.keys()) == {"DEFAULT", "DEFAULT"}
+    assert xr.coords.dims == {"time": 1057, "frequency": 160}
+    assert xr["DEFAULT"].dims == ("frequency", "time")
+    assert xr["DEFAULT"].shape == (160, 1057)
+    assert xr["DEFAULT"].units == "W m^-2 Hz^-1"
 
 
 @pytest.mark.test_data_required

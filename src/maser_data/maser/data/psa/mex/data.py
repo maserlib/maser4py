@@ -153,6 +153,7 @@ class MexMMarsis3RdrAisV1Data(
         for dataset_key in self._dataset_keys:
             datasets[dataset_key] = xarray.DataArray(
                 data=numpy.array([item.table for item in self.sweeps]).T,
+                # data=numpy.array([item.data for item in self.sweeps]).T[0],
                 name=self.dataset,
                 coords=[
                     ("frequency", self.frequencies, {"units": "kHz"}),
