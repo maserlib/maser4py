@@ -272,8 +272,12 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
 
         return xarray.Dataset({"VOLTAGE_SPECTRAL_POWER": V_da})
 
-    def quicklook(self, file_png: Union[str, Path, None] = None):
+    def quicklook(
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: [str] = ["VOLTAGE_SPECTRAL_POWER", "VOLTAGE_SPECTRAL_POWER"],
+    ):
         self._quicklook(
-            keys=["VOLTAGE_SPECTRAL_POWER", "VOLTAGE_SPECTRAL_POWER"],
+            keys=keys,
             file_png=file_png,
         )

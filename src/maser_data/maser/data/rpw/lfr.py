@@ -130,8 +130,12 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
 
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png: Union[str, Path, None] = None):
+    def quicklook(
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: [str] = ["PE_B_F1", "PE_B_F0"],
+    ):
         self._quicklook(
-            keys=["PE_B_F1", "PE_B_F0"],
+            keys=keys,
             file_png=file_png,
         )

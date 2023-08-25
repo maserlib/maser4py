@@ -207,9 +207,11 @@ class StereoWavesL2HighResBinData(
                 self._frequencies.append(s.data["freq"] * Unit("kHz"))
         return self._frequencies
 
-    def quicklook(self, file_png=None):
+    def quicklook(self, file_png=None, keys: Union[str, None] = None):
+        if keys is None:
+            keys = self.fields
         self._quicklook(
-            keys=self.fields,
+            keys=keys,
             file_png=file_png,
             y="frequency",
             vmin=[-150, -160, -150, -160, -1, -1],

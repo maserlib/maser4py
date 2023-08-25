@@ -95,3 +95,7 @@ def test_jno_wav_cdr_lesia_quicklook(filepath):
         #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
+        data.quicklook(ql_path_tmp, keys=["DEFAULT", "DEFAULT"])
+        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()

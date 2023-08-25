@@ -245,9 +245,13 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
     def _decode_frequencies(self):
         return numpy.array(list(map(fi_freq, self._data["fi"]))) * Unit("kHz")
 
-    def quicklook(self, file_png=None):
+    def quicklook(
+        self,
+        file_png=None,
+        keys: [str] = ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"],
+    ):
         self._quicklook(
-            keys=["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"],
+            keys=keys,
             file_png=file_png,
             vmax=[127, 191, 127, 191, 255, 255],
             vmin=[0, 128, 0, 128, -255, -255],
@@ -261,9 +265,11 @@ class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"
     def _decode_frequencies(self):
         return self._data["f"] * Unit("kHz")
 
-    def quicklook(self, file_png=None):
+    def quicklook(
+        self, file_png=None, keys: [str] = ["autoX", "autoZ", "crossR", "crossI"]
+    ):
         self._quicklook(
-            keys=["autoX", "autoZ", "crossR", "crossI"],
+            keys=keys,
             db=[True, True, False, False],
             file_png=file_png,
             y="frequency",
@@ -282,9 +288,11 @@ class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n3"
 
 
 class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3e"):
-    def quicklook(self, file_png=None):
+    def quicklook(
+        self, file_png=None, keys: [str] = ["s", "v", "th", "ph", "snx", "snz"]
+    ):
         self._quicklook(
-            keys=["s", "v", "th", "ph", "snx", "snz"],
+            keys=keys,
             db=[True, False, False, False, True, True],
             file_png=file_png,
             y="frequency",
@@ -295,9 +303,11 @@ class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
 
 
 class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3d"):
-    def quicklook(self, file_png=None):
+    def quicklook(
+        self, file_png=None, keys: [str] = ["s", "q", "u", "v", "snx", "snz"]
+    ):
         self._quicklook(
-            keys=["s", "q", "u", "v", "snx", "snz"],
+            keys=keys,
             db=[True, False, False, False, True, True],
             file_png=file_png,
             y="frequency",

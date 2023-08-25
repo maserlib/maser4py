@@ -66,9 +66,9 @@ class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):
             ).transpose("frequency", "time")
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png=None):
+    def quicklook(self, file_png=None, keys: [str] = ["FLUX_DENSITY", "SNR"]):
         self._quicklook(
-            keys=["FLUX_DENSITY", "SNR"],
+            keys=keys,
             file_png=file_png,
             # vmin=[68, 68],
             # vmax=[94, 94],
@@ -188,9 +188,9 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
 
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png=None):
+    def quicklook(self, file_png=None, keys: [str] = ["SWEEP", "STOKES_I"]):
         self._quicklook(
-            keys=["SWEEP", "STOKES_I"],
+            keys=keys,
             file_png=file_png,
             # vmin=[68, 68],
             # vmax=[94, 94],

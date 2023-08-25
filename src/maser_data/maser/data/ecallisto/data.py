@@ -50,8 +50,12 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
         )
         return xarray.Dataset(data_vars=dataset)
 
-    def quicklook(self, file_png: Union[str, Path, None] = None):
+    def quicklook(
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: [str] = ["Flux Density", "Flux Density"],
+    ):
         self._quicklook(
-            keys=["Flux Density", "Flux Density"],
+            keys=keys,
             file_png=file_png,
         )
