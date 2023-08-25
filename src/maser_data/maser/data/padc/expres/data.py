@@ -21,7 +21,7 @@ from maser.data.base import CdfData
 from .sweeps import ExpresCdfDataSweeps
 
 from abc import ABC
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 from astropy.time import Time
 from astropy.units import Unit, Quantity
@@ -220,7 +220,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,
-        keys: [str] = ["FC", "FP", "Polarization", "Theta"],
+        keys: List[str] = ["FC", "FP", "Polarization", "Theta"],
         **kwargs,
     ) -> None:
         if self.source is None:

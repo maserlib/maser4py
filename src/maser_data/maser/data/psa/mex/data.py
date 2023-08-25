@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-from typing import Union, Dict
+from typing import Union, Dict, List
 from ...pds import Pds3Data
 from ...pds.utils import PDSDataTableObject
 from maser.data.base.sweeps import Sweeps, Sweep
@@ -168,7 +168,7 @@ class MexMMarsis3RdrAisV1Data(
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,
-        keys: [str] = ["DEFAULT", "DEFAULT"],
+        keys: List[str] = ["DEFAULT", "DEFAULT"],
     ):
         self._quicklook(
             keys=keys,

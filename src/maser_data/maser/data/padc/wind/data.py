@@ -5,6 +5,7 @@ from astropy.time import Time
 import numpy as np
 import xarray
 from .sweeps import WindWavesRad1Sweeps
+from typing import List
 
 # from functools import lru_cache
 from .utils import get_indices
@@ -66,7 +67,7 @@ class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):
             ).transpose("frequency", "time")
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png=None, keys: [str] = ["FLUX_DENSITY", "SNR"]):
+    def quicklook(self, file_png=None, keys: List[str] = ["FLUX_DENSITY", "SNR"]):
         self._quicklook(
             keys=keys,
             file_png=file_png,
@@ -188,7 +189,7 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
 
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png=None, keys: [str] = ["SWEEP", "STOKES_I"]):
+    def quicklook(self, file_png=None, keys: List[str] = ["SWEEP", "STOKES_I"]):
         self._quicklook(
             keys=keys,
             file_png=file_png,

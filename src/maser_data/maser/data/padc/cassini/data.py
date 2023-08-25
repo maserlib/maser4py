@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Iterable, Union, Sequence
+from typing import Iterable, Union, Sequence, List
 
 from maser.data.base import Data, BinData, Sweeps, Records, VariableFrequencies
 from maser.data.base.sweeps import Sweep
@@ -248,7 +248,7 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
     def quicklook(
         self,
         file_png=None,
-        keys: [str] = ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"],
+        keys: List[str] = ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"],
     ):
         self._quicklook(
             keys=keys,
@@ -266,7 +266,7 @@ class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"
         return self._data["f"] * Unit("kHz")
 
     def quicklook(
-        self, file_png=None, keys: [str] = ["autoX", "autoZ", "crossR", "crossI"]
+        self, file_png=None, keys: List[str] = ["autoX", "autoZ", "crossR", "crossI"]
     ):
         self._quicklook(
             keys=keys,
@@ -289,7 +289,7 @@ class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n3"
 
 class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3e"):
     def quicklook(
-        self, file_png=None, keys: [str] = ["s", "v", "th", "ph", "snx", "snz"]
+        self, file_png=None, keys: List[str] = ["s", "v", "th", "ph", "snx", "snz"]
     ):
         self._quicklook(
             keys=keys,
@@ -304,7 +304,7 @@ class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
 
 class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3d"):
     def quicklook(
-        self, file_png=None, keys: [str] = ["s", "q", "u", "v", "snx", "snz"]
+        self, file_png=None, keys: List[str] = ["s", "q", "u", "v", "snx", "snz"]
     ):
         self._quicklook(
             keys=keys,

@@ -2,6 +2,7 @@
 from maser.data.base import CdfData, BinData, Sweeps
 from astropy.units import Unit
 from astropy.time import Time
+from typing import List
 
 
 class StWavL2Bin(BinData, dataset="st__l2_wav"):
@@ -117,7 +118,7 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
     #    xr = self.as_xarray()
     #    #xr["L"].plot(vmin=40, vmax=70)
     #    xr["STOKES_I"].plot()
-    def quicklook(self, file_png=None, keys: [str] = ["PSD_FLUX", "STOKES_I"]):
+    def quicklook(self, file_png=None, keys: List[str] = ["PSD_FLUX", "STOKES_I"]):
         self._quicklook(
             keys=keys,
             file_png=file_png,

@@ -4,7 +4,7 @@
 
 from maser.data.base import FitsData
 
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 from astropy.time import Time
 from astropy.units import Unit
@@ -53,7 +53,7 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,
-        keys: [str] = ["Flux Density", "Flux Density"],
+        keys: List[str] = ["Flux Density", "Flux Density"],
     ):
         self._quicklook(
             keys=keys,

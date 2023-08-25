@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 
 import numpy
@@ -207,7 +207,7 @@ class StereoWavesL2HighResBinData(
                 self._frequencies.append(s.data["freq"] * Unit("kHz"))
         return self._frequencies
 
-    def quicklook(self, file_png=None, keys: Union[str, None] = None):
+    def quicklook(self, file_png=None, keys: Union[List[str], None] = None):
         if keys is None:
             keys = self.fields
         self._quicklook(

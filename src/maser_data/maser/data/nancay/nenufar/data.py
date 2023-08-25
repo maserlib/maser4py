@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from abc import ABC
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 from maser.data.base import FitsData
 from astropy.units import Unit, Quantity
@@ -100,6 +100,6 @@ class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: [str] = ["NW", "NE"]
+        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["NW", "NE"]
     ):
         self._quicklook(keys=keys, file_png=file_png, db=[True, True])

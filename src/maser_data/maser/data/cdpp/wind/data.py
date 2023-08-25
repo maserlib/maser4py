@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 from maser.data.base import BinData, RecordsOnly, VariableFrequencies
 from .sweeps import (
@@ -178,7 +178,7 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                 self._frequencies.append(s.data["FREQ"] * Unit("kHz"))
         return self._frequencies
 
-    def quicklook(self, file_png=None, keys: [str] = ["VSPAL", "VZPAL"]):
+    def quicklook(self, file_png=None, keys: List[str] = ["VSPAL", "VZPAL"]):
         self._quicklook(
             file_png=file_png,
             keys=keys,

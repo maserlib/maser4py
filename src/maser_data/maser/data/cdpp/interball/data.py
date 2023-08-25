@@ -6,7 +6,7 @@ from .records import InterballAuroralPolradRspRecords
 from pathlib import Path
 import numpy
 
-from typing import Union
+from typing import Union, List
 from astropy.time import Time
 from ..const import CCSDS_CDS_FIELDS
 from ..utils import _read_sweep_length, _read_block
@@ -208,7 +208,7 @@ class InterballAuroralPolradRspBinData(
 
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png=None, keys: [str] = ["EX", "EY", "EZ"]):
+    def quicklook(self, file_png=None, keys: List[str] = ["EX", "EY", "EZ"]):
         self._quicklook(
             keys=keys,
             file_png=file_png,

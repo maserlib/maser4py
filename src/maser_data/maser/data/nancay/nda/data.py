@@ -3,7 +3,7 @@ from maser.data.base import CdfData
 from maser.data.base import FitsData
 from .sweeps import OrnNdaRoutineEdrSweeps, OrnNdaNewRoutineEdrSweeps
 
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 from astropy.time import Time
 from astropy.units import Unit
@@ -57,7 +57,7 @@ class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: [str] = ["LL", "RR"]
+        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["LL", "RR"]
     ):
         self._quicklook(
             keys=keys,
@@ -152,7 +152,7 @@ class OrnNdaNewRoutineSunEdrFitsData(
             self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
         return self._fields
 
-    def quicklook(self, file_png=None, keys: [str] = ["LL", "RR"]):
+    def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"]):
         self._quicklook(
             keys=keys,
             file_png=file_png,
@@ -174,7 +174,7 @@ class OrnNdaNewRoutineJupEdrFitsData(
         return self._fields
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: [str] = ["LL", "RR"]
+        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["LL", "RR"]
     ):
         self._quicklook(keys=keys, file_png=file_png, db=[True, True])
 
@@ -191,7 +191,7 @@ class OrnNdaNewRoutineTransitEdrFitsData(
         return self._fields
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: [str] = ["LL", "RR"]
+        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["LL", "RR"]
     ):
         self._quicklook(keys=keys, file_png=file_png, db=[True, True])
 
@@ -207,5 +207,5 @@ class OrnNdaMefistoSunEdrFitsData(
             self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
         return self._fields
 
-    def quicklook(self, file_png=None, keys: [str] = ["LL", "RR"]):
+    def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"]):
         self._quicklook(keys=keys, file_png=file_png, db=[True, True])
