@@ -13,6 +13,8 @@ from maser.data.padc.cassini.data import (
 from astropy.time import Time
 from astropy.units import Quantity
 from pathlib import Path
+import xarray
+from xarray.core.dataarray import DataArray
 
 # import xarray
 
@@ -121,6 +123,18 @@ def test_co_rpws_hfr_kronos_n3_frequencies():
 
 
 @pytest.mark.test_data_required
+def test_co_rpws_hfr_kronos_n3d_bin_dataset__as_xarray():
+    filepath = TEST_FILES["co_rpws_hfr_kronos_n3d"][0]
+    data = Data(filepath=filepath)
+    xarr = data.as_xarray()
+    assert isinstance(xarr, xarray.Dataset)
+    xarr_keys = xarr.keys()
+    assert set(xarr_keys) == set(data._format["vars"].keys())
+    for k in xarr_keys:
+        assert isinstance(xarr[k], DataArray)
+
+
+@pytest.mark.test_data_required
 def test_co_rpws_hfr_kronos_n3d_quicklook():
     for filepath in TEST_FILES["co_rpws_hfr_kronos_n3d"]:
         # ql_path = BASEDIR.parent / "quicklook" / "kronos" / f"{filepath.name}.png"
@@ -142,6 +156,18 @@ def test_co_rpws_hfr_kronos_n3e_bin_dataset():
         assert isinstance(data, BinData)
         assert isinstance(data, CoRpwsHfrKronosN3eData)
         assert data.level == "n3e"
+
+
+@pytest.mark.test_data_required
+def test_co_rpws_hfr_kronos_n3e_bin_dataset__as_xarray():
+    filepath = TEST_FILES["co_rpws_hfr_kronos_n3e"][0]
+    data = Data(filepath=filepath)
+    xarr = data.as_xarray()
+    assert isinstance(xarr, xarray.Dataset)
+    xarr_keys = xarr.keys()
+    assert set(xarr_keys) == set(data._format["vars"].keys())
+    for k in xarr_keys:
+        assert isinstance(xarr[k], DataArray)
 
 
 @pytest.mark.test_data_required

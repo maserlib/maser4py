@@ -9,6 +9,7 @@ from maser.data.nancay import (
 from pathlib import Path
 from astropy.io import fits
 import pytest
+import xarray
 
 
 TEST_FILES = {
@@ -78,6 +79,18 @@ def test_nenufar_bst_dataset__frequencies():
         assert len(data.frequencies) == 192
         assert data.frequencies[0] == 25 * Unit("MHz")
         assert data.frequencies[-1].value == pytest.approx(62.304688)
+
+
+@pytest.mark.test_data_required
+def test_nenufar_bst_dataset_as_xarray():
+    for filepath in TEST_FILES["srn_nenufar_bst"]:
+        data = Data(filepath=filepath)
+        xr = data.as_xarray()
+        assert isinstance(xr, xarray.Dataset)
+        assert set(xr.keys()) == {"NW", "NE"}
+        assert xr["NW"].shape == (192, 3600)
+        assert xr["NW"].attrs["units"] == ""
+        assert xr["NW"].attrs["title"] == ""
 
 
 @pytest.mark.test_data_required

@@ -10,6 +10,7 @@ from astropy.units import Quantity, Unit
 
 from xarray.core.dataarray import DataArray
 from pathlib import Path
+import xarray
 
 TEST_FILES = {
     "co_rpws_hfr_kronos_n1": [
@@ -134,6 +135,7 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__as_xarray():
     filepath = TEST_FILES["co_rpws_hfr_kronos_n1"][0]
     data = Data(filepath=filepath)
     xarr = data.as_xarray()
+    assert isinstance(xarr, xarray.Dataset)
     xarr_keys = xarr.keys()
     assert set(xarr_keys) == set(data._format["vars"].keys())
     for k in xarr_keys:
