@@ -239,7 +239,7 @@ def test_int_aur_polrad_rsp_bin_dataset__records_for_loop__file0():
             break
 
 
-@pytest.mark.skip
+# @pytest.mark.skip
 @pytest.mark.test_data_required
 def test_int_aur_polrad_rsp_bin_dataset__epncore():
     filepath = TEST_FILES["cdpp_int_aur_polrad_rspn2"][0]
@@ -260,6 +260,7 @@ def test_int_aur_polrad_rsp_bin_dataset__epncore():
         "target_name": "Earth",
         "target_class": "planet",
         "target_region": "magnetosphere",
+        "obs_id": "POLR_RSPN2_19971116",
         "feature_name": "AKR#Auroral Kilometric Radiation",
         "dataproduct_type": "ds",
         "spectral_range_min": pytest.approx(4096.0),
