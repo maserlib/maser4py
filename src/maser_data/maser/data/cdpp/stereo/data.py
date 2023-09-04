@@ -219,6 +219,25 @@ class StereoWavesL2HighResBinData(
             db=[True, True, True, True, False, False],
         )
 
+    def epncore(self):
+        md = BinData.epncore(self)
+        md["obs_id"] = self.filepath.name
+        # md["instrument_host_name"] = "interball-auroral"
+        # md["instrument_name"] = "polrad"
+        # md["target_name"] = "Earth"
+        # md["target_class"] = "planet"
+        # md["target_region"] = "magnetosphere"
+        # md["feature_name"] = "AKR#Auroral Kilometric Radiation"
+
+        # md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = numpy.min(self.frequencies * Unit("Hz"))
+        md["spectral_range_max"] = numpy.max(self.frequencies * Unit("Hz"))
+
+        # md["publisher"] = "CNES/CDPP"
+
+        return md
+
 
 class StereoAWavesL2HighResLfrBinData(
     StereoWavesL2HighResBinData,
