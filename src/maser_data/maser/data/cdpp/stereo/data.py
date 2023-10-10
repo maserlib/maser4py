@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 
 import numpy
@@ -207,15 +207,36 @@ class StereoWavesL2HighResBinData(
                 self._frequencies.append(s.data["freq"] * Unit("kHz"))
         return self._frequencies
 
-    def quicklook(self, file_png=None):
+    def quicklook(self, file_png=None, keys: Union[List[str], None] = None):
+        if keys is None:
+            keys = self.fields
         self._quicklook(
-            keys=self.fields,
+            keys=keys,
             file_png=file_png,
             y="frequency",
             vmin=[-150, -160, -150, -160, -1, -1],
             vmax=[-120, -130, -120, -130, 1, 1],
             db=[True, True, True, True, False, False],
         )
+
+    def epncore(self):
+        md = BinData.epncore(self)
+        md["obs_id"] = self.filepath.name
+        # md["instrument_host_name"] = "interball-auroral"
+        # md["instrument_name"] = "polrad"
+        # md["target_name"] = "Earth"
+        # md["target_class"] = "planet"
+        # md["target_region"] = "magnetosphere"
+        # md["feature_name"] = "AKR#Auroral Kilometric Radiation"
+
+        # md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = numpy.min(self.frequencies * Unit("Hz"))
+        md["spectral_range_max"] = numpy.max(self.frequencies * Unit("Hz"))
+
+        # md["publisher"] = "CNES/CDPP"
+
+        return md
 
 
 class StereoAWavesL2HighResLfrBinData(

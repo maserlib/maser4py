@@ -92,4 +92,4 @@ class VariableFrequencies:
                 dims=("freq_index", "time"),
             )
 
-        return datasets
+        return xarray.Dataset(data_vars=datasets)

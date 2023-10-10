@@ -5,6 +5,7 @@ from maser.data import Data
 from maser.data.rpw import RpwLfrSurvBp1, RpwTnrSurv, RpwHfrSurv
 from astropy.time import Time
 from astropy.units import Quantity, Unit
+from pathlib import Path
 import xarray
 from .fixtures import skip_if_spacepy_not_available
 
@@ -108,6 +109,19 @@ def test_rpw_lfr_surv_bp1_dataset__as_xarray(filepath):
         )
 
 
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_lfr_surv_data_dataset_quicklook(filepath):
+    with Data(filepath=filepath) as data:
+        #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data.quicklook(ql_path_tmp)
+        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+
 # TEST solo_L2_rpw-tnr-surv
 # =============================
 
@@ -193,6 +207,19 @@ def test_rpw_tnr_surv_data__as_xarray(filepath):
         assert test_array.data[0][0] == pytest.approx(2.1229058431454354e-11)
 
 
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_tnr_surv_data_dataset_quicklook(filepath):
+    with Data(filepath=filepath) as data:
+        #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data.quicklook(ql_path_tmp)
+        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+
 # TEST solo_L2_rpw-hfr-surv
 # =============================
 
@@ -273,3 +300,16 @@ def test_rpw_hfr_surv_data__as_xarray(filepath):
         assert test_array.coords["frequency"][0] == pytest.approx(6525)
         assert test_array.attrs["units"] == "V^2/Hz"
         assert test_array.data[110000] == pytest.approx(4.8739396889859025e-15)
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_hfr_surv_data_dataset_quicklook(filepath):
+    with Data(filepath=filepath) as data:
+        #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data.quicklook(ql_path_tmp)
+        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()

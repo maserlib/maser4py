@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-from typing import Union, Dict
+from typing import Union, Dict, List
 from ...pds import Pds3Data
 from ...pds.utils import PDSDataTableObject
 from maser.data.base.sweeps import Sweeps, Sweep
@@ -153,6 +153,7 @@ class MexMMarsis3RdrAisV1Data(
         for dataset_key in self._dataset_keys:
             datasets[dataset_key] = xarray.DataArray(
                 data=numpy.array([item.table for item in self.sweeps]).T,
+                # data=numpy.array([item.data for item in self.sweeps]).T[0],
                 name=self.dataset,
                 coords=[
                     ("frequency", self.frequencies, {"units": "kHz"}),
@@ -164,9 +165,13 @@ class MexMMarsis3RdrAisV1Data(
 
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png: Union[str, Path, None] = None):
+    def quicklook(
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = ["DEFAULT", "DEFAULT"],
+    ):
         self._quicklook(
-            keys=["DEFAULT", "DEFAULT"],
+            keys=keys,
             file_png=file_png,
         )
 

@@ -17,6 +17,7 @@ from maser.data.cdpp import (
 from maser.data.cdpp.wind.sweeps import WindWavesL2Sweep
 import pytest
 from pathlib import Path
+import xarray
 
 TEST_FILES = {
     "cdpp_wi_wa_rad1_l2_60s_v2": [
@@ -85,6 +86,19 @@ def test_wi_wa_rad1_l2_bin_dataset__frequencies():
     assert len(data.frequencies) == 120
     assert data.frequencies[0][0] == 1040 * Unit("kHz")
     assert data.frequencies[0][-1] == 20 * Unit("kHz")
+
+
+@pytest.mark.test_data_required
+def test_wi_wa_rad1_l2_bin_dataset__as_xarray():
+    filepath = TEST_FILES["cdpp_wi_wa_rad1_l2"][0]
+    data = Data(filepath=filepath)
+    xr = data.as_xarray()
+    assert isinstance(xr, xarray.Dataset)
+    assert set(xr.keys()) == {"VSPAL", "VZPAL"}
+    assert xr.coords.dims == {"time": 120, "frequency": 120}
+    assert xr["VSPAL"].dims == ("frequency", "time")
+    assert xr["VSPAL"].shape == (120, 120)
+    assert xr["VSPAL"].units == "W m^-2 Hz^-1"
 
 
 @pytest.mark.test_data_required

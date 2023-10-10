@@ -173,9 +173,11 @@ class VgPra3RdrLowband6secV1Data(
 
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png: Union[str, Path, None] = None):
+    def quicklook(
+        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["L", "R"]
+    ):
         self._quicklook(
-            keys=["L", "R"],
+            keys=keys,
             file_png=file_png,
         )
 
@@ -346,9 +348,11 @@ class VgPra4RSummBrowse48secV1Data(
 
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png: Union[str, Path, None] = None):
+    def quicklook(
+        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["L", "R"]
+    ):
         self._quicklook(
-            keys=["L", "R"],
+            keys=keys,
             file_png=file_png,
         )
 

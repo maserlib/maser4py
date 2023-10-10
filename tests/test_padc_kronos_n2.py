@@ -8,6 +8,8 @@ from maser.data.padc.cassini.data import CoRpwsHfrKronosN2Data
 from astropy.time import Time
 from astropy.units import Quantity
 from pathlib import Path
+import xarray
+from xarray.core.dataarray import DataArray
 
 # import xarray
 
@@ -94,6 +96,18 @@ def test_co_rpws_hfr_kronos_n2_bin_dataset__frequencies_sweeps():
     assert data.frequencies[-1][0].value == pytest.approx(3.6856)
     assert data.frequencies[-1][-1].value == pytest.approx(16025)
     assert data.frequencies[0].unit == "kHz"
+
+
+@pytest.mark.test_data_required
+def test_co_rpws_hfr_kronos_n2_bin_dataset__as_xarray():
+    filepath = TEST_FILES["co_rpws_hfr_kronos_n2"][0]
+    data = Data(filepath=filepath)
+    xarr = data.as_xarray()
+    assert isinstance(xarr, xarray.Dataset)
+    xarr_keys = xarr.keys()
+    assert set(xarr_keys) == set(data._format["vars"].keys())
+    for k in xarr_keys:
+        assert isinstance(xarr[k], DataArray)
 
 
 @pytest.mark.test_data_required

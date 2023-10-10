@@ -5,6 +5,9 @@ from astropy.time import Time
 from astropy.units import Unit
 from maser.data.base.sweeps import Sweeps
 
+from typing import Union, List
+from pathlib import Path
+
 
 class RpwLfrSurvBp1Sweeps(Sweeps):
     @property
@@ -126,3 +129,13 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                 )
 
         return xarray.Dataset(data_vars=datasets)
+
+    def quicklook(
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = ["PE_B_F1", "PE_B_F0"],
+    ):
+        self._quicklook(
+            keys=keys,
+            file_png=file_png,
+        )

@@ -9,6 +9,7 @@ from astropy.time import Time
 
 from .fixtures import skip_if_spacepy_not_available
 from pathlib import Path
+import xarray
 
 TEST_FILES = {
     "sta_l3_wav_lfr": [
@@ -61,6 +62,34 @@ def test_swaves_l3_cdf_dataset__times():
     data = Data(filepath=filepath)
     assert isinstance(data.times, Time)
     assert len(data.times) == 2476
+
+
+@skip_if_spacepy_not_available
+@pytest.mark.test_data_required
+def test_swaves_l3_cdf_dataset_as_xarray():
+    filepath = TEST_FILES["sta_l3_wav_hfr"][0]
+    data = Data(filepath=filepath)
+    xr = data.as_xarray()
+    assert isinstance(xr, xarray.Dataset)
+    assert set(xr.keys()) == {
+        "STOKES_I",
+        "STOKES_Q",
+        "STOKES_U",
+        "STOKES_V",
+        "SOURCE_SIZE",
+        "PSD_FLUX",
+        "PSD_SFU",
+        "WAVE_AZIMUTH_HCI",
+        "WAVE_AZIMUTH_HEE",
+        "WAVE_AZIMUTH_HEEQ",
+        "WAVE_AZIMUTH_RTN",
+        "WAVE_COLATITUDE_HCI",
+        "WAVE_COLATITUDE_HEE",
+        "WAVE_COLATITUDE_HEEQ",
+        "WAVE_COLATITUDE_RTN",
+    }
+    assert xr["PSD_FLUX"].shape == (319, 2476)
+    assert xr["PSD_FLUX"].attrs["units"] == "W/m^2/Hz"
 
 
 @pytest.mark.test_data_required

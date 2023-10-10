@@ -7,6 +7,7 @@ from maser.data.cdpp.stereo.data import (
     StereoWavesL2HighResBinData,
 )
 from pathlib import Path
+import xarray
 
 TEST_FILES = {
     "cdpp_sta_l2_wav_h_res_lfr": [
@@ -47,6 +48,18 @@ def test_swaves_l2_bin_dataset__frequencies():
     data = Data(filepath)
     freq = data.frequencies
     assert isinstance(freq, list)
+
+
+@pytest.mark.test_data_required
+def test_swaves_l2_bin_dataset__as_xarray():
+    filepath = TEST_FILES["cdpp_sta_l2_wav_h_res_lfr"][0]
+    # with Data(filepath=filepath, access_mode="file") as data:
+    #    assert isinstance(data, dict)
+    datax = Data(filepath=filepath)
+    xr = datax.as_xarray()
+    assert isinstance(xr, xarray.Dataset)
+    assert set(xr.keys()) == {"agc1", "agc2", "auto1", "auto2", "crossr", "crossi"}
+    assert xr["agc1"].attrs["units"] == "ADU"
 
 
 @pytest.mark.test_data_required

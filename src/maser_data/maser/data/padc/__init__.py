@@ -25,3 +25,7 @@ from .wind import (  # noqa: F401
     WindWavesRad1L3DfV01Data,
     WindWavesRad1L3DfV02Data,
 )
+
+from .bepi import SorbetCdfData  # noqa: F401
+
+# from .bepi.sorbet import SorbetCdfData  # noqa: F401

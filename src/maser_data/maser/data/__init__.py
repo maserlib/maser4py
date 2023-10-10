@@ -37,6 +37,7 @@ from .padc import (  # noqa: F401
     StbWavHfrL3DfCdf,
     WindWavesRad1L3DfV01Data,
     WindWavesRad1L3DfV02Data,
+    SorbetCdfData,
 )
 
 from .pds import (  # noqa: F401
@@ -57,7 +58,6 @@ from .psa import MexMMarsis3RdrAisExt4V1Data  # noqa: F401
 from .rpw import (  # noqa: F401
     RpwLfrSurvBp1,
 )
-from .sorbet import SorbetCdfData  # noqa: F401
 
 if __name__ == "__main__":
     data = Data(filepath=Path("toto.txt"), dataset="cdf")
