@@ -100,6 +100,9 @@ class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["NW", "NE"]
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = ["NW", "NE"],
+        **kwargs,
     ):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True])
+        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)

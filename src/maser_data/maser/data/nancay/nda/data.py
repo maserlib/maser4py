@@ -57,11 +57,15 @@ class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["LL", "RR"]
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = ["LL", "RR"],
+        **kwargs,
     ):
         self._quicklook(
             keys=keys,
             file_png=file_png,
+            **kwargs,
         )
 
 
@@ -152,13 +156,14 @@ class OrnNdaNewRoutineSunEdrFitsData(
             self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
         return self._fields
 
-    def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"]):
+    def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"], **kwargs):
         self._quicklook(
             keys=keys,
             file_png=file_png,
             vmin=[68, 68],
             vmax=[94, 94],
             db=[True, True],
+            **kwargs,
         )
 
 
@@ -174,9 +179,12 @@ class OrnNdaNewRoutineJupEdrFitsData(
         return self._fields
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["LL", "RR"]
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = ["LL", "RR"],
+        **kwargs,
     ):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True])
+        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)
 
 
 class OrnNdaNewRoutineTransitEdrFitsData(
@@ -191,9 +199,12 @@ class OrnNdaNewRoutineTransitEdrFitsData(
         return self._fields
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["LL", "RR"]
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = ["LL", "RR"],
+        **kwargs,
     ):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True])
+        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)
 
 
 class OrnNdaMefistoSunEdrFitsData(
@@ -207,5 +218,5 @@ class OrnNdaMefistoSunEdrFitsData(
             self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
         return self._fields
 
-    def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"]):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True])
+    def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"], **kwargs):
+        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)

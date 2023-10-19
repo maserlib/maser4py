@@ -55,10 +55,11 @@ class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
             )
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png: Union[str, Path, None] = None):
+    def quicklook(self, file_png: Union[str, Path, None] = None, **kwargs):
         self._quicklook(
             keys=["sorbet_WPT_spectra", "sorbet_WPT_spectra"],
             file_png=file_png,
             # db=[True,True],
             yscale="log",
+            **kwargs,
         )

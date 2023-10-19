@@ -249,12 +249,14 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
         self,
         file_png=None,
         keys: List[str] = ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"],
+        **kwargs,
     ):
         self._quicklook(
             keys=keys,
             file_png=file_png,
             vmax=[127, 191, 127, 191, 255, 255],
             vmin=[0, 128, 0, 128, -255, -255],
+            **kwargs,
         )
 
 
@@ -266,7 +268,10 @@ class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"
         return self._data["f"] * Unit("kHz")
 
     def quicklook(
-        self, file_png=None, keys: List[str] = ["autoX", "autoZ", "crossR", "crossI"]
+        self,
+        file_png=None,
+        keys: List[str] = ["autoX", "autoZ", "crossR", "crossI"],
+        **kwargs,
     ):
         self._quicklook(
             keys=keys,
@@ -274,6 +279,7 @@ class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"
             file_png=file_png,
             y="frequency",
             yscale="log",
+            **kwargs,
         )
 
 
@@ -289,7 +295,10 @@ class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n3"
 
 class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3e"):
     def quicklook(
-        self, file_png=None, keys: List[str] = ["s", "v", "th", "ph", "snx", "snz"]
+        self,
+        file_png=None,
+        keys: List[str] = ["s", "v", "th", "ph", "snx", "snz"],
+        **kwargs,
     ):
         self._quicklook(
             keys=keys,
@@ -299,12 +308,16 @@ class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
             yscale="log",
             vmin=[-160, -1, 0, -math.pi, 10, 10],
             vmax=[-120, 1, math.pi, math.pi, 40, 40],
+            **kwargs,
         )
 
 
 class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3d"):
     def quicklook(
-        self, file_png=None, keys: List[str] = ["s", "q", "u", "v", "snx", "snz"]
+        self,
+        file_png=None,
+        keys: List[str] = ["s", "q", "u", "v", "snx", "snz"],
+        **kwargs,
     ):
         self._quicklook(
             keys=keys,
@@ -314,4 +327,5 @@ class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
             yscale="log",
             vmin=[-160, -1, -1, -1, 10, 10],
             vmax=[-120, 1, 1, 1, 40, 40],
+            **kwargs,
         )

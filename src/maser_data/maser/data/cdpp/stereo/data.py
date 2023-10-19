@@ -207,7 +207,7 @@ class StereoWavesL2HighResBinData(
                 self._frequencies.append(s.data["freq"] * Unit("kHz"))
         return self._frequencies
 
-    def quicklook(self, file_png=None, keys: Union[List[str], None] = None):
+    def quicklook(self, file_png=None, keys: Union[List[str], None] = None, **kwargs):
         if keys is None:
             keys = self.fields
         self._quicklook(
@@ -217,6 +217,7 @@ class StereoWavesL2HighResBinData(
             vmin=[-150, -160, -150, -160, -1, -1],
             vmax=[-120, -130, -120, -130, 1, 1],
             db=[True, True, True, True, False, False],
+            **kwargs,
         )
 
     def epncore(self):

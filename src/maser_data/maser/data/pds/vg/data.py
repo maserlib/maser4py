@@ -174,11 +174,15 @@ class VgPra3RdrLowband6secV1Data(
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["L", "R"]
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = ["L", "R"],
+        **kwargs,
     ):
         self._quicklook(
             keys=keys,
             file_png=file_png,
+            **kwargs,
         )
 
 
@@ -349,11 +353,15 @@ class VgPra4RSummBrowse48secV1Data(
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, keys: List[str] = ["L", "R"]
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = ["L", "R"],
+        **kwargs,
     ):
         self._quicklook(
             keys=keys,
             file_png=file_png,
+            **kwargs,
         )
 
     def epncore(self):

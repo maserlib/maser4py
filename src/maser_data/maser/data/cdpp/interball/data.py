@@ -208,9 +208,10 @@ class InterballAuroralPolradRspBinData(
 
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png=None, keys: List[str] = ["EX", "EY", "EZ"]):
+    def quicklook(self, file_png=None, keys: List[str] = ["EX", "EY", "EZ"], **kwargs):
         self._quicklook(
             keys=keys,
             file_png=file_png,
             db=[True, True, True],
+            **kwargs,
         )

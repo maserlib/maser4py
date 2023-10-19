@@ -54,8 +54,10 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
         self,
         file_png: Union[str, Path, None] = None,
         keys: List[str] = ["Flux Density", "Flux Density"],
+        **kwargs,
     ):
         self._quicklook(
             keys=keys,
             file_png=file_png,
+            **kwargs,
         )

@@ -9,7 +9,7 @@ import numpy
 from .sweeps import Sweeps
 from .records import Records
 
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 from astropy.units import Quantity, Unit
 import xarray
 
@@ -59,6 +59,7 @@ class BaseData:
 
         # store the computed times/frequencies to avoid computing them again
         self._times = None
+        self._delta_times = None
         self._frequencies = None
 
         # store the EPNcore metadata
@@ -153,6 +154,11 @@ class Data(BaseData, dataset="default"):
         pass
 
     @property
+    def delta_times(self) -> TimeDelta:
+        """Generic method to get the difference to referential time."""
+        pass
+
+    @property
     def frequencies(self) -> Union[Quantity, Dict]:
         """Generic method to get the spectral axis."""
         pass
@@ -244,6 +250,10 @@ class Data(BaseData, dataset="default"):
 
         hhmm_format = mdates.DateFormatter("%H:%M")
 
+        # setting defaults
+        if "cmap" not in kwargs:
+            kwargs["cmap"] = "gray"
+
         xr = self.as_xarray()
         if keys is None:
             raise ValueError()
@@ -276,7 +286,7 @@ class Data(BaseData, dataset="default"):
                 vmax_i = None
             xr_k.plot(
                 ax=axs[i],
-                cmap="gray",
+                # cmap="gray", set by default in kwargs
                 vmin=vmin_i,
                 vmax=vmax_i,
                 cbar_kwargs={"label": clabel},

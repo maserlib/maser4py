@@ -169,10 +169,12 @@ class MexMMarsis3RdrAisV1Data(
         self,
         file_png: Union[str, Path, None] = None,
         keys: List[str] = ["DEFAULT", "DEFAULT"],
+        **kwargs,
     ):
         self._quicklook(
             keys=keys,
             file_png=file_png,
+            **kwargs,
         )
 
 

@@ -118,13 +118,16 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
     #    xr = self.as_xarray()
     #    #xr["L"].plot(vmin=40, vmax=70)
     #    xr["STOKES_I"].plot()
-    def quicklook(self, file_png=None, keys: List[str] = ["PSD_FLUX", "STOKES_I"]):
+    def quicklook(
+        self, file_png=None, keys: List[str] = ["PSD_FLUX", "STOKES_I"], **kwargs
+    ):
         self._quicklook(
             keys=keys,
             file_png=file_png,
             # vmin=[68, 68],
             # vmax=[94, 94],
             db=[True, True],
+            **kwargs,
         )
 
 

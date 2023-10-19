@@ -68,5 +68,6 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
         self,
         file_png: Union[str, Path, None] = None,
         keys: List[str] = ["DEFAULT", "DEFAULT"],
+        **kwargs,
     ):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True])
+        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)
