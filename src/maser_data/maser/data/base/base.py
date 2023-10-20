@@ -243,6 +243,7 @@ class Data(BaseData, dataset="default"):
         file_png: Union[None, Path, str] = None,
         vmin: Union[None, list] = None,
         vmax: Union[None, list] = None,
+        iter_on_selection: Union[None, dict] = None,
         **kwargs,
     ):
         from matplotlib import pyplot as plt
@@ -284,14 +285,48 @@ class Data(BaseData, dataset="default"):
                 vmax_i = vmax[i]
             else:
                 vmax_i = None
-            xr_k.plot(
-                ax=axs[i],
-                # cmap="gray", set by default in kwargs
-                vmin=vmin_i,
-                vmax=vmax_i,
-                cbar_kwargs={"label": clabel},
-                **kwargs,
-            )
+            if iter_on_selection is None:
+                xr_k.plot(
+                    ax=axs[i],
+                    # cmap="gray", set by default in kwargs
+                    vmin=vmin_i,
+                    vmax=vmax_i,
+                    cbar_kwargs={"label": clabel},
+                    **kwargs,
+                )
+            else:
+                first_loop = 1
+                for selkey, selval, seldim, selhow in zip(
+                    iter_on_selection["select_key"],
+                    iter_on_selection["select_value"],
+                    iter_on_selection["select_dim"],
+                    iter_on_selection["select_how"],
+                ):
+                    if first_loop == 1:
+                        (
+                            xr_k.where(xr[selkey] == selval).dropna(seldim, how=selhow)
+                        ).plot(
+                            ax=axs[i],
+                            # cmap="gray", set by default in kwargs
+                            vmin=vmin_i,
+                            vmax=vmax_i,
+                            cbar_kwargs={"label": clabel},
+                            **kwargs,
+                        )
+                        first_loop = 0
+                    else:
+                        # fig.delaxes(fig.axes[1])
+                        (
+                            xr_k.where(xr[selkey] == selval).dropna(seldim, how=selhow)
+                        ).plot(
+                            ax=axs[i],
+                            # cmap="gray", set by default in kwargs
+                            vmin=vmin_i,
+                            vmax=vmax_i,
+                            # cbar_kwargs={"label": clabel},
+                            add_colorbar=False,
+                            **kwargs,
+                        )
             axs[i].get_xaxis().set_visible(False)
         axs[0].set_title(f"{self.filepath.name} [{self.dataset}]")
         axs[-1].get_xaxis().set_visible(True)
