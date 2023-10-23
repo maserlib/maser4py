@@ -93,9 +93,11 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
 
     @property
     def epncore(self):
+        import os
+
         md = BinData.epncore(self)
         md["obs_id"] = md["granule_uid"]
-        md["instrument_host_name"] = f"stereo-{self.dataset[3]}"
+        md["instrument_host_name"] = f"stereo-{self.dataset[2]}"
         md["instrument_name"] = "waves"
         md["target_name"] = "Sun"
         md["target_class"] = "star"
@@ -104,14 +106,41 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
 
         md["dataproduct_type"] = "ds"
 
-        md["spectral_range_min"] = min(
-            [min(freqs.to("Hz").value) for freqs in self.frequencies]
-        )
-        md["spectral_range_max"] = max(
-            [max(freqs.to("Hz").value) for freqs in self.frequencies]
-        )
+        md["spectral_range_min"] = min(self.frequencies.to("Hz").value)
+        md["spectral_range_max"] = max(self.frequencies.to("Hz").value)
 
         md["publisher"] = "PADC"
+
+        md["creation_date"] = Time(self.file.attrs["Generation_date"][0])
+        md["release_date"] = Time(os.path.getmtime(self.filepath), format="unix").iso
+        md["modification_date"] = Time.now().iso
+
+        sc_id, _, exp_id, rec_id = self.file.attrs["Logical_source"][0].split("_")
+        md["receiver_name"] = rec_id
+
+        md["processing_level"] = 5  # simulation / derived data
+        md["bib_reference"] = "2012JGRA..117.6101K"
+        md["measurement_type"] = "#".join(
+            [
+                "phys.flux.density;em.radio",
+                "phys.polarization;em.radio",
+            ]
+        )
+        md["spectral_sampling_step_min"] = float(
+            self.file.attrs["SPECTRAL_SAMPLING_STEP_MIN"][0]
+        )
+        md["spectral_sampling_step_max"] = float(
+            self.file.attrs["SPECTRAL_SAMPLING_STEP_MAX"][0]
+        )
+        md["spectral_resolution_min"] = float(md["spectral_range_min"]) / 50e3
+        md["spectral_resolution_max"] = float(md["spectral_range_max"]) / 50e3
+        md["time_sampling_step_min"] = float(
+            self.file.attrs["TIME_SAMPLING_STEP_MIN"][0]
+        )
+        md["time_sampling_step_max"] = float(
+            self.file.attrs["TIME_SAMPLING_STEP_MAX"][0]
+        )
+
         return md
 
     # def quicklook(self, output_format="png"):
