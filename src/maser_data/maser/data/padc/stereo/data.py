@@ -110,9 +110,9 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
         md["spectral_range_max"] = max(self.frequencies.to("Hz").value)
 
         md["publisher"] = "PADC"
-        md["filepath"] = self.filepath  # cdf_file
+        md["filepath"] = str(self.filepath)  # cdf_file
 
-        md["creation_date"] = Time(self.file.attrs["Generation_date"][0])
+        md["creation_date"] = Time(self.file.attrs["Generation_date"][0]).iso
         md["release_date"] = Time(os.path.getmtime(self.filepath), format="unix").iso
         md["modification_date"] = Time.now().iso
 
@@ -141,6 +141,7 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
         md["time_sampling_step_max"] = float(
             self.file.attrs["TIME_SAMPLING_STEP_MAX"][0]
         )
+        md["time_scale"] = "UTC"
 
         return md
 
