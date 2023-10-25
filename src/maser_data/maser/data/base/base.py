@@ -405,8 +405,8 @@ class CdfData(Data, dataset="cdf"):
             _range_max = f"{range_type}_max"
             _range_unit = f"{range_type}_unit"
             _u = range_units[range_type]
-            if f"VESPA_{_range_unit}_unit" in self.file.attrs.keys():
-                u = Unit(self.file.attrs[f"VESPA_{_range_unit}_unit"][0])
+            if f"VESPA_{_range_unit}" in self.file.attrs.keys():
+                u = Unit(self.file.attrs[f"VESPA_{_range_unit}"][0])
             else:
                 u = Unit(_u)
             _v = (float(v) * u).to(_u).value

@@ -74,15 +74,15 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
         md["obs_id"] = md["granule_uid"]
         # md["instrument_host_name"] = "juno"
         # md["instrument_name"] = "waves"
-        md["target_name"] = "Jupiter"
+        md["target_name"] = str(self.file.attrs["PDS_Observation_target"])  # "Jupiter"
         # md["target_class"] = "planet"
         # md["target_region"] = "TBD"
         # md["feature_name"] = "Radio Emission#Type II#Type III"
 
         md["dataproduct_type"] = "ds"
 
-        md["spectral_range_min"] = min(self.frequencies.to("Hz").value)
-        md["spectral_range_max"] = max(self.frequencies.to("Hz").value)
+        # md["spectral_range_min"] = min(self.frequencies.to("Hz").value)
+        # md["spectral_range_max"] = max(self.frequencies.to("Hz").value)
 
         md["publisher"] = "PADC"
         md["filepath"] = str(self.filepath)  # cdf_file
@@ -97,8 +97,8 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
 
         md["processing_level"] = 5  # simulation / derived data
 
-        md["spectral_resolution_min"] = float(md["spectral_range_min"]) / 50e3
-        md["spectral_resolution_max"] = float(md["spectral_range_max"]) / 50e3
+        md["spectral_resolution_min"] = float(md["spectral_range_min"]) / 1.0
+        md["spectral_resolution_max"] = float(md["spectral_range_max"]) / 1.0
 
         freq = numpy.sort(self.frequencies.to("Hz").value)  # .sort()
         sampling_step = freq[1:] - freq[:-1]
