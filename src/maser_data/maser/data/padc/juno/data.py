@@ -89,7 +89,8 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
 
         datetmp = str(self.file.attrs["Generation_date"])
         md["creation_date"] = Time(
-            datetime(int(datetmp[0:4]), int(datetmp[5:6]), int(datetmp[7:8]))
+            # datetime(int(datetmp[0:4]), int(datetmp[5:6]), int(datetmp[7:8]))
+            datetime.strptime(datetmp, "%Y%m%d")
         ).iso
         # md["creation_date"] = Time(self.file.attrs["Generation_date"][0], format="datetime").iso
         md["release_date"] = Time(os.path.getmtime(self.filepath), format="unix").iso
