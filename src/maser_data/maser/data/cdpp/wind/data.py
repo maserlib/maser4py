@@ -167,7 +167,10 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                         f"{header['CALEND_DATE_MINUTE']}:{header['CALEND_DATE_SECOND']}"
                     )
                 )
-            self._times = Time(times)
+            if times != []:
+                self._times = Time(times)
+            else:
+                self._times = times
         return self._times
 
     @property

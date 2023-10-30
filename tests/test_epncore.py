@@ -64,6 +64,8 @@ def test_any_dataset(filepath, dataset, epncore_expected):
         "granule_uid"
     ] != "__skip__":
         data = Data(filepath)
+        if len(data) == 0:
+            pytest.skip(reason="the dataset '" + dataset + "' has empty data")
         md = data.epncore()
         assert isinstance(md, dict)
         print(dataset, filepath)

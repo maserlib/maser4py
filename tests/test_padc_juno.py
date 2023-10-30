@@ -80,8 +80,8 @@ def test_jno_wav_cdr_lesia__as_xarray(filepath):
         # check the sweep content
         assert isinstance(test_array, xarray.Dataset)
         assert test_array.coords["frequency"].data[0] == pytest.approx(0.048828)
-        assert test_array["DEFAULT"].attrs["units"] == "V**2 m**-2 Hz**-1"
-        assert test_array["DEFAULT"].data[0][0] == pytest.approx(3.211884e-06)
+        assert test_array["INTENSITY"].attrs["units"] == "V**2 m**-2 Hz**-1"
+        assert test_array["INTENSITY"].data[0][0] == pytest.approx(3.211884e-06)
 
 
 @pytest.mark.test_data_required
@@ -95,7 +95,7 @@ def test_jno_wav_cdr_lesia_quicklook(filepath):
         #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
-        data.quicklook(ql_path_tmp, keys=["DEFAULT", "DEFAULT"])
+        data.quicklook(ql_path_tmp)  # , keys=["DEFAULT", "DEFAULT"])
         #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

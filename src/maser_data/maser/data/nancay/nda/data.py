@@ -26,6 +26,7 @@ class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
     @property
     def times(self):
         if self._times is None:
+            self._times = []
             with self.open(self.filepath) as f:
                 self._times = Time(f["Epoch"][...])
         return self._times

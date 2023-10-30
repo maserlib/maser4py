@@ -123,7 +123,11 @@ class MexMMarsis3RdrAisV1Data(
                 )
                 for sweep_mask in self._sweep_masks
             ]
-            self._times = Time(_times)
+            if _times != []:
+                self._times = Time(_times)
+            else:
+                self._times = _times
+            # self._times = Time(_times)
         return self._times
 
     @property

@@ -139,6 +139,7 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
     @property
     def times(self):
         if self._times is None:
+            self._times = []
             # Get Epoch time of each first sample in the sweep
             mask = self.sweep_start_index
             self._times = Time(np.take(self.file["Epoch"][...], mask, axis=0))

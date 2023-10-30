@@ -141,6 +141,7 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     @property
     def times(self):
         if self._times is None:
+            self._times = []
             # Get Epoch time values for Band A
             mask = self.file["TNR_BAND"][...] == 0
             self._times = Time(np.take(self.file["Epoch"][...], mask, axis=0))

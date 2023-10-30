@@ -97,6 +97,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
     @property
     def times(self) -> Time:
         if self._times is None:
+            self._times = []
             with self.open(self.filepath) as f:
                 self._times = Time(f["Epoch"][...])
         return self._times

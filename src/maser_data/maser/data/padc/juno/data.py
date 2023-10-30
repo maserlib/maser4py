@@ -22,9 +22,7 @@ class JnoWavLesiaL3aV02Sweeps(Sweeps):
 class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
     _iter_sweep_class = JnoWavLesiaL3aV02Sweeps
 
-    _dataset_keys = [
-        "DEFAULT",
-    ]
+    _dataset_keys = ["INTENSITY", "BACKGROUND", "INTENSITY_BG_COR"]
 
     @property
     def frequencies(self):
@@ -38,18 +36,30 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
     @property
     def times(self):
         if self._times is None:
+            self._times = []
             with self.open(self.filepath) as cdf_file:
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times
 
     def as_xarray(self):
         import xarray
+        import numpy
 
         datasets = {}
+        background = self.file["Background"][...]
+        bg_table = (numpy.tile(background, (len(self.times), 1))).T
+        # gain = self.file["Gain"][...]
+        # sigma = self.file["Sigma"][...]
 
         for dataset_key in self._dataset_keys:
+            if dataset_key == "INTENSITY":
+                values = self.file["Data"][...].T
+            elif dataset_key == "BACKGROUND":
+                values = bg_table
+            elif dataset_key == "INTENSITY_BG_COR":
+                values = self.file["Data"][...].T - bg_table
             dataset = xarray.DataArray(
-                data=self.file["Data"][...].T,
+                data=values,
                 name=self.dataset,
                 coords=[
                     (
@@ -114,7 +124,21 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,
-        keys: List[str] = ["DEFAULT", "DEFAULT"],
+        keys: List[str] = ["INTENSITY", "BACKGROUND", "INTENSITY_BG_COR"],
+        db: List[bool] = [True, True, True],
+        # vmin: List[float] = [-137,-137, 0, -137],
+        # vmax: List[float] = [-71,-71, 7e-8, -71],
+        vmin_quantile: List[float] = [0.35, 0.35, 0.35],
+        vmax_quantile: List[float] = [0.95, 0.95, 0.95],
+        yscale: str = "log",
         **kwargs,
     ):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)
+        self._quicklook(
+            keys=keys,
+            file_png=file_png,
+            db=db,
+            vmin_quantile=vmin_quantile,
+            vmax_quantile=vmax_quantile,
+            yscale=yscale,
+            **kwargs,
+        )

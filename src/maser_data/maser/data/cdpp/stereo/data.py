@@ -196,7 +196,10 @@ class StereoWavesL2HighResBinData(
                         f"{s.header[k0]['CALEND_DATE_MINUTE']}:{s.header[k0]['CALEND_DATE_SECOND']}"
                     )
                 )
-            self._times = Time(times)
+            if times != []:
+                self._times = Time(times)
+            else:
+                self._times = times
         return self._times
 
     @property

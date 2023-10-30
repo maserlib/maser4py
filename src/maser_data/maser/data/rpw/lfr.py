@@ -90,6 +90,7 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
     @property
     def times(self):
         if self._times is None:
+            self._times = []
             self._delta_times = {}
             timesbymode = {}
             truetimesbyfreq = {}

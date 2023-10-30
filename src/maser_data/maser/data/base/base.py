@@ -163,6 +163,10 @@ class Data(BaseData, dataset="default"):
         """Generic method to get the spectral axis."""
         pass
 
+    def __len__(self) -> int:
+        """Generic method to get the length of the data as a time series."""
+        return len(self.times)
+
     def as_array(self) -> numpy.ndarray:
         """Generic method to get the data as a numpy.array."""
         pass
@@ -243,6 +247,8 @@ class Data(BaseData, dataset="default"):
         file_png: Union[None, Path, str] = None,
         vmin: Union[None, list] = None,
         vmax: Union[None, list] = None,
+        vmin_quantile: Union[None, list] = None,
+        vmax_quantile: Union[None, list] = None,
         iter_on_selection: Union[None, dict] = None,
         **kwargs,
     ):
@@ -252,8 +258,17 @@ class Data(BaseData, dataset="default"):
         hhmm_format = mdates.DateFormatter("%H:%M")
 
         # setting defaults
+        if "nan_color" not in kwargs:
+            nan_color = "black"
+        else:
+            nan_color = kwargs["nan_color"]
+            del kwargs["nan_color"]
+
         if "cmap" not in kwargs:
             kwargs["cmap"] = "gray"
+        cmap = plt.cm.get_cmap(kwargs["cmap"]).copy()
+        cmap.set_bad(nan_color, 1.0)
+        del kwargs["cmap"]
 
         xr = self.as_xarray()
         if keys is None:
@@ -280,15 +295,25 @@ class Data(BaseData, dataset="default"):
             if isinstance(vmin, list):
                 vmin_i = vmin[i]
             else:
-                vmin_i = None
+                if isinstance(vmin_quantile, list):
+                    vmin_i = numpy.nanquantile(
+                        xr_k.where(xr_k > -numpy.inf), vmin_quantile[i]
+                    )
+                else:
+                    vmin_i = None
             if isinstance(vmax, list):
                 vmax_i = vmax[i]
             else:
-                vmax_i = None
+                if isinstance(vmax_quantile, list):
+                    vmax_i = numpy.nanquantile(
+                        xr_k.where(xr_k > -numpy.inf), vmax_quantile[i]
+                    )
+                else:
+                    vmax_i = None
             if iter_on_selection is None:
                 xr_k.plot(
                     ax=axs[i],
-                    # cmap="gray", set by default in kwargs
+                    cmap=cmap,  # cmap="gray", set by default in kwargs
                     vmin=vmin_i,
                     vmax=vmax_i,
                     cbar_kwargs={"label": clabel},
@@ -307,7 +332,7 @@ class Data(BaseData, dataset="default"):
                             xr_k.where(xr[selkey] == selval).dropna(seldim, how=selhow)
                         ).plot(
                             ax=axs[i],
-                            # cmap="gray", set by default in kwargs
+                            cmap=cmap,  # cmap="gray", set by default in kwargs
                             vmin=vmin_i,
                             vmax=vmax_i,
                             cbar_kwargs={"label": clabel},

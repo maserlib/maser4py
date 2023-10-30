@@ -185,6 +185,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
     @property
     def times(self):
         if self._times is None:
+            self._times = []
             times = self._decode_times()
             if self.access_mode == "records":
                 self._times = times

@@ -123,7 +123,10 @@ class InterballAuroralPolradRspBinData(
             times = []
             for sweep in self.sweeps:
                 times.append(sweep.time)
-            self._times = Time(times)
+            if times != []:
+                self._times = Time(times)
+            else:
+                self._times = times
         return self._times
 
     @property

@@ -33,7 +33,10 @@ class VikingV4nE5BinData(RecordsOnly, BinData, dataset="cdpp_viking_v4n_e5"):
                     )
                 )
             self._load_data = _load_data
-            self._times = Time(times)
+            if times != []:
+                self._times = Time(times)
+            else:
+                self._times = times
         return self._times
 
     def frequencies(self):
