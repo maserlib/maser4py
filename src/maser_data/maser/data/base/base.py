@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Union, Dict, Type, List, cast
+from typing import Union, Dict, Type, cast
 
 from pathlib import Path
 import re
@@ -149,7 +149,7 @@ class Data(BaseData, dataset="default"):
         return dict()
 
     @property
-    def times(self) -> Union[None, Time, List]:
+    def times(self) -> Time:
         """Generic method to get the time axis."""
         pass
 

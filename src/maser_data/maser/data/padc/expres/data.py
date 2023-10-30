@@ -95,7 +95,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
         return self._frequencies
 
     @property
-    def times(self) -> Union[None, Time, List]:
+    def times(self):  # -> Union[None, Time, List]:
         if self._times is None:
             self._times = []
             with self.open(self.filepath) as f:
