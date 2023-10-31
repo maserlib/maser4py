@@ -186,20 +186,18 @@ class StereoWavesL2HighResBinData(
     @property
     def times(self):
         if self._times is None:
-            times = []
+            times = Time([], format="jd")
             for s in self.sweeps:
                 k0 = list(s.header.keys())[0]
-                times.append(
+                times = numpy.append(
+                    times,
                     Time(
                         f"{s.header[k0]['CALEND_DATE_YEAR']}-{s.header[k0]['CALEND_DATE_MONTH']}-"
                         f"{s.header[k0]['CALEND_DATE_DAY']} {s.header[k0]['CALEND_DATE_HOUR']}:"
                         f"{s.header[k0]['CALEND_DATE_MINUTE']}:{s.header[k0]['CALEND_DATE_SECOND']}"
-                    )
+                    ),
                 )
-            if times != []:
-                self._times = Time(times)
-            else:
-                self._times = times
+            self._times = Time(times)
         return self._times
 
     @property

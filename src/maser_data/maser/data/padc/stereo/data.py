@@ -42,7 +42,7 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
     @property
     def times(self):
         if self._times is None:
-            self._times = []
+            self._times = Time([], format="jd")
             with self.open(self.filepath) as cdf_file:
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times
