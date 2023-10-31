@@ -16,7 +16,7 @@ class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
     @property
     def times(self):
         if self._times is None:
-            self._times = []
+            self._times = Time([], format="jd")
             with self.open(self.filepath) as f:
                 self._times = Time(f["Epoch"][...])
         return self._times

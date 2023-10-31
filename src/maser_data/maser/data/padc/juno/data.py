@@ -36,7 +36,7 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
     @property
     def times(self):
         if self._times is None:
-            self._times = []
+            self._times = Time([], format="jd")
             with self.open(self.filepath) as cdf_file:
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times

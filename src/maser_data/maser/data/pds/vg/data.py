@@ -76,7 +76,7 @@ class VgPra3RdrLowband6secV1Data(
     @property
     def times(self):
         if self._times is None:
-            self._times = []
+            self._times = Time([], format="jd")
             times = Time(
                 [self._decode_date(item) for item in self.table["DATE"]]
             ) + self.table["SECOND"] * Unit("s")
@@ -301,7 +301,7 @@ class VgPra4RSummBrowse48secV1Data(
     @property
     def times(self):
         if self._times is None:
-            self._times = []
+            self._times = Time([], format="jd")
             years = self.table["YEAR"] + 1900
             days = self.table["DAY"]
             hours = self.table["HOUR"]

@@ -120,13 +120,10 @@ class InterballAuroralPolradRspBinData(
     @property
     def times(self):
         if self._times is None:
-            times = []
+            times = Time([], format="jd")
             for sweep in self.sweeps:
-                times.append(sweep.time)
-            if times != []:
-                self._times = Time(times)
-            else:
-                self._times = times
+                times = numpy.append(times, sweep.time)
+            self._times = Time(times)
         return self._times
 
     @property

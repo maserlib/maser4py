@@ -156,21 +156,21 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
 
     @property
     def times(self):
+        import numpy
+
         if self._times is None:
-            times = []
+            times = Time([], format="jd")
             for s in self.sweeps:
                 header = s.header
-                times.append(
+                times = numpy.append(
+                    times,
                     Time(
                         f"{header['CALEND_DATE_YEAR']}-{header['CALEND_DATE_MONTH']}-"
                         f"{header['CALEND_DATE_DAY']} {header['CALEND_DATE_HOUR']}:"
                         f"{header['CALEND_DATE_MINUTE']}:{header['CALEND_DATE_SECOND']}"
-                    )
+                    ),
                 )
-            if times != []:
-                self._times = Time(times)
-            else:
-                self._times = times
+            self._times = Time(times)
         return self._times
 
     @property

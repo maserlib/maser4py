@@ -30,7 +30,7 @@ class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):
     @property
     def times(self):
         if self._times is None:
-            self._times = []
+            self._times = Time([], format="jd")
             with self.open(self.filepath) as cdf_file:
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times
@@ -111,7 +111,7 @@ class WindWavesRad1L3DfV01Data(CdfData, dataset="wi_wav_rad1_l3_df_v01"):
     @property
     def times(self):
         if self._times is None:
-            self._times = []
+            self._times = Time([], format="jd")
             with self.open(self.filepath) as cdf_file:
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times
@@ -147,7 +147,7 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
     @property
     def times(self):
         if self._times is None:
-            self._times = []
+            self._times = Time([], format="jd")
             with self.open(self.filepath) as cdf_file:
                 times = Time(cdf_file["Epoch"][...])
                 if self.access_mode == "sweeps":

@@ -114,6 +114,7 @@ class MexMMarsis3RdrAisV1Data(
     @property
     def times(self):
         if self._times is None:
+            _times = Time([], format="jd")
             if self._load_data is False:
                 self.load_data()
             _times = [
@@ -123,11 +124,7 @@ class MexMMarsis3RdrAisV1Data(
                 )
                 for sweep_mask in self._sweep_masks
             ]
-            if _times != []:
-                self._times = Time(_times)
-            else:
-                self._times = _times
-            # self._times = Time(_times)
+            self._times = Time(_times)
         return self._times
 
     @property

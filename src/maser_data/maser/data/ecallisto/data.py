@@ -16,7 +16,7 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
     @property
     def times(self):
         if self._times is None:
-            self._times = []
+            self._times = Time([], format="jd")
             with self.open(self.filepath) as f:
                 self._times = f[1].data["TIME"][0] * Unit("s") + Time(
                     f"{f[0].header['DATE-OBS'].replace('/', '-')} {f[0].header['TIME-OBS']}"
