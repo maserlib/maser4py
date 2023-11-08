@@ -26,6 +26,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 pip-wheel-metadata/
+Test_notebooks/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
