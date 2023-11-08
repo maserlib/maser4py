@@ -174,9 +174,13 @@ class Plot(BasePlot, dataset="default"):
                     )
                 else:
                     vmax_i = None
+            if len(keys) == 1:
+                axx = axs
+            else:
+                axx = axs[i]
             if iter_on_selection is None:
                 xr_k.plot(
-                    ax=axs[i],
+                    ax=axx,
                     cmap=cmap,  # cmap="gray", set by default in kwargs
                     vmin=vmin_i,
                     vmax=vmax_i,
@@ -195,7 +199,7 @@ class Plot(BasePlot, dataset="default"):
                         (
                             xr_k.where(xr[selkey] == selval).dropna(seldim, how=selhow)
                         ).plot(
-                            ax=axs[i],
+                            ax=axx,
                             cmap=cmap,  # cmap="gray", set by default in kwargs
                             vmin=vmin_i,
                             vmax=vmax_i,
@@ -208,7 +212,7 @@ class Plot(BasePlot, dataset="default"):
                         (
                             xr_k.where(xr[selkey] == selval).dropna(seldim, how=selhow)
                         ).plot(
-                            ax=axs[i],
+                            ax=axx,
                             # cmap="gray", set by default in kwargs
                             vmin=vmin_i,
                             vmax=vmax_i,
@@ -216,11 +220,17 @@ class Plot(BasePlot, dataset="default"):
                             add_colorbar=False,
                             **kwargs,
                         )
-            axs[i].get_xaxis().set_visible(False)
-        axs[0].set_title(f"{data.filepath.name} [{data.dataset}]")
-        axs[-1].get_xaxis().set_visible(True)
-        axs[-1].set_xlabel(f"time of day ({data.times[0].isot.split('T')[0]})")
-        axs[-1].xaxis.set_major_formatter(hhmm_format)
+            axx.get_xaxis().set_visible(False)
+        if len(keys) == 1:
+            axs.set_title(f"{data.filepath.name} [{data.dataset}]")
+            axs.get_xaxis().set_visible(True)
+            axs.set_xlabel(f"time of day ({data.times[0].isot.split('T')[0]})")
+            axs.xaxis.set_major_formatter(hhmm_format)
+        else:
+            axs[0].set_title(f"{data.filepath.name} [{data.dataset}]")
+            axs[-1].get_xaxis().set_visible(True)
+            axs[-1].set_xlabel(f"time of day ({data.times[0].isot.split('T')[0]})")
+            axs[-1].xaxis.set_major_formatter(hhmm_format)
         plt.tight_layout()
         if file_png is None:
             plt.show()
