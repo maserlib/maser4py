@@ -68,7 +68,7 @@ class MexMMarsis3RdrAisV1Data(
     _iter_sweep_class = MexMMarsis3RdrAisV1Sweeps
 
     _dataset_keys = [
-        "DEFAULT",
+        "SPECTRAL_DENSITY",
     ]
 
     def __init__(
@@ -152,29 +152,62 @@ class MexMMarsis3RdrAisV1Data(
         datasets = {}
 
         for dataset_key in self._dataset_keys:
-            datasets[dataset_key] = xarray.DataArray(
-                data=numpy.array([item.table for item in self.sweeps]).T,
-                # data=numpy.array([item.data for item in self.sweeps]).T[0],
-                name=self.dataset,
-                coords=[
-                    ("frequency", self.frequencies, {"units": "kHz"}),
-                    ("time", self.times.to_datetime()),
-                ],
-                dims=("frequency", "time"),
-                attrs={"units": "W m^-2 Hz^-1"},
-            )
+            data = numpy.array([item.data for item in self.sweeps])  # .T,
+            data_avg = numpy.mean(data, axis=2)
+            data_med = numpy.median(data, axis=2)
+            data_min = numpy.min(data, axis=2)
+            data_max = numpy.max(data, axis=2)
+            for i in range(data.shape[2] + 4):
+                if i == 0:
+                    dkey = dataset_key + "_AVG"
+                    datatab = data_avg
+                elif i == 1:
+                    dkey = dataset_key + "_MED"
+                    datatab = data_med
+                elif i == 2:
+                    dkey = dataset_key + "_MIN"
+                    datatab = data_min
+                elif i == 3:
+                    dkey = dataset_key + "_MAX"
+                    datatab = data_max
+                else:
+                    if i < 13:
+                        dkey = dataset_key + "_0" + str(i - 3)
+                    else:
+                        dkey = dataset_key + "_" + str(i - 3)  # Should be <= 80
+                    datatab = data[:, :, i - 4]
+                datasets[dkey] = xarray.DataArray(
+                    # data=numpy.array([item.table for item in self.sweeps]).T,
+                    # data=numpy.array([item.data for item in self.sweeps]).T, #[0],
+                    data=datatab.T,
+                    name=self.dataset,
+                    coords=[
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                    ],
+                    dims=("frequency", "time"),
+                    attrs={"units": "W m^-2 Hz^-1"},
+                )
 
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,
-        keys: List[str] = ["DEFAULT", "DEFAULT"],
+        keys: List[str] = [
+            "SPECTRAL_DENSITY_AVG",
+            "SPECTRAL_DENSITY_MED",
+            "SPECTRAL_DENSITY_MIN",
+            "SPECTRAL_DENSITY_MAX",
+            "SPECTRAL_DENSITY_56",
+        ],
+        db: List[bool] = [True, True, True, True, True],
         **kwargs,
     ):
         self._quicklook(
             keys=keys,
             file_png=file_png,
+            db=db,
             **kwargs,
         )
 
