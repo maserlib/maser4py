@@ -330,6 +330,24 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                     values = numpy.tile(
                         deltatimes[frequency_band].value, (len(frequencies), 1)
                     ).transpose()
+                    attrs = {}
+                    attrs["units"] = "jd"
+                    attrs["fieldnam"] = "Time shifts between frequency measurements"
+                    attrs[
+                        "catdesc"
+                    ] = "Time difference to reference time for each frequency"
+                    attrs["validmin"] = -1e30
+                    attrs["validmax"] = 1e30
+                    attrs["scalemin"] = -1e30
+                    attrs["scalemax"] = 1e30
+                    attrs["lablaxis"] = "DELTA_TIMES"
+                    attrs["var_types"] = "support_data"
+                    attrs["var_notes"] = "Extracted from Epochs"
+                    attrs["format"] = "Astropy.TimeDelta"
+                    attrs["scaletype"] = "linear"
+                    attrs["display_type"] = "time_series"
+                    attrs["fillval"] = -1e31
+                    attrs["depend_0"] = "Epoch"
 
                 elif dataset_key == "MODE_NB":
                     times = self.times_per_frequency[
@@ -342,6 +360,22 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                     else:
                         mode_nb = 2
                     values[:] = mode_nb
+                    attrs = {}
+                    attrs["units"] = "N=1 ; B=2"
+                    attrs["fieldnam"] = "Instrument mode: Normal/Burst"
+                    attrs["catdesc"] = "Instrument mode between Normal and Burst"
+                    attrs["validmin"] = 0
+                    attrs["validmax"] = 3
+                    attrs["scalemin"] = 0
+                    attrs["scalemax"] = 3
+                    attrs["lablaxis"] = "Instrument mode"
+                    attrs["var_types"] = "support_data"
+                    attrs["var_notes"] = "Extracted from data/header"
+                    attrs["format"] = "int"
+                    attrs["scaletype"] = "linear"
+                    attrs["display_type"] = "time_series"
+                    attrs["fillval"] = -1
+                    attrs["depend_0"] = "Epoch"
 
                 else:
                     times = self.times_per_frequency[
