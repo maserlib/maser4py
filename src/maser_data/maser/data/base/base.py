@@ -258,7 +258,6 @@ class Data(BaseData, dataset="default"):
         hhmm_format = mdates.DateFormatter("%H:%M")
 
         # setting defaults
-        # nan color management - not available if iteration on plot
         if "nan_color" not in kwargs:
             nan_color = "black"
         else:
@@ -266,14 +265,11 @@ class Data(BaseData, dataset="default"):
             del kwargs["nan_color"]
 
         # cmap management
-        # Incompatibilty remaining between nan management and iterative plots
         if "cmap" not in kwargs:
             kwargs["cmap"] = "gray"
         cmap_name = kwargs[
             "cmap"
         ]  # Necessary for iteration plots where using the same cmap object is an issue
-        cmap = plt.cm.get_cmap(kwargs["cmap"]).copy()
-        cmap.set_bad(nan_color, 1.0)
         del kwargs["cmap"]  # Necessary to avoir giving two times cmap key
 
         xr = self.as_xarray()
@@ -321,6 +317,8 @@ class Data(BaseData, dataset="default"):
             else:
                 axx = axs[i]
             if iter_on_selection is None:
+                cmap = plt.cm.get_cmap(cmap_name).copy()
+                cmap.set_bad(nan_color, 1.0)
                 xr_k.plot(
                     ax=axx,
                     cmap=cmap,  # cmap="gray", set by default in kwargs
@@ -337,6 +335,8 @@ class Data(BaseData, dataset="default"):
                     iter_on_selection["select_dim"],
                     iter_on_selection["select_how"],
                 ):
+                    cmap = plt.cm.get_cmap(cmap_name).copy()
+                    cmap.set_bad(nan_color, 1.0)
                     if first_loop == 1:
                         (
                             xr_k.where(xr[selkey] == selval).dropna(seldim, how=selhow)
