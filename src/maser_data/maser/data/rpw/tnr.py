@@ -140,12 +140,33 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
     @property
     def times(self):
+        import xarray
+
         if self._times is None:
             self._times = Time([], format="jd")
+            band = xarray.DataArray(
+                [self.frequency_band_labels[idx] for idx in self.file["TNR_BAND"][...]]
+            )
+            timeref = self.file["Epoch"][...]
             # Get Epoch time values for Band A
-            mask = self.file["TNR_BAND"][...] == 0
-            self._times = Time(np.take(self.file["Epoch"][...], mask, axis=0))
+            self._times = Time(timeref[np.where(band == self.frequency_band_labels[0])])
+            self._delta_times = {}
+            for freqband in self.frequency_band_labels:
+                self._delta_times[freqband] = (
+                    Time(timeref[np.where(band == freqband)]) - self._times
+                )
+            # mask = self.file["TNR_BAND"][...] == 0
+            # self._times = Time(np.take(self.file["Epoch"][...], mask, axis=0))
         return self._times
+
+    @property
+    def delta_times(self):
+        if self._delta_times is None:
+            times = self.times
+            for band in self._delta_times.keys():
+                if len(self._delta_times[band]) != len(times):
+                    raise ValueError("Conflict in Time object dimensions.")
+        return self._delta_times
 
     def as_xarray(self):
         """
@@ -153,10 +174,10 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         """
         import xarray
 
-        band = xarray.DataArray(
+        bandtab = xarray.DataArray(
             [self.frequency_band_labels[idx] for idx in self.file["TNR_BAND"][...]]
         )
-        time = self.file["Epoch"][...]
+        # timeref = self.file["Epoch"][...]
 
         sensor_config = list(
             map(
@@ -169,40 +190,175 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         )
 
         tnr_frequency_bands = self.file["TNR_BAND_FREQ"][...]
-        freq_index = range(tnr_frequency_bands.shape[1])
+        # freq_index = range(tnr_frequency_bands.shape[1])
+        freq_index = tnr_frequency_bands.shape[1]
 
-        frequency = self.file["FREQUENCY"][...]  # (n_time, n_freq)
+        # band_array_tmp = {}
+        # np.zeros([len(self.times), len(self.frequencies)])
+        # band_array_2 = np.zeros([len(self.times), len(self.frequencies)])
+        # for i in range(2):  # loop on channels
+
+        sensor_config = np.array(sensor_config)
+        for i, freqband in enumerate(self.frequency_band_labels):
+            # band_array_tmp[freqband+"_"+str(i)] = sensor_config[i][np.where(bandtab==freqband)]
+            if i == 0:
+                band_array_1 = np.tile(
+                    sensor_config[:, 0][np.where(bandtab == freqband)], (freq_index, 1)
+                ).transpose()
+                band_array_2 = np.tile(
+                    sensor_config[:, 1][np.where(bandtab == freqband)], (freq_index, 1)
+                ).transpose()
+            else:
+                band_array_1 = np.append(
+                    band_array_1,
+                    np.tile(
+                        sensor_config[:, 0][np.where(bandtab == freqband)],
+                        (freq_index, 1),
+                    ).transpose(),
+                    axis=1,
+                )
+                band_array_2 = np.append(
+                    band_array_2,
+                    np.tile(
+                        sensor_config[:, 1][np.where(bandtab == freqband)],
+                        (freq_index, 1),
+                    ).transpose(),
+                    axis=1,
+                )
+
+            # istart = 0 + freq_index*i
+            # iend = freq_index * (i + 1)
+            # band_array_1[:,istart:iend] = sensor_config[0][np.where(bandtab==freqband)]  # chan 1
+            # band_array_2[:,istart:iend] = sensor_config[1][np.where(bandtab==freqband)]  # chan 2
+
+        data_1 = self.file["AUTO1"][...]
+        data_2 = self.file["AUTO2"][...]
+        try:
+            fillval = self.file["AUTO1"].attrs["FILLVAL"]
+        except KeyError:
+            # If FILLVAL not found in variable attribute
+            fillval = -1e31
+        data_array_1 = (
+            np.ones(
+                [
+                    len(bandtab[np.where(bandtab == "A")]),
+                    freq_index * len(self.frequency_band_labels),
+                ]
+            )
+            * fillval
+        )
+        data_array_2 = (
+            np.ones(
+                [
+                    len(bandtab[np.where(bandtab == "A")]),
+                    freq_index * len(self.frequency_band_labels),
+                ]
+            )
+            * fillval
+        )
+        for i, freqband in enumerate(self.frequency_band_labels):
+            for j in range(freq_index):
+                # cond = bandtab==freqband
+                data_array_1[:, j + i * freq_index] = data_1[:, j][
+                    np.where(bandtab == freqband)
+                ]
+                data_array_2[:, j + i * freq_index] = data_2[:, j][
+                    np.where(bandtab == freqband)
+                ]
+
+        # frequency = self.file["FREQUENCY"][...]  # (n_time, n_freq)
+
+        for i, freqband in enumerate(self.frequency_band_labels):
+            if i == 0:
+                deltatimes = np.tile(
+                    self.delta_times[freqband].value, (freq_index, 1)
+                ).transpose()
+            else:
+                deltatimes = np.append(
+                    deltatimes,
+                    np.tile(
+                        self.delta_times[freqband].value, (freq_index, 1)
+                    ).transpose(),
+                    axis=1,
+                )
 
         try:
-            units = self.file["AUTO1"].attrs["UNITS"]
+            unit_data = self.file["AUTO1"].attrs["UNITS"]
         except KeyError:
             # If UNITS not found in variable attribute
             # assume V^2/Hz
-            units = "V^2/Hz"
+            unit_data = "V^2/Hz"
 
-        auto = xarray.DataArray(
-            [self.file["AUTO1"][...], self.file["AUTO2"][...]],
-            coords={
-                "channel": self.channel_labels,
-                "time": time,
-                "freq_index": freq_index,
-                "band": ("time", band.data),
-                "frequency": (["time", "freq_index"], frequency.data),
-                "sensor": (["time", "channel"], sensor_config),
-            },
-            dims=["channel", "time", "freq_index"],
-            attrs={"units": units},
-            name="VOLTAGE_SPECTRAL_POWER",
-        )
+        dataset_keys = [
+            "VOLTAGE_SPECTRAL_POWER_CH1",
+            "VOLTAGE_SPECTRAL_POWER_CH2",
+            "SENSOR_CH1",
+            "SENSOR_CH2",
+            "DELTA_TIMES",
+        ]
+        dataset = {}
+        firstloop = 1
+        for key in dataset_keys:
+            if key == "VOLTAGE_SPECTRAL_POWER_CH1":
+                values = data_array_1.T
+                units = unit_data
+            elif key == "VOLTAGE_SPECTRAL_POWER_CH2":
+                values = data_array_2.T
+                units = unit_data
+            elif key == "SENSOR_CH1":
+                values = band_array_1.T
+                units = ""
+            elif key == "SENSOR_CH2":
+                values = band_array_2.T
+                units = ""
+            elif key == "DELTA_TIMES":
+                values = deltatimes.T
+                units = "jd"
+            else:
+                raise KeyError("Unknown key.")
 
-        return xarray.Dataset({"VOLTAGE_SPECTRAL_POWER": auto})
+            dataset[key] = xarray.DataArray(
+                values,  # [self.file["AUTO1"][...], self.file["AUTO2"][...]],
+                coords={
+                    # "channel": self.channel_labels,
+                    "frequency": self.frequencies,  # (["time", "freq_index"], frequency.data),
+                    "time": self.times.to_datetime(),  # timeref,
+                    # "freq_index": freq_index,
+                    # "band": ("time", bandtab.data),
+                    # "sensor": (["time", "channel"], sensor_config),
+                },
+                dims=["frequency", "time"],  # ["channel", "time", "freq_index"],
+                attrs={"units": units},
+                name=key,  # "VOLTAGE_SPECTRAL_POWER",
+            )
+            if firstloop == 1:
+                ds = xarray.Dataset(data_vars=dataset)
+                firstloop = 0
+            else:
+                ds[key] = dataset[key]
+
+        return ds  # xarray.Dataset({"VOLTAGE_SPECTRAL_POWER": auto})
 
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,
-        keys: List[str] = ["VOLTAGE_SPECTRAL_POWER", "VOLTAGE_SPECTRAL_POWER"],
+        keys: List[str] = [
+            "VOLTAGE_SPECTRAL_POWER_CH1",
+            "VOLTAGE_SPECTRAL_POWER_CH2",
+            "DELTA_TIMES",
+        ],
+        db: List[bool] = [True, True, False],
+        vmin: List[Union[float, None]] = [None, None, -2e-5],
+        vmax: List[Union[float, None]] = [None, None, 2e-5],
+        yscale: str = "log",
+        **kwargs
     ):
         self._quicklook(
             keys=keys,
             file_png=file_png,
+            db=db,
+            vmin=vmin,
+            vmax=vmax,
+            yscale=yscale,
+            **kwargs
         )
