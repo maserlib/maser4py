@@ -76,14 +76,21 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__as_xarray(mex_data):
     data = mex_data
     xr = data.as_xarray()
     assert isinstance(xr, xarray.Dataset)
-    # assert set(xr.keys()) == {"SPECTRAL_DENSITY", "SPECTRAL_DENSITY"}
-    assert "SPECTRAL_DENSITY_MED" in xr.keys()
-    assert "SPECTRAL_DENSITY_AVG" in xr.keys()
-    assert "SPECTRAL_DENSITY_MIN" in xr.keys()
-    assert "SPECTRAL_DENSITY_MAX" in xr.keys()
-    assert "SPECTRAL_DENSITY_01" in xr.keys()
-    assert "SPECTRAL_DENSITY_80" in xr.keys()
-    assert xr.coords.dims == {"time": 1057, "frequency": 160}
+    assert set(xr.keys()) == {
+        "SPECTRAL_DENSITY",
+        "SPECTRAL_DENSITY_AVG",
+        "SPECTRAL_DENSITY_MED",
+        "SPECTRAL_DENSITY_MIN",
+        "SPECTRAL_DENSITY_MAX",
+    }
+    # assert "SPECTRAL_DENSITY_MED" in xr.keys()
+    # assert "SPECTRAL_DENSITY_AVG" in xr.keys()
+    # assert "SPECTRAL_DENSITY_MIN" in xr.keys()
+    # assert "SPECTRAL_DENSITY_MAX" in xr.keys()
+    # assert "SPECTRAL_DENSITY_01" in xr.keys()
+    # assert "SPECTRAL_DENSITY_80" in xr.keys()
+    assert xr.coords.dims == {"time": 1057, "frequency": 160, "sample": 80}
+    assert xr["SPECTRAL_DENSITY"].dims == ("frequency", "time", "sample")
     assert xr["SPECTRAL_DENSITY_MED"].dims == ("frequency", "time")
     assert xr["SPECTRAL_DENSITY_MED"].shape == (160, 1057)
     assert xr["SPECTRAL_DENSITY_MED"].units == "W m^-2 Hz^-1"
