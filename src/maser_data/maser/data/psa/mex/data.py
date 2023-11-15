@@ -157,39 +157,70 @@ class MexMMarsis3RdrAisV1Data(
             data_med = numpy.median(data, axis=2)
             data_min = numpy.min(data, axis=2)
             data_max = numpy.max(data, axis=2)
-            for i in range(data.shape[2] + 4):
+            for i in range(5):  # data.shape[2] + 4):
                 if i == 0:
                     dkey = dataset_key + "_AVG"
-                    datatab = data_avg
+                    datatab = data_avg.T
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                    ]
+                    dims = ("frequency", "time")
                 elif i == 1:
                     dkey = dataset_key + "_MED"
-                    datatab = data_med
+                    datatab = data_med.T
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                    ]
+                    dims = ("frequency", "time")
                 elif i == 2:
                     dkey = dataset_key + "_MIN"
-                    datatab = data_min
+                    datatab = data_min.T
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                    ]
+                    dims = ("frequency", "time")
                 elif i == 3:
                     dkey = dataset_key + "_MAX"
-                    datatab = data_max
+                    datatab = data_max.T
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                    ]
+                    dims = ("frequency", "time")
                 else:
+                    """
                     if i < 13:
                         dkey = dataset_key + "_0" + str(i - 3)
                     else:
                         dkey = dataset_key + "_" + str(i - 3)  # Should be <= 80
                     datatab = data[:, :, i - 4]
+                    """
+                    dkey = dataset_key
+                    datatab = numpy.transpose(data, (1, 0, 2))
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                        ("sample", range(data.shape[2])),
+                    ]
+                    dims = ("frequency", "time", "sample")
                 datasets[dkey] = xarray.DataArray(
                     # data=numpy.array([item.table for item in self.sweeps]).T,
                     # data=numpy.array([item.data for item in self.sweeps]).T, #[0],
-                    data=datatab.T,
+                    data=datatab,
                     name=self.dataset,
-                    coords=[
-                        ("frequency", self.frequencies, {"units": "kHz"}),
-                        ("time", self.times.to_datetime()),
-                    ],
-                    dims=("frequency", "time"),
+                    coords=coords,
+                    dims=dims,
                     attrs={"units": "W m^-2 Hz^-1"},
                 )
+                if i == 0:
+                    dataset = xarray.Dataset(data_vars=datasets)
+                else:
+                    dataset[dkey] = datasets[dkey]
 
-        return xarray.Dataset(data_vars=datasets)
+        return dataset  # xarray.Dataset(data_vars=datasets)
 
     def quicklook(
         self,
@@ -199,7 +230,7 @@ class MexMMarsis3RdrAisV1Data(
             "SPECTRAL_DENSITY_MED",
             "SPECTRAL_DENSITY_MIN",
             "SPECTRAL_DENSITY_MAX",
-            "SPECTRAL_DENSITY_56",
+            # "SPECTRAL_DENSITY_56",
         ],
         db: List[bool] = [True, True, True, True, True],
         **kwargs,

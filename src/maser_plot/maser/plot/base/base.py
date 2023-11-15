@@ -99,6 +99,7 @@ class Plot(BasePlot, dataset="default"):
         force_new_units: Union[None, dict] = None,
         data_factor: Union[None, dict] = None,
         force_new_keyname: Union[None, dict] = None,
+        landscape: bool = False,
         **kwargs,
     ):
         from matplotlib import pyplot as plt
@@ -126,11 +127,15 @@ class Plot(BasePlot, dataset="default"):
         xr = data.as_xarray()
         if keys is None:
             raise ValueError()
+        if landscape:
+            figsize = (11.69, 8.27)
+        else:
+            figsize = (8.27, 11.69)  # A4 portrait
         fig, axs = plt.subplots(
             nrows=len(keys),
             sharex=True,
             sharey=True,
-            figsize=(8.27, 11.69),  # A4 portrait
+            figsize=figsize,
             dpi=100,
         )
         for i, k in enumerate(keys):

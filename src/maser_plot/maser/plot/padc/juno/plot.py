@@ -21,6 +21,7 @@ class JnoWavLesiaL3aV02Plot(CdfPlot, dataset="jno_wav_cdr_lesia"):
         vmax_quantile: List[float] = [0.95, 0.95, 0.95],
         yscale: str = "log",
         calibrate: bool = True,
+        landscape: bool = False,
         **kwargs,
     ):
 
@@ -59,5 +60,6 @@ class JnoWavLesiaL3aV02Plot(CdfPlot, dataset="jno_wav_cdr_lesia"):
             force_new_units=force_new_units,
             force_new_keyname=force_new_keyname,
             data_factor=data_factor,
+            landscape=landscape,
             **kwargs,
         )
