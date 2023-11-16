@@ -129,10 +129,21 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
             with self.open(self.filepath) as cdf_file:
                 # if units are not specified, assume kHz
                 units = Unit(cdf_file["FREQUENCY"].attrs["UNITS"].strip() or "kHz")
-                # Compute frequency values for HF1 and HF2 bands
-                f1 = 375 + 50 * np.arange(64)
-                f2 = 3625 + 100 * np.arange(128)
-                self._frequencies = np.concatenate((f1, f2)) * units
+                # Removed # Compute frequency values for HF1 and HF2 bands
+                # f1 = 375 + 50 * np.arange(64)
+                # f2 = 3625 + 100 * np.arange(128)
+
+                def sort_uniq(sequence):  # a fast way to sort(unique(sequence))
+                    import itertools
+                    import operator
+
+                    return map(
+                        operator.itemgetter(0), itertools.groupby(sorted(sequence))
+                    )
+
+                freq = cdf_file["FREQUENCY"][...]
+                freq = list(sort_uniq(freq))
+                self._frequencies = freq * units  # np.concatenate((f1, f2)) * units
 
         return self._frequencies
 
@@ -146,6 +157,14 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
         return self._times
 
     @property
+    def delta_times(self):
+        if self._delta_times is None:
+            xr = self.as_xarray()
+            if len(self._delta_times[0, :]) != len(xr.time):
+                raise ValueError("Conflict in Time object dimensions.")
+        return self._delta_times
+
+    @property
     def sweep_start_index(self):
         # Define the list of indices of the first element of each sweep in the file
         if not hasattr(self, "_sweep_start_index") or self._sweep_start_index is None:
@@ -154,7 +173,7 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
         # Return resulting index array as a list
         return list(self._sweep_start_index)
 
-    def as_xarray(self, as_is=True):
+    def as_xarray(self, as_is=False):
         """
         Return the HFR data as a xarray
 
@@ -171,7 +190,7 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
             # assume V^2/Hz
             units = "V^2/Hz"
 
-        if as_is:
+        if as_is:  # old way
             time = self.file["Epoch"][...]
             # Return HFR data as is
             sensor_config = list(
@@ -220,6 +239,10 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
             # Fill 2D array with NaN for HRF frequencies not actually measured in the file
             V_2d[:] = np.nan
 
+            # Same for a verification table
+            freq_ind_table = np.empty((nt, nf))
+            freq_ind_table[:] = np.nan
+
             # Get list of first index of sweeps
             isweep = self.sweep_start_index
             # Get number of sweeps
@@ -239,8 +262,10 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                 i0 = isweep[i]
                 i1 = isweep[i + 1]
 
-                # Get indices of the actual frequency values in the 192 frequency vector
-                freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1])
+                # Get indices of the actual frequency values since they are not always sorted
+                # freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1]) # old way if 192 freqs
+                freq_indices = hfr_frequency.value.searchsorted(freq[i0:i1])
+                freq_ind_table[i, :] = freq_indices
 
                 # fill output 2D array
                 V_2d[0, i, freq_indices] = self.file["AGC1"][i0:i1]
@@ -254,31 +279,173 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                     self.file["SENSOR_CONFIG"][i0, 1]
                 ]
 
+            # Filtering the All-NaN slice warning for the following section
+            # nanmax is used here to detect the All-NaN lines and thus we do not want the warning
+            # There is always MAX 1 channel used so at least 1 Nan per (freq,time) in 1 channel
+            import warnings
+
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", message="All-NaN slice encountered")
+                # Computing delta_times
+                nanline = np.empty((nt - 2))
+                nanline[:] = np.nan
+                # delta_times = Time([], format="jd")
+                timeref = Time(self.file["Epoch"][...])
+                delta_times = []
+                delta_times_first = np.empty((nf))
+                delta_times_last = np.empty((nf))
+                delta_times_first[:] = np.nan
+                delta_times_last[:] = np.nan
+                isweep_r = isweep[1:-2]
+                j = 0
+                jfirst = 0
+                jlast = 0
+                for i in range(nf):
+                    # First sweep - may be incomplete
+                    # Check whether the measurement exists and fills delta_times if so
+                    if np.nanmax(V_2d[:, 0, i], axis=0) > -np.inf:
+                        delta_times_first[i] = (timeref[jfirst] - self.times[0]).value
+                        jfirst += 1
+
+                    # regular sweep
+                    if np.nanmax(V_2d[:, :, i]) > -np.inf:  # Main case
+                        delta_times = np.append(
+                            delta_times,
+                            (timeref[isweep_r + j] - self.times[1:-1]).value,
+                        )
+                        j += 1
+                    else:
+                        delta_times = np.append(
+                            delta_times, nanline
+                        )  # if a frequency is ONLY here in first or last sweep
+
+                    # Last sweep - maybe be incomplete
+                    # Check whether the measurement exists and fills delta_times if so
+                    if np.nanmax(V_2d[:, -1, i], axis=0) > -np.inf:
+                        delta_times_last[i] = (
+                            timeref[isweep[-2] + jlast] - self.times[-1]
+                        ).value
+                        jlast += 1
+                delta_times = np.append(delta_times_first, delta_times)
+                delta_times = np.append(delta_times, delta_times_last)
+                delta_times = np.reshape(delta_times, (nf, nt))
+                self._delta_times = delta_times  # stores delta_times
+
             # Define hfr bands
-            hfr_band = (["HF1"] * 64) + (["HF2"] * 128)
+            # hfr_band = (["HF1"] * 64) + (["HF2"] * 128) # not accurrate
 
-            V_da = xarray.DataArray(
-                V_2d,
-                coords={
-                    "channel": self.channel_labels,
-                    "time": sweep_times.value,
-                    "frequency": hfr_frequency,
-                    "band": (["frequency"], hfr_band),
-                    "sensor": (["channel", "time"], sensor_config),
-                },
-                dims=["channel", "time", "frequency"],
-                attrs={"units": units},
-                name="VOLTAGE_SPECTRAL_POWER",
-            )
+            dataset = {}
+            for i in range(7):
+                if i == 0:
+                    key = "VOLTAGE_SPECTRAL_POWER"
+                    # Filtering the All-NaN slice warning for the following computation
+                    # nanmax is used here to detect the All-NaN lines and thus we do not want the warning
+                    with warnings.catch_warnings():
+                        warnings.filterwarnings(
+                            "ignore", message="All-NaN slice encountered"
+                        )
+                        values = (np.nanmax(V_2d, axis=0)).T
+                    # sensor_conf = np.max(sensor_config, axis = 0)
+                    coords = [
+                        # "channel": self.channel_labels,
+                        ("frequency", hfr_frequency, {"units": self.frequencies.unit}),
+                        ("time", sweep_times.value),
+                        # ("band", (["frequency"], hfr_band)),
+                        # "sensor": (["channel", "time"], sensor_config),
+                        # ("sensor", (["time"], sensor_conf)),
+                    ]
+                    dims = ["frequency", "time"]
+                    units_da = units
+                elif i <= 2:
+                    key = "VOLTAGE_SPECTRAL_POWER_CH" + str(i)
+                    values = (V_2d[i - 1, :, :]).T
+                    # sensor_conf = sensor_config[i-1, :]
+                    coords = [
+                        ("frequency", hfr_frequency, {"units": self.frequencies.unit}),
+                        ("time", sweep_times.value),
+                    ]
+                    dims = ["frequency", "time"]
+                    units_da = units
+                elif i == 3:
+                    key = "SENSOR"
 
-        return xarray.Dataset({"VOLTAGE_SPECTRAL_POWER": V_da})
+                    # Computing which sensor of the 2 channels is used
+                    tabref = np.array(
+                        np.nanmax(
+                            V_2d[
+                                1,
+                                :,
+                                :,
+                            ],
+                            axis=1,
+                        )
+                    )
+                    sens_conf = sensor_config[0, :]
+                    sens_conf[np.where(tabref - np.inf)] = sensor_config[1, :][
+                        np.where(tabref > -np.inf)
+                    ]
+                    values = sens_conf
+                    # Saving channel info as well
+                    channel = np.ones([len(sens_conf)])
+                    channel[np.where(tabref > -np.inf)] = 2
+                    coords = [
+                        ("time", sweep_times.value),
+                    ]
+                    dims = ["time"]
+                    units_da = ""
+                elif i == 4:
+                    key = "CHANNEL"
+                    values = channel  # Computed in key i = 3
+                    coords = [
+                        ("time", sweep_times.value),
+                    ]
+                    dims = ["time"]
+                    units_da = ""
+                elif i == 5:
+                    key = "DELTA_TIMES"
+                    values = delta_times
+                    coords = [
+                        ("frequency", hfr_frequency, {"units": self.frequencies.unit}),
+                        ("time", sweep_times.value),
+                    ]
+                    dims = ["frequency", "time"]
+                    units_da = "jd"
+                else:  # Previously hfr_band but dropped
+                    key = "FREQ_INDICES"  # for check purpose mainly
+                    values = freq_ind_table.T
+                    coords = [
+                        ("frequency", hfr_frequency, {"units": self.frequencies.unit}),
+                        ("time", sweep_times.value),
+                    ]
+                    dims = ["frequency", "time"]
+                    units_da = ""
+                V_da = xarray.DataArray(
+                    values,
+                    coords=coords,
+                    # dims=["channel", "time", "frequency"],
+                    dims=dims,
+                    attrs={"units": units_da},
+                    name=key,
+                )
+                dataset[key] = V_da
+                if i == 0:
+                    V_ds = xarray.Dataset(data_vars=dataset)
+                else:
+                    V_ds[key] = dataset[key]
+
+        return V_ds  # xarray.Dataset({"VOLTAGE_SPECTRAL_POWER": V_da})
 
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,
-        keys: List[str] = ["VOLTAGE_SPECTRAL_POWER", "VOLTAGE_SPECTRAL_POWER"],
+        keys: List[str] = [
+            "VOLTAGE_SPECTRAL_POWER",
+            "VOLTAGE_SPECTRAL_POWER_CH1",
+            "VOLTAGE_SPECTRAL_POWER_CH2",
+            "DELTA_TIMES",
+            "FREQ_INDICES",
+        ],
+        db: List[bool] = [True, True, True, False, False],
+        **kwargs
     ):
-        self._quicklook(
-            keys=keys,
-            file_png=file_png,
-        )
+        self._quicklook(keys=keys, file_png=file_png, db=db, **kwargs)
