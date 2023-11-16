@@ -319,14 +319,18 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
 
             dataset[key] = xarray.DataArray(
                 values,  # [self.file["AUTO1"][...], self.file["AUTO2"][...]],
-                coords={
+                coords=[
                     # "channel": self.channel_labels,
-                    "frequency": self.frequencies,  # (["time", "freq_index"], frequency.data),
-                    "time": self.times.to_datetime(),  # timeref,
+                    (
+                        "frequency",
+                        self.frequencies.value,
+                        {"units": self.frequencies.unit},
+                    ),  # (["time", "freq_index"], frequency.data),
+                    ("time", self.times.to_datetime()),  # timeref,
                     # "freq_index": freq_index,
                     # "band": ("time", bandtab.data),
                     # "sensor": (["time", "channel"], sensor_config),
-                },
+                ],
                 dims=["frequency", "time"],  # ["channel", "time", "freq_index"],
                 attrs={"units": units},
                 name=key,  # "VOLTAGE_SPECTRAL_POWER",
