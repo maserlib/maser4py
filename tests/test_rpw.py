@@ -13,12 +13,17 @@ TEST_FILES = {
     "solo_L2_rpw-lfr-surv-bp1": [
         BASEDIR / "solo" / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf",
         BASEDIR / "solo" / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20220326_V02.cdf",
+        # BASEDIR / "solo" / "rpw" / "solo_L2_rpw-lfr-surv-bp1_20230521_V02.cdf",  # recent file
     ],
     "solo_L2_rpw-tnr-surv": [
-        BASEDIR / "solo" / "rpw" / "solo_L2_rpw-tnr-surv_20220101_V02.cdf"
+        BASEDIR / "solo" / "rpw" / "solo_L2_rpw-tnr-surv_20220101_V02.cdf",
+        # BASEDIR / "solo" / "rpw" / "solo_L2_rpw-tnr-surv_20211028_V04.cdf",  # visible feature
+        # BASEDIR / "solo" / "rpw" / "solo_L2_rpw-tnr-surv_20230521_V02.cdf",  # recent file
     ],
     "solo_L2_rpw-hfr-surv": [
-        BASEDIR / "solo" / "rpw" / "solo_L2_rpw-hfr-surv_20220101_V01.cdf"
+        BASEDIR / "solo" / "rpw" / "solo_L2_rpw-hfr-surv_20220101_V01.cdf",
+        # BASEDIR / "solo" / "rpw" / "solo_L2_rpw-hfr-surv_20211028_V02.cdf",  # visible feature
+        # BASEDIR / "solo" / "rpw" / "solo_L2_rpw-hfr-surv_20230521_V01.cdf",  # recent file
     ],
 }
 

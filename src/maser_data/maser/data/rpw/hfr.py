@@ -300,7 +300,8 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                 # Get indices of the actual frequency values since they are not always sorted
                 # freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1]) # old way if 192 freqs
                 freq_indices = hfr_frequency.value.searchsorted(freq[i0:i1])
-                freq_ind_table[i, :] = freq_indices
+                # freq_ind_table[i, :] = freq_indices
+                freq_ind_table[i, freq_indices] = np.arange(len(freq_indices))
 
                 # fill output 2D array
                 V_2d[0, i, freq_indices] = self.file["AGC1"][i0:i1]
