@@ -177,10 +177,12 @@ def test_rpw_lfr_surv_bp1_dataset__as_xarray(filepath):
         test_array = datasets[expected_keys[0]]
         assert isinstance(test_array, xarray.DataArray)
         if "20201227" in str(filepath):
+            assert test_array.shape == (48, 86380)
             assert test_array.coords["frequency"][0] == pytest.approx(120)
             # assert len(test_array.values) == 108175
             assert len(test_array.values) == 48  # 86380 now freq dim instead of time
         elif "20220326" in str(filepath):
+            assert test_array.shape == (84, 24352)
             assert test_array.coords["frequency"][0] == pytest.approx(10.5)
             # assert len(test_array.values) == 108175
             assert len(test_array.values) == 84  # 24352 now freq dim instead of time
@@ -232,9 +234,13 @@ def test_rpw_tnr_surv_dataset(filepath):
 def test_rpw_tnr_surv_dataset__times(filepath):
     with Data(filepath=filepath) as data:
         assert isinstance(data.times, Time)
-        assert len(data.times) == 172452
-        assert data.times[0] == Time("2022-01-01 00:01:26.830833")
-        assert data.times[-1] == Time("2022-01-01 00:01:26.324603")
+        assert len(data.times) == 43113  # 172452
+        assert data.times[0] == Time(
+            "2022-01-01 00:01:26.324603"
+        )  # Time("2022-01-01 00:01:26.830833")
+        assert data.times[-1] == Time(
+            "2022-01-02 00:01:23.090977"
+        )  # Time("2022-01-01 00:01:26.324603")
 
 
 @pytest.mark.test_data_required
@@ -281,15 +287,32 @@ def test_rpw_tnr_surv_data__as_xarray(filepath):
         # get only the first sweep
         datasets = data.as_xarray()
 
-        expected_keys = ["VOLTAGE_SPECTRAL_POWER"]
+        expected_keys = [
+            "VOLTAGE_SPECTRAL_POWER_CH1",
+            "VOLTAGE_SPECTRAL_POWER_CH2",
+            "SENSOR_CH1",
+            "SENSOR_CH2",
+            "V1",
+            "V2",
+            "V3",
+            "V1-V2",
+            "V2-V3",
+            "V3-V1",
+            "B_MF",
+            "HF_V1-V2",
+            "HF_V2-V3",
+            "HF_V3-V1",
+            "DELTA_TIMES",
+        ]
 
         # check the sweep content
-        assert len(datasets.keys()) == 1
+        assert len(datasets.keys()) == 15
         assert sorted(list(datasets.keys())) == sorted(expected_keys)
 
-        test_array = datasets[expected_keys[0]][0]
+        test_array = datasets[expected_keys[0]]  # [0]
         assert isinstance(test_array, xarray.DataArray)
-        assert test_array.coords["frequency"][0][0] == pytest.approx(3991)
+        assert test_array.shape == (128, 43113)
+        assert test_array.coords["frequency"].values[0] == pytest.approx(3992)
         assert test_array.attrs["units"] == "V^2/Hz"
         assert test_array.data[0][0] == pytest.approx(2.1229058431454354e-11)
 
@@ -341,8 +364,8 @@ def test_rpw_hfr_surv_dataset__times(filepath):
 def test_rpw_hfr_surv_dataset__frequencies(filepath):
     with Data(filepath=filepath) as data:
         assert isinstance(data.frequencies, Quantity)
-        assert len(data.frequencies) == 192
-        assert data.frequencies[0].to(Unit("Hz")).value == pytest.approx(375000)
+        assert len(data.frequencies) == 40  # 192
+        assert data.frequencies[0].to(Unit("Hz")).value == pytest.approx(425000)
         assert data.frequencies[-1].to(Unit("Hz")).value == pytest.approx(16325000)
 
 
@@ -376,17 +399,37 @@ def test_rpw_hfr_surv_data__as_xarray(filepath):
         # get only the first sweep
         datasets = data.as_xarray()
 
-        expected_keys = ["VOLTAGE_SPECTRAL_POWER"]
+        expected_keys = [
+            "VOLTAGE_SPECTRAL_POWER",
+            "SENSOR",
+            "CHANNEL",
+            "V1",
+            "V2",
+            "V3",
+            "V1-V2",
+            "V2-V3",
+            "V3-V1",
+            "B_MF",
+            "HF_V1-V2",
+            "HF_V2-V3",
+            "HF_V3-V1",
+            "DELTA_TIMES",
+            "FREQ_INDICES",
+            "VOLTAGE_SPECTRAL_POWER_CH1",
+            "VOLTAGE_SPECTRAL_POWER_CH2",
+        ]
 
         # check the sweep content
-        assert len(datasets.keys()) == 1
+        assert len(datasets.keys()) == 17
         assert sorted(list(datasets.keys())) == sorted(expected_keys)
 
-        test_array = datasets[expected_keys[0]][0]
+        test_array = datasets[expected_keys[0]]  # [0]
         assert isinstance(test_array, xarray.DataArray)
-        assert test_array.coords["frequency"][0] == pytest.approx(6525)
+        assert test_array.coords["frequency"].values[0] == pytest.approx(425)
+        assert test_array.shape == (40, 26871)
         assert test_array.attrs["units"] == "V^2/Hz"
-        assert test_array.data[110000] == pytest.approx(4.8739396889859025e-15)
+        # assert test_array.data[110000] == pytest.approx(4.8739396889859025e-15) # old
+        assert test_array.data[10][0] == pytest.approx(4.88892085e-13)
 
 
 @pytest.mark.test_data_required
