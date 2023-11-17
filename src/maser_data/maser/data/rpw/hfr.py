@@ -87,7 +87,8 @@ class RpwHfrSurvSweeps(Sweeps):
 
         # Get frequency and corresponding HFR band values
         freq = self.file["FREQUENCY"][...]
-        band = self.file["HFR_BAND"][...]
+        # band = self.file["HFR_BAND"][...] # not reliable
+        units = Unit(self.file["FREQUENCY"].attrs["UNITS"].strip() or "kHz")
 
         # Loop over each sweep in the CDF
         for i in range(n_sweeps):
@@ -96,7 +97,7 @@ class RpwHfrSurvSweeps(Sweeps):
             i1 = sweep_start_index[i + 1]
 
             # Define indices of the frequencies for current sweep
-            freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1])
+            # freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1]) # deprecated
 
             yield (
                 {
@@ -106,7 +107,8 @@ class RpwHfrSurvSweeps(Sweeps):
                 # Return the time of the first sample of the current sweep
                 Time(self.file["Epoch"][i0]),
                 # Return the list of frequencies
-                self.data_reference.frequencies[freq_indices],
+                # self.data_reference.frequencies[freq_indices],
+                freq[i0:i1] * units,
                 (
                     SENSOR_MAPPING[self.file["SENSOR_CONFIG"][i][0]],
                     SENSOR_MAPPING[self.file["SENSOR_CONFIG"][i][1]],
