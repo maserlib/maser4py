@@ -103,6 +103,7 @@ class Plot(BasePlot, dataset="default"):
         **kwargs,
     ):
         from matplotlib import pyplot as plt
+        import matplotlib
         import matplotlib.dates as mdates
 
         hhmm_format = mdates.DateFormatter("%H:%M")
@@ -186,7 +187,8 @@ class Plot(BasePlot, dataset="default"):
             else:
                 axx = axs[i]
             if iter_on_selection is None:
-                cmap = plt.cm.get_cmap(cmap_name).copy()
+                # cmap = plt.cm.get_cmap(cmap_name).copy() # Deprecated
+                cmap = matplotlib.colormaps[cmap_name]
                 cmap.set_bad(nan_color, 1.0)
                 xr_k.plot(
                     ax=axx,
@@ -204,7 +206,8 @@ class Plot(BasePlot, dataset="default"):
                     iter_on_selection["select_dim"],
                     iter_on_selection["select_how"],
                 ):
-                    cmap = plt.cm.get_cmap(cmap_name).copy()
+                    # cmap = plt.cm.get_cmap(cmap_name).copy() # Deprecated
+                    cmap = matplotlib.colormaps[cmap_name]
                     cmap.set_bad(nan_color, 1.0)
                     if first_loop == 1:
                         (
@@ -224,7 +227,7 @@ class Plot(BasePlot, dataset="default"):
                             xr_k.where(xr[selkey] == selval).dropna(seldim, how=selhow)
                         ).plot(
                             ax=axx,
-                            # cmap="gray", set by default in kwargs
+                            cmap=cmap_name,  # cmap_name required here else it would replace the first iter by nan_color
                             vmin=vmin_i,
                             vmax=vmax_i,
                             # cbar_kwargs={"label": clabel},
