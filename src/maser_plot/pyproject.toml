@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "maser-plot"
-version = "0.2.7"
+version = "0.3.0"
 description = "Maser4py submodule to plot radio data"
 readme = "README.md"
 authors = ["Baptiste Cecconi <baptiste.cecconi@obspm.fr>", "Sonny Lion <sonny.lion@obspm.fr>", "Xavier Bonnin <xavier.bonnin@obspm.fr>"]
