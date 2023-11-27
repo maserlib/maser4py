@@ -56,9 +56,11 @@ from .pds import (  # noqa: F401
 )
 from .psa import MexMMarsis3RdrAisExt4V1Plot  # noqa: F401
 
-# from .rpw import (  # noqa: F401
-#    RpwLfrSurvBp1,
-# )
+from .rpw import (  # noqa: F401
+    RpwLfrSurvBp1Plot,
+    RpwTnrSurvPlot,
+    RpwHfrSurvPlot,
+)
 
 if __name__ == "__main__":
     Plot = Plot(filepath=Path("toto.txt"), dataset="cdf")

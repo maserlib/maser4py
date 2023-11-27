@@ -174,6 +174,37 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
         """
         import xarray
 
+        dataset_keys = [
+            "VOLTAGE_SPECTRAL_POWER_CH1",
+            "VOLTAGE_SPECTRAL_POWER_CH2",
+            "SENSOR_CH1",
+            "SENSOR_CH2",
+            "V1",
+            "V2",
+            "V3",
+            "V1-V2",
+            "V2-V3",
+            "V3-V1",
+            "B_MF",
+            "HF_V1-V2",
+            "HF_V2-V3",
+            "HF_V3-V1",
+            "DELTA_TIMES",
+        ]
+
+        sensor_keys = [
+            "V1",
+            "V2",
+            "V3",
+            "V1-V2",
+            "V2-V3",
+            "V3-V1",
+            "B_MF",
+            "HF_V1-V2",
+            "HF_V2-V3",
+            "HF_V3-V1",
+        ]
+
         bandtab = xarray.DataArray(
             [self.frequency_band_labels[idx] for idx in self.file["TNR_BAND"][...]]
         )
@@ -289,6 +320,7 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             # assume V^2/Hz
             unit_data = "V^2/Hz"
 
+        """
         dataset_keys = [
             "VOLTAGE_SPECTRAL_POWER_CH1",
             "VOLTAGE_SPECTRAL_POWER_CH2",
@@ -296,6 +328,7 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             "SENSOR_CH2",
             "DELTA_TIMES",
         ]
+        """
         dataset = {}
         firstloop = 1
         for key in dataset_keys:
@@ -314,6 +347,16 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             elif key == "DELTA_TIMES":
                 values = deltatimes.T
                 units = "jd"
+            elif key in sensor_keys:
+                valuetmp = np.empty(data_array_1.T.shape)
+                valuetmp[:] = np.nan
+                # faster than np.where
+                loc1 = np.asarray(band_array_1.T == key).nonzero()
+                loc2 = np.asarray(band_array_2.T == key).nonzero()
+                valuetmp[loc1] = data_array_1.T[loc1]
+                valuetmp[loc2] = data_array_2.T[loc2]
+                values = valuetmp
+                units = unit_data
             else:
                 raise KeyError("Unknown key.")
 

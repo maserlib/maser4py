@@ -87,7 +87,8 @@ class RpwHfrSurvSweeps(Sweeps):
 
         # Get frequency and corresponding HFR band values
         freq = self.file["FREQUENCY"][...]
-        band = self.file["HFR_BAND"][...]
+        # band = self.file["HFR_BAND"][...] # not reliable
+        units = Unit(self.file["FREQUENCY"].attrs["UNITS"].strip() or "kHz")
 
         # Loop over each sweep in the CDF
         for i in range(n_sweeps):
@@ -96,7 +97,7 @@ class RpwHfrSurvSweeps(Sweeps):
             i1 = sweep_start_index[i + 1]
 
             # Define indices of the frequencies for current sweep
-            freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1])
+            # freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1]) # deprecated
 
             yield (
                 {
@@ -106,7 +107,8 @@ class RpwHfrSurvSweeps(Sweeps):
                 # Return the time of the first sample of the current sweep
                 Time(self.file["Epoch"][i0]),
                 # Return the list of frequencies
-                self.data_reference.frequencies[freq_indices],
+                # self.data_reference.frequencies[freq_indices],
+                freq[i0:i1] * units,
                 (
                     SENSOR_MAPPING[self.file["SENSOR_CONFIG"][i][0]],
                     SENSOR_MAPPING[self.file["SENSOR_CONFIG"][i][1]],
@@ -182,6 +184,39 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
         :return: xarray containing HFR data
         """
         import xarray
+
+        dataset_keys = [
+            "VOLTAGE_SPECTRAL_POWER",
+            "SENSOR",
+            "CHANNEL",
+            "V1",
+            "V2",
+            "V3",
+            "V1-V2",
+            "V2-V3",
+            "V3-V1",
+            "B_MF",
+            "HF_V1-V2",
+            "HF_V2-V3",
+            "HF_V3-V1",
+            "DELTA_TIMES",
+            "FREQ_INDICES",
+            "VOLTAGE_SPECTRAL_POWER_CH1",
+            "VOLTAGE_SPECTRAL_POWER_CH2",
+        ]
+
+        sensor_keys = [
+            "V1",
+            "V2",
+            "V3",
+            "V1-V2",
+            "V2-V3",
+            "V3-V1",
+            "B_MF",
+            "HF_V1-V2",
+            "HF_V2-V3",
+            "HF_V3-V1",
+        ]
 
         try:
             units = self.file["AGC1"].attrs["UNITS"]
@@ -265,7 +300,8 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                 # Get indices of the actual frequency values since they are not always sorted
                 # freq_indices = get_freq_indices(freq[i0:i1], band[i0:i1]) # old way if 192 freqs
                 freq_indices = hfr_frequency.value.searchsorted(freq[i0:i1])
-                freq_ind_table[i, :] = freq_indices
+                # freq_ind_table[i, :] = freq_indices
+                freq_ind_table[i, freq_indices] = np.arange(len(freq_indices))
 
                 # fill output 2D array
                 V_2d[0, i, freq_indices] = self.file["AGC1"][i0:i1]
@@ -335,16 +371,11 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
             # hfr_band = (["HF1"] * 64) + (["HF2"] * 128) # not accurrate
 
             dataset = {}
-            for i in range(7):
-                if i == 0:
-                    key = "VOLTAGE_SPECTRAL_POWER"
-                    # Filtering the All-NaN slice warning for the following computation
-                    # nanmax is used here to detect the All-NaN lines and thus we do not want the warning
-                    with warnings.catch_warnings():
-                        warnings.filterwarnings(
-                            "ignore", message="All-NaN slice encountered"
-                        )
-                        values = (np.nanmax(V_2d, axis=0)).T
+            firstloop = 1
+            for key in dataset_keys:
+                if key == "VOLTAGE_SPECTRAL_POWER":
+                    main_data = (np.nanmax(V_2d, axis=0)).T
+                    values = main_data
                     # sensor_conf = np.max(sensor_config, axis = 0)
                     coords = [
                         # "channel": self.channel_labels,
@@ -356,8 +387,11 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                     ]
                     dims = ["frequency", "time"]
                     units_da = units
-                elif i <= 2:
-                    key = "VOLTAGE_SPECTRAL_POWER_CH" + str(i)
+                elif "VOLTAGE_SPECTRAL_POWER_CH" in key:
+                    if key == "VOLTAGE_SPECTRAL_POWER_CH1":
+                        i = 1
+                    else:
+                        i = 2
                     values = (V_2d[i - 1, :, :]).T
                     # sensor_conf = sensor_config[i-1, :]
                     coords = [
@@ -366,8 +400,7 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                     ]
                     dims = ["frequency", "time"]
                     units_da = units
-                elif i == 3:
-                    key = "SENSOR"
+                elif key == "SENSOR":
 
                     # Computing which sensor of the 2 channels is used
                     tabref = np.array(
@@ -393,16 +426,16 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                     ]
                     dims = ["time"]
                     units_da = ""
-                elif i == 4:
-                    key = "CHANNEL"
+                elif key == "CHANNEL":
+                    if "SENSOR" not in dataset.keys():
+                        raise ValueError("Trying to add CHANNEL before computing it.")
                     values = channel  # Computed in key i = 3
                     coords = [
                         ("time", sweep_times.value),
                     ]
                     dims = ["time"]
                     units_da = ""
-                elif i == 5:
-                    key = "DELTA_TIMES"
+                elif key == "DELTA_TIMES":
                     values = delta_times
                     coords = [
                         ("frequency", hfr_frequency, {"units": self.frequencies.unit}),
@@ -410,8 +443,8 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                     ]
                     dims = ["frequency", "time"]
                     units_da = "jd"
-                else:  # Previously hfr_band but dropped
-                    key = "FREQ_INDICES"  # for check purpose mainly
+                elif key == "FREQ_INDICES":  # Previously hfr_band but dropped
+                    # for check purpose mainly
                     values = freq_ind_table.T
                     coords = [
                         ("frequency", hfr_frequency, {"units": self.frequencies.unit}),
@@ -419,6 +452,30 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                     ]
                     dims = ["frequency", "time"]
                     units_da = ""
+                elif key in sensor_keys:
+                    if "VOLTAGE_SPECTRAL_POWER" not in dataset.keys():
+                        raise ValueError(
+                            "Trying to add a sensor key before computing the main data."
+                        )
+                    if "SENSOR" not in dataset.keys():
+                        raise ValueError(
+                            "Trying to add a sensor key before the sensor mapping."
+                        )
+                    valuetmp = np.empty((nf, nt))
+                    valuetmp[:] = np.nan
+                    loc = np.asarray(sens_conf == key).nonzero()  # faster than np.where
+                    for fr in range(nf):
+                        valuetmp[fr, loc] = main_data[fr, loc]
+                    values = valuetmp
+                    coords = [
+                        ("frequency", hfr_frequency, {"units": self.frequencies.unit}),
+                        ("time", sweep_times.value),
+                    ]
+                    dims = ["frequency", "time"]
+                    units_da = units
+                else:
+                    raise KeyError("Unknown key.")
+
                 V_da = xarray.DataArray(
                     values,
                     coords=coords,
@@ -428,8 +485,9 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
                     name=key,
                 )
                 dataset[key] = V_da
-                if i == 0:
+                if firstloop == 1:
                     V_ds = xarray.Dataset(data_vars=dataset)
+                    firstloop = 0
                 else:
                     V_ds[key] = dataset[key]
 
