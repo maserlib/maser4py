@@ -26,10 +26,10 @@ class StbWavHfrL2BinPlot(StWavL2BinPlot, dataset="stb_l2_wav_hfr"):
 
 
 class StWavL3CdfPlot(CdfPlot, dataset="st__l3_wav"):
-    def quicklook(
+    def main_plot(
         self, file_png=None, keys: List[str] = ["PSD_FLUX", "STOKES_I"], **kwargs
     ):
-        self._quicklook(
+        self._main_plot(
             keys=keys,
             file_png=file_png,
             # vmin=[68, 68],
