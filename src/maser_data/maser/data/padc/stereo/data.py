@@ -92,7 +92,7 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
         #    datasets[key] = datasets[key].where(datasets[key] != self.file[key].attrs["FILLVAL"])
         return datasets
 
-    @property
+    # @property
     def epncore(self):
         import os
 

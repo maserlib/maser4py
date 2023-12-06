@@ -75,7 +75,7 @@ class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
             datasets[dataset_key] = dataset.sortby("frequency")
         return xarray.Dataset(data_vars=datasets)
 
-    @property
+    # @property
     def epncore(self):
         import os
         import numpy
