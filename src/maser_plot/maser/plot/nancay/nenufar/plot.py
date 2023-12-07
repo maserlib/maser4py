@@ -11,8 +11,6 @@ from maser.plot.base import FitsPlot
 class OrnNenufarBstFitsPlot(FitsPlot, ABC, dataset="orn_nenufar_bst"):
     """NenuFAR/BST (Beamlet Statistics) dataset"""
 
-    _dataset_keys = ["NW", "NE"]
-
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,

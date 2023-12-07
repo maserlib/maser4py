@@ -8,15 +8,10 @@ class MexMMarsis3RdrAisV1Plot(
     Pds3Plot,
     dataset="MEX-M-MARSIS-3-RDR-AIS-V1.0",
 ):
-
-    _dataset_keys = [
-        "DEFAULT",
-    ]
-
     def main_plot(
         self,
         file_png: Union[str, Path, None] = None,
-        keys: List[str] = ["DEFAULT", "DEFAULT"],
+        keys: List[str] = ["SPECTRAL_DENSITY_MED", "SPECTRAL_DENSITY_AVG"],
         **kwargs,
     ):
         self._main_plot(
