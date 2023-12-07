@@ -154,6 +154,10 @@ class MexMMarsis3RdrAisV1Data(
                 ]
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 

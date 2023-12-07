@@ -195,6 +195,10 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
         # Return resulting index array as a list
         return list(self._sweep_start_index)
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self, as_is=False):
         """
         Return the HFR data as a xarray

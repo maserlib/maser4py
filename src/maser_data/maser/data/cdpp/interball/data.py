@@ -135,6 +135,10 @@ class InterballAuroralPolradRspBinData(
             self._frequencies = sweep.frequencies
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     @staticmethod
     def decode_session_name(session_name):
         tmp = dict()

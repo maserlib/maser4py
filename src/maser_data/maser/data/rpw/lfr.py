@@ -280,6 +280,10 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
                 """
         return self._delta_times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 

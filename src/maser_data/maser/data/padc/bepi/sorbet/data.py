@@ -32,6 +32,10 @@ class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
                 )
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 

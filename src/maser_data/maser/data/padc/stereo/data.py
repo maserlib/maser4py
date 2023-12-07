@@ -66,6 +66,10 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 

@@ -33,6 +33,10 @@ class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
                 self._times = Time(f["Epoch"][...])
         return self._times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 

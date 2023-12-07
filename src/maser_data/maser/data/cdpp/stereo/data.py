@@ -210,6 +210,10 @@ class StereoWavesL2HighResBinData(
                 self._frequencies.append(s.data["freq"] * Unit("kHz"))
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def quicklook(self, file_png=None, keys: Union[List[str], None] = None, **kwargs):
         if keys is None:
             keys = self.fields

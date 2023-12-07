@@ -183,6 +183,10 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                 self._frequencies.append(s.data["FREQ"] * Unit("kHz"))
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def quicklook(self, file_png=None, keys: List[str] = ["VSPAL", "VZPAL"], **kwargs):
         self._quicklook(
             file_png=file_png,

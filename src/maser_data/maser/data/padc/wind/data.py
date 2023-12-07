@@ -35,6 +35,10 @@ class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
 
         datasets = {}
@@ -154,6 +158,10 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
                     times = times[::16]
                 self._times = times
         return self._times
+
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
 
     def as_xarray(self):
 

@@ -186,6 +186,10 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
                     raise ValueError("Conflict in Time object dimensions.")
         return self._delta_times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         """
         Return the data as a xarray

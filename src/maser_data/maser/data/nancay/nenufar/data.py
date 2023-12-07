@@ -52,6 +52,10 @@ class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
             self._times = Time(self.file[7].data["jd"], format="jd")
         return self._times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         """Transform the data in x-arrays."""
 

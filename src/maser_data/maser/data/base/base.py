@@ -150,7 +150,8 @@ class Data(BaseData, dataset="default"):
 
     @property
     def dataset_keys(self) -> list:
-        return self._dataset_keys
+        """Generic method to get the keys for this dataset's quicklook."""
+        pass
 
     @property
     def times(self) -> Time:
@@ -280,21 +281,25 @@ class Data(BaseData, dataset="default"):
             return True
 
         # *** setting defaults ***
+        # keys and landscape
+        if keys is None:
+            raise ValueError()
+        else:
+            if "landscape" not in kwargs:
+                if len(keys) == 1:
+                    landscape = True
+                else:
+                    landscape = False
+            else:
+                landscape = kwargs["landscape"]
+                del kwargs["landscape"]
+
         # nan_color
         if "nan_color" not in kwargs:
             nan_color = "black"
         else:
             nan_color = kwargs["nan_color"]
             del kwargs["nan_color"]
-        # landscape
-        if "landscape" not in kwargs:
-            if len(keys) == 1:
-                landscape = True
-            else:
-                landscape = False
-        else:
-            landscape = kwargs["landscape"]
-            del kwargs["landscape"]
 
         # cmap management
         if "cmap" not in kwargs:
@@ -305,8 +310,6 @@ class Data(BaseData, dataset="default"):
         del kwargs["cmap"]  # Necessary to avoir giving two times cmap key
 
         xr = self.as_xarray()
-        if keys is None:
-            raise ValueError()
         if landscape:
             figsize = (11.69, 8.27)
         else:
