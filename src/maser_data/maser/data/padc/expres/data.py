@@ -39,7 +39,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
     """Base class for EXPRES datasets."""
 
     _iter_sweep_class = ExpresCdfDataSweeps
-    _dataset_keys = [
+    _initial_dataset_keys = [
         "CML",
         "Polarization",
         "FC",
@@ -54,6 +54,17 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
         # 'Azimuth' # WIP
         # 'ObsLocalTime' # WIP
     ]
+    _dataset_keys = None
+
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = []
+            for dk in self._initial_dataset_keys:
+                # Check that the variable is in the CDF
+                if dk in self.file.keys():
+                    self._dataset_keys.append(dk)
+        return self._dataset_keys
 
     def __init__(
         self,
@@ -142,7 +153,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
 
         datasets = {}
 
-        for dataset_key in self._dataset_keys:
+        for dataset_key in self._initial_dataset_keys:
 
             # Check that the variable is in the CDF
             if dataset_key not in self.file.keys():

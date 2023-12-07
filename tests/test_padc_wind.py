@@ -88,6 +88,7 @@ def test_wind_waves_l3_akr_dataset__as_xarray(wind_waves_l3_akr_files):
         assert xr["SNR"].dims == ("frequency", "time")
         assert xr["SNR"].shape == (32, 471)
         assert xr["FLUX_DENSITY"].units == "Wm2Hz-1"
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @skip_if_spacepy_not_available
@@ -208,6 +209,7 @@ def test_wind_waves_l3_dfv02_dataset__as_xarray(wind_waves_l3_dfv02_files):
         assert xr["STOKES_I"].dims == ("frequency", "time")
         assert xr["STOKES_I"].shape == (32, 1756)
         assert xr["STOKES_I"].units == "W/m^2/Hz"
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required

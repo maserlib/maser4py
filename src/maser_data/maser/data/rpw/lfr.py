@@ -50,6 +50,16 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
     frequency_band_labels = ["N_F0", "B_F0", "N_F1", "B_F1", "N_F2"]
     _multiple_mode = None
 
+    _dataset_keys = [
+        "PE",
+        "PB",
+        "DOP",
+        "ELLIP",
+        "SX_REA",
+        "DELTA_TIMES",
+        "MODE_NB",
+    ]
+
     @property
     def multiple_mode(self):
         if self._multiple_mode is None:

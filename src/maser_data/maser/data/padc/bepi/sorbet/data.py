@@ -13,6 +13,8 @@ from astropy.units import Unit
 class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
     """Class for `sorbet` CDF files."""
 
+    _dataset_keys = ["sorbet_WPT_spectra"]
+
     @property
     def times(self):
         if self._times is None:
@@ -33,7 +35,7 @@ class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
     def as_xarray(self):
         import xarray
 
-        dataset_keys = ["sorbet_WPT_spectra"]
+        dataset_keys = self.dataset_keys
         datasets = {}
 
         for dataset_key in dataset_keys:
@@ -56,10 +58,13 @@ class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
             )
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png: Union[str, Path, None] = None, **kwargs):
+    def quicklook(
+        self, file_png: Union[str, Path, None] = None, landscape: bool = True, **kwargs
+    ):
         self._quicklook(
-            keys=["sorbet_WPT_spectra", "sorbet_WPT_spectra"],
+            keys=["sorbet_WPT_spectra"],
             file_png=file_png,
+            landscape=landscape,
             # db=[True,True],
             yscale="log",
             **kwargs,

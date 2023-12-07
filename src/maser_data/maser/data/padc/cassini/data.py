@@ -57,6 +57,8 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
     _iter_sweep_class = CoRpwsHfrKronosDataSweeps
     _iter_record_class = CoRpwsHfrKronosDataRecords
 
+    _dataset_keys = None
+
     def __init__(
         self,
         filepath: Path,
@@ -207,6 +209,16 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
                     self._frequencies_[mask] for mask in self.sweep_masks
                 ]
         return self._frequencies
+
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = self.fields  # self._format["vars"].keys()
+            # N1: ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"]
+            # N2: ["autoX", "autoZ", "crossR", "crossI"]
+            # N3e:["s", "v", "th", "ph", "snx", "snz"]
+            # N3d:["s", "q", "u", "v", "snx", "snz"]
+        return self._dataset_keys
 
     def epncore(self):
         md = BinData.epncore(self)

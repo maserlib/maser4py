@@ -91,6 +91,7 @@ def test_nenufar_bst_dataset_as_xarray():
         assert xr["NW"].shape == (192, 3600)
         assert xr["NW"].attrs["units"] == ""
         assert xr["NW"].attrs["title"] == ""
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required

@@ -120,6 +120,26 @@ class RpwHfrSurvSweeps(Sweeps):
 class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
     _iter_sweep_class = RpwHfrSurvSweeps
 
+    _dataset_keys = [
+        "VOLTAGE_SPECTRAL_POWER",
+        "SENSOR",
+        "CHANNEL",
+        "V1",
+        "V2",
+        "V3",
+        "V1-V2",
+        "V2-V3",
+        "V3-V1",
+        "B_MF",
+        "HF_V1-V2",
+        "HF_V2-V3",
+        "HF_V3-V1",
+        "DELTA_TIMES",
+        "FREQ_INDICES",
+        "VOLTAGE_SPECTRAL_POWER_CH1",
+        "VOLTAGE_SPECTRAL_POWER_CH2",
+    ]
+
     frequency_band_labels = FREQUENCY_BAND_LABELS
     survey_mode_labels = SURVEY_MODE_LABELS
     channel_labels = CHANNEL_LABELS

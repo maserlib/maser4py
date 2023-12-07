@@ -131,6 +131,7 @@ def test_orn_nda_routine_jup_edr_dataset_as_xarray():
             xr["LL"].attrs["title"]
             == "Flux density spectrogram measured on the LH polarized array."
         )
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -226,6 +227,7 @@ def test_orn_nda_routine_sun_edr_dataset_as_xarray():
             xr["LL"].attrs["title"]
             == "Flux density spectrogram measured on the LH polarized array."
         )
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -286,6 +288,7 @@ def test_orn_nda_newroutine_jup_edr_dataset_as_xarray():
             xr["LL"].attrs["title"]
             == "ORN NDA newroutine JUPITER EDR Dataset (LL component)"
         )
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -313,6 +316,7 @@ def test_orn_nda_newroutine_sun_edr_dataset_as_xarray():
             xr["LL"].attrs["title"]
             == "ORN NDA newroutine SUN EDR Dataset (LL component)"
         )
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -342,6 +346,7 @@ def test_orn_nda_mefisto_sun_edr_dataset_as_xarray():
         assert (
             xr["LL"].attrs["title"] == "ORN NDA mefisto SUN EDR Dataset (LL component)"
         )
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required

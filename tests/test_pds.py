@@ -93,6 +93,7 @@ def test_vg1_j_pra_3_rdr_lowband_6sec_v1_dataset__as_xarray():
         datax = Data(filepath=filepath)
         xr = datax.as_xarray()
         assert isinstance(xr, xarray.Dataset)
+        assert set(datax.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -129,6 +130,7 @@ def test_vg_rdr_lowband_6sec_v1_dataset_as_xarray():
                 assert set(xr.keys()) == {"L", "R"}
                 #  assert xr["L"].shape == (70, 1661)
             assert xr["L"].attrs["units"] == "dB"
+            assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required

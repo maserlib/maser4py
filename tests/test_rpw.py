@@ -201,6 +201,7 @@ def test_rpw_lfr_surv_bp1_dataset__as_xarray(filepath):
             assert test_array.dropna(dim="time", how="all").data[0][0] == pytest.approx(
                 0.000860668411803
             )
+        assert set(data.dataset_keys) == set(list(datasets.keys()))
 
 
 @pytest.mark.test_data_required
@@ -320,6 +321,7 @@ def test_rpw_tnr_surv_data__as_xarray(filepath):
         assert test_array.coords["frequency"].values[0] == pytest.approx(3992)
         assert test_array.attrs["units"] == "V^2/Hz"
         assert test_array.data[0][0] == pytest.approx(2.1229058431454354e-11)
+        assert set(data.dataset_keys) == set(list(datasets.keys()))
 
 
 @pytest.mark.test_data_required
@@ -435,6 +437,7 @@ def test_rpw_hfr_surv_data__as_xarray(filepath):
         assert test_array.attrs["units"] == "V^2/Hz"
         # assert test_array.data[110000] == pytest.approx(4.8739396889859025e-15) # old
         assert test_array.data[10][0] == pytest.approx(4.88892085e-13)
+        assert set(data.dataset_keys) == set(list(datasets.keys()))
 
 
 @pytest.mark.test_data_required

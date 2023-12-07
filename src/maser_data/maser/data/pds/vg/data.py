@@ -24,6 +24,7 @@ class VgPra3RdrLowband6secV1Data(
     """
 
     _iter_sweep_class = VgPra3RdrLowband6secV1Sweeps
+    _dataset_keys = None
 
     def __init__(
         self,
@@ -138,6 +139,14 @@ class VgPra3RdrLowband6secV1Data(
         md["publisher"] = "NASA/PDS/PPI"
 
         return md
+
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = self.fields
+            if "any" not in self._dataset_keys:
+                self._dataset_keys.append("any")
+        return self._dataset_keys
 
     def as_xarray(self):
         import xarray
@@ -264,6 +273,7 @@ class VgPra4RSummBrowse48secV1Data(
     """
 
     _iter_sweep_class = VgPra4SummBrowse48secV1Sweeps
+    _dataset_keys = None
 
     def __init__(
         self,
@@ -326,6 +336,12 @@ class VgPra4RSummBrowse48secV1Data(
         if self._frequencies is None:
             self._frequencies = numpy.arange(1326, -18, -19.2) * Unit("kHz")
         return self._frequencies
+
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = self.fields
+        return self._dataset_keys
 
     def as_xarray(self):
         import xarray

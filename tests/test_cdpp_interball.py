@@ -280,6 +280,7 @@ def test_int_aur_polrad_rsp_bin_dataset__as_xarray():
         assert set(xr.keys()) == {"EX", "EY", "EZ"}
         assert xr["EY"].shape == (240, time_len)
         assert xr["EY"].attrs["units"] == "W m^-2 Hz^-1"
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -288,6 +289,8 @@ def test_int_aur_polrad_rsp_bin_dataset__quicklook():
         #  ql_path = BASEDIR.parent / "quicklook" / "cdpp" / f"{filepath.stem}.png"
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
+        # for key in data.dataset_keys:
+        #    assert data.quicklook(keys=[key],db=None,check_quicklook=True)
         data.quicklook(ql_path_tmp)
         #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
         assert ql_path_tmp.is_file()

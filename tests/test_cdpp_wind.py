@@ -99,6 +99,7 @@ def test_wi_wa_rad1_l2_bin_dataset__as_xarray():
     assert xr["VSPAL"].dims == ("frequency", "time")
     assert xr["VSPAL"].shape == (120, 120)
     assert xr["VSPAL"].units == "W m^-2 Hz^-1"
+    assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required

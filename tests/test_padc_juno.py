@@ -82,6 +82,7 @@ def test_jno_wav_cdr_lesia__as_xarray(filepath):
         assert test_array.coords["frequency"].data[0] == pytest.approx(0.048828)
         assert test_array["INTENSITY"].attrs["units"] == "V**2 m**-2 Hz**-1"
         assert test_array["INTENSITY"].data[0][0] == pytest.approx(3.211884e-06)
+        assert set(data.dataset_keys) == set(list(test_array.keys()))
 
 
 @pytest.mark.test_data_required

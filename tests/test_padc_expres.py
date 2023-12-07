@@ -64,6 +64,7 @@ class TestExpres:
         assert isinstance(xarrays, xarray.Dataset)
         assert xarrays["CML"].units == "deg"
         assert xarrays["CML"].coords["time"].values.dtype.str == "<M8[ns]"
+        assert set(self.data.dataset_keys) == set(list(xarrays.keys()))
 
     @pytest.mark.test_data_required
     @pytest.mark.parametrize(

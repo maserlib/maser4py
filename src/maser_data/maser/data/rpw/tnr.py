@@ -102,6 +102,24 @@ class RpwTnrSurvSweeps(Sweeps):
 class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
     _iter_sweep_class = RpwTnrSurvSweeps
 
+    _dataset_keys = [
+        "VOLTAGE_SPECTRAL_POWER_CH1",
+        "VOLTAGE_SPECTRAL_POWER_CH2",
+        "SENSOR_CH1",
+        "SENSOR_CH2",
+        "V1",
+        "V2",
+        "V3",
+        "V1-V2",
+        "V2-V3",
+        "V3-V1",
+        "B_MF",
+        "HF_V1-V2",
+        "HF_V2-V3",
+        "HF_V3-V1",
+        "DELTA_TIMES",
+    ]
+
     # Define TNR frequency band names
     frequency_band_labels = ["A", "B", "C", "D"]
 

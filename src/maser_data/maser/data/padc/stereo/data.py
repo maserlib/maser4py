@@ -30,6 +30,25 @@ class StWavL3CdfSweeps(Sweeps):
 
 
 class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
+
+    _dataset_keys = [
+        "STOKES_I",
+        "STOKES_Q",
+        "STOKES_U",
+        "STOKES_V",
+        "SOURCE_SIZE",
+        "PSD_FLUX",
+        "PSD_SFU",
+        "WAVE_AZIMUTH_HCI",
+        "WAVE_AZIMUTH_HEE",
+        "WAVE_AZIMUTH_HEEQ",
+        "WAVE_AZIMUTH_RTN",
+        "WAVE_COLATITUDE_HCI",
+        "WAVE_COLATITUDE_HEE",
+        "WAVE_COLATITUDE_HEEQ",
+        "WAVE_COLATITUDE_RTN",
+    ]
+
     @property
     def frequencies(self):
         if self._frequencies is None:
@@ -50,23 +69,7 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
     def as_xarray(self):
         import xarray
 
-        dataset_keys = [
-            "STOKES_I",
-            "STOKES_Q",
-            "STOKES_U",
-            "STOKES_V",
-            "SOURCE_SIZE",
-            "PSD_FLUX",
-            "PSD_SFU",
-            "WAVE_AZIMUTH_HCI",
-            "WAVE_AZIMUTH_HEE",
-            "WAVE_AZIMUTH_HEEQ",
-            "WAVE_AZIMUTH_RTN",
-            "WAVE_COLATITUDE_HCI",
-            "WAVE_COLATITUDE_HEE",
-            "WAVE_COLATITUDE_HEEQ",
-            "WAVE_COLATITUDE_RTN",
-        ]
+        dataset_keys = self._dataset_keys
         data_vars = {}
         for key in dataset_keys:
             data_vars[key] = (

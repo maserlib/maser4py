@@ -90,6 +90,7 @@ def test_swaves_l3_cdf_dataset_as_xarray():
     }
     assert xr["PSD_FLUX"].shape == (319, 2476)
     assert xr["PSD_FLUX"].attrs["units"] == "W/m^2/Hz"
+    assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required

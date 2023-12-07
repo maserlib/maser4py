@@ -94,6 +94,7 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__as_xarray(mex_data):
     assert xr["SPECTRAL_DENSITY_MED"].dims == ("frequency", "time")
     assert xr["SPECTRAL_DENSITY_MED"].shape == (160, 1057)
     assert xr["SPECTRAL_DENSITY_MED"].units == "W m^-2 Hz^-1"
+    assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required

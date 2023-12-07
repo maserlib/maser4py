@@ -22,7 +22,11 @@ class JnoWavLesiaL3aV02Sweeps(Sweeps):
 class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
     _iter_sweep_class = JnoWavLesiaL3aV02Sweeps
 
-    _dataset_keys = ["INTENSITY", "BACKGROUND", "INTENSITY_BG_COR"]
+    _dataset_keys = [
+        "INTENSITY",
+        "BACKGROUND",
+        "INTENSITY_BG_COR",
+    ]
 
     @property
     def frequencies(self):

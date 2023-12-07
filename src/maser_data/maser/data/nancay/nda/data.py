@@ -14,6 +14,8 @@ class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
 
     _iter_sweep_class = OrnNdaRoutineEdrSweeps
 
+    _dataset_keys = ["LL", "RR"]
+
     @property
     def frequencies(self):
         if self._frequencies is None:
@@ -91,6 +93,8 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
 
     _iter_sweep_class = OrnNdaNewRoutineEdrSweeps
 
+    _dataset_keys = None
+
     def __init__(
         self,
         filepath: Path,
@@ -119,6 +123,12 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
         md = FitsData.epncore(self)
         md["granule_uid"] = f"{self.dataset}:{self.filepath.stem}"
         return md
+
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = self.fields
+        return self._dataset_keys
 
     def as_xarray(self):
         import xarray

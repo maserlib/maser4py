@@ -117,6 +117,7 @@ def test_padc_bepi_sorbet_dataset_as_xarray():
         assert (
             xr["sorbet_WPT_spectra"].attrs["title"] == "SORBET Power Spectral Density"
         )
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required

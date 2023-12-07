@@ -20,6 +20,8 @@ class InterballAuroralPolradRspBinData(
     _iter_sweep_class = InterballAuroralPolradRspSweeps
     _iter_record_class = InterballAuroralPolradRspRecords
 
+    _dataset_keys = ["EX", "EY", "EZ"]
+
     def __init__(
         self,
         filepath: Path,

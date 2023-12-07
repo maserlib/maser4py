@@ -33,6 +33,8 @@ class StereoWavesL2HighResBinData(
 
     _iter_sweep_class = StereoWavesLfrL2HighResSweeps
 
+    _dataset_keys = ["agc1", "agc2", "auto1", "auto2", "crossr", "crossi"]
+
     def __init__(
         self,
         filepath: Path,

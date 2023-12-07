@@ -66,6 +66,7 @@ def test_ecallisto_dataset_as_xarray():
             xr["Flux Density"].attrs["title"]
             == "2022/01/30  Radio flux density, e-CALLISTO (BIR)"
         )
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required

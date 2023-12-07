@@ -67,8 +67,16 @@ class MexMMarsis3RdrAisV1Data(
 ):
     _iter_sweep_class = MexMMarsis3RdrAisV1Sweeps
 
+    _initial_dataset_keys = [
+        "SPECTRAL_DENSITY",
+    ]
+
     _dataset_keys = [
         "SPECTRAL_DENSITY",
+        "SPECTRAL_DENSITY_AVG",
+        "SPECTRAL_DENSITY_MED",
+        "SPECTRAL_DENSITY_MAX",
+        "SPECTRAL_DENSITY_MIN",
     ]
 
     def __init__(
@@ -151,7 +159,7 @@ class MexMMarsis3RdrAisV1Data(
 
         datasets = {}
 
-        for dataset_key in self._dataset_keys:
+        for dataset_key in self._initial_dataset_keys:
             data = numpy.array([item.data for item in self.sweeps])  # .T,
             data_avg = numpy.mean(data, axis=2)
             data_med = numpy.median(data, axis=2)
@@ -232,7 +240,7 @@ class MexMMarsis3RdrAisV1Data(
             "SPECTRAL_DENSITY_MAX",
             # "SPECTRAL_DENSITY_56",
         ],
-        db: List[bool] = [True, True, True, True, True],
+        db: List[bool] = [True, True, True, True],
         **kwargs,
     ):
         self._quicklook(

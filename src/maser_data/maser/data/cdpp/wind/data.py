@@ -35,6 +35,8 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
 
     _iter_sweep_class = WindWavesL2HighResSweeps
 
+    _dataset_keys = ["VSPAL", "VZPAL", "TSPAL", "TZPAL"]
+
     def __init__(
         self,
         filepath: Path,

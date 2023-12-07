@@ -13,6 +13,8 @@ from astropy.units import Unit
 class ECallistoFitsData(FitsData, dataset="ecallisto"):
     """Class for `ecallisto` FITS files."""
 
+    _dataset_keys = ["Flux Density"]
+
     @property
     def times(self):
         if self._times is None:
