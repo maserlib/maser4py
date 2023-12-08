@@ -498,7 +498,7 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
             "DELTA_TIMES",
             "MODE_NB",
         ]
-        forbidden_keys = []
+        forbidden_keys: List[str] = []
         db_tab = numpy.array([True, True, False, False, True, False, False])
         vmin_tab = numpy.array([-100, -130, 0, 0, -50, 0 * 10 ** (-8), 0])
         vmax_tab = numpy.array([-50, -60, 1, 1, 50, 0.2 * 10 ** (-8), 3])
