@@ -99,6 +99,13 @@ def test_swaves_l3_cdf_dataset_quicklook():
     filepath = TEST_FILES["sta_l3_wav_hfr"][0]
     ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
     data = Data(filepath=filepath)
+
+    # checking default
     data.quicklook(ql_path_tmp)
+    assert ql_path_tmp.is_file()
+    ql_path_tmp.unlink()
+
+    # checking all
+    data.quicklook(ql_path_tmp, keys=data.dataset_keys)
     assert ql_path_tmp.is_file()
     ql_path_tmp.unlink()

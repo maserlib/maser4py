@@ -289,9 +289,14 @@ def test_int_aur_polrad_rsp_bin_dataset__quicklook():
         #  ql_path = BASEDIR.parent / "quicklook" / "cdpp" / f"{filepath.stem}.png"
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
-        # for key in data.dataset_keys:
-        #    assert data.quicklook(keys=[key],db=None,check_quicklook=True)
-        data.quicklook(ql_path_tmp)
         #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+        # checking default
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

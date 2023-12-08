@@ -4,7 +4,7 @@
 
 from maser.data.base import CdfData
 
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 from astropy.time import Time
 from astropy.units import Unit
@@ -63,13 +63,17 @@ class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(
-        self, file_png: Union[str, Path, None] = None, landscape: bool = True, **kwargs
+        self,
+        file_png: Union[str, Path, None] = None,
+        yscale: str = "log",
+        keys: List[str] = ["sorbet_WPT_spectra"],
+        **kwargs,
     ):
         self._quicklook(
-            keys=["sorbet_WPT_spectra"],
+            keys=keys,
             file_png=file_png,
-            landscape=landscape,
+            # landscape=landscape,
             # db=[True,True],
-            yscale="log",
+            yscale=yscale,
             **kwargs,
         )

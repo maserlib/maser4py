@@ -95,6 +95,25 @@ class TestExpres:
         filepath = TEST_FILES["expres_juno_jupiter_ganymede"]
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath, source="Ganymede NORTH")
+
+        # checking default
         data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        forbbiden_keys = [
+            "CML",
+            "ObsDistance",
+            "ObsLatitude",
+            "SrcFreqMax",
+            "SrcFreqMaxCMI",
+            "SrcLongitude",
+        ]
+        test_keys = []
+        for key in data.dataset_keys:
+            if key not in forbbiden_keys:
+                test_keys.append(key)
+        data.quicklook(ql_path_tmp, keys=test_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

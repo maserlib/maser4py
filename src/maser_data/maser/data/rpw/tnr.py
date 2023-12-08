@@ -416,18 +416,38 @@ class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
             "VOLTAGE_SPECTRAL_POWER_CH2",
             "DELTA_TIMES",
         ],
-        db: List[bool] = [True, True, False],
-        vmin: List[Union[float, None]] = [None, None, -2e-5],
-        vmax: List[Union[float, None]] = [None, None, 2e-5],
+        # db: List[bool] = [True, True, False],
+        # vmin: List[Union[float, None]] = [None, None, -2e-5],
+        # vmax: List[Union[float, None]] = [None, None, 2e-5],
         yscale: str = "log",
         **kwargs
     ):
+        default_keys = [
+            "VOLTAGE_SPECTRAL_POWER_CH1",
+            "VOLTAGE_SPECTRAL_POWER_CH2",
+            "DELTA_TIMES",
+        ]
+        forbidden_keys = ["SENSOR_CH1", "SENSOR_CH2"]
+        db_tab = np.array([True, True, False])
+        vmin_tab = np.array([None, None, -2e-5])
+        vmax_tab = np.array([None, None, 2e-5])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(tab[np.where(key == np.array(default_keys))][0])
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
             file_png=file_png,
-            db=db,
-            vmin=vmin,
-            vmax=vmax,
+            # db=db,
+            # vmin=vmin,
+            # vmax=vmax,
             yscale=yscale,
             **kwargs
         )

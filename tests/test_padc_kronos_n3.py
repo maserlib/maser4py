@@ -142,7 +142,14 @@ def test_co_rpws_hfr_kronos_n3d_quicklook():
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
         # data.quicklook(ql_path)
+
+        # checking default
         data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
 
@@ -179,6 +186,13 @@ def test_co_rpws_hfr_kronos_n3e_quicklook():
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
         # data.quicklook(ql_path)
+
+        # checking default
         data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

@@ -160,12 +160,27 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
     def quicklook(
         self, file_png=None, keys: List[str] = ["PSD_FLUX", "STOKES_I"], **kwargs
     ):
+        import numpy
+
+        default_keys = ["PSD_FLUX", "STOKES_I"]
+        db_tab = numpy.array([True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
             file_png=file_png,
             # vmin=[68, 68],
             # vmax=[94, 94],
-            db=[True, True],
+            # db=[True, True],
             **kwargs,
         )
 

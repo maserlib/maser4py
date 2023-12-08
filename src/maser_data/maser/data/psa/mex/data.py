@@ -244,13 +244,37 @@ class MexMMarsis3RdrAisV1Data(
             "SPECTRAL_DENSITY_MAX",
             # "SPECTRAL_DENSITY_56",
         ],
-        db: List[bool] = [True, True, True, True],
+        # db: List[bool] = [True, True, True, True],
         **kwargs,
     ):
+        import numpy
+
+        default_keys = [
+            "SPECTRAL_DENSITY_AVG",
+            "SPECTRAL_DENSITY_MED",
+            "SPECTRAL_DENSITY_MIN",
+            "SPECTRAL_DENSITY_MAX",
+            # "SPECTRAL_DENSITY_56",
+        ]
+        forbidden_keys = ["SPECTRAL_DENSITY"]
+        db_tab = numpy.array([True, True, True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
             file_png=file_png,
-            db=db,
+            # db=db,
             **kwargs,
         )
 

@@ -92,11 +92,14 @@ def test_jno_wav_cdr_lesia_quicklook(filepath):
     with Data(filepath=filepath) as data:
         #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
-        data.quicklook(ql_path_tmp)
         #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+        # checking default
+        data.quicklook(ql_path_tmp)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
-        data.quicklook(ql_path_tmp)  # , keys=["DEFAULT", "DEFAULT"])
-        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

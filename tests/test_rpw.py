@@ -211,8 +211,15 @@ def test_rpw_lfr_surv_data_dataset_quicklook(filepath):
     with Data(filepath=filepath) as data:
         #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
-        data.quicklook(ql_path_tmp)
         #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+        # checking default
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
 
@@ -331,8 +338,20 @@ def test_rpw_tnr_surv_data_dataset_quicklook(filepath):
     with Data(filepath=filepath) as data:
         #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
-        data.quicklook(ql_path_tmp)
         #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+        # checking default
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        forbbiden_keys = ["SENSOR_CH1", "SENSOR_CH2"]
+        test_keys = []
+        for key in data.dataset_keys:
+            if key not in forbbiden_keys:
+                test_keys.append(key)
+        data.quicklook(ql_path_tmp, keys=test_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
 
@@ -447,7 +466,19 @@ def test_rpw_hfr_surv_data_dataset_quicklook(filepath):
     with Data(filepath=filepath) as data:
         #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
-        data.quicklook(ql_path_tmp)
         #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+        # checking default
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        forbbiden_keys = ["SENSOR", "CHANNEL"]
+        test_keys = []
+        for key in data.dataset_keys:
+            if key not in forbbiden_keys:
+                test_keys.append(key)
+        data.quicklook(ql_path_tmp, keys=test_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

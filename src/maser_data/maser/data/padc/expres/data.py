@@ -239,11 +239,32 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
             raise ValueError(
                 f"Select one source among {self.file['Src_ID_Label'][...]} before producing a quicklook."
             )
+        default_keys = ["FC", "FP", "Polarization", "Theta"]
+        forbidden_keys = [
+            "CML",
+            "ObsDistance",
+            "ObsLatitude",
+            "SrcFreqMax",
+            "SrcFreqMaxCMI",
+            "SrcLongitude",
+        ]
+        db_tab = np.array([False, False, False, False])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(tab[np.where(key == np.array(default_keys))][0])
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
-            db=[False, False, False, False],
+            # db=[False, False, False, False],
             file_png=file_png,
-            vmin=None,  # [-360, -10],
-            vmax=None,  # [360, 10],
+            # vmin=None,  # [-360, -10],
+            # vmax=None,  # [360, 10],
             **kwargs,
         )

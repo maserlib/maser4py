@@ -260,6 +260,7 @@ class Data(BaseData, dataset="default"):
         from matplotlib import pyplot as plt
         import matplotlib
         import matplotlib.dates as mdates
+        import warnings
 
         hhmm_format = mdates.DateFormatter("%H:%M")
 
@@ -277,8 +278,6 @@ class Data(BaseData, dataset="default"):
         }  # select not None parameters
         args_to_test = {**params_nn, **kwargs}  # combine kwargs and default keys
         self.check_input_param(keys, args_to_test)  # check that inputs are coherent
-        if "check_quicklook" in kwargs:
-            return True
 
         # *** setting defaults ***
         # keys and landscape
@@ -323,6 +322,12 @@ class Data(BaseData, dataset="default"):
         )
         for i, k in enumerate(keys):
             xr_k = xr[k]
+            if xr_k.dims != ("frequency", "time"):
+                warnings.warn(
+                    "WARNING: Dimensions for key: "
+                    + str(k)
+                    + " are not frequency - time. Quicklook should fail."
+                )
             xr_k_unit_label = f"{xr_k.units}" if xr_k.units is not None else ""
             if db is not None and db[i]:
                 xr_k.values = 10.0 * numpy.log10(xr_k)

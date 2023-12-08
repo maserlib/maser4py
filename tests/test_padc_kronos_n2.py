@@ -127,6 +127,13 @@ def test_co_rpws_hfr_kronos_n2_bin_dataset_quicklook():
     for filepath in TEST_FILES["co_rpws_hfr_kronos_n2"]:
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
+
+        # checking default
         data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

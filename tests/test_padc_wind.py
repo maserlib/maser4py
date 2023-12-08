@@ -97,7 +97,14 @@ def test_wind_waves_l3_akr_dataset_quicklook(wind_waves_l3_akr_files):
     for filepath in wind_waves_l3_akr_files:
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
+
+        # checking default
         data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
 
@@ -217,6 +224,13 @@ def test_wind_waves_l3_dfv02_dataset_quicklook(wind_waves_l3_dfv02_files):
     for filepath in wind_waves_l3_dfv02_files:
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
+
+        # checking default
         data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

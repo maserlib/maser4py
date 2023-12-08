@@ -475,9 +475,9 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
             "DELTA_TIMES",
             "MODE_NB",
         ],
-        db=[True, True, False, False, True, False, False],
-        vmax=[-50, -60, 1, 1, 50, 0.2 * 10 ** (-8), 3],
-        vmin=[-100, -130, 0, 0, -50, 0 * 10 ** (-8), 0],
+        # db=[True, True, False, False, True, False, False],
+        # vmax=[-50, -60, 1, 1, 50, 0.2 * 10 ** (-8), 3],
+        # vmin=[-100, -130, 0, 0, -50, 0 * 10 ** (-8), 0],
         **kwargs,
     ):
         if self.multiple_mode == 1:
@@ -489,13 +489,39 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
             }
         else:
             selection = None
+        default_keys = [
+            "PB",
+            "PE",
+            "DOP",
+            "ELLIP",
+            "SX_REA",
+            "DELTA_TIMES",
+            "MODE_NB",
+        ]
+        forbidden_keys = []
+        db_tab = numpy.array([True, True, False, False, True, False, False])
+        vmin_tab = numpy.array([-100, -130, 0, 0, -50, 0 * 10 ** (-8), 0])
+        vmax_tab = numpy.array([-50, -60, 1, 1, 50, 0.2 * 10 ** (-8), 3])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
             file_png=file_png,
-            db=db,
+            # db=db,
             # vmin=[0.008,0.006],
-            vmax=vmax,
-            vmin=vmin,
+            # vmax=vmax,
+            # vmin=vmin,
             # vmax=[0.009,0.007],
             iter_on_selection=selection,
             **kwargs,
