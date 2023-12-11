@@ -2,7 +2,7 @@
 from .constants import BASEDIR
 import pytest
 from maser.data import Data
-from maser.data.rpw import RpwLfrSurvBp1, RpwTnrSurv, RpwHfrSurv
+from maser.data.padc import RpwLfrSurvBp1, RpwTnrSurv, RpwHfrSurv
 from astropy.time import Time, TimeDelta
 from astropy.units import Quantity, Unit
 from pathlib import Path

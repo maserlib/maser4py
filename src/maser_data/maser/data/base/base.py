@@ -541,6 +541,11 @@ class CdfData(Data, dataset="cdf"):
                 dataset = "orn_nda_routine_sun_edr"
             if dataset == "wi_wav_rad1_l3_df":
                 dataset = f"{dataset}_v{c.attrs['Skeleton_version']}"
+            if dataset == "solo_l3_rpw-hfr":
+                if "tnr" in str(filepath):
+                    dataset = "solo_L3_rpw-tnr-flux_"
+                else:
+                    dataset = "solo_L3_rpw-hfr-flux_"
 
         return dataset
 

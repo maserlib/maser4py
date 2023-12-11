@@ -28,4 +28,12 @@ from .wind import (  # noqa: F401
 
 from .bepi import SorbetCdfData  # noqa: F401
 
+from .solo import (  # noqa: F401
+    RpwHfrSurv,
+    RpwTnrSurv,
+    RpwLfrSurvBp1,
+    RpwHfrL3Cdf,
+    RpwTnrL3Cdf,
+)
+
 # from .bepi.sorbet import SorbetCdfData  # noqa: F401
