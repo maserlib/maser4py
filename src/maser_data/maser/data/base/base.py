@@ -177,7 +177,7 @@ class Data(BaseData, dataset="default"):
         pass
 
     def as_xarray(self) -> xarray.Dataset:
-        """Generic method to get the data as a xarray.Dataset (a more efficient dict with xarray.DataArray) values"""
+        """Generic method to get the data as a xarray.Dataset object (an efficient "dict", filled with xarray.DataArray)"""
         pass
 
     def __enter__(self):
@@ -427,6 +427,21 @@ class Data(BaseData, dataset="default"):
             plt.close(fig)
 
     def quicklook(self, file_png: Union[str, Path, None] = None):
+        """Generic method to display data.
+
+        This method selects main keys for each data set and display corresponding data from the file.
+        It is based on xarray.plot, which in turn uses pcolormesh.
+        Keyword arguments:
+        keys -- List of str -- gives which keys to be displayed. See or use Data.dataset_keys for list of usable keys.
+        file_png -- Path/str -- will save the created plot on file_png if given (default None).
+        Additionnal display keyword arguments:
+        cmap -- str -- select the corresponding matplotlib colormap (default: "gray").
+        nan_color -- str -- gives the color to be used to display nan (default: "black").
+        db -- List of bool -- if True, display the data for this key in db (10*log10(data)).
+        vmin_quantile -- List of float -- select for each key the lower limit of the colormap based on quantile.
+        vmax_quantile -- List of float -- select for each key the upper limit of the colormap based on quantile.
+        kwargs -- any kwargs of xarray.plot or pcolormesh can be given to this function.
+        """
         pass
 
     @staticmethod
@@ -450,7 +465,7 @@ class Data(BaseData, dataset="default"):
     def check_input_param(self, keys, kwargs):
         """
         Method to test that all the inputs given to quicklook are consistent.
-        Mainly, it consists it checking that "keys" are corrects and match the known
+        Mainly, it consists in checking that "keys" are corrects and match the known
         dataset keys ; and that all the other keywords are compatible with these keys.
         """
         import matplotlib
