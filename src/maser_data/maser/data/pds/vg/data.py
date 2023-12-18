@@ -150,6 +150,7 @@ class VgPra3RdrLowband6secV1Data(
 
     def as_xarray(self):
         import xarray
+        import warnings
 
         fields = self.fields
         units = self.units
@@ -180,6 +181,9 @@ class VgPra3RdrLowband6secV1Data(
                 attrs={"units": dataset_unit},
                 dims=("time", "frequency"),
             ).sortby("time")
+        warnings.warn(
+            "WARNING: Time for Voyager are known for not being recorded in a not monotonic way. Be careful with these data."
+        )
 
         return xarray.Dataset(data_vars=datasets)
 
