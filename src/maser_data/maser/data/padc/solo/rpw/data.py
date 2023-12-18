@@ -67,14 +67,11 @@ class RpwHfrL3Cdf(CdfData, dataset="solo_L3_rpw-hfr-flux_"):
         import numpy
 
         default_keys = ["PSD_FLUX"]
-        forbidden_keys = []
         db_tab = numpy.array([True])
         for qkey, tab in zip(["db"], [db_tab]):
             if qkey not in kwargs:
                 qkey_tab = []
                 for key in keys:
-                    if key in forbidden_keys:
-                        raise KeyError("Key: " + str(key) + " is not supported.")
                     if key in default_keys:
                         qkey_tab.append(
                             tab[numpy.where(key == numpy.array(default_keys))][0]
@@ -143,14 +140,11 @@ class RpwTnrL3Cdf(CdfData, dataset="solo_L3_rpw-tnr-flux_"):
         import numpy
 
         default_keys = ["PSD_FLUX"]
-        forbidden_keys = []
         db_tab = numpy.array([True])
         for qkey, tab in zip(["db"], [db_tab]):
             if qkey not in kwargs:
                 qkey_tab = []
                 for key in keys:
-                    if key in forbidden_keys:
-                        raise KeyError("Key: " + str(key) + " is not supported.")
                     if key in default_keys:
                         qkey_tab.append(
                             tab[numpy.where(key == numpy.array(default_keys))][0]
