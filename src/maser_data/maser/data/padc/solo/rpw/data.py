@@ -10,6 +10,9 @@ from .lfr import RpwLfrSurvBp1  # noqa: F401
 
 
 class RpwHfrL3Cdf(CdfData, dataset="solo_L3_rpw-hfr-flux_"):
+
+    _dataset_keys = ["PSD_V2", "PSD_FLUX", "PSD_SFU"]
+
     @property
     def frequencies(self):
         if self._frequencies is None:
@@ -27,10 +30,14 @@ class RpwHfrL3Cdf(CdfData, dataset="solo_L3_rpw-hfr-flux_"):
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 
-        dataset_keys = {"PSD_V2", "PSD_FLUX", "PSD_SFU", "SC_POS_HCI"}
+        dataset_keys = {"PSD_V2", "PSD_FLUX", "PSD_SFU"}
 
         data_vars = {}
         for key in dataset_keys:
@@ -57,17 +64,31 @@ class RpwHfrL3Cdf(CdfData, dataset="solo_L3_rpw-hfr-flux_"):
         return datasets
 
     def quicklook(self, file_png=None, keys: List[str] = ["PSD_FLUX"], **kwargs):
-        self._quicklook(
-            keys=keys,
-            file_png=file_png,
-            # vmin=[68, 68],
-            # vmax=[94, 94],
-            db=[True, True],
-            **kwargs,
-        )
+        import numpy
+
+        default_keys = ["PSD_FLUX"]
+        forbidden_keys = []
+        db_tab = numpy.array([True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(keys=keys, file_png=file_png, **kwargs)
 
 
 class RpwTnrL3Cdf(CdfData, dataset="solo_L3_rpw-tnr-flux_"):
+
+    _dataset_keys = ["PSD_V2", "PSD_FLUX", "PSD_SFU"]
+
     @property
     def frequencies(self):
         if self._frequencies is None:
@@ -85,10 +106,14 @@ class RpwTnrL3Cdf(CdfData, dataset="solo_L3_rpw-tnr-flux_"):
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 
-        dataset_keys = {"PSD_V2", "PSD_FLUX", "PSD_SFU", "SC_POS_HCI"}
+        dataset_keys = {"PSD_V2", "PSD_FLUX", "PSD_SFU"}
 
         data_vars = {}
         for key in dataset_keys:
@@ -115,11 +140,22 @@ class RpwTnrL3Cdf(CdfData, dataset="solo_L3_rpw-tnr-flux_"):
         return datasets
 
     def quicklook(self, file_png=None, keys: List[str] = ["PSD_FLUX"], **kwargs):
-        self._quicklook(
-            keys=keys,
-            file_png=file_png,
-            # vmin=[68, 68],
-            # vmax=[94, 94],
-            db=[True, True],
-            **kwargs,
-        )
+        import numpy
+
+        default_keys = ["PSD_FLUX"]
+        forbidden_keys = []
+        db_tab = numpy.array([True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(keys=keys, file_png=file_png, **kwargs)

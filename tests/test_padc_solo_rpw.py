@@ -2,7 +2,13 @@
 from .constants import BASEDIR
 import pytest
 from maser.data import Data
-from maser.data.padc import RpwLfrSurvBp1, RpwTnrSurv, RpwHfrSurv
+from maser.data.padc import (
+    RpwLfrSurvBp1,
+    RpwTnrSurv,
+    RpwHfrSurv,
+    RpwTnrL3Cdf,
+    RpwHfrL3Cdf,
+)
 from astropy.time import Time, TimeDelta
 from astropy.units import Quantity, Unit
 from pathlib import Path
@@ -24,6 +30,12 @@ TEST_FILES = {
         BASEDIR / "solo" / "rpw" / "solo_L2_rpw-hfr-surv_20220101_V01.cdf",
         # BASEDIR / "solo" / "rpw" / "solo_L2_rpw-hfr-surv_20211028_V02.cdf",  # visible feature
         # BASEDIR / "solo" / "rpw" / "solo_L2_rpw-hfr-surv_20230521_V01.cdf",  # recent file
+    ],
+    "solo_L3_rpw-tnr-flux_": [
+        BASEDIR / "solo" / "rpw" / "solo_L3_rpw-tnr-flux_20230101_V01.cdf",
+    ],
+    "solo_L3_rpw-hfr-flux_": [
+        BASEDIR / "solo" / "rpw" / "solo_L3_rpw-hfr-flux_20230101_V01.cdf",
     ],
 }
 
@@ -475,6 +487,234 @@ def test_rpw_hfr_surv_data_dataset_quicklook(filepath):
 
         # checking all
         forbbiden_keys = ["SENSOR", "CHANNEL"]
+        test_keys = []
+        for key in data.dataset_keys:
+            if key not in forbbiden_keys:
+                test_keys.append(key)
+        data.quicklook(ql_path_tmp, keys=test_keys)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+
+# TEST solo_L3_rpw-tnr-flux_
+# =============================
+
+# create a decorator to test each file in the list
+for_each_test_file = pytest.mark.parametrize(
+    "filepath", TEST_FILES["solo_L3_rpw-tnr-flux_"]
+)
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_tnr_dataset(filepath):
+    data = Data(filepath=filepath)
+    assert isinstance(data, RpwTnrL3Cdf)
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_tnr_dataset__times(filepath):
+    with Data(filepath=filepath) as data:
+        assert isinstance(data.times, Time)
+        assert len(data.times) == 24785
+        assert data.times[0] == Time(
+            "2023-01-01 00:02:33.734149"
+        )  # Time("2022-01-01 00:01:26.830833")
+        assert data.times[-1] == Time(
+            "2023-01-02 00:02:09.233900"
+        )  # Time("2022-01-01 00:01:26.324603")
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_tnr_dataset__frequencies(filepath):
+    with Data(filepath=filepath) as data:
+        assert isinstance(data.frequencies, Quantity)
+        assert len(data.frequencies) == 128
+        assert data.frequencies[0].to(Unit("Hz")).value == pytest.approx(3992)
+        assert data.frequencies[-1].to(Unit("Hz")).value == pytest.approx(978572)
+
+
+@pytest.mark.skip(reason="Sweeps not implemented for RPW L3 yet.")
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_tnr_dataset__sweeps(filepath):
+    with Data(filepath=filepath) as data:
+        # get only the first sweep
+        sweep = next(data.sweeps)
+
+        # check the sweep content
+        assert len(sweep) == 5
+        assert isinstance(sweep[0], dict)
+        assert isinstance(sweep[1], Time)
+        assert isinstance(sweep[2], Quantity)
+        assert list(sweep[0].keys()) == [
+            "Epoch",
+            "VOLTAGE_SPECTRAL_POWER1",
+            "VOLTAGE_SPECTRAL_POWER2",
+            "FLUX_DENSITY1",
+            "FLUX_DENSITY2",
+            "MAGNETIC_SPECTRAL_POWER1",
+            "MAGNETIC_SPECTRAL_POWER2",
+        ]
+        assert len(sweep[2]) == 128
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_tnr_data__as_xarray(filepath):
+    with Data(filepath=filepath) as data:
+        # get only the first sweep
+        datasets = data.as_xarray()
+
+        expected_keys = ["PSD_V2", "PSD_FLUX", "PSD_SFU"]
+
+        # check the sweep content
+        assert len(datasets.keys()) == 3
+        assert sorted(list(datasets.keys())) == sorted(expected_keys)
+
+        test_array = datasets[expected_keys[0]]  # [0]
+        assert isinstance(test_array, xarray.DataArray)
+        assert test_array.shape == (128, 24785)
+        assert test_array.coords["frequency"].values[0] == pytest.approx(3992)
+        assert test_array.attrs["units"] == "V^2/Hz"
+        assert test_array.data[0][0] == pytest.approx(1.274948977772125e-13)
+        assert set(data.dataset_keys) == set(list(datasets.keys()))
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_tnr_data_dataset_quicklook(filepath):
+    with Data(filepath=filepath) as data:
+        #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+        # checking default
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        forbbiden_keys = []
+        test_keys = []
+        for key in data.dataset_keys:
+            if key not in forbbiden_keys:
+                test_keys.append(key)
+        data.quicklook(ql_path_tmp, keys=test_keys)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+
+# TEST solo_L3_rpw-hfr-flux_
+# =============================
+
+# create a decorator to test each file in the list
+for_each_test_file = pytest.mark.parametrize(
+    "filepath", TEST_FILES["solo_L3_rpw-hfr-flux_"]
+)
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_hfr_dataset(filepath):
+    data = Data(filepath=filepath)
+    assert isinstance(data, RpwHfrL3Cdf)
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_hfr_dataset__times(filepath):
+    with Data(filepath=filepath) as data:
+        assert isinstance(data.times, Time)
+        assert len(data.times) == 42811
+        assert data.times[0] == Time("2023-01-01 01:32:35.016057")
+        assert data.times[-1] == Time("2023-01-02 00:02:22.838573")
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_hfr_dataset__frequencies(filepath):
+    with Data(filepath=filepath) as data:
+        assert isinstance(data.frequencies, Quantity)
+        assert len(data.frequencies) == 321
+        assert data.frequencies[0].to(Unit("Hz")).value == pytest.approx(375000)
+        assert data.frequencies[-1].to(Unit("Hz")).value == pytest.approx(16375000)
+
+
+@pytest.mark.skip(reason="Sweeps not implemented for RPW L3 yet.")
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_hfr_dataset__sweeps(filepath):
+    with Data(filepath=filepath) as data:
+        # get only the first sweep
+        sweep = next(data.sweeps)
+
+        # check the sweep content
+        assert len(sweep) == 5
+        assert isinstance(sweep[0], dict)
+        assert isinstance(sweep[1], Time)
+        assert isinstance(sweep[2], Quantity)
+        assert list(sweep[0].keys()) == [
+            "VOLTAGE_SPECTRAL_POWER1",
+            "VOLTAGE_SPECTRAL_POWER2",
+        ]
+        assert len(sweep[2]) == 40
+        assert list(sweep[3]) == ["V2-V3", "HF_V2-V3"]
+        assert sweep[4] == "SURVEY_BURST"
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_hfr_data__as_xarray(filepath):
+    with Data(filepath=filepath) as data:
+        # get only the first sweep
+        datasets = data.as_xarray()
+
+        expected_keys = ["PSD_V2", "PSD_FLUX", "PSD_SFU"]
+
+        # check the sweep content
+        assert len(datasets.keys()) == 3
+        assert sorted(list(datasets.keys())) == sorted(expected_keys)
+
+        test_array = datasets[expected_keys[0]]  # [0]
+        assert isinstance(test_array, xarray.DataArray)
+        assert test_array.coords["frequency"].values[0] == pytest.approx(375000)
+        assert test_array.shape == (321, 42811)
+        assert test_array.attrs["units"] == "V^2/Hz"
+        # assert test_array.data[110000] == pytest.approx(4.8739396889859025e-15) # old
+        assert test_array.data[10][0] == pytest.approx(4.88892085e-13)
+        assert set(data.dataset_keys) == set(list(datasets.keys()))
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_rpw_L3_hfr_data_dataset_quicklook(filepath):
+    with Data(filepath=filepath) as data:
+        #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+        # checking default
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        forbbiden_keys = []
         test_keys = []
         for key in data.dataset_keys:
             if key not in forbbiden_keys:
