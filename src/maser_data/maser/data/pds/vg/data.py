@@ -167,20 +167,24 @@ class VgPra3RdrLowband6secV1Data(
                     d = sweep[dataset_key]
                     data_arr[i, :] = numpy.repeat(d["data"].value, 2)
 
-            datasets[dataset_key] = xarray.DataArray(
-                data=data_arr,
-                name=dataset_key,
-                coords=[
-                    ("time", self.times.to_datetime()),
-                    (
-                        "frequency",
-                        self.frequencies.value,
-                        {"units": self.frequencies.unit},
-                    ),
-                ],
-                attrs={"units": dataset_unit},
-                dims=("time", "frequency"),
-            ).sortby("time")
+            datasets[dataset_key] = (
+                xarray.DataArray(
+                    data=data_arr,
+                    name=dataset_key,
+                    coords=[
+                        ("time", self.times.to_datetime()),
+                        (
+                            "frequency",
+                            self.frequencies.value,
+                            {"units": self.frequencies.unit},
+                        ),
+                    ],
+                    attrs={"units": dataset_unit},
+                    dims=("time", "frequency"),
+                )
+                .sortby("time")
+                .T
+            )
         warnings.warn(
             "WARNING: Time for Voyager are known for not being recorded in a not monotonic way. Be careful with these data."
         )
