@@ -323,11 +323,12 @@ class Data(BaseData, dataset="default"):
         for i, k in enumerate(keys):
             xr_k = xr[k]
             if xr_k.dims != ("frequency", "time"):
-                warnings.warn(
-                    "WARNING: Dimensions for key: "
-                    + str(k)
-                    + " are not frequency - time. Quicklook should fail."
-                )
+                if xr_k.dims != ("freq_index", "time"):  # Cassini
+                    warnings.warn(
+                        "WARNING: Dimensions for key: "
+                        + str(k)
+                        + " are not frequency - time. Quicklook should fail."
+                    )
             xr_k_unit_label = f"{xr_k.units}" if xr_k.units is not None else ""
             if db is not None and db[i]:
                 xr_k.values = 10.0 * numpy.log10(xr_k)
