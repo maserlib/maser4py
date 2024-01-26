@@ -149,6 +149,11 @@ class Data(BaseData, dataset="default"):
         return dict()
 
     @property
+    def dataset_keys(self) -> list:
+        """Generic method to get the keys for this dataset's quicklook."""
+        pass
+
+    @property
     def times(self) -> Time:
         """Generic method to get the time axis."""
         pass
@@ -172,7 +177,7 @@ class Data(BaseData, dataset="default"):
         pass
 
     def as_xarray(self) -> xarray.Dataset:
-        """Generic method to get the data as a xarray.Dataset (a more efficient dict with xarray.DataArray) values"""
+        """Generic method to get the data as a xarray.Dataset object (an efficient "dict", filled with xarray.DataArray)"""
         pass
 
     def __enter__(self):
@@ -255,10 +260,40 @@ class Data(BaseData, dataset="default"):
         from matplotlib import pyplot as plt
         import matplotlib
         import matplotlib.dates as mdates
+        import warnings
 
         hhmm_format = mdates.DateFormatter("%H:%M")
 
-        # setting defaults
+        params = {
+            "db": db,
+            "file_png": file_png,
+            "vmin": vmin,
+            "vmax": vmax,
+            "vmin_quantile": vmin_quantile,
+            "vmax_quantile": vmax_quantile,
+            "iter_on_selection": iter_on_selection,
+        }
+        params_nn = {
+            k: v for k, v in params.items() if v is not None
+        }  # select not None parameters
+        args_to_test = {**params_nn, **kwargs}  # combine kwargs and default keys
+        self.check_input_param(keys, args_to_test)  # check that inputs are coherent
+
+        # *** setting defaults ***
+        # keys and landscape
+        if keys is None:
+            raise ValueError()
+        else:
+            if "landscape" not in kwargs:
+                if len(keys) == 1:
+                    landscape = True
+                else:
+                    landscape = False
+            else:
+                landscape = kwargs["landscape"]
+                del kwargs["landscape"]
+
+        # nan_color
         if "nan_color" not in kwargs:
             nan_color = "black"
         else:
@@ -274,17 +309,26 @@ class Data(BaseData, dataset="default"):
         del kwargs["cmap"]  # Necessary to avoir giving two times cmap key
 
         xr = self.as_xarray()
-        if keys is None:
-            raise ValueError()
+        if landscape:
+            figsize = (11.69, 8.27)
+        else:
+            figsize = (8.27, 11.69)  # A4 portrait
         fig, axs = plt.subplots(
             nrows=len(keys),
             sharex=True,
             sharey=True,
-            figsize=(8.27, 11.69),  # A4 portrait
+            figsize=figsize,  # A4 portrait
             dpi=100,
         )
         for i, k in enumerate(keys):
             xr_k = xr[k]
+            if xr_k.dims != ("frequency", "time"):
+                if xr_k.dims != ("freq_index", "time"):  # Cassini
+                    warnings.warn(
+                        "WARNING: Dimensions for key: "
+                        + str(k)
+                        + " are not frequency - time. Quicklook should fail."
+                    )
             xr_k_unit_label = f"{xr_k.units}" if xr_k.units is not None else ""
             if db is not None and db[i]:
                 xr_k.values = 10.0 * numpy.log10(xr_k)
@@ -384,6 +428,21 @@ class Data(BaseData, dataset="default"):
             plt.close(fig)
 
     def quicklook(self, file_png: Union[str, Path, None] = None):
+        """Generic method to display data.
+
+        This method selects main keys for each data set and display corresponding data from the file.
+        It is based on xarray.plot, which in turn uses pcolormesh.
+        Keyword arguments:
+        keys -- List of str -- gives which keys to be displayed. See or use Data.dataset_keys for list of usable keys.
+        file_png -- Path/str -- will save the created plot on file_png if given (default None).
+        Additionnal display keyword arguments:
+        cmap -- str -- select the corresponding matplotlib colormap (default: "gray").
+        nan_color -- str -- gives the color to be used to display nan (default: "black").
+        db -- List of bool -- if True, display the data for this key in db (10*log10(data)).
+        vmin_quantile -- List of float -- select for each key the lower limit of the colormap based on quantile.
+        vmax_quantile -- List of float -- select for each key the upper limit of the colormap based on quantile.
+        kwargs -- any kwargs of xarray.plot or pcolormesh can be given to this function.
+        """
         pass
 
     @staticmethod
@@ -403,6 +462,76 @@ class Data(BaseData, dataset="default"):
         else:
             dataset = BaseData._registry["bin"].get_dataset(filepath)
         return dataset
+
+    def check_input_param(self, keys, kwargs):
+        """
+        Method to test that all the inputs given to quicklook are consistent.
+        Mainly, it consists in checking that "keys" are corrects and match the known
+        dataset keys ; and that all the other keywords are compatible with these keys.
+        """
+        import matplotlib
+        import warnings
+
+        arg_list_list = [
+            "vmin",
+            "vmax",
+            "vmin_quantile",
+            "vmax_quantile",
+            "db",
+        ]
+
+        for key in keys:
+            if key is None:
+                raise KeyError("Key must be specified and cannot be None.")
+            if key not in self.dataset_keys:
+                raise KeyError(
+                    "Given key: "
+                    + key
+                    + " not in dataset keys. Use Data.dataset_keys for full list."
+                )
+
+        for arg in kwargs.keys():
+            if kwargs[arg] is not None:
+                if arg == "iter_on_selection":
+                    if not type(kwargs["iter_on_selection"]) == dict:
+                        raise KeyError("iter_on_selection must be a dictionnary.")
+                    elif "nan_color" in kwargs:
+                        warnings.warn(
+                            "WARNING: nan_color and iter_on_selection may be incompatible. Result may look strange."
+                        )
+                elif arg == "cmap":
+                    if kwargs["cmap"] not in matplotlib.colormaps:
+                        raise KeyError(
+                            "cmap: "
+                            + kwargs["cmap"]
+                            + " unknwon, must be a matplotlib cmap."
+                        )
+                elif arg == "nan_color":
+                    if not matplotlib.colors.is_color_like(kwargs["nan_color"]):
+                        raise KeyError("nan_color must be a matplotlib color.")
+                elif arg == "file_png" in kwargs:
+                    if (
+                        type(kwargs["file_png"]) != str
+                    ):  # if file_png was given as a str
+                        if kwargs["file_png"] != Path(
+                            kwargs["file_png"]
+                        ):  # if file_png was given as a Path()
+                            raise KeyError(
+                                "file_png must be a Path (str or Path object)."
+                            )
+                elif arg == "landscape":
+                    if type(kwargs[arg]) != bool:
+                        raise KeyError("landscape must be a bool.")
+                else:  # all the args that should have same dimension as keys
+                    if arg in arg_list_list:  # Prevent checking matplotlib kwargs
+                        if len(kwargs[arg]) != len(keys):
+                            raise KeyError(
+                                "Wrong list size for "
+                                + arg
+                                + ", should be the same size as keys (len: "
+                                + str(len(keys))
+                                + ")"
+                            )
 
 
 class CdfData(Data, dataset="cdf"):
@@ -428,6 +557,11 @@ class CdfData(Data, dataset="cdf"):
                 dataset = "orn_nda_routine_sun_edr"
             if dataset == "wi_wav_rad1_l3_df":
                 dataset = f"{dataset}_v{c.attrs['Skeleton_version']}"
+            if dataset == "solo_l3_rpw-hfr":
+                if "tnr" in str(filepath):
+                    dataset = "solo_L3_rpw-tnr-flux_"
+                else:
+                    dataset = "solo_L3_rpw-hfr-flux_"
 
         return dataset
 

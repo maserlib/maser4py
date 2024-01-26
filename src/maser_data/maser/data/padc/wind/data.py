@@ -35,6 +35,10 @@ class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):
                 self._times = Time(cdf_file["Epoch"][...])
         return self._times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
 
         datasets = {}
@@ -71,12 +75,27 @@ class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):
     def quicklook(
         self, file_png=None, keys: List[str] = ["FLUX_DENSITY", "SNR"], **kwargs
     ):
+        import numpy
+
+        default_keys = ["FLUX_DENSITY", "SNR"]
+        db_tab = numpy.array([True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
             file_png=file_png,
             # vmin=[68, 68],
             # vmax=[94, 94],
-            db=[True, True],
+            # db=[True, True],
             **kwargs,
         )
 
@@ -155,6 +174,10 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
                 self._times = times
         return self._times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
 
         datasets = {}
@@ -198,11 +221,26 @@ class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
     def quicklook(
         self, file_png=None, keys: List[str] = ["SWEEP", "STOKES_I"], **kwargs
     ):
+        import numpy
+
+        default_keys = ["SWEEP", "STOKES_I"]
+        db_tab = numpy.array([True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
             file_png=file_png,
             # vmin=[68, 68],
             # vmax=[94, 94],
-            db=[True, True],
+            # db=[True, True],
             **kwargs,
         )

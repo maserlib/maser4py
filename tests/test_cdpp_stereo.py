@@ -60,6 +60,7 @@ def test_swaves_l2_bin_dataset__as_xarray():
     assert isinstance(xr, xarray.Dataset)
     assert set(xr.keys()) == {"agc1", "agc2", "auto1", "auto2", "crossr", "crossi"}
     assert xr["agc1"].attrs["units"] == "ADU"
+    assert set(datax.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -68,6 +69,13 @@ def test_swaves_l2_bin_dataset_quicklook():  # filepath):
     filepath = TEST_FILES["cdpp_sta_l2_wav_h_res_lfr"][0]
     ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
     data = Data(filepath=filepath)
+
+    # checking default
     data.quicklook(ql_path_tmp)
+    assert ql_path_tmp.is_file()
+    ql_path_tmp.unlink()
+
+    # checking all
+    data.quicklook(ql_path_tmp, keys=data.dataset_keys)
     assert ql_path_tmp.is_file()
     ql_path_tmp.unlink()

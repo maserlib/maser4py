@@ -39,7 +39,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
     """Base class for EXPRES datasets."""
 
     _iter_sweep_class = ExpresCdfDataSweeps
-    _dataset_keys = [
+    _initial_dataset_keys = [
         "CML",
         "Polarization",
         "FC",
@@ -54,6 +54,17 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
         # 'Azimuth' # WIP
         # 'ObsLocalTime' # WIP
     ]
+    _dataset_keys = None
+
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = []
+            for dk in self._initial_dataset_keys:
+                # Check that the variable is in the CDF
+                if dk in self.file.keys():
+                    self._dataset_keys.append(dk)
+        return self._dataset_keys
 
     def __init__(
         self,
@@ -142,7 +153,7 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
 
         datasets = {}
 
-        for dataset_key in self._dataset_keys:
+        for dataset_key in self._initial_dataset_keys:
 
             # Check that the variable is in the CDF
             if dataset_key not in self.file.keys():
@@ -228,11 +239,32 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
             raise ValueError(
                 f"Select one source among {self.file['Src_ID_Label'][...]} before producing a quicklook."
             )
+        default_keys = ["FC", "FP", "Polarization", "Theta"]
+        forbidden_keys = [
+            "CML",
+            "ObsDistance",
+            "ObsLatitude",
+            "SrcFreqMax",
+            "SrcFreqMaxCMI",
+            "SrcLongitude",
+        ]
+        db_tab = np.array([False, False, False, False])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(tab[np.where(key == np.array(default_keys))][0])
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
-            db=[False, False, False, False],
+            # db=[False, False, False, False],
             file_png=file_png,
-            vmin=None,  # [-360, -10],
-            vmax=None,  # [360, 10],
+            # vmin=None,  # [-360, -10],
+            # vmax=None,  # [360, 10],
             **kwargs,
         )

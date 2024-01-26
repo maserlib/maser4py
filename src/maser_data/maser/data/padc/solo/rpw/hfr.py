@@ -120,6 +120,26 @@ class RpwHfrSurvSweeps(Sweeps):
 class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
     _iter_sweep_class = RpwHfrSurvSweeps
 
+    _dataset_keys = [
+        "VOLTAGE_SPECTRAL_POWER",
+        "SENSOR",
+        "CHANNEL",
+        "V1",
+        "V2",
+        "V3",
+        "V1-V2",
+        "V2-V3",
+        "V3-V1",
+        "B_MF",
+        "HF_V1-V2",
+        "HF_V2-V3",
+        "HF_V3-V1",
+        "DELTA_TIMES",
+        "FREQ_INDICES",
+        "VOLTAGE_SPECTRAL_POWER_CH1",
+        "VOLTAGE_SPECTRAL_POWER_CH2",
+    ]
+
     frequency_band_labels = FREQUENCY_BAND_LABELS
     survey_mode_labels = SURVEY_MODE_LABELS
     channel_labels = CHANNEL_LABELS
@@ -174,6 +194,10 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
 
         # Return resulting index array as a list
         return list(self._sweep_start_index)
+
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
 
     def as_xarray(self, as_is=False):
         """
@@ -503,7 +527,31 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
             "DELTA_TIMES",
             "FREQ_INDICES",
         ],
-        db: List[bool] = [True, True, True, False, False],
+        # db: List[bool] = [True, True, True, False, False],
         **kwargs
     ):
-        self._quicklook(keys=keys, file_png=file_png, db=db, **kwargs)
+        import numpy
+
+        default_keys = [
+            "VOLTAGE_SPECTRAL_POWER",
+            "VOLTAGE_SPECTRAL_POWER_CH1",
+            "VOLTAGE_SPECTRAL_POWER_CH2",
+            "DELTA_TIMES",
+            "FREQ_INDICES",
+        ]
+        forbidden_keys = ["SENSOR", "CHANNEL"]
+        db_tab = numpy.array([True, True, True, False, False])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(keys=keys, file_png=file_png, **kwargs)

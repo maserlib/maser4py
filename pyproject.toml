@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "maser4py"
-version = "0.16.0"
+version = "0.16.1"
 description = "maser4py offers tools to handle low frequency radioastronomy data"
 authors = ["Baptiste CECCONI <baptiste.cecconi@obspm.fr>", "Xavier BONNIN <xavier.bonnin@obspm.fr>", "Sonny LION <sonny.lion@obspm.fr>", "Alan Loh <alan.loh@obspm.fr>", "Quynh Nhu Nguyen <quynh-nhu.nguyen@obspm.fr>"]
 readme = "README.md"

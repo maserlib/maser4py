@@ -52,6 +52,10 @@ class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
             self._times = Time(self.file[7].data["jd"], format="jd")
         return self._times
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         """Transform the data in x-arrays."""
 
@@ -105,4 +109,19 @@ class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
         keys: List[str] = ["NW", "NE"],
         **kwargs,
     ):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)
+        import numpy
+
+        default_keys = ["NW", "NE"]
+        db_tab = numpy.array([True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(keys=keys, file_png=file_png, **kwargs)

@@ -4,7 +4,7 @@
 
 from maser.data.base import CdfData
 
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 from astropy.time import Time
 from astropy.units import Unit
@@ -12,6 +12,8 @@ from astropy.units import Unit
 
 class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
     """Class for `sorbet` CDF files."""
+
+    _dataset_keys = ["sorbet_WPT_spectra"]
 
     @property
     def times(self):
@@ -30,10 +32,14 @@ class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
                 )
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 
-        dataset_keys = ["sorbet_WPT_spectra"]
+        dataset_keys = self.dataset_keys
         datasets = {}
 
         for dataset_key in dataset_keys:
@@ -56,11 +62,18 @@ class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
             )
         return xarray.Dataset(data_vars=datasets)
 
-    def quicklook(self, file_png: Union[str, Path, None] = None, **kwargs):
+    def quicklook(
+        self,
+        file_png: Union[str, Path, None] = None,
+        yscale: str = "log",
+        keys: List[str] = ["sorbet_WPT_spectra"],
+        **kwargs,
+    ):
         self._quicklook(
-            keys=["sorbet_WPT_spectra", "sorbet_WPT_spectra"],
+            keys=keys,
             file_png=file_png,
+            # landscape=landscape,
             # db=[True,True],
-            yscale="log",
+            yscale=yscale,
             **kwargs,
         )

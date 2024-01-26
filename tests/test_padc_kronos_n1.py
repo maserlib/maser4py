@@ -140,6 +140,7 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__as_xarray():
     assert set(xarr_keys) == set(data._format["vars"].keys())
     for k in xarr_keys:
         assert isinstance(xarr[k], DataArray)
+    assert set(data.dataset_keys) == set(list(xarr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -154,6 +155,13 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset_quicklook():
     for filepath in TEST_FILES["co_rpws_hfr_kronos_n1"]:
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
+
+        # checking default
         data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

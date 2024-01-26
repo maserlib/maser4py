@@ -94,6 +94,7 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__as_xarray(mex_data):
     assert xr["SPECTRAL_DENSITY_MED"].dims == ("frequency", "time")
     assert xr["SPECTRAL_DENSITY_MED"].shape == (160, 1057)
     assert xr["SPECTRAL_DENSITY_MED"].units == "W m^-2 Hz^-1"
+    assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -103,7 +104,19 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0_quicklook():
             #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
             ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
             data = Data(filepath=filepath)
-            data.quicklook(ql_path_tmp)
             #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+            # checking default
+            data.quicklook(ql_path_tmp)
+            assert ql_path_tmp.is_file()
+            ql_path_tmp.unlink()
+
+            # checking all
+            forbbiden_keys = ["SPECTRAL_DENSITY"]
+            test_keys = []
+            for key in data.dataset_keys:
+                if key not in forbbiden_keys:
+                    test_keys.append(key)
+            data.quicklook(ql_path_tmp, keys=test_keys)
             assert ql_path_tmp.is_file()
             ql_path_tmp.unlink()

@@ -57,6 +57,8 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
     _iter_sweep_class = CoRpwsHfrKronosDataSweeps
     _iter_record_class = CoRpwsHfrKronosDataRecords
 
+    _dataset_keys = None
+
     def __init__(
         self,
         filepath: Path,
@@ -208,6 +210,16 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
                 ]
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = self.fields  # self._format["vars"].keys()
+            # N1: ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"]
+            # N2: ["autoX", "autoZ", "crossR", "crossI"]
+            # N3e:["s", "v", "th", "ph", "snx", "snz"]
+            # N3d:["s", "q", "u", "v", "snx", "snz"]
+        return self._dataset_keys
+
     def epncore(self):
         md = BinData.epncore(self)
         md["obs_id"] = f"K{self._ydh}"
@@ -252,11 +264,25 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
         keys: List[str] = ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"],
         **kwargs,
     ):
+        default_keys = ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"]
+        vmin_tab = numpy.array([0, 128, 0, 128, -255, -255])
+        vmax_tab = numpy.array([127, 191, 127, 191, 255, 255])
+        for qkey, tab in zip(["vmin", "vmax"], [vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
             file_png=file_png,
-            vmax=[127, 191, 127, 191, 255, 255],
-            vmin=[0, 128, 0, 128, -255, -255],
+            # vmax=[127, 191, 127, 191, 255, 255],
+            # vmin=[0, 128, 0, 128, -255, -255],
             **kwargs,
         )
 
@@ -272,14 +298,28 @@ class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"
         self,
         file_png=None,
         keys: List[str] = ["autoX", "autoZ", "crossR", "crossI"],
+        yscale: str = "log",
         **kwargs,
     ):
+        default_keys = ["autoX", "autoZ", "crossR", "crossI"]
+        db_tab = numpy.array([True, True, False, False])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
-            db=[True, True, False, False],
+            # db=[True, True, False, False],
             file_png=file_png,
             y="frequency",
-            yscale="log",
+            yscale=yscale,
             **kwargs,
         )
 
@@ -299,16 +339,32 @@ class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
         self,
         file_png=None,
         keys: List[str] = ["s", "v", "th", "ph", "snx", "snz"],
+        yscale: str = "log",
         **kwargs,
     ):
+        default_keys = ["s", "v", "th", "ph", "snx", "snz"]
+        db_tab = numpy.array([True, False, False, False, True, True])
+        vmin_tab = numpy.array([-160, -1, 0, -math.pi, 10, 10])
+        vmax_tab = numpy.array([-120, 1, math.pi, math.pi, 40, 40])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
-            db=[True, False, False, False, True, True],
+            # db=[True, False, False, False, True, True],
             file_png=file_png,
             y="frequency",
-            yscale="log",
-            vmin=[-160, -1, 0, -math.pi, 10, 10],
-            vmax=[-120, 1, math.pi, math.pi, 40, 40],
+            yscale=yscale,
+            # vmin=[-160, -1, 0, -math.pi, 10, 10],
+            # vmax=[-120, 1, math.pi, math.pi, 40, 40],
             **kwargs,
         )
 
@@ -318,15 +374,31 @@ class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
         self,
         file_png=None,
         keys: List[str] = ["s", "q", "u", "v", "snx", "snz"],
+        yscale: str = "log",
         **kwargs,
     ):
+        default_keys = ["s", "q", "u", "v", "snx", "snz"]
+        db_tab = numpy.array([True, False, False, False, True, True])
+        vmin_tab = numpy.array([-160, -1, -1, -1, 10, 10])
+        vmax_tab = numpy.array([-120, 1, 1, 1, 40, 40])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
-            db=[True, False, False, False, True, True],
+            # db=[True, False, False, False, True, True],
             file_png=file_png,
             y="frequency",
-            yscale="log",
-            vmin=[-160, -1, -1, -1, 10, 10],
-            vmax=[-120, 1, 1, 1, 40, 40],
+            yscale=yscale,
+            # vmin=[-160, -1, -1, -1, 10, 10],
+            # vmax=[-120, 1, 1, 1, 40, 40],
             **kwargs,
         )

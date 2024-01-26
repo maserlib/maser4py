@@ -14,6 +14,8 @@ class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
 
     _iter_sweep_class = OrnNdaRoutineEdrSweeps
 
+    _dataset_keys = ["LL", "RR"]
+
     @property
     def frequencies(self):
         if self._frequencies is None:
@@ -30,6 +32,10 @@ class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
             with self.open(self.filepath) as f:
                 self._times = Time(f["Epoch"][...])
         return self._times
+
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
 
     def as_xarray(self):
         import xarray
@@ -91,6 +97,8 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
 
     _iter_sweep_class = OrnNdaNewRoutineEdrSweeps
 
+    _dataset_keys = None
+
     def __init__(
         self,
         filepath: Path,
@@ -119,6 +127,12 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
         md = FitsData.epncore(self)
         md["granule_uid"] = f"{self.dataset}:{self.filepath.stem}"
         return md
+
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = self.fields
+        return self._dataset_keys
 
     def as_xarray(self):
         import xarray
@@ -159,12 +173,29 @@ class OrnNdaNewRoutineSunEdrFitsData(
         return self._fields
 
     def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"], **kwargs):
+        import numpy
+
+        default_keys = ["LL", "RR"]
+        db_tab = numpy.array([True, True])
+        vmin_tab = numpy.array([68, 68])
+        vmax_tab = numpy.array([94, 94])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
             file_png=file_png,
-            vmin=[68, 68],
-            vmax=[94, 94],
-            db=[True, True],
+            # vmin=[68, 68],
+            # vmax=[94, 94],
+            # db=[True, True],
             **kwargs,
         )
 
@@ -186,7 +217,22 @@ class OrnNdaNewRoutineJupEdrFitsData(
         keys: List[str] = ["LL", "RR"],
         **kwargs,
     ):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)
+        import numpy
+
+        default_keys = ["LL", "RR"]
+        db_tab = numpy.array([True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(keys=keys, file_png=file_png, **kwargs)
 
 
 class OrnNdaNewRoutineTransitEdrFitsData(
@@ -206,7 +252,22 @@ class OrnNdaNewRoutineTransitEdrFitsData(
         keys: List[str] = ["LL", "RR"],
         **kwargs,
     ):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)
+        import numpy
+
+        default_keys = ["LL", "RR"]
+        db_tab = numpy.array([True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(keys=keys, file_png=file_png, **kwargs)
 
 
 class OrnNdaMefistoSunEdrFitsData(
@@ -221,4 +282,19 @@ class OrnNdaMefistoSunEdrFitsData(
         return self._fields
 
     def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"], **kwargs):
-        self._quicklook(keys=keys, file_png=file_png, db=[True, True], **kwargs)
+        import numpy
+
+        default_keys = ["LL", "RR"]
+        db_tab = numpy.array([True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(keys=keys, file_png=file_png, **kwargs)

@@ -88,6 +88,7 @@ def test_wind_waves_l3_akr_dataset__as_xarray(wind_waves_l3_akr_files):
         assert xr["SNR"].dims == ("frequency", "time")
         assert xr["SNR"].shape == (32, 471)
         assert xr["FLUX_DENSITY"].units == "Wm2Hz-1"
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @skip_if_spacepy_not_available
@@ -96,7 +97,14 @@ def test_wind_waves_l3_akr_dataset_quicklook(wind_waves_l3_akr_files):
     for filepath in wind_waves_l3_akr_files:
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
+
+        # checking default
         data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
 
@@ -208,6 +216,7 @@ def test_wind_waves_l3_dfv02_dataset__as_xarray(wind_waves_l3_dfv02_files):
         assert xr["STOKES_I"].dims == ("frequency", "time")
         assert xr["STOKES_I"].shape == (32, 1756)
         assert xr["STOKES_I"].units == "W/m^2/Hz"
+        assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -215,6 +224,13 @@ def test_wind_waves_l3_dfv02_dataset_quicklook(wind_waves_l3_dfv02_files):
     for filepath in wind_waves_l3_dfv02_files:
         ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
         data = Data(filepath=filepath)
+
+        # checking default
         data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()

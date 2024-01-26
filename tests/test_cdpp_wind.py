@@ -99,6 +99,7 @@ def test_wi_wa_rad1_l2_bin_dataset__as_xarray():
     assert xr["VSPAL"].dims == ("frequency", "time")
     assert xr["VSPAL"].shape == (120, 120)
     assert xr["VSPAL"].units == "W m^-2 Hz^-1"
+    assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -106,7 +107,14 @@ def test_wi_wa_rad1_l2_bin_dataset_quicklook():
     filepath = TEST_FILES["cdpp_wi_wa_rad1_l2"][0]
     ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
     data = Data(filepath=filepath)
+
+    # checking default
     data.quicklook(ql_path_tmp)
+    assert ql_path_tmp.is_file()
+    ql_path_tmp.unlink()
+
+    # checking all
+    data.quicklook(ql_path_tmp, keys=data.dataset_keys)
     assert ql_path_tmp.is_file()
     ql_path_tmp.unlink()
 

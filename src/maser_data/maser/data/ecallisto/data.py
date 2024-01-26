@@ -13,6 +13,8 @@ from astropy.units import Unit
 class ECallistoFitsData(FitsData, dataset="ecallisto"):
     """Class for `ecallisto` FITS files."""
 
+    _dataset_keys = ["Flux Density"]
+
     @property
     def times(self):
         if self._times is None:
@@ -29,6 +31,10 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
             with self.open(self.filepath) as f:
                 self._frequencies = f[1].data["FREQUENCY"][0] * Unit("MHz")
         return self._frequencies
+
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
 
     def as_xarray(self):
         import xarray
@@ -54,7 +60,7 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,
-        keys: List[str] = ["Flux Density", "Flux Density"],
+        keys: List[str] = ["Flux Density"],
         **kwargs,
     ):
         self._quicklook(

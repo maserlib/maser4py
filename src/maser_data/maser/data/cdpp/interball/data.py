@@ -20,6 +20,8 @@ class InterballAuroralPolradRspBinData(
     _iter_sweep_class = InterballAuroralPolradRspSweeps
     _iter_record_class = InterballAuroralPolradRspRecords
 
+    _dataset_keys = ["EX", "EY", "EZ"]
+
     def __init__(
         self,
         filepath: Path,
@@ -133,6 +135,10 @@ class InterballAuroralPolradRspBinData(
             self._frequencies = sweep.frequencies
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     @staticmethod
     def decode_session_name(session_name):
         tmp = dict()
@@ -209,9 +215,17 @@ class InterballAuroralPolradRspBinData(
         return xarray.Dataset(data_vars=datasets)
 
     def quicklook(self, file_png=None, keys: List[str] = ["EX", "EY", "EZ"], **kwargs):
+
+        default_keys = ["EX", "EY", "EZ"]
+        if "db" not in kwargs:
+            db = []
+            for key in keys:
+                if key in default_keys:
+                    db.append(True)
+            kwargs["db"] = db
+
         self._quicklook(
             keys=keys,
             file_png=file_png,
-            db=[True, True, True],
             **kwargs,
         )

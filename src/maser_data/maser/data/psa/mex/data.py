@@ -67,8 +67,16 @@ class MexMMarsis3RdrAisV1Data(
 ):
     _iter_sweep_class = MexMMarsis3RdrAisV1Sweeps
 
+    _initial_dataset_keys = [
+        "SPECTRAL_DENSITY",
+    ]
+
     _dataset_keys = [
         "SPECTRAL_DENSITY",
+        "SPECTRAL_DENSITY_AVG",
+        "SPECTRAL_DENSITY_MED",
+        "SPECTRAL_DENSITY_MAX",
+        "SPECTRAL_DENSITY_MIN",
     ]
 
     def __init__(
@@ -146,12 +154,16 @@ class MexMMarsis3RdrAisV1Data(
                 ]
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 
         datasets = {}
 
-        for dataset_key in self._dataset_keys:
+        for dataset_key in self._initial_dataset_keys:
             data = numpy.array([item.data for item in self.sweeps])  # .T,
             data_avg = numpy.mean(data, axis=2)
             data_med = numpy.median(data, axis=2)
@@ -232,13 +244,37 @@ class MexMMarsis3RdrAisV1Data(
             "SPECTRAL_DENSITY_MAX",
             # "SPECTRAL_DENSITY_56",
         ],
-        db: List[bool] = [True, True, True, True, True],
+        # db: List[bool] = [True, True, True, True],
         **kwargs,
     ):
+        import numpy
+
+        default_keys = [
+            "SPECTRAL_DENSITY_AVG",
+            "SPECTRAL_DENSITY_MED",
+            "SPECTRAL_DENSITY_MIN",
+            "SPECTRAL_DENSITY_MAX",
+            # "SPECTRAL_DENSITY_56",
+        ]
+        forbidden_keys = ["SPECTRAL_DENSITY"]
+        db_tab = numpy.array([True, True, True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             keys=keys,
             file_png=file_png,
-            db=db,
+            # db=db,
             **kwargs,
         )
 

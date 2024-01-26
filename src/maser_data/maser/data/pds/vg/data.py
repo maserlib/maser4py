@@ -24,6 +24,7 @@ class VgPra3RdrLowband6secV1Data(
     """
 
     _iter_sweep_class = VgPra3RdrLowband6secV1Sweeps
+    _dataset_keys = None
 
     def __init__(
         self,
@@ -139,8 +140,17 @@ class VgPra3RdrLowband6secV1Data(
 
         return md
 
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = self.fields
+            if "any" not in self._dataset_keys:
+                self._dataset_keys.append("any")
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
+        import warnings
 
         fields = self.fields
         units = self.units
@@ -157,20 +167,27 @@ class VgPra3RdrLowband6secV1Data(
                     d = sweep[dataset_key]
                     data_arr[i, :] = numpy.repeat(d["data"].value, 2)
 
-            datasets[dataset_key] = xarray.DataArray(
-                data=data_arr,
-                name=dataset_key,
-                coords=[
-                    ("time", self.times.to_datetime()),
-                    (
-                        "frequency",
-                        self.frequencies.value,
-                        {"units": self.frequencies.unit},
-                    ),
-                ],
-                attrs={"units": dataset_unit},
-                dims=("time", "frequency"),
-            ).sortby("time")
+            datasets[dataset_key] = (
+                xarray.DataArray(
+                    data=data_arr,
+                    name=dataset_key,
+                    coords=[
+                        ("time", self.times.to_datetime()),
+                        (
+                            "frequency",
+                            self.frequencies.value,
+                            {"units": self.frequencies.unit},
+                        ),
+                    ],
+                    attrs={"units": dataset_unit},
+                    dims=("time", "frequency"),
+                )
+                .sortby("time")
+                .T
+            )
+        warnings.warn(
+            "WARNING: Time for Voyager are known for not being recorded in a not monotonic way. Be careful with these data."
+        )
 
         return xarray.Dataset(data_vars=datasets)
 
@@ -264,6 +281,7 @@ class VgPra4RSummBrowse48secV1Data(
     """
 
     _iter_sweep_class = VgPra4SummBrowse48secV1Sweeps
+    _dataset_keys = None
 
     def __init__(
         self,
@@ -326,6 +344,12 @@ class VgPra4RSummBrowse48secV1Data(
         if self._frequencies is None:
             self._frequencies = numpy.arange(1326, -18, -19.2) * Unit("kHz")
         return self._frequencies
+
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = self.fields
+        return self._dataset_keys
 
     def as_xarray(self):
         import xarray

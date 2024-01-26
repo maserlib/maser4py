@@ -35,6 +35,8 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
 
     _iter_sweep_class = WindWavesL2HighResSweeps
 
+    _dataset_keys = ["VSPAL", "VZPAL", "TSPAL", "TZPAL"]
+
     def __init__(
         self,
         filepath: Path,
@@ -180,6 +182,10 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
             for s in self.sweeps:
                 self._frequencies.append(s.data["FREQ"] * Unit("kHz"))
         return self._frequencies
+
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
 
     def quicklook(self, file_png=None, keys: List[str] = ["VSPAL", "VZPAL"], **kwargs):
         self._quicklook(

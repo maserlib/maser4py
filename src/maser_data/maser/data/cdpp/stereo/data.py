@@ -33,6 +33,8 @@ class StereoWavesL2HighResBinData(
 
     _iter_sweep_class = StereoWavesLfrL2HighResSweeps
 
+    _dataset_keys = ["agc1", "agc2", "auto1", "auto2", "crossr", "crossi"]
+
     def __init__(
         self,
         filepath: Path,
@@ -208,16 +210,36 @@ class StereoWavesL2HighResBinData(
                 self._frequencies.append(s.data["freq"] * Unit("kHz"))
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def quicklook(self, file_png=None, keys: Union[List[str], None] = None, **kwargs):
         if keys is None:
             keys = self.fields
+        default_keys = self.fields
+        db_tab = numpy.array([True, True, True, True, False, False])
+        vmin_tab = numpy.array([-150, -160, -150, -160, -1, -1])
+        vmax_tab = numpy.array([-120, -130, -120, -130, 1, 1])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+
         self._quicklook(
             keys=keys,
             file_png=file_png,
             y="frequency",
-            vmin=[-150, -160, -150, -160, -1, -1],
-            vmax=[-120, -130, -120, -130, 1, 1],
-            db=[True, True, True, True, False, False],
+            # vmin=[-150, -160, -150, -160, -1, -1],
+            # vmax=[-120, -130, -120, -130, 1, 1],
+            # db=[True, True, True, True, False, False],
             **kwargs,
         )
 
