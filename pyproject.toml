@@ -2,14 +2,14 @@
 name = "maser4py"
 version = "0.16.1"
 description = "maser4py offers tools to handle low frequency radioastronomy data"
-authors = ["Baptiste CECCONI <baptiste.cecconi@obspm.fr>", "Xavier BONNIN <xavier.bonnin@obspm.fr>", "Sonny LION <sonny.lion@obspm.fr>", "Alan Loh <alan.loh@obspm.fr>", "Quynh Nhu Nguyen <quynh-nhu.nguyen@obspm.fr>"]
+authors = ["Baptiste CECCONI <baptiste.cecconi@obspm.fr>", "Xavier BONNIN <xavier.bonnin@obspm.fr>", "Alan Loh <alan.loh@obspm.fr>", "Lucas Grosset <lucas.grosset@obspm.fr>", "Sonny LION <sonny.lion@obspm.fr>", "Quynh Nhu Nguyen <quynh-nhu.nguyen@obspm.fr>"]
 readme = "README.md"
 # be careful to format the license correctly so that Zenodo can use it as metadata
 # valid licenses are listed here : https://zenodo.org/api/licenses/
 license = "GPL-3.0"
 homepage = "https://pypi.org/project/maser4py"
 repository = "https://github.com/maserlib/maser4py"
-keywords = ["maser4py", "data science", "radioastronomy"]
+keywords = ["maser", "data science", "radioastronomy"]
 
 # handle namespace with poetry
 packages = [
