@@ -16,6 +16,7 @@ from ..const import (
     CALDATE_FIELDS,
     ORBIT_FIELDS,
 )
+import numpy as np
 
 
 class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
@@ -48,8 +49,8 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
         self._data = None
         self._nsweep = None
         self._data = self._loader()
-        self.fields = ["VSPAL", "VZPAL", "TSPAL", "TZPAL"]
-        self.units = ["V2/Hz", "V2/Hz", "V2/Hz", "V2/Hz"]
+        self.fields = ["VS", "VSP", "VZ", "TS", "TSP", "TZ"]
+        self.units = ["uV2/Hz", "uV2/Hz", "uV2/Hz", "s", "s", "s"]
 
     @property
     def _parse_file_name(self):
@@ -68,7 +69,7 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
         Vspal = struct.unpack(">" + "f" * (nbytes // 4), block)
         block = self.file.read(nbytes)
         Tspal = struct.unpack(">" + "f" * (nbytes // 4), block)
-        return Vspal, Tspal
+        return np.array(Vspal, dtype=float), np.array(Tspal, dtype=float)
 
     def _loader(self, count_only=False):
         data = []
@@ -123,20 +124,34 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
 
                 # Reading frequency list (kHz) in the current sweep
                 cur_dtype = ">" + "f" * npalf
-                freq = _read_block(self.file, cur_dtype)
+                freq = np.array(_read_block(self.file, cur_dtype), dtype=float)
 
                 if self.load_data:
                     # Reading intensity and time values for S/SP in the current sweep
                     Vspal, Tspal = self._read_data_block(4 * npalf * nspal)
                     # Reading intensity and time values for Z in the current sweep
                     Vzpal, Tzpal = self._read_data_block(4 * npalf * nzpal)
+
+                    # Get indices of S and SP channels
+                    index_s = (2 * np.arange(nspal / 2)).astype(int)
+                    index_sp = (2 * np.arange(nspal / 2) + 1).astype(int)
+
+                    # Reshape Vspal, Tspal, Vzpal, Tzpal into 2D arrays
+                    Vspal = Vspal.reshape((nspal, npalf))
+                    Vzpal = Vzpal.reshape((nzpal, npalf))
+                    Tspal = Tspal.reshape((nspal, npalf))
+                    Tzpal = Tzpal.reshape((nzpal, npalf))
+
                     data_i = {
-                        "FREQ": freq,
-                        "VSPAL": Vspal,
-                        "VZPAL": Vzpal,
-                        "TSPAL": Tspal,
-                        "TZPAL": Tzpal,
+                        "FREQ": np.tile(freq, (nzpal, 1)),
+                        "VS": np.take(Vspal, index_s, axis=0),
+                        "VSP": np.take(Vspal, index_sp, axis=0),
+                        "VZ": Vzpal,
+                        "TS": np.take(Tspal, index_s, axis=0),
+                        "TSP": np.take(Tspal, index_sp, axis=0),
+                        "TZ": Tzpal,
                     }
+
                 else:
                     # Skip data section
                     self.file.seek(8 * npalf * (nspal + nzpal), 1)
@@ -155,6 +170,50 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
 
         self._nsweep = nsweep
         return data
+
+    @property
+    def max_sweep_length(self):
+        if self._max_sweep_length is None:
+            self._max_sweep_length = np.max(
+                [len(f.flatten()) for f in self.frequencies]
+            )
+        return self._max_sweep_length
+
+    def as_xarray(self):
+        import xarray
+
+        fields = self.fields
+        units = self.units
+
+        freq_arr = np.full((self._nsweep, self.max_sweep_length), np.nan)
+
+        for i in range(self._nsweep):
+            f = self.frequencies[i].value.flatten()
+            freq_arr[i, : len(f)] = f
+            freq_arr[i, len(f) :] = f[-1]
+
+        freq_index = range(self.max_sweep_length)
+
+        datasets = {}
+        for dataset_key, dataset_unit in zip(fields, units):
+            data_arr = np.full((self._nsweep, self.max_sweep_length), np.nan)
+            for i, sweep in enumerate(self.sweeps):
+                d = sweep.data[dataset_key].flatten()
+                data_arr[i, : len(d)] = d
+
+            datasets[dataset_key] = xarray.DataArray(
+                data=data_arr.T,
+                name=dataset_key,
+                coords={
+                    "freq_index": freq_index,
+                    "time": self.times.to_datetime(),
+                    "frequency": (["time", "freq_index"], freq_arr, {"units": "kHz"}),
+                },
+                attrs={"units": dataset_unit},
+                dims=("freq_index", "time"),
+            )
+
+        return xarray.Dataset(data_vars=datasets)
 
     @property
     def times(self):
