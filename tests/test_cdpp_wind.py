@@ -71,9 +71,11 @@ def test_wi_wa_rad1_l2_bin_dataset__times():
     filepath = TEST_FILES["cdpp_wi_wa_rad1_l2"][0]
     data = Data(filepath=filepath)
     assert isinstance(data.times, Time)
-    assert len(data.times) == 120
-    assert data.times[0] == Time("1994-11-10 16:38:06.000")
-    assert data.times[-1] == Time("1994-11-10 23:55:27.000")
+    assert len(data.times) == 7360  # 120 before but, now more with replicate.
+    assert data.times[0].jd == pytest.approx(
+        Time("1994-11-10 16:38:06.127").jd
+    )  # Time("1994-11-10 16:38:06.000")
+    assert data.times[-1].jd == pytest.approx(Time("1994-11-10 23:58:09.956").jd)
 
 
 @pytest.mark.test_data_required
@@ -81,11 +83,11 @@ def test_wi_wa_rad1_l2_bin_dataset__frequencies():
     filepath = TEST_FILES["cdpp_wi_wa_rad1_l2"][0]
     data = Data(filepath=filepath)
     assert not data.fixed_frequencies
-    assert isinstance(data.frequencies, list)
+    # assert isinstance(data.frequencies, list)
     assert isinstance(data.frequencies[0], Quantity)
-    assert len(data.frequencies) == 120
-    assert data.frequencies[0][0] == 1040 * Unit("kHz")
-    assert data.frequencies[0][-1] == 20 * Unit("kHz")
+    assert len(data.frequencies[0]) == 23  # 120
+    assert data.frequencies[0][-1] == 1040 * Unit("kHz")
+    assert data.frequencies[0][0] == 20 * Unit("kHz")
 
 
 @pytest.mark.test_data_required
@@ -94,11 +96,21 @@ def test_wi_wa_rad1_l2_bin_dataset__as_xarray():
     data = Data(filepath=filepath)
     xr = data.as_xarray()
     assert isinstance(xr, xarray.Dataset)
-    assert set(xr.keys()) == {"VSPAL", "VZPAL"}
-    assert xr.coords.dims == {"time": 120, "frequency": 120}
-    assert xr["VSPAL"].dims == ("frequency", "time")
-    assert xr["VSPAL"].shape == (120, 120)
-    assert xr["VSPAL"].units == "W m^-2 Hz^-1"
+    # assert set(xr.keys()) == {"VSPAL", "VZPAL"}
+    assert set(xr.keys()) == {
+        "MODE",
+        "VS",
+        "VSP",
+        "VZ",
+        "TS",
+        "TSP",
+        "TZ",
+    }  # "FREQ_DEGEN", "FREQ"}
+    # assert xr.coords.dims == {"time": 120, "frequency": 120}
+    assert xr.coords.dims == {"frequency": 23, "time": 7360}
+    assert xr["VS"].dims == ("frequency", "time")
+    assert xr["VS"].shape == (23, 7360)  # (120, 120)
+    assert xr["VS"].units == "uV2/Hz"  # "W m^-2 Hz^-1"
     assert set(data.dataset_keys) == set(list(xr.keys()))
 
 
@@ -173,10 +185,20 @@ def test_wi_wa_rad1_l2_bin_dataset__sweeps_next():
             "SPIN_RATE": 129.59471130371094,
             "SUN_ANGLE": 190.1953125,
         }
-        assert list(data_i.keys()) == ["FREQ", "VSPAL", "VZPAL", "TSPAL", "TZPAL"]
+        # assert list(data_i.keys()) == ["FREQ", "VSPAL", "VZPAL", "TSPAL", "TZPAL"]  # old
+        assert list(data_i.keys()) == [
+            "FREQ",
+            "VST",
+            "VS",
+            "VSP",
+            "VZ",
+            "TS",
+            "TSP",
+            "TZ",
+        ]
         assert len(data_i["FREQ"]) == 64
-        assert data_i["FREQ"][0] == 1040.0
-        assert data_i["FREQ"][-1] == 20.0
+        assert data_i["FREQ"][0, 0] == 1040.0
+        assert data_i["FREQ"][-1, 0] == 20.0
 
 
 # CDPP/WIND TESTS ===== wi_wa_rad2_l2_60s

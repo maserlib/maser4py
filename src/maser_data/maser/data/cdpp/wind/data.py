@@ -8,7 +8,7 @@ from .sweeps import (
     WindWaves60sSweeps,
 )
 from .records import WindWavesTnrL3Bqt1mnRecords
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 from astropy.units import Unit
 from ..utils import _read_sweep_length, _merge_dtype, _read_block
 from ..const import (
@@ -36,7 +36,17 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
 
     _iter_sweep_class = WindWavesL2HighResSweeps
 
-    _dataset_keys = ["VSPAL", "VZPAL", "TSPAL", "TZPAL"]
+    _multiple_mode = None
+    # _dataset_keys = ["VSPAL", "VZPAL", "TSPAL", "TZPAL"]
+    _dataset_keys = [
+        "VS",
+        "VSP",
+        "VZ",
+        "TS",
+        "TSP",
+        "TZ",
+        "MODE",
+    ]  # , "MODE", "FREQ_DEGEN"]
 
     def __init__(
         self,
@@ -135,21 +145,32 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                     # Get indices of S and SP channels
                     index_s = (2 * np.arange(nspal / 2)).astype(int)
                     index_sp = (2 * np.arange(nspal / 2) + 1).astype(int)
+                    # index_s = (2 * np.arange(npalf / 1)).astype(int)
+                    # index_sp = (2 * np.arange(npalf / 1) + 1).astype(int)
 
                     # Reshape Vspal, Tspal, Vzpal, Tzpal into 2D arrays
-                    Vspal = Vspal.reshape((nspal, npalf))
-                    Vzpal = Vzpal.reshape((nzpal, npalf))
-                    Tspal = Tspal.reshape((nspal, npalf))
-                    Tzpal = Tzpal.reshape((nzpal, npalf))
+                    # Vspal = Vspal.reshape((npalf, int(nspal//1)))
+                    # Vzpal = Vzpal.reshape((npalf, nzpal))
+                    # Tspal = Tspal.reshape((npalf, int(nspal/1)))
+                    # Tzpal = Tzpal.reshape((npalf, nzpal))
+                    # Vspal = Vspal.reshape((int(nspal//2), npalf*2))
+                    # Vzpal = Vzpal.reshape((nzpal, npalf))
+                    # Tspal = Tspal.reshape((int(nspal/2), npalf*2))
+                    # Tzpal = Tzpal.reshape((nzpal, npalf))
+                    Vspal = Vspal.reshape((npalf, nspal)).T
+                    Vzpal = Vzpal.reshape((npalf, nzpal)).T
+                    Tspal = Tspal.reshape((npalf, nspal)).T
+                    Tzpal = Tzpal.reshape((npalf, nzpal)).T
 
                     data_i = {
-                        "FREQ": np.tile(freq, (nzpal, 1)),
+                        "FREQ": np.tile(freq, (nzpal, 1)).T,
+                        "VST": Vspal,
                         "VS": np.take(Vspal, index_s, axis=0),
                         "VSP": np.take(Vspal, index_sp, axis=0),
-                        "VZ": Vzpal,
+                        "VZ": Vzpal,  # .T works
                         "TS": np.take(Tspal, index_s, axis=0),
                         "TSP": np.take(Tspal, index_sp, axis=0),
-                        "TZ": Tzpal,
+                        "TZ": Tzpal,  # .T works
                     }
 
                 else:
@@ -172,84 +193,389 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
         return data
 
     @property
+    def multiple_mode(self):
+        if self._multiple_mode is None:
+            modes = []
+            for s in self.sweeps:
+                modes.append(s.header["MODE"])
+            if 2 in modes and 3 in modes:
+                self._multiple_mode = 1
+            else:
+                self._multiple_mode = 0
+        return self._multiple_mode
+
+    @property
     def max_sweep_length(self):
         if self._max_sweep_length is None:
             self._max_sweep_length = np.max(
-                [len(f.flatten()) for f in self.frequencies]
+                [len(f.flatten()) for f in self.tmp_frequencies]
             )
         return self._max_sweep_length
 
-    def as_xarray(self):
-        import xarray
-
-        fields = self.fields
-        units = self.units
-
-        freq_arr = np.full((self._nsweep, self.max_sweep_length), np.nan)
-
-        for i in range(self._nsweep):
-            f = self.frequencies[i].value.flatten()
-            freq_arr[i, : len(f)] = f
-            freq_arr[i, len(f) :] = f[-1]
-
-        freq_index = range(self.max_sweep_length)
-
-        datasets = {}
-        for dataset_key, dataset_unit in zip(fields, units):
-            data_arr = np.full((self._nsweep, self.max_sweep_length), np.nan)
-            for i, sweep in enumerate(self.sweeps):
-                d = sweep.data[dataset_key].flatten()
-                data_arr[i, : len(d)] = d
-
-            datasets[dataset_key] = xarray.DataArray(
-                data=data_arr.T,
-                name=dataset_key,
-                coords={
-                    "freq_index": freq_index,
-                    "time": self.times.to_datetime(),
-                    "frequency": (["time", "freq_index"], freq_arr, {"units": "kHz"}),
-                },
-                attrs={"units": dataset_unit},
-                dims=("freq_index", "time"),
-            )
-
-        return xarray.Dataset(data_vars=datasets)
-
     @property
     def times(self):
-        import numpy
 
         if self._times is None:
             times = Time([], format="jd")
             for s in self.sweeps:
                 header = s.header
-                times = numpy.append(
-                    times,
-                    Time(
-                        f"{header['CALEND_DATE_YEAR']}-{header['CALEND_DATE_MONTH']}-"
-                        f"{header['CALEND_DATE_DAY']} {header['CALEND_DATE_HOUR']}:"
-                        f"{header['CALEND_DATE_MINUTE']}:{header['CALEND_DATE_SECOND']}"
-                    ),
+                nzpalf = header["NZPALF"]
+                nspalf = header["NSPALF"]
+                if nspalf != nzpalf * 2:
+                    print(
+                        "WARNING: Wind data has unexpected dimensions, process might fail."
+                    )
+                sweep_degen_level = 0
+                sweep_freqs = s.data["FREQ"][:, 0]  # Freqs in the current sweep
+                sweep_freq_list = np.sort(list(set(sweep_freqs)))  # unique freqs
+                index = []
+                for i in range(len(sweep_freq_list)):
+                    index = np.append(
+                        index, int(np.count_nonzero(sweep_freqs == sweep_freq_list[i]))
+                    )
+                sweep_degen_level = int(
+                    np.max(index)
+                )  # max number of time a freq is measured
+                sub_sweep_len = int(
+                    header["NPALIF"] // sweep_degen_level
+                )  # time between measuring the same freq
+
+                dts = s.data["TS"]
+                dtsp = s.data["TSP"]
+                dtz = s.data["TZ"]
+                dtmin = np.min(
+                    [dts.T.flatten(), dtsp.T.flatten(), dtz.T.flatten()], axis=0
                 )
+
+                tsweep = Time(
+                    f"{header['CALEND_DATE_YEAR']}-{header['CALEND_DATE_MONTH']}-"
+                    f"{header['CALEND_DATE_DAY']} {header['CALEND_DATE_HOUR']}:"
+                    f"{header['CALEND_DATE_MINUTE']}:{header['CALEND_DATE_SECOND']}"
+                )
+
+                for i in range(sweep_degen_level):
+                    loc = i * sub_sweep_len * nzpalf
+                    times = np.append(
+                        times,
+                        tsweep + TimeDelta(dtmin[loc : loc + nzpalf], format="sec"),
+                    )
             self._times = Time(times)
         return self._times
+
+    @property
+    def tmp_times(self):
+        import numpy
+
+        # if self._times is None:
+        tmp_times = Time([], format="jd")
+        for s in self.sweeps:
+            header = s.header
+            tmp_times = numpy.append(
+                tmp_times,
+                Time(
+                    f"{header['CALEND_DATE_YEAR']}-{header['CALEND_DATE_MONTH']}-"
+                    f"{header['CALEND_DATE_DAY']} {header['CALEND_DATE_HOUR']}:"
+                    f"{header['CALEND_DATE_MINUTE']}:{header['CALEND_DATE_SECOND']}"
+                ),
+            )
+        tmp_times = Time(tmp_times)
+        return tmp_times
 
     @property
     def frequencies(self):
         if self._frequencies is None:
             self._frequencies = []
+            raw_frequencies = []
             for s in self.sweeps:
-                self._frequencies.append(s.data["FREQ"] * Unit("kHz"))
+                # self._frequencies.append(s.data["FREQ"] * Unit("kHz"))
+                raw_frequencies.append(s.data["FREQ"] * Unit("kHz"))
+                # for f in s.data["FREQ"][0,:]:
+                for f in s.data["FREQ"][:, 0]:
+                    if f not in self._frequencies:
+                        self._frequencies.append(f)
+            # self._frequencies = np.sort(list(set(self._frequencies)) * Unit("kHz")) # return the unique freq list
+            # self._frequencies = list([list(np.sort(list(self._frequencies))) * Unit("kHz")]) # return the unique freq list
+            self._frequencies = np.array(
+                list(np.sort(list(self._frequencies)))
+            )  # * Unit("kHz")[...] # return the unique freq list
+            # print(raw_frequencies,self._frequencies)
+            # print(type(raw_frequencies),type(self._frequencies))
+            """
+            for i in range(len(self._frequencies)):
+                self._frequencies[i] *= Unit("kHz")
+            """
+            self._frequencies = [self._frequencies[...] * Unit("kHz")]
         return self._frequencies
+
+    @property
+    def tmp_frequencies(self):
+        raw_frequencies = []
+        for s in self.sweeps:
+            raw_frequencies.append(s.data["FREQ"] * Unit("kHz"))
+        return raw_frequencies
 
     @property
     def dataset_keys(self):
         return self._dataset_keys
 
-    def quicklook(self, file_png=None, keys: List[str] = ["VSPAL", "VZPAL"], **kwargs):
+    def as_xarray(self, replicate=True, tmp_out=False):
+        import xarray
+
+        fields = self.fields
+        units = self.units
+        fields.append("MODE")
+        units.append("#")
+        if False:
+            fields.append("FREQ_DEGEN")
+            units.append("#")
+            fields.append("FREQ")
+            units.append("kHz")
+
+        if tmp_out:
+            freq_arr = np.full((self._nsweep, self.max_sweep_length), np.nan)
+
+            for i in range(self._nsweep):
+                f = self.tmp_frequencies[i].value.flatten()
+                freq_arr[i, : len(f)] = f
+                freq_arr[i, len(f) :] = f[-1]
+
+            freq_index = range(self.max_sweep_length)
+
+            datasets = {}
+            for dataset_key, dataset_unit in zip(fields, units):
+                data_arr = np.full((self._nsweep, self.max_sweep_length), np.nan)
+                if dataset_key != "MODE":
+                    for i, sweep in enumerate(self.sweeps):
+                        d = sweep.data[dataset_key].flatten()
+                        data_arr[i, : len(d)] = d
+                else:
+                    for i, sweep in enumerate(self.sweeps):
+                        d = sweep.header["MODE"]
+                        data_arr[i, :] = d
+
+                datasets[dataset_key] = xarray.DataArray(
+                    data=data_arr.T,
+                    name=dataset_key,
+                    coords={
+                        "freq_index": freq_index,
+                        "time": self.tmp_times.to_datetime(),
+                        "frequency": (
+                            ["time", "freq_index"],
+                            freq_arr,
+                            {"units": "kHz"},
+                        ),
+                    },
+                    attrs={"units": dataset_unit},
+                    dims=("freq_index", "time"),
+                )
+
+            return xarray.Dataset(data_vars=datasets)
+
+        else:
+            # Final data reorganisation from tmp to final
+            data_reorg = {}
+            for dataset_key in fields:
+                # print(len(self.frequencies), np.shape(self.frequencies),np.shape(self.frequencies)[0])
+                data_reorg[dataset_key] = np.full(
+                    (np.shape(self.frequencies[0])[0], len(self.times)), np.nan
+                )
+            sweep_loc = 0
+            freq_ref = self.frequencies[0].value[...]
+            # delta_times = []
+            for s in self.sweeps:
+                header = s.header
+                nzpalf = header["NZPALF"]
+                nspalf = header["NSPALF"]
+                if nspalf != nzpalf * 2:
+                    print(
+                        "WARNING: Wind data has unexpected dimensions, process might fail."
+                    )
+                sweep_degen_level = 0
+                sweep_freqs = s.data["FREQ"][:, 0]  # Freqs in the current sweep
+                sweep_freq_list = np.sort(list(set(sweep_freqs)))  # unique freqs
+                freq_degen = []
+                freq_loc = {}
+                for i in range(len(sweep_freq_list)):
+                    freq_degen = np.append(
+                        freq_degen,
+                        int(np.count_nonzero(sweep_freqs == sweep_freq_list[i])),
+                    )
+                    freq_loc[sweep_freq_list[i]] = np.where(
+                        sweep_freqs == sweep_freq_list[i]
+                    )
+                sweep_degen_level = int(
+                    np.max(freq_degen)
+                )  # max number of time a freq is measured
+                sub_sweep_len = int(
+                    header["NPALIF"] // sweep_degen_level
+                )  # time between measuring the same freq
+                sweep_degen_frac = np.array(sweep_degen_level // freq_degen, dtype=int)
+
+                dts = s.data["TS"]
+                dtsp = s.data["TSP"]
+                dtz = s.data["TZ"]
+                dtmin = np.min(
+                    [dts.T.flatten(), dtsp.T.flatten(), dtz.T.flatten()], axis=0
+                )
+                t_out_min = sweep_loc
+                t_out_max = sweep_loc + sweep_degen_level * nzpalf
+                delta_times = []
+
+                for i in range(sweep_degen_level):
+                    loc = i * sub_sweep_len * nzpalf
+                    delta_times = np.append(
+                        delta_times,
+                        dtmin[loc : loc + nzpalf],
+                    )
+                for i in range(len(sweep_freq_list)):
+                    freq_out = int(np.where(sweep_freq_list[i] == freq_ref)[0])
+                    freq = sweep_freq_list[i]
+                    # freq_in = freq_loc[freq]
+                    freq_in = []
+                    # for j in range(sweep_degen_frac[i]):
+                    #     freq_in = np.append(freq_in, freq_loc[freq])
+                    # freq_in = np.tile(freq_loc[freq], (1, sweep_degen_frac[i])).flatten()  # First try
+                    time_out_final = np.arange(t_out_min, t_out_max, 1)
+                    if False:
+                        # Technically works, probably faster
+                        # but copy each subsweep as is and thus not the last measurement (full nzpalf vector is used)
+                        freq_in = (
+                            np.tile(
+                                freq_loc[freq], (sweep_degen_frac[i], 1)
+                            ).T.flatten(),
+                        )
+                        time_out = time_out_final
+                    else:
+                        freq_in = freq_loc[freq]
+                        nztab = np.tile(
+                            np.arange(0, nzpalf, 1), (len(freq_loc[freq][0]), 1)
+                        )
+                        time_out = np.tile(
+                            np.array(freq_loc[freq]) // sub_sweep_len * nzpalf,
+                            (nzpalf, 1),
+                        ).T
+                        time_out = (time_out + nztab + t_out_min).flatten()
+                    if replicate:
+                        # replace all NaN by the last previous value
+                        nan_mask = np.in1d(time_out_final, time_out)
+                        nan_loc = time_out_final[np.where(~nan_mask)[0]]
+                        replace_loc = np.copy(nan_loc)
+                        for k in range(len(replace_loc)):
+                            replace_loc[k] = (
+                                time_out.searchsorted(replace_loc[k], "right") - 1
+                            )
+                        if sweep_loc == 0:
+                            replace_loc = replace_loc[np.where(replace_loc > 0)]
+                            nan_loc = nan_loc[np.where(replace_loc > 0)]
+                        replace_loc = np.append(time_out, [np.min(time_out_final) - 1])[
+                            replace_loc
+                        ]
+                    # print(sweep_loc, sweep_degen_level, nzpalf, len(freq_loc[freq][0]), sweep_degen_frac[i])
+                    # print("    ",len(s.data["VS"][:, freq_in].flatten()))
+                    # print("    ",freq_loc[freq])
+                    # print("    ",time_out)
+                    for dataset_key in fields:
+                        if dataset_key == "MODE":
+                            d = np.full(np.shape(dts), np.nan)
+                            d[:] = int(header["MODE"])
+                        elif dataset_key == "FREQ_DEGEN":
+                            d = np.full(np.shape(dts), np.nan)
+                            # d[:,:] = np.tile(sweep_degen_frac, (sweep_degen_level * nzpalf, 1))
+                            d[:] = int(sweep_degen_frac[i])
+                        elif dataset_key == "FREQ":
+                            d = np.full(np.shape(dts), np.nan)
+                            d[:] = freq
+                        else:
+                            d = s.data[dataset_key]
+                        # data_reorg[dataset_key][freq_out, t_out_min:t_out_max] = d[:, freq_in].flatten()
+                        data_reorg[dataset_key][freq_out, time_out] = d[
+                            :, freq_in
+                        ].T.flatten()
+                        if replicate:
+                            # replace all NaN by the last previous value
+                            data_reorg[dataset_key][freq_out, nan_loc] = data_reorg[
+                                dataset_key
+                            ][freq_out, replace_loc]
+                        if dataset_key in ["TS", "TSP", "TZ"]:
+                            data_reorg[dataset_key][
+                                freq_out, time_out_final
+                            ] -= delta_times
+                sweep_loc += sweep_degen_level * nzpalf
+
+            datasets = {}
+            for dataset_key, dataset_unit in zip(fields, units):
+                data_arr = data_reorg[dataset_key]
+
+                datasets[dataset_key] = xarray.DataArray(
+                    data=data_arr,
+                    name=dataset_key,
+                    coords=[
+                        ("frequency", self.frequencies[0].value, {"units": "kHz"}),
+                        ("time", self.times.to_datetime(), {}),
+                    ],
+                    attrs={"units": dataset_unit},
+                    dims=("frequency", "time"),
+                )
+            return xarray.Dataset(data_vars=datasets)
+
+    def quicklook(
+        self,
+        file_png=None,
+        keys: Union[List[str], None] = None,
+        yscale: str = "log",
+        **kwargs,
+    ):
+        if keys is None:
+            keys = self.dataset_keys
+        default_keys = self.dataset_keys
+        selection = None
+        if self.multiple_mode == 2:
+            selection = {
+                "select_key": ["MODE", "MODE"],
+                "select_value": [3, 2],
+                "select_dim": ["freq_index", "freq_index"],
+                "select_how": ["all", "all"],
+            }
+        if self.multiple_mode == 1:
+            selection = {
+                "select_key": ["MODE", "MODE"],
+                "select_value": [3, 2],
+                "select_dim": ["frequency", "frequency"],
+                "select_how": ["all", "all"],
+            }
+        if self.multiple_mode == 3:
+            selection = {
+                "select_key": [],
+                "select_value": [],
+                "select_dim": [],
+                "select_how": [],
+            }
+            for freq in self.frequencies:
+                selection["select_key"] = np.append(selection["select_key"], "FREQ")
+                selection["select_value"] = np.append(
+                    selection["select_value"], freq.value
+                )
+                selection["select_dim"] = np.append(selection["select_dim"], "time")
+                selection["select_how"] = np.append(selection["select_how"], "all")
+        db_tab = np.array([True, True, True, False, False, False, False, False])
+        vmin_tab = np.array([-50, -50, -50, 0, 0, 0, 0, 0])
+        vmax_tab = np.array([50, 50, 50, 170, 170, 170, 4, 10])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(tab[np.where(key == np.array(default_keys))][0])
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
         self._quicklook(
             file_png=file_png,
             keys=keys,
+            iter_on_selection=selection,
+            yscale=yscale,
+            y="frequency",
+            ylim=[15, 1200],
             **kwargs,
         )
 
