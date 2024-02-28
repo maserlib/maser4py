@@ -145,18 +145,8 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                     # Get indices of S and SP channels
                     index_s = (2 * np.arange(nspal / 2)).astype(int)
                     index_sp = (2 * np.arange(nspal / 2) + 1).astype(int)
-                    # index_s = (2 * np.arange(npalf / 1)).astype(int)
-                    # index_sp = (2 * np.arange(npalf / 1) + 1).astype(int)
 
                     # Reshape Vspal, Tspal, Vzpal, Tzpal into 2D arrays
-                    # Vspal = Vspal.reshape((npalf, int(nspal//1)))
-                    # Vzpal = Vzpal.reshape((npalf, nzpal))
-                    # Tspal = Tspal.reshape((npalf, int(nspal/1)))
-                    # Tzpal = Tzpal.reshape((npalf, nzpal))
-                    # Vspal = Vspal.reshape((int(nspal//2), npalf*2))
-                    # Vzpal = Vzpal.reshape((nzpal, npalf))
-                    # Tspal = Tspal.reshape((int(nspal/2), npalf*2))
-                    # Tzpal = Tzpal.reshape((nzpal, npalf))
                     Vspal = Vspal.reshape((npalf, nspal)).T
                     Vzpal = Vzpal.reshape((npalf, nzpal)).T
                     Tspal = Tspal.reshape((npalf, nspal)).T
@@ -266,7 +256,6 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
     def tmp_times(self):
         import numpy
 
-        # if self._times is None:
         tmp_times = Time([], format="jd")
         for s in self.sweeps:
             header = s.header
@@ -287,23 +276,13 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
             self._frequencies = []
             raw_frequencies = []
             for s in self.sweeps:
-                # self._frequencies.append(s.data["FREQ"] * Unit("kHz"))
                 raw_frequencies.append(s.data["FREQ"] * Unit("kHz"))
-                # for f in s.data["FREQ"][0,:]:
                 for f in s.data["FREQ"][:, 0]:
                     if f not in self._frequencies:
                         self._frequencies.append(f)
-            # self._frequencies = np.sort(list(set(self._frequencies)) * Unit("kHz")) # return the unique freq list
-            # self._frequencies = list([list(np.sort(list(self._frequencies))) * Unit("kHz")]) # return the unique freq list
             self._frequencies = np.array(
                 list(np.sort(list(self._frequencies)))
             )  # * Unit("kHz")[...] # return the unique freq list
-            # print(raw_frequencies,self._frequencies)
-            # print(type(raw_frequencies),type(self._frequencies))
-            """
-            for i in range(len(self._frequencies)):
-                self._frequencies[i] *= Unit("kHz")
-            """
             self._frequencies = [self._frequencies[...] * Unit("kHz")]
         return self._frequencies
 
@@ -375,13 +354,11 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
             # Final data reorganisation from tmp to final
             data_reorg = {}
             for dataset_key in fields:
-                # print(len(self.frequencies), np.shape(self.frequencies),np.shape(self.frequencies)[0])
                 data_reorg[dataset_key] = np.full(
                     (np.shape(self.frequencies[0])[0], len(self.times)), np.nan
                 )
             sweep_loc = 0
             freq_ref = self.frequencies[0].value[...]
-            # delta_times = []
             for s in self.sweeps:
                 header = s.header
                 nzpalf = header["NZPALF"]
@@ -430,11 +407,7 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                 for i in range(len(sweep_freq_list)):
                     freq_out = int(np.where(sweep_freq_list[i] == freq_ref)[0])
                     freq = sweep_freq_list[i]
-                    # freq_in = freq_loc[freq]
                     freq_in = []
-                    # for j in range(sweep_degen_frac[i]):
-                    #     freq_in = np.append(freq_in, freq_loc[freq])
-                    # freq_in = np.tile(freq_loc[freq], (1, sweep_degen_frac[i])).flatten()  # First try
                     time_out_final = np.arange(t_out_min, t_out_max, 1)
                     if False:
                         # Technically works, probably faster
@@ -470,24 +443,18 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                         replace_loc = np.append(time_out, [np.min(time_out_final) - 1])[
                             replace_loc
                         ]
-                    # print(sweep_loc, sweep_degen_level, nzpalf, len(freq_loc[freq][0]), sweep_degen_frac[i])
-                    # print("    ",len(s.data["VS"][:, freq_in].flatten()))
-                    # print("    ",freq_loc[freq])
-                    # print("    ",time_out)
                     for dataset_key in fields:
                         if dataset_key == "MODE":
                             d = np.full(np.shape(dts), np.nan)
                             d[:] = int(header["MODE"])
                         elif dataset_key == "FREQ_DEGEN":
                             d = np.full(np.shape(dts), np.nan)
-                            # d[:,:] = np.tile(sweep_degen_frac, (sweep_degen_level * nzpalf, 1))
                             d[:] = int(sweep_degen_frac[i])
                         elif dataset_key == "FREQ":
                             d = np.full(np.shape(dts), np.nan)
                             d[:] = freq
                         else:
                             d = s.data[dataset_key]
-                        # data_reorg[dataset_key][freq_out, t_out_min:t_out_max] = d[:, freq_in].flatten()
                         data_reorg[dataset_key][freq_out, time_out] = d[
                             :, freq_in
                         ].T.flatten()
@@ -529,13 +496,6 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
             keys = self.dataset_keys
         default_keys = self.dataset_keys
         selection = None
-        if self.multiple_mode == 2:
-            selection = {
-                "select_key": ["MODE", "MODE"],
-                "select_value": [3, 2],
-                "select_dim": ["freq_index", "freq_index"],
-                "select_how": ["all", "all"],
-            }
         if self.multiple_mode == 1:
             selection = {
                 "select_key": ["MODE", "MODE"],
@@ -543,20 +503,6 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                 "select_dim": ["frequency", "frequency"],
                 "select_how": ["all", "all"],
             }
-        if self.multiple_mode == 3:
-            selection = {
-                "select_key": [],
-                "select_value": [],
-                "select_dim": [],
-                "select_how": [],
-            }
-            for freq in self.frequencies:
-                selection["select_key"] = np.append(selection["select_key"], "FREQ")
-                selection["select_value"] = np.append(
-                    selection["select_value"], freq.value
-                )
-                selection["select_dim"] = np.append(selection["select_dim"], "time")
-                selection["select_how"] = np.append(selection["select_how"], "all")
         db_tab = np.array([True, True, True, False, False, False, False, False])
         vmin_tab = np.array([-50, -50, -50, 0, 0, 0, 0, 0])
         vmax_tab = np.array([50, 50, 50, 170, 170, 170, 4, 10])
