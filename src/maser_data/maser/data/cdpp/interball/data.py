@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
 from maser.data.base import BinData
+from maser.data.base.mixins import FixedFrequencies
 from .sweeps import InterballAuroralPolradRspSweeps
 from .records import InterballAuroralPolradRspRecords
 from pathlib import Path
 import numpy
 
-from typing import Union
+from typing import Union, List
 from astropy.time import Time
 from ..const import CCSDS_CDS_FIELDS
 from ..utils import _read_sweep_length, _read_block
 
 
-class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rspn2"):
+class InterballAuroralPolradRspBinData(
+    BinData, FixedFrequencies, dataset="cdpp_int_aur_polrad_rspn2"
+):
     """Class for `cdpp_int_aur_polrad_rspn2` binary data"""
 
     _iter_sweep_class = InterballAuroralPolradRspSweeps
     _iter_record_class = InterballAuroralPolradRspRecords
+
+    _dataset_keys = ["EX", "EY", "EZ"]
 
     def __init__(
         self,
@@ -23,11 +28,15 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
         dataset: Union[None, str] = "__auto__",
         access_mode: str = "sweeps",
     ):
-        super().__init__(
+        BinData.__init__(
+            self,
             filepath,
             dataset,
             access_mode,
         )
+        FixedFrequencies.__init__(self)
+        self.fields = ["EX", "EY", "EZ"]
+        self.units = ["W m^-2 Hz^-1", "W m^-2 Hz^-1", "W m^-2 Hz^-1"]
         self._data = None
         self._nsweep = None
         self._data = self._loader()
@@ -113,9 +122,9 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
     @property
     def times(self):
         if self._times is None:
-            times = []
+            times = Time([], format="jd")
             for sweep in self.sweeps:
-                times.append(sweep.time)
+                times = numpy.append(times, sweep.time)
             self._times = Time(times)
         return self._times
 
@@ -125,6 +134,10 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
             sweep = next(self.sweeps)
             self._frequencies = sweep.frequencies
         return self._frequencies
+
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
 
     @staticmethod
     def decode_session_name(session_name):
@@ -157,20 +170,62 @@ class InterballAuroralPolradRspBinData(BinData, dataset="cdpp_int_aur_polrad_rsp
 
         return tmp
 
+    def epncore(self):
+        md = BinData.epncore(self)
+        md["obs_id"] = self.filepath.name
+        md["instrument_host_name"] = "interball-auroral"
+        md["instrument_name"] = "polrad"
+        md["target_name"] = "Earth"
+        md["target_class"] = "planet"
+        md["target_region"] = "magnetosphere"
+        md["feature_name"] = "AKR#Auroral Kilometric Radiation"
+
+        md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = min(self.frequencies.to("Hz").value)
+        md["spectral_range_max"] = max(self.frequencies.to("Hz").value)
+
+        md["publisher"] = "CNES/CDPP"
+
+        return md
+
     def as_xarray(self):
         import xarray
 
         datasets = {}
-        for dataset_key in ["EX", "EY", "EZ"]:
+        for dataset_key, dataset_unit in zip(self.fields, self.units):
+            data = numpy.zeros((len(self.times), len(self.frequencies)))
+            for i, sweep in enumerate(self.sweeps):
+                data[i, :] = sweep.data[dataset_key]
             datasets[dataset_key] = xarray.DataArray(
-                data=numpy.array([item.data[dataset_key] for item in self.sweeps]).T,
+                data=data.T,
                 name=dataset_key,
                 coords=[
-                    ("frequency", self.frequencies, {"units": "kHz"}),
+                    (
+                        "frequency",
+                        self.frequencies.value,
+                        {"units": self.frequencies.unit},
+                    ),
                     ("time", self.times.to_datetime()),
                 ],
                 dims=("frequency", "time"),
-                attrs={"units": "W m^-2 Hz^-1"},
+                attrs={"units": dataset_unit},
             )
 
-        return datasets
+        return xarray.Dataset(data_vars=datasets)
+
+    def quicklook(self, file_png=None, keys: List[str] = ["EX", "EY", "EZ"], **kwargs):
+
+        default_keys = ["EX", "EY", "EZ"]
+        if "db" not in kwargs:
+            db = []
+            for key in keys:
+                if key in default_keys:
+                    db.append(True)
+            kwargs["db"] = db
+
+        self._quicklook(
+            keys=keys,
+            file_png=file_png,
+            **kwargs,
+        )

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from typing import Iterable, Union, Sequence
+from typing import Iterable, Union, Sequence, List
 
-from maser.data.base import BinData, Sweeps, Records, VariableFrequencies
+from maser.data.base import Data, BinData, Sweeps, Records, VariableFrequencies
 from maser.data.base.sweeps import Sweep
 from .kronos import fi_freq, ti_datetime, t97_datetime
 
@@ -9,6 +9,7 @@ from astropy.units import Unit
 from astropy.time import Time
 import numpy
 import json
+import math
 from pathlib import Path
 
 
@@ -56,6 +57,8 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
     _iter_sweep_class = CoRpwsHfrKronosDataSweeps
     _iter_record_class = CoRpwsHfrKronosDataRecords
 
+    _dataset_keys = None
+
     def __init__(
         self,
         filepath: Path,
@@ -66,6 +69,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         VariableFrequencies.__init__(self)
         self.__format = None
         self.level = self.dataset[19:]
+        self._levels = None
         self._data = self.read_data_binary()
         self._nrecord = len(self._data)
         self._nsweep = len(self.sweep_masks)
@@ -90,18 +94,43 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
                 self.__format["vars"][key] = (dtype, unit)
         return self.__format
 
+    def _filepath_to_level(self, level):
+        switcher = {
+            "n1": self.filepath.parents[1] / "n1" / f"R{self._ydh}",
+            "n2": self.filepath.parents[1] / "n2" / f"P{self._ydh}",
+        }
+        if level not in switcher.keys():
+            raise ValueError()
+        return switcher[level]
+
+    def levels(self, level):
+        if self._levels is None:
+            self._levels = {level: Data(self._filepath_to_level(level))}
+        elif level not in self._levels.keys():
+            self._levels[level] = Data(self._filepath_to_level(level))
+
+        return self._levels[level]
+
     def read_data_binary(self):
-        file_size = self.file_size
-        rec_size = self._format["length"]
+        file_size = self.file_size.value
+
+        # size of 1 record of the structure:
         dtype = [
             (key, self._format["vars"][key][0]) for key in self._format["vars"].keys()
         ]
+        rec_size = numpy.dtype(dtype).itemsize
+
+        # assert rec_size == self._format["length"]
+
         if file_size % rec_size != 0:
             raise IOError("Corrupted file...")
 
-        data = numpy.fromfile(
+        # opening binary data file:
+        # (swapping byte order if CPU is big endian)
+        data = numpy.memmap(
             self.filepath,
             dtype=dtype,
+            mode="r",
         )
         return data
 
@@ -109,13 +138,18 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
     def sweep_masks(self):
         if self._sweep_masks is None:
             if self.level == "n1":
-                tvar = "ti"
+                # If level=n1: time is encoded in 'ti' (time index)
+                tvar = self._data["ti"]
+            elif self.level == "n2":
+                # If level=n1: time is provided in 't97' (days of 1997; t97=1 <=> 1997-01-01)
+                tvar = self._data["t97"]
             else:
-                tvar = "t97"
+                # for upper data levels, use n2['t97'] and filter with data['num'] indices
+                tvar = (self.levels("n2")._data["t97"])[self._data["num"]]
             sweep_masks = []
-            t_values = numpy.unique(self._data[tvar])
+            t_values = numpy.unique(tvar)
             for t in t_values:
-                sweep_masks.append(self._data[tvar] == t)
+                sweep_masks.append(tvar == t)
             self._sweep_masks = sweep_masks
         return self._sweep_masks
 
@@ -145,14 +179,15 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         elif self.access_mode == "records":
             return self._nrecord
         else:
-            return self.file_size
+            return int(self.file_size.value)
 
-    def _decode_times(self) -> Sequence:  # pragma: no cover
+    def _decode_times(self) -> Time:  # pragma: no cover
         pass
 
     @property
     def times(self):
         if self._times is None:
+            self._times = Time([], format="jd")
             times = self._decode_times()
             if self.access_mode == "records":
                 self._times = times
@@ -175,9 +210,41 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
                 ]
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        if self._dataset_keys is None:
+            self._dataset_keys = self.fields  # self._format["vars"].keys()
+            # N1: ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"]
+            # N2: ["autoX", "autoZ", "crossR", "crossI"]
+            # N3e:["s", "v", "th", "ph", "snx", "snz"]
+            # N3d:["s", "q", "u", "v", "snx", "snz"]
+        return self._dataset_keys
+
+    def epncore(self):
+        md = BinData.epncore(self)
+        md["obs_id"] = f"K{self._ydh}"
+        md["instrument_host_name"] = "cassini-orbiter"
+        md["instrument_name"] = "rpws"
+        md["target_name"] = "Saturn"
+        md["target_class"] = "planet"
+        md["target_region"] = "magnetosphere"
+        md["feature_name"] = "SKR#Saturn Auroral Kilometric Radiation"
+
+        md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = min(
+            [min(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+        md["spectral_range_max"] = max(
+            [max(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+
+        md["publisher"] = "PADC"
+        return md
+
 
 class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"):
-    def _decode_times(self):
+    def _decode_times(self) -> Time:
         return Time(
             list(
                 map(
@@ -191,10 +258,147 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
     def _decode_frequencies(self):
         return numpy.array(list(map(fi_freq, self._data["fi"]))) * Unit("kHz")
 
+    def quicklook(
+        self,
+        file_png=None,
+        keys: List[str] = ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"],
+        **kwargs,
+    ):
+        default_keys = ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"]
+        vmin_tab = numpy.array([0, 128, 0, 128, -255, -255])
+        vmax_tab = numpy.array([127, 191, 127, 191, 255, 255])
+        for qkey, tab in zip(["vmin", "vmax"], [vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(
+            keys=keys,
+            file_png=file_png,
+            # vmax=[127, 191, 127, 191, 255, 255],
+            # vmin=[0, 128, 0, 128, -255, -255],
+            **kwargs,
+        )
+
 
 class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"):
-    def _decode_times(self):
+    def _decode_times(self) -> Time:
         return Time(list(map(t97_datetime, self._data["t97"])))
 
     def _decode_frequencies(self):
         return self._data["f"] * Unit("kHz")
+
+    def quicklook(
+        self,
+        file_png=None,
+        keys: List[str] = ["autoX", "autoZ", "crossR", "crossI"],
+        yscale: str = "log",
+        **kwargs,
+    ):
+        default_keys = ["autoX", "autoZ", "crossR", "crossI"]
+        db_tab = numpy.array([True, True, False, False])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(
+            keys=keys,
+            # db=[True, True, False, False],
+            file_png=file_png,
+            y="frequency",
+            yscale=yscale,
+            **kwargs,
+        )
+
+
+class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n3"):
+    def _decode_times(self) -> Time:
+        return Time(
+            list(map(t97_datetime, (self.levels("n2")._data["t97"])[self._data["num"]]))
+        )
+
+    def _decode_frequencies(self):
+        return (self.levels("n2")._data["f"])[self._data["num"]] * Unit("kHz")
+
+
+class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3e"):
+    def quicklook(
+        self,
+        file_png=None,
+        keys: List[str] = ["s", "v", "th", "ph", "snx", "snz"],
+        yscale: str = "log",
+        **kwargs,
+    ):
+        default_keys = ["s", "v", "th", "ph", "snx", "snz"]
+        db_tab = numpy.array([True, False, False, False, True, True])
+        vmin_tab = numpy.array([-160, -1, 0, -math.pi, 10, 10])
+        vmax_tab = numpy.array([-120, 1, math.pi, math.pi, 40, 40])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(
+            keys=keys,
+            # db=[True, False, False, False, True, True],
+            file_png=file_png,
+            y="frequency",
+            yscale=yscale,
+            # vmin=[-160, -1, 0, -math.pi, 10, 10],
+            # vmax=[-120, 1, math.pi, math.pi, 40, 40],
+            **kwargs,
+        )
+
+
+class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3d"):
+    def quicklook(
+        self,
+        file_png=None,
+        keys: List[str] = ["s", "q", "u", "v", "snx", "snz"],
+        yscale: str = "log",
+        **kwargs,
+    ):
+        default_keys = ["s", "q", "u", "v", "snx", "snz"]
+        db_tab = numpy.array([True, False, False, False, True, True])
+        vmin_tab = numpy.array([-160, -1, -1, -1, 10, 10])
+        vmax_tab = numpy.array([-120, 1, 1, 1, 40, 40])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(
+            keys=keys,
+            # db=[True, False, False, False, True, True],
+            file_png=file_png,
+            y="frequency",
+            yscale=yscale,
+            # vmin=[-160, -1, -1, -1, 10, 10],
+            # vmax=[-120, 1, 1, 1, 40, 40],
+            **kwargs,
+        )

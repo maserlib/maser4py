@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Union
 from maser.data.base import Data
 from .utils import PDSLabelDict
+from astropy.units import Quantity, Unit
 
 
 class Pds3Data(Data, dataset="pds3"):
@@ -85,4 +86,16 @@ class Pds3Data(Data, dataset="pds3"):
 
 
 class Pds3DataTable(Pds3Data, dataset="pds3-table"):
-    pass
+    @property
+    def file_size(self) -> Quantity:
+        import os
+
+        return os.path.getsize(self.pointers["TABLE"]["file_name"]) * Unit("byte")
+
+
+class Pds3DataTimeSeries(Pds3Data, dataset="pds3-time-series"):
+    @property
+    def file_size(self) -> Quantity:
+        import os
+
+        return os.path.getsize(self.pointers["TIME_SERIES"]["file_name"]) * Unit("byte")

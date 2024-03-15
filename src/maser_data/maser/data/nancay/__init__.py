@@ -25,13 +25,16 @@ distributed by CDN (Centre de Données de Nançay).
      - CDN
      - `srn_nenufar_bst`
      - FITS
-     - `nenupy`
 
 """
 
 from .nda import (  # noqa: F401
-    SrnNdaRoutineJupEdrCdfData,
+    OrnNdaRoutineJupEdrCdfData,
+    OrnNdaRoutineSunEdrCdfData,
+    OrnNdaNewRoutineJupEdrFitsData,
+    OrnNdaNewRoutineSunEdrFitsData,
+    OrnNdaNewRoutineTransitEdrFitsData,
 )
 from .nenufar import (  # noqa: F401
-    NenufarBstFitsData,
+    OrnNenufarBstFitsData,
 )

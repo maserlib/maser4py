@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-from typing import Union, Dict
+from typing import Union, Dict, List
 from ...pds import Pds3Data
 from ...pds.utils import PDSDataTableObject
 from maser.data.base.sweeps import Sweeps, Sweep
@@ -67,6 +67,18 @@ class MexMMarsis3RdrAisV1Data(
 ):
     _iter_sweep_class = MexMMarsis3RdrAisV1Sweeps
 
+    _initial_dataset_keys = [
+        "SPECTRAL_DENSITY",
+    ]
+
+    _dataset_keys = [
+        "SPECTRAL_DENSITY",
+        "SPECTRAL_DENSITY_AVG",
+        "SPECTRAL_DENSITY_MED",
+        "SPECTRAL_DENSITY_MAX",
+        "SPECTRAL_DENSITY_MIN",
+    ]
+
     def __init__(
         self,
         filepath: Path,
@@ -110,6 +122,7 @@ class MexMMarsis3RdrAisV1Data(
     @property
     def times(self):
         if self._times is None:
+            _times = Time([], format="jd")
             if self._load_data is False:
                 self.load_data()
             _times = [
@@ -141,21 +154,129 @@ class MexMMarsis3RdrAisV1Data(
                 ]
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 
-        datasets = xarray.DataArray(
-            data=numpy.array([item.table for item in self.sweeps]).T,
-            name=self.dataset,
-            coords=[
-                ("frequency", self.frequencies, {"units": "kHz"}),
-                ("time", self.times.to_datetime()),
-            ],
-            dims=("frequency", "time"),
-            attrs={"units": "W m^-2 Hz^-1"},
-        )
+        datasets = {}
 
-        return datasets
+        for dataset_key in self._initial_dataset_keys:
+            data = numpy.array([item.data for item in self.sweeps])  # .T,
+            data_avg = numpy.mean(data, axis=2)
+            data_med = numpy.median(data, axis=2)
+            data_min = numpy.min(data, axis=2)
+            data_max = numpy.max(data, axis=2)
+            for i in range(5):  # data.shape[2] + 4):
+                if i == 0:
+                    dkey = dataset_key + "_AVG"
+                    datatab = data_avg.T
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                    ]
+                    dims = ("frequency", "time")
+                elif i == 1:
+                    dkey = dataset_key + "_MED"
+                    datatab = data_med.T
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                    ]
+                    dims = ("frequency", "time")
+                elif i == 2:
+                    dkey = dataset_key + "_MIN"
+                    datatab = data_min.T
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                    ]
+                    dims = ("frequency", "time")
+                elif i == 3:
+                    dkey = dataset_key + "_MAX"
+                    datatab = data_max.T
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                    ]
+                    dims = ("frequency", "time")
+                else:
+                    """
+                    if i < 13:
+                        dkey = dataset_key + "_0" + str(i - 3)
+                    else:
+                        dkey = dataset_key + "_" + str(i - 3)  # Should be <= 80
+                    datatab = data[:, :, i - 4]
+                    """
+                    dkey = dataset_key
+                    datatab = numpy.transpose(data, (1, 0, 2))
+                    coords = [
+                        ("frequency", self.frequencies, {"units": "kHz"}),
+                        ("time", self.times.to_datetime()),
+                        ("sample", range(data.shape[2])),
+                    ]
+                    dims = ("frequency", "time", "sample")
+                datasets[dkey] = xarray.DataArray(
+                    # data=numpy.array([item.table for item in self.sweeps]).T,
+                    # data=numpy.array([item.data for item in self.sweeps]).T, #[0],
+                    data=datatab,
+                    name=self.dataset,
+                    coords=coords,
+                    dims=dims,
+                    attrs={"units": "W m^-2 Hz^-1"},
+                )
+                if i == 0:
+                    dataset = xarray.Dataset(data_vars=datasets)
+                else:
+                    dataset[dkey] = datasets[dkey]
+
+        return dataset  # xarray.Dataset(data_vars=datasets)
+
+    def quicklook(
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = [
+            "SPECTRAL_DENSITY_AVG",
+            "SPECTRAL_DENSITY_MED",
+            "SPECTRAL_DENSITY_MIN",
+            "SPECTRAL_DENSITY_MAX",
+            # "SPECTRAL_DENSITY_56",
+        ],
+        # db: List[bool] = [True, True, True, True],
+        **kwargs,
+    ):
+        import numpy
+
+        default_keys = [
+            "SPECTRAL_DENSITY_AVG",
+            "SPECTRAL_DENSITY_MED",
+            "SPECTRAL_DENSITY_MIN",
+            "SPECTRAL_DENSITY_MAX",
+            # "SPECTRAL_DENSITY_56",
+        ]
+        forbidden_keys = ["SPECTRAL_DENSITY"]
+        db_tab = numpy.array([True, True, True, True])
+        for qkey, tab in zip(["db"], [db_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in forbidden_keys:
+                        raise KeyError("Key: " + str(key) + " is not supported.")
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(
+            keys=keys,
+            file_png=file_png,
+            # db=db,
+            **kwargs,
+        )
 
 
 class MexMMarsis3RdrAisExt1V1Data(

@@ -11,7 +11,7 @@ class SrnNdaRoutineEdrSweep(Sweep):
         self._frequencies = frequencies
 
 
-class SrnNdaRoutineEdrSweeps(Sweeps):
+class OrnNdaRoutineEdrSweeps(Sweeps):
     @property
     def generator(self):
         for time, rr, ll, status, rr_t_offset in zip(
@@ -28,3 +28,7 @@ class SrnNdaRoutineEdrSweeps(Sweeps):
                 self.file["Frequency"][...]
                 * Unit(self.file["Frequency"].attrs["UNITS"]),
             )
+
+
+class OrnNdaNewRoutineEdrSweeps(Sweeps):
+    pass

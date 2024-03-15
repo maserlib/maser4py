@@ -89,17 +89,17 @@
         "i1"
       ],
       "units": [
-        "",
-        "",
+        null,
+        null,
         "Day of year 1997",
         "kHz",
         "ms",
         "kHz",
         "V^2/Hz",
         "V^2/Hz",
-        "%",
-        "%",
-        ""
+        null,
+        null,
+        null
       ],
       "length": 45
     },
@@ -193,6 +193,18 @@
         "<f4",
         "<f4"
       ],
+      "units": [
+        null,
+        null,
+        "V**2/Hz",
+        null,
+        null,
+        null,
+        "rad",
+        "rad",
+        null,
+        null
+      ],
       "length": 38
     },
     "description": "Cassini/RPWS/HFR Kronos Level 3d (Known source position 2 antenna GP)",
@@ -214,6 +226,18 @@
         "<f4",
         "<f4",
         "<f4"
+      ],
+      "units": [
+        null,
+        null,
+        "V**2/Hz",
+        null,
+        null,
+        null,
+        "rad",
+        "rad",
+        null,
+        null
       ],
       "length": 38
     },

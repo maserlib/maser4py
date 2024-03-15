@@ -20,8 +20,12 @@ from .ecallisto import (  # noqa: F401
     ECallistoFitsData,
 )
 from .nancay import (  # noqa: F401
-    SrnNdaRoutineJupEdrCdfData,
-    NenufarBstFitsData,
+    OrnNdaRoutineJupEdrCdfData,
+    OrnNdaRoutineSunEdrCdfData,
+    OrnNdaNewRoutineJupEdrFitsData,
+    OrnNdaNewRoutineSunEdrFitsData,
+    OrnNdaNewRoutineTransitEdrFitsData,
+    OrnNenufarBstFitsData,
 )
 from .padc import (  # noqa: F401
     JnoWavLesiaL3aV02Data,
@@ -31,6 +35,14 @@ from .padc import (  # noqa: F401
     StbWavLfrL3DfCdf,
     StaWavHfrL3DfCdf,
     StbWavHfrL3DfCdf,
+    WindWavesRad1L3DfV01Data,
+    WindWavesRad1L3DfV02Data,
+    SorbetCdfData,
+    RpwLfrSurvBp1,
+    RpwHfrSurv,
+    RpwTnrSurv,
+    RpwTnrL3Cdf,
+    RpwHfrL3Cdf,
 )
 
 from .pds import (  # noqa: F401
@@ -38,16 +50,16 @@ from .pds import (  # noqa: F401
     Vg1JPra3RdrLowband6secV1Data,
     Vg1JPra4SummBrowse48secV1Data,
     Vg1SPra3RdrLowband6secV1Data,
+    Vg2JPra4SummBrowse48secV1Data,
     Vg2NPra2RdrHighrate60msV1Data,
     Vg2NPra3RdrLowband6secV1Data,
+    Vg2NPra4SummBrowse48secV1Data,
+    Vg2UPra3RdrLowband6secV1Data,
+    Vg2UPra4SummBrowse48secV1Data,
     CoVEJSSSRpws2RefdrWbrFullV1Data,
     CoVEJSSSRpws3RdrLrFullV1Data,
 )
 from .psa import MexMMarsis3RdrAisExt4V1Data  # noqa: F401
-from .rpw import (  # noqa: F401
-    RpwLfrSurvBp1,
-)
-
 
 if __name__ == "__main__":
     data = Data(filepath=Path("toto.txt"), dataset="cdf")

@@ -59,3 +59,18 @@ class VgPra3RdrLowband6secV1Sweeps(Sweeps):
             header["status_word"] = data[0]
 
             yield VgPra3RdrLowband6secV1Sweep(header, data[1:] / 100 * Unit("dB"))
+
+
+class VgPra4SummBrowse48secV1Sweeps(Sweeps):
+    @property
+    def generator(self):
+        for i, t in enumerate(self.data_reference.times):
+            header = {
+                "frequencies": self.data_reference.frequencies,
+                "time": t,
+            }
+            data = {
+                "L": self.data_reference.table["LH_DATA"][i],
+                "R": self.data_reference.table["RH_DATA"][i],
+            }
+            yield Sweep(header, data)

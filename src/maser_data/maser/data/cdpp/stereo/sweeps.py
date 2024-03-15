@@ -50,25 +50,34 @@ class StereoWavesLfrL2HighResSweep(Sweep):
             sweep_data[irec * 16 : (irec + 1) * 16]["crossi"] = sub_sweep_data.get(
                 "crossi", None
             )
-
         super(StereoWavesLfrL2HighResSweep, self).__init__(sweep_header, sweep_data)
 
 
 class StereoWavesLfrL2HighResSweeps(Sweeps):
     @property
     def generator(self):
-        prev_receiver_code = 99
-        sweep_head = []
-        sweep_data = []
-        for header, data in self.data_reference._data:
-            if header["RECEIVER_CODE"] < prev_receiver_code:
-                if prev_receiver_code != 99:
-                    s = StereoWavesLfrL2HighResSweep(sweep_head, sweep_data)
-                    for i in range(s.header["nconfig"]):
-                        yield Sweep(s.header, s.data[:, i].reshape(s.header["nfreq"]))
+
+        for rec in self.data_reference._data:
+
+            # "RECEIVER_CODE" values are successively 11, 12 and 13, and repeating.
+            rec_code = rec["hdr"]["RECEIVER_CODE"]
+
+            # init at the first of the 3 elements
+            if rec_code == 11:
                 sweep_head = []
                 sweep_data = []
-            sweep_head.append(header)
-            sweep_data.append(data)
-            prev_receiver_code = header["RECEIVER_CODE"]
-        yield StereoWavesLfrL2HighResSweep(sweep_head, sweep_data)
+
+            # accumulate header and data
+            sweep_head.append(rec["hdr"])
+            sweep_data.append(rec["dat"])
+
+            # dispatch at the last of the 3 elements
+            if rec_code == 13:
+
+                # create a StereoWavesLfrL2HighResSweep object,
+                # accumulated from the 3 last sweeps ("RECEIVER_CODE" = 11, 12 and 13)
+                s = StereoWavesLfrL2HighResSweep(sweep_head, sweep_data)
+
+                # yield as many elements as in "nconfig"
+                for i in range(s.header["nconfig"]):
+                    yield Sweep(s.header, s.data[:, i].reshape(s.header["nfreq"]))

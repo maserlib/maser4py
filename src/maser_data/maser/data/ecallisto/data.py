@@ -4,6 +4,8 @@
 
 from maser.data.base import FitsData
 
+from typing import Union, List
+from pathlib import Path
 from astropy.time import Time
 from astropy.units import Unit
 
@@ -11,9 +13,12 @@ from astropy.units import Unit
 class ECallistoFitsData(FitsData, dataset="ecallisto"):
     """Class for `ecallisto` FITS files."""
 
+    _dataset_keys = ["Flux Density"]
+
     @property
     def times(self):
         if self._times is None:
+            self._times = Time([], format="jd")
             with self.open(self.filepath) as f:
                 self._times = f[1].data["TIME"][0] * Unit("s") + Time(
                     f"{f[0].header['DATE-OBS'].replace('/', '-')} {f[0].header['TIME-OBS']}"
@@ -27,10 +32,15 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
                 self._frequencies = f[1].data["FREQUENCY"][0] * Unit("MHz")
         return self._frequencies
 
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
     def as_xarray(self):
         import xarray
 
-        dataset = xarray.DataArray(
+        dataset = {}
+        dataset["Flux Density"] = xarray.DataArray(
             data=self.file[0].data,
             name="Flux Density",
             coords=[
@@ -39,10 +49,22 @@ class ECallistoFitsData(FitsData, dataset="ecallisto"):
             ],
             dims=("frequency", "time"),
             attrs={
-                "unit": "digits",
+                "units": "digits",
                 "title": self.file[0].header["CONTENT"],
                 "instrument": self.file[0].header["INSTRUME"].strip(),
                 "target": self.file[0].header["OBJECT"].strip(),
             },
         )
-        return dataset
+        return xarray.Dataset(data_vars=dataset)
+
+    def quicklook(
+        self,
+        file_png: Union[str, Path, None] = None,
+        keys: List[str] = ["Flux Density"],
+        **kwargs,
+    ):
+        self._quicklook(
+            keys=keys,
+            file_png=file_png,
+            **kwargs,
+        )

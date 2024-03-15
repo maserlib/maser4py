@@ -21,16 +21,19 @@ class VikingV4nE5BinData(RecordsOnly, BinData, dataset="cdpp_viking_v4n_e5"):
 
     @property
     def times(self):
+        import numpy
+
         if self._times is None:
-            times = []
+            times = Time([], format="jd")
             _load_data, self._load_data = self._load_data, False
             for header, _ in self.sweeps:
-                times.append(
+                times = numpy.append(
+                    times,
                     Time(
                         f"{header[0]['CALEND_DATE_YEAR']}-{header[0]['CALEND_DATE_MONTH']}-"
                         f"{header[0]['CALEND_DATE_DAY']} {header[0]['CALEND_DATE_HOUR']}:"
                         f"{header[0]['CALEND_DATE_MINUTE']}:{header[0]['CALEND_DATE_SECOND']}"
-                    )
+                    ),
                 )
             self._load_data = _load_data
             self._times = Time(times)

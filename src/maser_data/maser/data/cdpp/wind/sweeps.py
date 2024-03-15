@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
 from maser.data.base import Sweeps
+from maser.data.base.sweeps import Sweep
 from ..const import (
     CCSDS_CDS_FIELDS,
     CALDATE_FIELDS,
     ORBIT_FIELDS,
 )
 from ..utils import _read_sweep_length, _merge_dtype, _read_block
+from astropy.units import Unit
+
+
+class WindWavesL2Sweep(Sweep):
+    def __init__(self, header, data):
+        super().__init__(header, data)
+        self._frequencies = data["FREQ"] * Unit("kHz")
 
 
 class WindWavesL260sSweeps(Sweeps):
@@ -87,19 +95,19 @@ class WindWavesL260sSweeps(Sweeps):
                 break
 
             else:
-                yield header_i, data_i
+                yield Sweep(header_i, data_i)
                 nsweep += 1
 
 
 class WindWaves60sSweeps(Sweeps):
     @property
     def generator(self):
-        for sweep in self.data_reference._data:
-            yield sweep
+        for s in self.data_reference._data:
+            yield WindWavesL2Sweep(s["hdr"], s["dat"])
 
 
 class WindWavesL2HighResSweeps(Sweeps):
     @property
     def generator(self):
-        for sweep in self.data_reference._data:
-            yield sweep
+        for s in self.data_reference._data:
+            yield WindWavesL2Sweep(s["hdr"], s["dat"])

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 
 import numpy
@@ -33,6 +33,8 @@ class StereoWavesL2HighResBinData(
 
     _iter_sweep_class = StereoWavesLfrL2HighResSweeps
 
+    _dataset_keys = ["agc1", "agc2", "auto1", "auto2", "crossr", "crossi"]
+
     def __init__(
         self,
         filepath: Path,
@@ -44,8 +46,8 @@ class StereoWavesL2HighResBinData(
         self._data = None
         self._nsweep = None
         self._data = self._loader()
-        self.fields = ["AGC1", "AGC2", "AUTO1", "AUTO2", "CROSS_R", "CROSS_I"]
-        self.units = ["", "", "", "", "", ""]
+        self.fields = ["agc1", "agc2", "auto1", "auto2", "crossr", "crossi"]
+        self.units = ["ADU", "ADU", "ADU", "ADU", "ADU", "ADU"]
 
     def _read_array_block(self, n1, n2):
         import struct
@@ -177,23 +179,25 @@ class StereoWavesL2HighResBinData(
                 print("End of file reached")
                 break
             else:
-                data.append((header_i, data_i))
+                data.append({"hdr": header_i, "dat": data_i})
             nsweep += 1
 
-        self._nsweep = nsweep
+        self._nsweep = nsweep // 3
         return data
 
     @property
     def times(self):
         if self._times is None:
-            times = []
-            for header, _ in self.sweeps:
-                times.append(
+            times = Time([], format="jd")
+            for s in self.sweeps:
+                k0 = list(s.header.keys())[0]
+                times = numpy.append(
+                    times,
                     Time(
-                        f"{header['CALEND_DATE_YEAR']}-{header['CALEND_DATE_MONTH']}-"
-                        f"{header['CALEND_DATE_DAY']} {header['CALEND_DATE_HOUR']}:"
-                        f"{header['CALEND_DATE_MINUTE']}:{header['CALEND_DATE_SECOND']}"
-                    )
+                        f"{s.header[k0]['CALEND_DATE_YEAR']}-{s.header[k0]['CALEND_DATE_MONTH']}-"
+                        f"{s.header[k0]['CALEND_DATE_DAY']} {s.header[k0]['CALEND_DATE_HOUR']}:"
+                        f"{s.header[k0]['CALEND_DATE_MINUTE']}:{s.header[k0]['CALEND_DATE_SECOND']}"
+                    ),
                 )
             self._times = Time(times)
         return self._times
@@ -205,6 +209,58 @@ class StereoWavesL2HighResBinData(
             for s in self.sweeps:
                 self._frequencies.append(s.data["freq"] * Unit("kHz"))
         return self._frequencies
+
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
+    def quicklook(self, file_png=None, keys: Union[List[str], None] = None, **kwargs):
+        if keys is None:
+            keys = self.fields
+        default_keys = self.fields
+        db_tab = numpy.array([True, True, True, True, False, False])
+        vmin_tab = numpy.array([-150, -160, -150, -160, -1, -1])
+        vmax_tab = numpy.array([-120, -130, -120, -130, 1, 1])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+
+        self._quicklook(
+            keys=keys,
+            file_png=file_png,
+            y="frequency",
+            # vmin=[-150, -160, -150, -160, -1, -1],
+            # vmax=[-120, -130, -120, -130, 1, 1],
+            # db=[True, True, True, True, False, False],
+            **kwargs,
+        )
+
+    def epncore(self):
+        md = BinData.epncore(self)
+        md["obs_id"] = self.filepath.name
+        # md["instrument_host_name"] = "interball-auroral"
+        # md["instrument_name"] = "polrad"
+        # md["target_name"] = "Earth"
+        # md["target_class"] = "planet"
+        # md["target_region"] = "magnetosphere"
+        # md["feature_name"] = "AKR#Auroral Kilometric Radiation"
+
+        # md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = numpy.min(self.frequencies * Unit("Hz"))
+        md["spectral_range_max"] = numpy.max(self.frequencies * Unit("Hz"))
+
+        # md["publisher"] = "CNES/CDPP"
+
+        return md
 
 
 class StereoAWavesL2HighResLfrBinData(

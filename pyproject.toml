@@ -1,15 +1,15 @@
 [tool.poetry]
 name = "maser4py"
-version = "0.15.3"
+version = "0.16.1"
 description = "maser4py offers tools to handle low frequency radioastronomy data"
-authors = ["Baptiste CECCONI <baptiste.cecconi@obspm.fr>", "Xavier BONNIN <xavier.bonnin@obspm.fr>", "Sonny LION <sonny.lion@obspm.fr>", "Alan Loh <alan.loh@obspm.fr>", "Quynh Nhu Nguyen <quynh-nhu.nguyen@obspm.fr>"]
+authors = ["Baptiste CECCONI <baptiste.cecconi@obspm.fr>", "Xavier BONNIN <xavier.bonnin@obspm.fr>", "Alan Loh <alan.loh@obspm.fr>", "Lucas Grosset <lucas.grosset@obspm.fr>", "Sonny LION <sonny.lion@obspm.fr>", "Quynh Nhu Nguyen <quynh-nhu.nguyen@obspm.fr>"]
 readme = "README.md"
 # be careful to format the license correctly so that Zenodo can use it as metadata
 # valid licenses are listed here : https://zenodo.org/api/licenses/
 license = "GPL-3.0"
 homepage = "https://pypi.org/project/maser4py"
 repository = "https://github.com/maserlib/maser4py"
-keywords = ["maser4py", "data science", "radioastronomy"]
+keywords = ["maser", "data science", "radioastronomy"]
 
 # handle namespace with poetry
 packages = [
@@ -31,10 +31,10 @@ maser = 'maser.script:main'
 python = ">=3.8,<4"
 jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
-spacepy = {version = "^0.4.0", optional = true}
-maser-data = {version = "^0.3.0", optional = true}
-maser-plot = {version = "^0.2.0", optional = true}
-maser-tools = {version = "^0.1.0", optional = true}
+spacepy = {version = ">=0.4,<1.0", optional = true}
+maser-data = {version = ">=0.4.0,<1.0", optional = true}
+maser-plot = {version = ">=0.3.0,<1.0", optional = true}
+maser-tools = {version = ">=0.1.0,<1.0", optional = true}
 
 [tool.poetry.extras]
 jupyter = ["jupyter", "jupytext"]
@@ -85,7 +85,6 @@ exclude = '''
 [tool.pytest.ini_options]
 markers = [
     "test_data_required: mark tests that require downloading test data",
-    "nenupy_required: mark tests that require the nenupy package",
     "spacepy_required: mark tests that require the spacepy package",
 ]
 
@@ -99,7 +98,6 @@ cell_metadata_filter = "-all"
 module = [
     "astropy.*",
     "spacepy.*",
-    "nenupy.*",
     "matplotlib.*",
     "numpy.*",
     "xarray.*",

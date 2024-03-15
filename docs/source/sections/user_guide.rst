@@ -8,7 +8,7 @@ Quickstart
 ~~~~~~~~~~~
 
 The `Data` class is a wrapper around several classes that allow you to read data supported by maser4py from various
-formats, including CDF, FITS, and some custom binary formats. By default, the class will try to automagically detect
+formats, including CDF, FITS, and some custom binary formats. By default, the class will try to automatically detect
 the format of the file and use the appropriate class to read the data.
 
 .. code:: python
@@ -22,51 +22,80 @@ the format of the file and use the appropriate class to read the data.
 Dataset Reference
 ~~~~~~~~~~~~~~~~~~
 
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Facility          | Instrument | Dataset                                                                | Format | Data Center |
-+===================+============+========================================================================+========+=============+
-| Birr              | E-Callisto | :ref:`ecallisto <ecallisto>`                                           | FITS   | E-Callisto  |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Interball-Auroral | POLRAD     | :ref:`cdpp_int_aur_polrad_rspn2 <cdpp_int_aur_polrad_rspn2>`           | Binary | CDPP        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Juno              | Waves      | :ref:`jno_wav_cdr_lesia <jno_wav_cdr_lesia>`                           | CDF    | PADC        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`       | PDS3   | PSA         |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT1-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`  | PDS3   | PSA         |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT2-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`  | PDS3   | PSA         |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT3-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`  | PDS3   | PSA         |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`  | PDS3   | PSA         |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT5-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`  | PDS3   | PSA         |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT6-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`  | PDS3   | PSA         |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| NDA               | Routine    | :ref:`srn_nda_routine_jup_edr <Msrn_nda_routine_jup_edr>`              | CDF    | CDN         |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| STEREO-A          | Waves      | :ref:`sta_l3_wav_lfr <sta_l3_wav_lfr>`                                 | CDF    | PADC        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| STEREO-A          | Waves      | :ref:`sta_l3_wav_hfr <sta_l3_wav_hfr>`                                 | CDF    | PADC        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| STEREO-B          | Waves      | :ref:`stb_l3_wav_lfr <stb_l3_wav_lfr>`                                 | CDF    | PADC        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| STEREO-B          | Waves      | :ref:`stb_l3_wav_hfr <stb_l3_wav_hfr>`                                 | CDF    | PADC        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Wind              | Waves      | :ref:`cdpp_wi_wa_rad1_l2_60s_v1 <cdpp_wi_wa_rad1_l2_60s_v1>`           | Binary | CDPP        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Wind              | Waves      | :ref:`cdpp_wi_wa_rad1_l2_60s_v2 <cdpp_wi_wa_rad1_l2_60s_v2>`           | Binary | CDPP        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Wind              | Waves      | :ref:`cdpp_wi_wa_rad2_l2_60s_v1 <cdpp_wi_wa_rad2_l2_60s_v1>`           | Binary | CDPP        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Wind              | Waves      | :ref:`cdpp_wi_wa_rad2_l2_60s_v2 <cdpp_wi_wa_rad2_l2_60s_v2>`           | Binary | CDPP        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Wind              | Waves      | :ref:`cdpp_wi_wa_tnr_l2_60s_v1 <cdpp_wi_wa_tnr_l2_60s_v1>`             | Binary | CDPP        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
-| Wind              | Waves      | :ref:`cdpp_wi_wa_tnr_l2_60s_v2 <cdpp_wi_wa_tnr_l2_60s_v2>`             | Binary | CDPP        |
-+-------------------+------------+------------------------------------------------------------------------+--------+-------------+
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Facility          | Instrument | Dataset                                                                      | Format | Data Center |
++===================+============+==============================================================================+========+=============+
+| Birr              | E-Callisto | :ref:`ecallisto <ecallisto>`                                                 | FITS   | E-Callisto  |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| ExPRES            |            | expres_<observer>_<target>                                                   | CDF    | PADC        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Interball-Auroral | POLRAD     | :ref:`cdpp_int_aur_polrad_rspn2 <cdpp_int_aur_polrad_rspn2>`                 | Binary | CDPP        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Juno              | Waves      | :ref:`jno_wav_cdr_lesia <jno_wav_cdr_lesia>`                                 | CDF    | PADC        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`             | PDS3   | PSA         |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT1-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`        | PDS3   | PSA         |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT2-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`        | PDS3   | PSA         |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT3-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`        | PDS3   | PSA         |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`        | PDS3   | PSA         |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT5-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`        | PDS3   | PSA         |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT6-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`        | PDS3   | PSA         |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| NDA               | Routine    | :ref:`srn_nda_routine_jup_edr <Msrn_nda_routine_jup_edr>`                    | CDF    | CDN         |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| STEREO-A          | Waves      | :ref:`sta_l3_wav_lfr <sta_l3_wav_lfr>`                                       | CDF    | PADC        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| STEREO-A          | Waves      | :ref:`sta_l3_wav_hfr <sta_l3_wav_hfr>`                                       | CDF    | PADC        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| STEREO-B          | Waves      | :ref:`stb_l3_wav_lfr <stb_l3_wav_lfr>`                                       | CDF    | PADC        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| STEREO-B          | Waves      | :ref:`stb_l3_wav_hfr <stb_l3_wav_hfr>`                                       | CDF    | PADC        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Voyager-1         | PRA        | :ref:`VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0 <VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0>` | PDS3   | PDS/PPI     |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Wind              | Waves      | :ref:`cdpp_wi_wa_rad1_l2_60s_v1 <cdpp_wi_wa_rad1_l2_60s_v1>`                 | Binary | CDPP        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Wind              | Waves      | :ref:`cdpp_wi_wa_rad1_l2_60s_v2 <cdpp_wi_wa_rad1_l2_60s_v2>`                 | Binary | CDPP        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Wind              | Waves      | :ref:`cdpp_wi_wa_rad2_l2_60s_v1 <cdpp_wi_wa_rad2_l2_60s_v1>`                 | Binary | CDPP        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Wind              | Waves      | :ref:`cdpp_wi_wa_rad2_l2_60s_v2 <cdpp_wi_wa_rad2_l2_60s_v2>`                 | Binary | CDPP        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Wind              | Waves      | :ref:`cdpp_wi_wa_tnr_l2_60s_v1 <cdpp_wi_wa_tnr_l2_60s_v1>`                   | Binary | CDPP        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+| Wind              | Waves      | :ref:`cdpp_wi_wa_tnr_l2_60s_v2 <cdpp_wi_wa_tnr_l2_60s_v2>`                   | Binary | CDPP        |
++-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
+
+ExPRES
+""""""""""""""""""""""""""""""
+
+`ExPRES <https://maser.lesia.obspm.fr/task-2-modeling-tools/expres/?lang=en>`_ (Exoplanetary and Planetary Radio
+Emission Simulator) simulations are stored in CDF files. They can be automatically read by `Data`.
+
+A specificity for the ExPRES dataset classes is the additional attribute `source`, which is dataset-dependent.
+It can either be specified as an argument (e.g., `Data('<expres_file.cdf>', source='Io NORTH')`) or as an attribute (see the following
+example). If set to `None` (by default), the 'extra' dimension is kept.
+
+.. code-block:: python
+
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   expres_data = Data('tests/data/maser/expres/expres_earth_jupiter_io_jrm09_lossc-wid1deg_3kev_20220801_v01.cdf')
+   expres_data.source = 'Io NORTH'
+   data = expres_data.as_xarray()
+   data['Theta'].plot()
+   plt.show()
+
+
+.. image:: figures/expres_example.png
+   :width: 500
+   :alt: expres example plot
 
 
 Interball-Auroral / POLRAD
@@ -238,7 +267,6 @@ Sub-collections from ESA/PSA archive: ``MEX-M-MARSIS-3-RDR-AIS-V1.0``, ``MEX-M-M
 Juno / Waves
 """"""""""""""""""""""""""""""
 
-
 .. _jno_wav_cdr_lesia:
 
 jno_wav_cdr_lesia
@@ -261,6 +289,31 @@ jno_wav_cdr_lesia
 .. image:: figures/jno_wav_cdr_lesia.png
    :width: 400
    :alt: jno_wav_cdr_lesia example plot
+
+
+Voyager / PRA
+""""""""""""""""""""""""""""""
+
+.. _VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0:
+
+VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0
+.................................
+
+* **Data Centre**: NASA/PDS/PPI
+
+.. code-block:: python
+
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data("tests/data/pds/VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1/T790306.LBL")
+   xd = data.as_xarray()
+   xd['L'].plot(vmin=40, vmax=70)
+   plt.title(f"{v.dataset}:{v.filepath.stem}")
+   plt.show()
+
+.. image:: figures/_vg1_j_pra_3_rdr_lowband_6sec_v1.png
+   :width: 400
+   :alt: _vg1_j_pra_3_rdr_lowband_6sec_v1 example plot
 
 
 E-Callisto
