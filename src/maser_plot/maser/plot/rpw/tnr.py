@@ -9,6 +9,7 @@ def plot_auto(
     sensor: str = "V1-V2",
     bands: list = ["A", "B", "C", "D"],
     cbar_ax=None,
+    interpol_gap=True,
     **kwargs
 ):
     from matplotlib import colors
@@ -18,15 +19,14 @@ def plot_auto(
     if cbar_ax is None:
         cbar_ax, kw = cbar.make_axes(ax)
 
-    auto = data_wrapper.as_xarray()["VOLTAGE_SPECTRAL_POWER"]
-
-    # keep only V1-V2 sensor
-    v1_v2_auto = auto.where(auto.sensor == sensor, drop=True)
+    auto = data_wrapper.as_xarray()[sensor]
+    if interpol_gap:
+        auto = auto.interpolate_na(dim="time")
 
     # determine min/max for the colorbar
     # use q5 and q95 for vmin and vmax to avoid outliers
-    positive_v1_v2_auto = v1_v2_auto.where(v1_v2_auto > 0)
-    vmin, vmax = positive_v1_v2_auto.quantile([0.05, 0.95])
+    positive_auto = auto.where(auto > 0)
+    vmin, vmax = positive_auto.quantile([0.05, 0.95])
 
     plot_kwargs = {
         "cmap": "plasma",
@@ -44,24 +44,17 @@ def plot_auto(
     meshes = []
 
     # group data by band and plot each channel
-    for band, data_array in v1_v2_auto.groupby("band"):
-        if band not in bands:
-            # skip bands not in the list
-            continue
+    mesh = auto.plot.pcolormesh(
+        ax=ax,
+        x="time",
+        y="frequency",
+        yscale="log",
+        add_colorbar=True,
+        **plot_kwargs,
+    )
 
-        for channel in data_wrapper.channel_labels:
-            # create a new mesh for each band/channel
-            mesh = data_array.sel(channel=channel).plot.pcolormesh(
-                ax=ax,
-                x="time",
-                y="frequency",
-                yscale="log",
-                add_colorbar=True,
-                **plot_kwargs,
-            )
-
-            # store the mesh for future use
-            meshes.append(mesh)
+    # store the mesh for future use
+    meshes.append(mesh)
 
     return {
         "ax": ax,
