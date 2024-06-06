@@ -10,10 +10,10 @@ from astropy.time import Time
 from astropy.units import Unit
 
 
-class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
-    """Class for `sorbet` CDF files."""
+class SorbetL1CdfData(CdfData, dataset="mmo_pwi_sorbet_l1_"):
+    """Class for `sorbet` L1 CDF files."""
 
-    _dataset_keys = ["sorbet_WPT_spectra"]
+    # _dataset_keys = ["sorbet_WPT_spectra"]
 
     @property
     def times(self):
@@ -62,11 +62,49 @@ class SorbetCdfData(CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
             )
         return xarray.Dataset(data_vars=datasets)
 
+
+class SorbetL1CdfTnr(SorbetL1CdfData, dataset="mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_"):
+    """Class for `sorbet` L1 CDF TNR files."""
+
+    _dataset_keys = ["sorbet_WPT_spectra"]
+
     def quicklook(
         self,
         file_png: Union[str, Path, None] = None,
         yscale: str = "log",
         keys: List[str] = ["sorbet_WPT_spectra"],
+        **kwargs,
+    ):
+        self._quicklook(
+            keys=keys,
+            file_png=file_png,
+            # landscape=landscape,
+            # db=[True,True],
+            yscale=yscale,
+            **kwargs,
+        )
+
+
+class SorbetL1CdfDbsc(
+    SorbetL1CdfData, dataset="mmo_pwi_sorbet_l1_bz-ex_complex-specdB-tnr"
+):
+    """Class for `sorbet` L1 CDF TNR-DBSC files."""
+
+    _dataset_keys = [
+        "sorbet_dbsc_spectra",
+        "Bz_Ex_cross_amplitude",
+        "Bz_Ex_cross_phase",
+    ]
+
+    def quicklook(
+        self,
+        file_png: Union[str, Path, None] = None,
+        yscale: str = "log",
+        keys: List[str] = [
+            "sorbet_dbsc_spectra",
+            "Bz_Ex_cross_amplitude",
+            "Bz_Ex_cross_phase",
+        ],
         **kwargs,
     ):
         self._quicklook(

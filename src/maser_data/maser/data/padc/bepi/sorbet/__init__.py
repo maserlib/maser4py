@@ -5,5 +5,6 @@ Classes for Sorbet datasets.
 """
 
 from .data import (  # noqa: F401
-    SorbetCdfData,
+    SorbetL1CdfTnr,
+    SorbetL1CdfDbsc,
 )

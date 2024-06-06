@@ -26,7 +26,10 @@ from .wind import (  # noqa: F401
     WindWavesRad1L3DfV02Data,
 )
 
-from .bepi import SorbetCdfData  # noqa: F401
+from .bepi import (  # noqa: F401
+    SorbetL1CdfTnr,
+    SorbetL1CdfDbsc,
+)
 
 from .solo import (  # noqa: F401
     RpwHfrSurv,
