@@ -8,7 +8,7 @@ license = "CeCILL"
 
 # handle namespace with poetry
 packages = [
-    { include = "maser" }
+    { include = "maser", from = "src" }
 ]
 
 [tool.poetry.dependencies]
@@ -28,3 +28,5 @@ all = ["jupyter", "jupytext", "spacepy"]
 [build-system]
 requires = ["poetry>=1.1.4", "setuptools"]
 build-backend = "poetry.core.masonry.api"
+# requires = ["setuptools", "setuptools-scm"]
+# build-backend = "setuptools.build_meta"
