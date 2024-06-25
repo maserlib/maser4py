@@ -151,17 +151,17 @@ class Data(BaseData, dataset="default"):
     @property
     def dataset_keys(self) -> list:
         """Generic method to get the keys for this dataset's quicklook."""
-        pass
+        return []
 
     @property
     def times(self) -> Time:
         """Generic method to get the time axis."""
-        pass
+        return Time([], format="jd")
 
     @property
     def delta_times(self) -> TimeDelta:
         """Generic method to get the difference to referential time."""
-        pass
+        return TimeDelta([], format="jd")
 
     @property
     def frequencies(self) -> Union[Quantity, Dict]:
@@ -174,11 +174,11 @@ class Data(BaseData, dataset="default"):
 
     def as_array(self) -> numpy.ndarray:
         """Generic method to get the data as a numpy.array."""
-        pass
+        return numpy.ndarray([])
 
     def as_xarray(self) -> xarray.Dataset:
         """Generic method to get the data as a xarray.Dataset object (an efficient "dict", filled with xarray.DataArray)"""
-        pass
+        return xarray.Dataset()
 
     def __enter__(self):
         if self.access_mode == "file":
