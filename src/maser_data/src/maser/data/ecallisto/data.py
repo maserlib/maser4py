@@ -10,7 +10,7 @@ from astropy.time import Time
 from astropy.units import Unit
 
 
-class ECallistoFitsData(FitsData, dataset="ecallisto"):
+class ECallistoFitsData(FitsData, dataset="ecallisto"):  # type: ignore
     """Class for `ecallisto` FITS files."""
 
     _dataset_keys = ["Flux Density"]

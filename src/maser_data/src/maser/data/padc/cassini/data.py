@@ -52,7 +52,7 @@ class CoRpwsHfrKronosDataRecords(Records):
             yield self.data_reference._data[i]
 
 
-class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kronos"):
+class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kronos"):  # type: ignore
 
     _iter_sweep_class = CoRpwsHfrKronosDataSweeps
     _iter_record_class = CoRpwsHfrKronosDataRecords
@@ -196,7 +196,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         return self._times
 
     def _decode_frequencies(self) -> Sequence:  # pragma: no cover
-        pass
+        return numpy.array([])  # pass
 
     @property
     def frequencies(self):
@@ -243,7 +243,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         return md
 
 
-class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"):
+class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"):  # type: ignore
     def _decode_times(self) -> Time:
         return Time(
             list(
@@ -287,7 +287,7 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
         )
 
 
-class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"):
+class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"):  # type: ignore
     def _decode_times(self) -> Time:
         return Time(list(map(t97_datetime, self._data["t97"])))
 
@@ -324,7 +324,7 @@ class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"
         )
 
 
-class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n3"):
+class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n3"):  # type: ignore
     def _decode_times(self) -> Time:
         return Time(
             list(map(t97_datetime, (self.levels("n2")._data["t97"])[self._data["num"]]))
@@ -334,7 +334,7 @@ class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n3"
         return (self.levels("n2")._data["f"])[self._data["num"]] * Unit("kHz")
 
 
-class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3e"):
+class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3e"):  # type: ignore
     def quicklook(
         self,
         file_png=None,
@@ -369,7 +369,7 @@ class CoRpwsHfrKronosN3eData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
         )
 
 
-class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3d"):
+class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3d"):  # type: ignore
     def quicklook(
         self,
         file_png=None,

@@ -64,7 +64,7 @@ class MexMMarsis3RdrAisV1Sweeps(Sweeps):
 class MexMMarsis3RdrAisV1Data(
     Pds3Data,
     dataset="MEX-M-MARSIS-3-RDR-AIS-V1.0",
-):
+):  # type: ignore
     _iter_sweep_class = MexMMarsis3RdrAisV1Sweeps
 
     _initial_dataset_keys = [
@@ -281,35 +281,35 @@ class MexMMarsis3RdrAisV1Data(
 
 class MexMMarsis3RdrAisExt1V1Data(
     MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT1-V1.0"
-):
+):  # type: ignore
     pass
 
 
 class MexMMarsis3RdrAisExt2V1Data(
     MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT2-V1.0"
-):
+):  # type: ignore
     pass
 
 
 class MexMMarsis3RdrAisExt3V1Data(
     MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT3-V1.0"
-):
+):  # type: ignore
     pass
 
 
 class MexMMarsis3RdrAisExt4V1Data(
     MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0"
-):
+):  # type: ignore
     pass
 
 
 class MexMMarsis3RdrAisExt5V1Data(
     MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT5-V1.0"
-):
+):  # type: ignore
     pass
 
 
 class MexMMarsis3RdrAisExt6V1Data(
     MexMMarsis3RdrAisV1Data, dataset="MEX-M-MARSIS-3-RDR-AIS-EXT6-V1.0"
-):
+):  # type: ignore
     pass

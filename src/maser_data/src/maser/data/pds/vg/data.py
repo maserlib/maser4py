@@ -18,7 +18,7 @@ class VgPra3RdrLowband6secV1Data(
     FixedFrequencies,
     Pds3DataTable,
     dataset="VGX-X-PRA-3-RDR-LOWBAND-6SEC-V1.0",
-):
+):  # type: ignore
     """Class for the Voyager 1 or 2 PRA Level 3 RDR LowBand
     6sec PDS3 dataset.
     """
@@ -207,7 +207,7 @@ class VgPra3RdrLowband6secV1Data(
 class Vg1JPra3RdrLowband6secV1Data(
     VgPra3RdrLowband6secV1Data,
     dataset="VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0",
-):
+):  # type: ignore
     """Class for the Voyager-1/PRA Jupiter Level 3 RDR LowBand 6sec PDS3 dataset.
 
     PDS3 DATASET-ID: `VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0`."""
@@ -218,7 +218,7 @@ class Vg1JPra3RdrLowband6secV1Data(
 class Vg2JPra3RdrLowband6secV1Data(
     VgPra3RdrLowband6secV1Data,
     dataset="VG2-J-PRA-3-RDR-LOWBAND-6SEC-V1.0",
-):
+):  # type: ignore
     """Class for the Voyager-2/PRA Jupiter Level 3 RDR LowBand 6sec PDS3 dataset.
 
     PDS3 DATASET-ID: `VG2-J-PRA-3-RDR-LOWBAND-6SEC-V1.0`."""
@@ -228,7 +228,7 @@ class Vg2JPra3RdrLowband6secV1Data(
 
 class Vg1SPra3RdrLowband6secV1Data(
     VgPra3RdrLowband6secV1Data, dataset="VG1-S-PRA-3-RDR-LOWBAND-6SEC-V1.0"
-):
+):  # type: ignore
     """Class for the Voyager-1/PRA Saturn Level 3 RDR LowBand 6sec PDS3 dataset.
 
     PDS3 DATASET-ID: `VG1-S-PRA-3-RDR-LOWBAND-6SEC-V1.0`."""
@@ -238,7 +238,7 @@ class Vg1SPra3RdrLowband6secV1Data(
 
 class Vg2SPra3RdrLowband6secV1Data(
     VgPra3RdrLowband6secV1Data, dataset="VG2-S-PRA-3-RDR-LOWBAND-6SEC-V1.0"
-):
+):  # type: ignore
     """Class for the Voyager-2/PRA Saturn Level 3 RDR LowBand 6sec PDS3 dataset.
 
     PDS3 DATASET-ID: `VG2-S-PRA-3-RDR-LOWBAND-6SEC-V1.0`."""
@@ -248,7 +248,7 @@ class Vg2SPra3RdrLowband6secV1Data(
 
 class Vg2NPra3RdrLowband6secV1Data(
     VgPra3RdrLowband6secV1Data, dataset="VG2-N-PRA-3-RDR-LOWBAND-6SEC-V1.0"
-):
+):  # type: ignore
     """Class for the Voyager-2/PRA Neptune Level 3 RDR LowBand 6sec PDS3 dataset.
 
     PDS3 DATASET-ID: `VG2-N-PRA-3-RDR-LOWBAND-6SEC-V1.0`."""
@@ -258,7 +258,7 @@ class Vg2NPra3RdrLowband6secV1Data(
 
 class Vg2UPra3RdrLowband6secV1Data(
     VgPra3RdrLowband6secV1Data, dataset="VG2-U-PRA-3-RDR-LOWBAND-6SEC-V1.0"
-):
+):  # type: ignore
     """Class for the Voyager-2/PRA Uranus Level 3 RDR LowBand 6sec PDS3 dataset.
 
     PDS3 DATASET-ID: `VG2-U-PRA-3-RDR-LOWBAND-6SEC-V1.0`."""
@@ -275,7 +275,7 @@ class VgPra4RSummBrowse48secV1Data(
     FixedFrequencies,
     Pds3DataTimeSeries,
     dataset="VGX-X-PRA-4-SUMM-BROWSE-48SEC-V1.0",
-):
+):  # type: ignore
     """Class for the Voyager 1 or 2 PRA Level 4 Summary Browse
     48sec PDS3 dataset.
     """
@@ -441,7 +441,7 @@ class VgPra4RSummBrowse48secV1Data(
 
 class Vg1JPra4SummBrowse48secV1Data(
     VgPra4RSummBrowse48secV1Data, dataset="VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1.0"
-):
+):  # type: ignore
     """Class for the Voyager-1/PRA Jupiter Level 4 Summary Browse
     48sec PDS3 dataset.
 
@@ -452,7 +452,7 @@ class Vg1JPra4SummBrowse48secV1Data(
 
 class Vg2JPra4SummBrowse48secV1Data(
     VgPra4RSummBrowse48secV1Data, dataset="VG2-J-PRA-4-SUMM-BROWSE-48SEC-V1.0"
-):
+):  # type: ignore
     """Class for the Voyager-2/PRA Jupiter Level 4 Summary Browse
     48sec PDS3 dataset.
 
@@ -463,7 +463,7 @@ class Vg2JPra4SummBrowse48secV1Data(
 
 class Vg2NPra4SummBrowse48secV1Data(
     VgPra4RSummBrowse48secV1Data, dataset="VG2-N-PRA-4-SUMM-BROWSE-48SEC-V1.0"
-):
+):  # type: ignore
     """Class for the Voyager-2/PRA Neptune Level 4 Summary Browse
     48sec PDS3 dataset.
 
@@ -474,7 +474,7 @@ class Vg2NPra4SummBrowse48secV1Data(
 
 class Vg2UPra4SummBrowse48secV1Data(
     VgPra4RSummBrowse48secV1Data, dataset="VG2-U-PRA-4-SUMM-BROWSE-48SEC-V1.0"
-):
+):  # type: ignore
     """Class for the Voyager-2/PRA Uranus Level 4 Summary Browse
     48sec PDS3 dataset.
 
@@ -490,5 +490,5 @@ class Vg2UPra4SummBrowse48secV1Data(
 
 class Vg2NPra2RdrHighrate60msV1Data(
     Pds3DataTable, dataset="VG2-N-PRA-2-RDR-HIGHRATE-60MS-V1.0"
-):
+):  # type: ignore
     pass

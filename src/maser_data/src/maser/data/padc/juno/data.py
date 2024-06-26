@@ -19,7 +19,7 @@ class JnoWavLesiaL3aV02Sweeps(Sweeps):
             )
 
 
-class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):
+class JnoWavLesiaL3aV02Data(CdfData, dataset="jno_wav_cdr_lesia"):  # type: ignore
     _iter_sweep_class = JnoWavLesiaL3aV02Sweeps
 
     _dataset_keys = [

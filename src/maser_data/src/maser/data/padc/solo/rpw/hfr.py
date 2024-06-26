@@ -117,7 +117,7 @@ class RpwHfrSurvSweeps(Sweeps):
             )
 
 
-class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):
+class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):  # type: ignore
     _iter_sweep_class = RpwHfrSurvSweeps
 
     _dataset_keys = [

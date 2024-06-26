@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+
+from typing import Union
+
+
 class Record:
     def __init__(self, header, data):
         self.header = header
@@ -23,7 +27,7 @@ class Records:
         for d in self.generator:
             yield d
 
-    def __call__(self, load_data: bool = None, *args, **kwargs):
+    def __call__(self, load_data: Union[bool, None] = None, *args, **kwargs):
         return self.generator
 
     @property

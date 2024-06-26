@@ -9,7 +9,7 @@ from astropy.time import Time
 from astropy.units import Unit
 
 
-class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
+class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):  # type: ignore
     """ORN NDA Routine Jupiter dataset"""
 
     _iter_sweep_class = OrnNdaRoutineEdrSweeps
@@ -78,7 +78,7 @@ class OrnNdaRoutineEdrCdfData(CdfData, dataset="orn_nda_routine_edr"):
 
 class OrnNdaRoutineJupEdrCdfData(
     OrnNdaRoutineEdrCdfData, dataset="orn_nda_routine_jup_edr"
-):
+):  # type: ignore
     """ORN NDA Routine Jupiter dataset"""
 
     pass
@@ -86,13 +86,13 @@ class OrnNdaRoutineJupEdrCdfData(
 
 class OrnNdaRoutineSunEdrCdfData(
     OrnNdaRoutineEdrCdfData, dataset="orn_nda_routine_sun_edr"
-):
+):  # type: ignore
     """ORN NDA Routine Sun dataset"""
 
     pass
 
 
-class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
+class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):  # type: ignore
     """ORN NDA NewRoutine dataset"""
 
     _iter_sweep_class = OrnNdaNewRoutineEdrSweeps
@@ -163,7 +163,7 @@ class OrnNdaNewRoutineEdrFitsData(FitsData, dataset="orn_nda_newroutine_edr"):
 
 class OrnNdaNewRoutineSunEdrFitsData(
     OrnNdaNewRoutineEdrFitsData, dataset="orn_nda_newroutine_sun_edr"
-):
+):  # type: ignore
     """ORN NDA NewRoutine Sun dataset"""
 
     @property
@@ -202,7 +202,7 @@ class OrnNdaNewRoutineSunEdrFitsData(
 
 class OrnNdaNewRoutineJupEdrFitsData(
     OrnNdaNewRoutineEdrFitsData, dataset="orn_nda_newroutine_jup_edr"
-):
+):  # type: ignore
     """ORN NDA NewRoutine Jupiter dataset"""
 
     @property
@@ -237,7 +237,7 @@ class OrnNdaNewRoutineJupEdrFitsData(
 
 class OrnNdaNewRoutineTransitEdrFitsData(
     OrnNdaNewRoutineEdrFitsData, dataset="orn_nda_newroutine_transit_edr"
-):
+):  # type: ignore
     """ORN NDA NewRoutine Radio Source Transit dataset"""
 
     @property
@@ -272,7 +272,7 @@ class OrnNdaNewRoutineTransitEdrFitsData(
 
 class OrnNdaMefistoSunEdrFitsData(
     OrnNdaNewRoutineEdrFitsData, dataset="orn_nda_mefisto_sun_edr"
-):
+):  # type: ignore
     """ORN NDA Mefisto Sun dataset"""
 
     @property

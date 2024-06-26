@@ -9,7 +9,7 @@ from astropy.time import Time
 import xarray
 
 
-class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
+class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):  # type: ignore
     """NenuFAR/BST (Beamlet Statistics) dataset"""
 
     _dataset_keys = ["NW", "NE"]
@@ -48,7 +48,8 @@ class OrnNenufarBstFitsData(FitsData, ABC, dataset="orn_nenufar_bst"):
 
     @property
     def times(self) -> Time:
-        if self._times is None:
+        if self._times is None:  # type: ignore
+            # self._times is Union[None, Time] but defined in base.py
             self._times = Time(self.file[7].data["jd"], format="jd")
         return self._times
 

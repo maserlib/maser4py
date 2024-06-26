@@ -38,7 +38,7 @@ class RpwLfrSurvBp1Sweeps(Sweeps):
                 )
 
 
-class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):
+class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):  # type: ignore
     _iter_sweep_class = RpwLfrSurvBp1Sweeps
 
     """

@@ -14,7 +14,7 @@ from ..utils import _read_sweep_length, _read_block
 
 class InterballAuroralPolradRspBinData(
     BinData, FixedFrequencies, dataset="cdpp_int_aur_polrad_rspn2"
-):
+):  # type: ignore
     """Class for `cdpp_int_aur_polrad_rspn2` binary data"""
 
     _iter_sweep_class = InterballAuroralPolradRspSweeps

@@ -28,7 +28,7 @@ ANT_CFG_FIELDS = (
 
 class StereoWavesL2HighResBinData(
     VariableFrequencies, BinData, dataset="cdpp_st__l2_wav_h_res"
-):
+):  # type: ignore
     """Placeholder class for `cdpp_stX_l2_wav_XXX` binary data."""
 
     _iter_sweep_class = StereoWavesLfrL2HighResSweeps
@@ -266,7 +266,7 @@ class StereoWavesL2HighResBinData(
 class StereoAWavesL2HighResLfrBinData(
     StereoWavesL2HighResBinData,
     dataset="cdpp_sta_l2_wav_h_res_lfr",
-):
+):  # type: ignore
     """CDPP STEREO-A Waves LFR Level 2 High-Resolution dataset
 
     - Observatory/Facility: STEREO-A
@@ -279,7 +279,7 @@ class StereoAWavesL2HighResLfrBinData(
 class StereoAWavesL2HighResHfrBinData(
     StereoWavesL2HighResBinData,
     dataset="cdpp_sta_l2_wav_h_res_hfr",
-):
+):  # type: ignore
     """CDPP STEREO-A Waves HFR Level 2 High-Resolution dataset
 
     - Observatory/Facility: STEREO-A
@@ -292,7 +292,7 @@ class StereoAWavesL2HighResHfrBinData(
 class StereoBWavesL2HighResLfrBinData(
     StereoWavesL2HighResBinData,
     dataset="cdpp_stb_l2_wav_h_res_lfr",
-):
+):  # type: ignore
     """CDPP STEREO-B Waves LFR Level 2 High-Resolution dataset
 
     - Observatory/Facility: STEREO-B
@@ -305,7 +305,7 @@ class StereoBWavesL2HighResLfrBinData(
 class StereoBWavesL2HighResHfrBinData(
     StereoWavesL2HighResBinData,
     dataset="cdpp_stb_l2_wav_h_res_hfr",
-):
+):  # type: ignore
     """CDPP STEREO-B Waves HFR Level 2 High-Resolution dataset
 
     - Observatory/Facility: STEREO-B

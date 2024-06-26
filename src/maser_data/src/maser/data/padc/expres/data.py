@@ -35,7 +35,7 @@ log.setLevel(logging.INFO)
 __all__ = ["ExpresCdfData"]
 
 
-class ExpresCdfData(CdfData, ABC, dataset="expres"):
+class ExpresCdfData(CdfData, ABC, dataset="expres"):  # type: ignore
     """Base class for EXPRES datasets."""
 
     _iter_sweep_class = ExpresCdfDataSweeps
@@ -98,7 +98,8 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
 
     @property
     def frequencies(self) -> Quantity:
-        if self._frequencies is None:
+        if self._frequencies is None:  # type: ignore
+            # self._frequencies is Union[None, Quantity] but defined in base.py
             with self.open(self.filepath) as f:
                 self._frequencies = f["Frequency"][...] * Unit(
                     f["Frequency"].attrs["UNITS"]
@@ -107,7 +108,8 @@ class ExpresCdfData(CdfData, ABC, dataset="expres"):
 
     @property
     def times(self) -> Time:
-        if self._times is None:
+        if self._times is None:  # type: ignore
+            # self._times is Union[None, Time] but defined in base.py
             self._times = Time([], format="jd")
             with self.open(self.filepath) as f:
                 self._times = Time(f["Epoch"][...])

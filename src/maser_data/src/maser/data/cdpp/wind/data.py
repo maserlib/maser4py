@@ -19,7 +19,7 @@ from ..const import (
 import numpy as np
 
 
-class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
+class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):  # type: ignore
     """CDPP Wind Waves RAD1 Level 2 60s-Average (version 2) dataset
 
     - Observatory/Facility: WIND
@@ -31,7 +31,7 @@ class WindWavesRad1L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v2"):
     _iter_sweep_class = WindWavesL260sSweeps
 
 
-class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
+class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):  # type: ignore
     """Placeholder class for `cdpp_wi_wa_XXX_l2` binary data."""
 
     _iter_sweep_class = WindWavesL2HighResSweeps
@@ -554,19 +554,19 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
         return md
 
 
-class WindWavesRad1L2BinData(WindWavesL2BinData, dataset="cdpp_wi_wa_rad1_l2"):
+class WindWavesRad1L2BinData(WindWavesL2BinData, dataset="cdpp_wi_wa_rad1_l2"):  # type: ignore
     """Class for `cdpp_wi_wa_rad1_l2` binary data."""
 
     pass
 
 
-class WindWavesRad2L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad2_l2_60s_v2"):
+class WindWavesRad2L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad2_l2_60s_v2"):  # type: ignore
     """Class for `cdpp_wi_wa_rad2_l2_60s_v2` binary data."""
 
     pass
 
 
-class WindWavesTnrL260sV2BinData(BinData, dataset="cdpp_wi_wa_tnr_l2_60s_v2"):
+class WindWavesTnrL260sV2BinData(BinData, dataset="cdpp_wi_wa_tnr_l2_60s_v2"):  # type: ignore
     """Class for `cdpp_wi_wa_tnr_l2_60s_v2` binary data."""
 
     pass
@@ -574,7 +574,7 @@ class WindWavesTnrL260sV2BinData(BinData, dataset="cdpp_wi_wa_tnr_l2_60s_v2"):
 
 class WindWavesTnrL3Bqt1mnBinData(
     RecordsOnly, BinData, dataset="cdpp_wi_wa_tnr_l3_bqt_1mn"
-):
+):  # type: ignore
     """Class for `cdpp_wi_wa_tnr_l3_bqt_1mn` data."""
 
     _iter_record_class = WindWavesTnrL3Bqt1mnRecords
@@ -589,13 +589,13 @@ class WindWavesTnrL3Bqt1mnBinData(
         super().__init__(filepath, dataset, access_mode, load_data)
 
 
-class WindWavesTnrL3NnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_nn"):
+class WindWavesTnrL3NnBinData(BinData, dataset="cdpp_wi_wa_tnr_l3_nn"):  # type: ignore
     """Class for `cdpp_wi_wa_tnr_l3_nn` data."""
 
     pass
 
 
-class WindWavesL260sV1BinData(BinData, dataset="cdpp_wi_wa___l2_60s_v1"):
+class WindWavesL260sV1BinData(BinData, dataset="cdpp_wi_wa___l2_60s_v1"):  # type: ignore
     """Class for `cdpp_wi_wa_rad1_l2_60s_v1` binary data"""
 
     _iter_sweep_class = WindWaves60sSweeps
@@ -687,7 +687,7 @@ class WindWavesL260sV1BinData(BinData, dataset="cdpp_wi_wa___l2_60s_v1"):
 
 class WindWavesRad1L260sV1BinData(
     WindWavesL260sV1BinData, dataset="cdpp_wi_wa_rad1_l2_60s_v1"
-):
+):  # type: ignore
     """Class for `cdpp_wi_wa_rad1_l2_60s_v1` binary data"""
 
     pass
@@ -695,7 +695,7 @@ class WindWavesRad1L260sV1BinData(
 
 class WindWavesRad2L260sV1BinData(
     WindWavesL260sV1BinData, dataset="cdpp_wi_wa_rad2_l2_60s_v1"
-):
+):  # type: ignore
     """Class for `cdpp_wi_wa_rad2_l2_60s_v1` binary data"""
 
     pass
@@ -703,7 +703,7 @@ class WindWavesRad2L260sV1BinData(
 
 class WindWavesTnrL260sV1BinData(
     WindWavesL260sV1BinData, dataset="cdpp_wi_wa_tnr_l2_60s_v1"
-):
+):  # type: ignore
     """Class for `cdpp_wi_wa_tnr_l2_60s_v1` binary data"""
 
     pass

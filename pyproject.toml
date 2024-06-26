@@ -110,6 +110,7 @@ module = [
     "matplotlib.*",
     "numpy.*",
     "xarray.*",
+    "maser.*",  # required as long as mypy is bugged
 ]
 ignore_missing_imports = true
 

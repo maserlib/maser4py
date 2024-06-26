@@ -85,7 +85,7 @@ class Pds3Data(Data, dataset="pds3"):
         pass
 
 
-class Pds3DataTable(Pds3Data, dataset="pds3-table"):
+class Pds3DataTable(Pds3Data, dataset="pds3-table"):  # type: ignore
     @property
     def file_size(self) -> Quantity:
         import os
@@ -93,7 +93,7 @@ class Pds3DataTable(Pds3Data, dataset="pds3-table"):
         return os.path.getsize(self.pointers["TABLE"]["file_name"]) * Unit("byte")
 
 
-class Pds3DataTimeSeries(Pds3Data, dataset="pds3-time-series"):
+class Pds3DataTimeSeries(Pds3Data, dataset="pds3-time-series"):  # type: ignore
     @property
     def file_size(self) -> Quantity:
         import os

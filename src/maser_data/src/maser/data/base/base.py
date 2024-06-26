@@ -537,6 +537,9 @@ class Data(BaseData, dataset="default"):
 class CdfData(Data, dataset="cdf"):
     """Base class for CDF formatted data. Requires `spacepy`."""
 
+    def __init_subclass__(cls, *args, dataset: str, **kwargs) -> None:
+        return super().__init_subclass__(*args, dataset=dataset, **kwargs)
+
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):
         """Open method for CDF formatted data products"""
@@ -645,6 +648,9 @@ class CdfData(Data, dataset="cdf"):
 class FitsData(Data, dataset="fits"):
     """Base class for FITS formatted data."""
 
+    def __init_subclass__(cls, *args, dataset: str, **kwargs) -> None:
+        return super().__init_subclass__(*args, dataset=dataset, **kwargs)
+
     @classmethod
     def open(cls, filepath: Path, *args, **kwargs):
         """Open method for FITS formatted data products"""
@@ -687,6 +693,9 @@ class FitsData(Data, dataset="fits"):
 
 class BinData(Data, dataset="bin"):
     """Base class for custom binary data."""
+
+    def __init_subclass__(cls, *args, dataset: str, **kwargs) -> None:
+        return super().__init_subclass__(*args, dataset=dataset, **kwargs)
 
     @classmethod
     def open(cls, filepath: Path, *args, mode: str = "rb", **kwargs):

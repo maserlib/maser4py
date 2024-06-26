@@ -99,7 +99,7 @@ class RpwTnrSurvSweeps(Sweeps):
                 )
 
 
-class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):
+class RpwTnrSurv(CdfData, dataset="solo_L2_rpw-tnr-surv"):  # type: ignore
     _iter_sweep_class = RpwTnrSurvSweeps
 
     _dataset_keys = [

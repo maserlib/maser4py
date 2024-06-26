@@ -11,7 +11,7 @@ from typing import List
 from .utils import get_indices
 
 
-class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):
+class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):  # type: ignore
 
     _dataset_keys = [
         "FLUX_DENSITY",
@@ -107,7 +107,7 @@ class WindWavesRad1L3AkrData(CdfData, dataset="wi_wa_rad1_l3-akr"):
         return self._epncore
 
 
-class WindWavesRad1L3DfV01Data(CdfData, dataset="wi_wav_rad1_l3_df_v01"):
+class WindWavesRad1L3DfV01Data(CdfData, dataset="wi_wav_rad1_l3_df_v01"):  # type: ignore
 
     _iter_sweep_class = WindWavesRad1Sweeps
     _dataset_keys = [
@@ -139,7 +139,7 @@ class WindWavesRad1L3DfV01Data(CdfData, dataset="wi_wav_rad1_l3_df_v01"):
         pass
 
 
-class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):
+class WindWavesRad1L3DfV02Data(CdfData, dataset="wi_wav_rad1_l3_df_v02"):  # type: ignore
 
     _iter_sweep_class = WindWavesRad1Sweeps
     _dataset_keys = [

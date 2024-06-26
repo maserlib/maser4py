@@ -5,23 +5,23 @@ from astropy.time import Time
 from typing import List
 
 
-class StWavL2Bin(BinData, dataset="st__l2_wav"):
+class StWavL2Bin(BinData, dataset="st__l2_wav"):  # type: ignore
     pass
 
 
-class StaWavLfrL2Bin(StWavL2Bin, dataset="sta_l2_wav_lfr"):
+class StaWavLfrL2Bin(StWavL2Bin, dataset="sta_l2_wav_lfr"):  # type: ignore
     pass
 
 
-class StbWavLfrL2Bin(StWavL2Bin, dataset="stb_l2_wav_lfr"):
+class StbWavLfrL2Bin(StWavL2Bin, dataset="stb_l2_wav_lfr"):  # type: ignore
     pass
 
 
-class StaWavHfrL2Bin(StWavL2Bin, dataset="sta_l2_wav_hfr"):
+class StaWavHfrL2Bin(StWavL2Bin, dataset="sta_l2_wav_hfr"):  # type: ignore
     pass
 
 
-class StbWavHfrL2Bin(StWavL2Bin, dataset="stb_l2_wav_hfr"):
+class StbWavHfrL2Bin(StWavL2Bin, dataset="stb_l2_wav_hfr"):  # type: ignore
     pass
 
 
@@ -29,7 +29,7 @@ class StWavL3CdfSweeps(Sweeps):
     pass
 
 
-class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
+class StWavL3Cdf(CdfData, dataset="st__l3_wav"):  # type: ignore
 
     _dataset_keys = [
         "STOKES_I",
@@ -185,7 +185,7 @@ class StWavL3Cdf(CdfData, dataset="st__l3_wav"):
         )
 
 
-class StaWavLfrL3DfCdf(StWavL3Cdf, dataset="sta_l3_wav_lfr"):
+class StaWavLfrL3DfCdf(StWavL3Cdf, dataset="sta_l3_wav_lfr"):  # type: ignore
     """PADC/MASER STEREO-A Waves LFR Level 3 Direction-Finding dataset
 
     - Observatory/Facility: STEREO-A
@@ -197,7 +197,7 @@ class StaWavLfrL3DfCdf(StWavL3Cdf, dataset="sta_l3_wav_lfr"):
     pass
 
 
-class StbWavLfrL3DfCdf(StWavL3Cdf, dataset="stb_l3_wav_lfr"):
+class StbWavLfrL3DfCdf(StWavL3Cdf, dataset="stb_l3_wav_lfr"):  # type: ignore
     """PADC/MASER STEREO-B Waves LFR Level 3 Direction-Finding dataset
 
     - Observatory/Facility: STEREO-B
@@ -209,7 +209,7 @@ class StbWavLfrL3DfCdf(StWavL3Cdf, dataset="stb_l3_wav_lfr"):
     pass
 
 
-class StaWavHfrL3DfCdf(StWavL3Cdf, dataset="sta_l3_wav_hfr"):
+class StaWavHfrL3DfCdf(StWavL3Cdf, dataset="sta_l3_wav_hfr"):  # type: ignore
     """PADC/MASER STEREO-A Waves HFR Level 3 Direction-Finding dataset
 
     - Observatory/Facility: STEREO-A
@@ -221,7 +221,7 @@ class StaWavHfrL3DfCdf(StWavL3Cdf, dataset="sta_l3_wav_hfr"):
     pass
 
 
-class StbWavHfrL3DfCdf(StWavL3Cdf, dataset="stb_l3_wav_hfr"):
+class StbWavHfrL3DfCdf(StWavL3Cdf, dataset="stb_l3_wav_hfr"):  # type: ignore
     """PADC/MASER STEREO-B Waves HFR Level 3 Direction-Finding dataset
 
     - Observatory/Facility: STEREO-B

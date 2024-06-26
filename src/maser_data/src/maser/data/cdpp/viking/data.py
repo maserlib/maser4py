@@ -7,7 +7,7 @@ from .records import VikingV4nE5Records
 from astropy.time import Time
 
 
-class VikingV4nE5BinData(RecordsOnly, BinData, dataset="cdpp_viking_v4n_e5"):
+class VikingV4nE5BinData(RecordsOnly, BinData, dataset="cdpp_viking_v4n_e5"):  # type: ignore
     _iter_sweep_class = Type[VikingV4nE5Records]
 
     def __init__(
