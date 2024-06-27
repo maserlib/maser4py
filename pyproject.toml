@@ -53,7 +53,7 @@ Sphinx = "^5.0.2"
 sphinx-rtd-theme = "^1.0.0"
 tomli = "^2.0.1"
 myst-parser = "^0.18.0"
-mypy = "^0.961" #  "^1.10"
+mypy = "^1.10"  # "^0.961"
 black = "^22.6.0"
 "maser-tools" = { path = "src/maser_tools", develop = true }
 "maser-das2" = { path = "src/maser_das2", develop = true }
