@@ -58,7 +58,12 @@ To retrieve maser4py source files:
 
     The ``master`` branch will be retrieved by default. Use ``--branch develop`` option to get the development version.
 
-Then install `poetry <https://python-poetry.org/>`_ package:
+Then, you can install the package locally, by using:
+
+.. code:: bash
+
+    pip install -e .[all]
+or by using ``poetry``: first install `poetry <https://python-poetry.org/>`_ package:
 
 .. code:: bash
 
