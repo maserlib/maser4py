@@ -55,7 +55,7 @@ class BasePlot:
         return []
 
     @property
-    def Ddata(self) -> dict():
+    def Ddata(self) -> dict:
         """Generic method to return dict of data"""
         return dict()
 
