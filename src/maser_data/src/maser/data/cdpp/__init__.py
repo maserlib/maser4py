@@ -4,11 +4,11 @@
 Classes for CDPP datasets.
 
 .. list-table:: Dataset Table
-   :widths: 30 30 20 20 10 10
+   :widths: 20 20 20 20 10 10
    :header-rows: 1
 
-   * - Observatory/Probe
-     - Telescope/Instrument
+   * - Observatory
+     - Instrument
      - Repository
      - Dataset-id
      - Format
