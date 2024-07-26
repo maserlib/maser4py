@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for STEREO WAVES CDPP datasets.
+"""
+
 from typing import Union, List
 from pathlib import Path
 

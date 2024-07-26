@@ -1,4 +1,33 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for PDS datasets.
+
+.. list-table:: Dataset Table
+   :widths: 30 30 20 20 10 10
+   :header-rows: 1
+
+   * - Observatory/Probe
+     - Telescope/Instrument
+     - Repository
+     - Dataset-id
+     - Format
+     - Requires
+   * - Cassini
+     - RPWS
+     - TBD
+     - `CO-V/E/J/S/SS-RPWS-_`
+     - PDS3
+     - N/A
+   * - Voyager
+     - PRA
+     - TBD
+     - `VGX-X-PRA-_`
+     - PDS3
+     - N/A
+
+"""
+
 from .data import (  # noqa: F401
     Pds3Data,
 )

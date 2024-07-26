@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+"""Classes for ORN NenuFAR datasets"""
+
 from abc import ABC
 from typing import Union, List
 from pathlib import Path

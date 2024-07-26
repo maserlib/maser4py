@@ -1,4 +1,17 @@
 # -*- coding: utf-8 -*-
+
+"""
+Module to define data object classes.
+
+Data object classes
+-------------------
+
+* `Data` Class: The `Data` class is the base class to be used to load data with the MASER-Data module.
+* `BinData` Class: Generic class for custom binary formatted data products.
+* `CdfData` Class: Generic class for CDF formatted data products.
+* `FitsData` Class: Generic class for FITS formatted data products.
+"""
+
 from typing import Union, Dict, Type, cast
 
 from pathlib import Path

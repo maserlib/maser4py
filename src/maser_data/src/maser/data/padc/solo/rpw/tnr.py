@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for RPW/TNR L2 datasets.
+"""
+
 import numpy as np
 
 from astropy.time import Time

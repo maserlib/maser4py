@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-
 """
+Classes for EXPRES datasets.
+
     EXPRES Simulation data reader
 
 
@@ -15,7 +16,6 @@
 
 
 """
-
 
 from maser.data.base import CdfData
 from .sweeps import ExpresCdfDataSweeps

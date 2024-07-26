@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for Voyager PRA datasets.
+"""
+
 from ..data import Pds3DataTable, Pds3DataTimeSeries
 from maser.data.base import FixedFrequencies
 from pathlib import Path

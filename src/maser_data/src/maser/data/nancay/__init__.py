@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
+Classes for Nançay Radio Observatory (ORN) datasets.
+
 Classes for datasets produced with instruments located at Nançay Radio Observatory (ORN). The collections are
 distributed by CDN (Centre de Données de Nançay).
 
@@ -25,6 +27,7 @@ distributed by CDN (Centre de Données de Nançay).
      - CDN
      - `srn_nenufar_bst`
      - FITS
+     - N/A
 
 """
 

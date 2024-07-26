@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+"""Classes for Interball datasets"""
+
 from maser.data.base import BinData
 from maser.data.base.mixins import FixedFrequencies
 from .sweeps import InterballAuroralPolradRspSweeps

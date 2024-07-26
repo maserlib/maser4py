@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for Juno/WAVES datasets.
+"""
+
 from maser.data.base import CdfData, Sweeps
 from astropy.units import Unit
 from astropy.time import Time

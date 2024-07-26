@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+"""Constants for CDPP."""
+
 CCSDS_CDS_FIELDS = (
     [
         "CCSDS_PREAMBLE",

@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for Wind WAVES CDPP datasets.
+"""
+
 from typing import Union, List
 from pathlib import Path
 from maser.data.base import BinData, RecordsOnly, VariableFrequencies

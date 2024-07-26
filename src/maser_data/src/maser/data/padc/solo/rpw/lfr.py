@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for RPW/LFR L2 datasets.
+"""
+
 from maser.data.base import CdfData
 
 from astropy.time import Time, TimeDelta

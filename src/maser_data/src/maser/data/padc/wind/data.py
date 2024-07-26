@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for Wind/WAVES PADC datasets.
+"""
+
 from maser.data.base import CdfData
 from astropy.units import Unit
 from astropy.time import Time

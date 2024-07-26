@@ -1,4 +1,45 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for CDPP datasets.
+
+.. list-table:: Dataset Table
+   :widths: 30 30 20 20 10 10
+   :header-rows: 1
+
+   * - Observatory/Probe
+     - Telescope/Instrument
+     - Repository
+     - Dataset-id
+     - Format
+     - Requires
+   * - Wind
+     - WAVES
+     - TBD
+     - `cdpp_wi_wa_`
+     - Bin
+     - N/A
+   * - Interball
+     - Aurora
+     - TBD
+     - `cdpp_int_aur_polrad_rspn2`
+     - Bin
+     - N/A
+   * - STEREO
+     - WAVES
+     - TBD
+     - `cdpp_st__l2_wav_`
+     - Bin
+     - N/A
+   * - Viking
+     - TBD
+     - TBD
+     - `cdpp_viking_v4n_e5`
+     - Bin
+     - N/A
+
+"""
+
 from .wind import (  # noqa: F401
     WindWavesRad1L260sV2BinData,
     WindWavesRad1L260sV1BinData,

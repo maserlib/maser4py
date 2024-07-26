@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for MarsExpress datasets.
+"""
+
 from .data import (  # noqa: F401
     MexMMarsis3RdrAisV1Data,
     MexMMarsis3RdrAisExt1V1Data,

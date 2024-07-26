@@ -1,5 +1,16 @@
 # -*- coding: utf-8 -*-
 
+"""
+Module to define spectral classes.
+
+Spectral classes
+----------------
+
+* `RecordsOnly` Class: Generic class for time series datasets.
+* `FixedFrequencies` Class: Generic class for datasets with fixed spectral sampling.
+* `VariableFrequencies` Class: Generic class for datasets with variable spectral sampling.
+"""
+
 import numpy
 from typing import Union
 

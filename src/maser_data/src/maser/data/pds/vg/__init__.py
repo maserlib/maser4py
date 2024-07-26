@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for Voyager PRA datasets.
+"""
+
 from .data import (  # noqa: F401
     Vg1JPra3RdrLowband6secV1Data,
     Vg1JPra4SummBrowse48secV1Data,

@@ -1,4 +1,63 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for PADC datasets.
+
+.. list-table:: Dataset Table
+   :widths: 30 30 20 20 10 10
+   :header-rows: 1
+
+   * - Observatory/Probe
+     - Telescope/Instrument
+     - Repository
+     - Dataset-id
+     - Format
+     - Requires
+   * - BepiColombo/MMO
+     - SORBET
+     - TBD
+     - `mmo_pwi_sorbet_l1_`
+     - CDF
+     - `spacepy`
+   * - Cassini
+     - RPWS
+     - TBD
+     - `co_rpws_hfr_kronos`
+     - Bin
+     - N/A
+   * - EXPRES
+     - EXPRES
+     - TBD
+     - `expres`
+     - CDF
+     - `spacepy`
+   * - Juno
+     - WAVES
+     - TBD
+     - `jno_wav_cdr_lesia`
+     - CDF
+     - `spacepy`
+   * - SolarOrbiter
+     - RPW
+     - TBD
+     - `solo_L__rpw-___-_`
+     - CDF
+     - `spacepy`
+   * - STEREO
+     - WAVES
+     - TBD
+     - `st__l__wav`
+     - Bin
+     - N/A
+   * - Wind
+     - WAVES
+     - TBD
+     - `wi_wa__rad1_l3_`
+     - CDF
+     - `spacepy`
+
+"""
+
 from .juno import (  # noqa: F401
     JnoWavLesiaL3aV02Data,
 )

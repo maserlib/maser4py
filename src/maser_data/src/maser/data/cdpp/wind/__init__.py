@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for Wind WAVES CDPP datasets.
+"""
+
 from .data import (  # noqa: F401
     WindWavesRad1L260sV2BinData,
     WindWavesRad1L260sV1BinData,

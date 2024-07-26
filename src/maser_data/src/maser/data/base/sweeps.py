@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Module to define generic iterator class for sweep-based access.
+"""
+
 from .records import Records, Record
 
 

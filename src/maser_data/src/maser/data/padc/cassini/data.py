@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for Cassini datasets.
+"""
+
 from typing import Iterable, Union, Sequence, List
 
 from maser.data.base import Data, BinData, Sweeps, Records, VariableFrequencies

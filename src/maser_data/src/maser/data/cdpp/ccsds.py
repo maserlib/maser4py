@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
+Classes for CCSDS Date formats.
+
 Python module to define classes for CCSDS Date formats in use with CDPP deep archive data (http://cdpp-archive.cnes.fr).
 @author: B.Cecconi(LESIA)
 """

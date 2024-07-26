@@ -7,6 +7,8 @@ Base Classes for MASER-Data
 Data object classes
 -------------------
 
+Defined in base.
+
 * `Data` Class: The `Data` class is the base class to be used to load data with the MASER-Data module.
 * `BinData` Class: Generic class for custom binary formatted data products.
 * `CdfData` Class: Generic class for CDF formatted data products.
@@ -15,9 +17,19 @@ Data object classes
 Iterator classes
 ----------------
 
+Defined in sweeps and records.
+
 * `Sweeps` Class: Generic iterator class for sweep-based access.
 * `Records` Class: Generic iterator class for record-based access.
 
+Spectral classes
+----------------
+
+Defined in mixins.
+
+* `RecordsOnly` Class: Generic class for time series datasets.
+* `FixedFrequencies` Class: Generic class for datasets with fixed spectral sampling.
+* `VariableFrequencies` Class: Generic class for datasets with variable spectral sampling.
 """
 
 

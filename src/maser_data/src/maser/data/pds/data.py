@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for PDS3 data format.
+"""
+
 from pathlib import Path
 from typing import Union
 from maser.data.base import Data

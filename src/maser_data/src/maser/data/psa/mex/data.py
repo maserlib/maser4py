@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for MarsExpress/MARSIS datasets.
+"""
+
 from pathlib import Path
 from typing import Union, Dict, List
 from ...pds import Pds3Data

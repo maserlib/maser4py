@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for Viking datasets.
+"""
+
 from pathlib import Path
 from typing import Union, Type
 from maser.data.base import BinData, RecordsOnly

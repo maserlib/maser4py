@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for STEREO/WAVES PADC datasets.
+"""
+
 from maser.data.base import CdfData, BinData, Sweeps
 from astropy.units import Unit
 from astropy.time import Time

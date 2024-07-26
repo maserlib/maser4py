@@ -20,6 +20,7 @@ sections/installation
 sections/tutorial
 sections/user_guide
 sections/api
+sections/developer
 
 ```
 

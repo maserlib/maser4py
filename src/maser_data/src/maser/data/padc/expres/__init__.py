@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+"""
+Classes for EXPRES datasets.
+"""
 
 from maser.data.base.class_factory import data_class_factory
 from .data import ExpresCdfData

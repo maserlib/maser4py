@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+"""Classes for ORN NDA datasets"""
+
 from maser.data.base import CdfData
 from maser.data.base import FitsData
 from .sweeps import OrnNdaRoutineEdrSweeps, OrnNdaNewRoutineEdrSweeps

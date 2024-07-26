@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Classes for Cassini RPWS PDS datasets.
+"""
+
 from ..data import Pds3Data
 
 

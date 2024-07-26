@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+Module to define generic iterator class for record-based access.
+"""
+
 from typing import Union
 
 
