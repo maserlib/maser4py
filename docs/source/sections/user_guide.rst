@@ -1,6 +1,11 @@
 User guide
 =============
 
+The following 3 sections will quickly introduce the three submodules :ref:`maser-data<maser_data>`, :ref:`maser-plot<maser_plot>` and :ref:`maser-tools<maser_tools>`,
+their usages and short examples.
+
+.. _maser_data:
+
 Read radio data with maser-data
 -------------------------------------
 
@@ -17,6 +22,54 @@ the format of the file and use the appropriate class to read the data.
 
     filepath = "path/to/my/data/file.ext"
     data = Data(filepath=filepath)
+
+
+Methods and properties can then be called from this main `Data` class. For example, it is possible to retrieve the data under a `Dataset` format
+(a slightly upgraded `dict` of `DataArray`, see xarray documentation: <https://pypi.org/project/xarray/>) with:
+
+.. code:: python
+
+    data_xarr = data.as_xarray()
+
+.. note::
+
+    ExPRES dataset is a special case where one extra argument `source` is required. See :ref:`ExPRES<EXPRES_dataset>` for more detail.
+
+A list of main properties and methods is shown on the diagram and table below:
+
+.. image:: figures/Maser_basic.png
+   :width: 500
+   :alt: Maser4py basic routines diagram.
+
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
+| Method / Property | Type     |  Call               | Description                                             | Output format          |
++===================+==========+=====================+=========================================================+========================+
+| times             | property | `data.times`        | retrieve the time coordinate                            | astropy.time.Time      |
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
+| delta_times       | property | `data.delta_times`  | retrieve the table of difference to the time coordinate | astropy.time.TimeDelta |
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
+| frequencies       | property | `data.frequencies`  | retrieve the frequency coordinate                       | astropy.units.Quantity |
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
+| dataset_keys      | property | `data.dataset_keys` | retrieve the list of keys of the dataset                | list                   |
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
+| as_array          | method   | `data.as_array()`   | retrieve data under array format                        | numpy.ndarray          |
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
+| as_xarray         | method   | `data.as_xarray()`  | retrieve data under xarray format                       | xarray.Dataset         |
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
+| quicklook         | method   | `data.quicklook()`  | produce a quicklook of the data                         | None                   |
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
+| epncore           | method   | `data.epncore()`    | retrieve metadata of the dataset                        | dict                   |
++-------------------+----------+---------------------+---------------------------------------------------------+------------------------+
+
+
+.. note::
+
+    Amongst methods, only the `quicklook` method accepts additionnal optional arguments.
+    `quicklook` accepts its own arguments on top of most `matplotlib.pyplot` typical arguments,
+    `quicklook` wrapping `pyplot.pcolormesh` through `xarray`. For a list of arguments, please use `help(Data.quicklook)` for own arguments and
+    refer to: <https://docs.xarray.dev/en/stable/user-guide/plotting.html> and <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.pcolormesh.html>
+    for extra arguments.
 
 
 Dataset Reference
@@ -47,7 +100,7 @@ Dataset Reference
 +-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
 | Mars-Express      | MARSIS     | :ref:`MEX-M-MARSIS-3-RDR-AIS-EXT6-V1.0 <MEX-M-MARSIS-3-RDR-AIS-V1.0>`        | PDS3   | PSA         |
 +-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
-| NDA               | Routine    | :ref:`srn_nda_routine_jup_edr <Msrn_nda_routine_jup_edr>`                    | CDF    | CDN         |
+| NDA               | Routine    | :ref:`srn_nda_routine_jup_edr <srn_nda_routine_jup_edr>`                     | CDF    | CDN         |
 +-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
 | STEREO-A          | Waves      | :ref:`sta_l3_wav_lfr <sta_l3_wav_lfr>`                                       | CDF    | PADC        |
 +-------------------+------------+------------------------------------------------------------------------------+--------+-------------+
@@ -74,6 +127,8 @@ Dataset Reference
 
 ExPRES
 """"""""""""""""""""""""""""""
+
+.. _EXPRES_dataset:
 
 `ExPRES <https://maser.lesia.obspm.fr/task-2-modeling-tools/expres/?lang=en>`_ (Exoplanetary and Planetary Radio
 Emission Simulator) simulations are stored in CDF files. They can be automatically read by `Data`.
@@ -311,9 +366,9 @@ VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0
    plt.title(f"{v.dataset}:{v.filepath.stem}")
    plt.show()
 
-.. image:: figures/_vg1_j_pra_3_rdr_lowband_6sec_v1.png
+.. image:: figures/vg1_j_pra_3_rdr_lowband_6sec_v1.png
    :width: 400
-   :alt: _vg1_j_pra_3_rdr_lowband_6sec_v1 example plot
+   :alt: vg1_j_pra_3_rdr_lowband_6sec_v1 example plot
 
 
 E-Callisto
@@ -333,7 +388,7 @@ ecallisto
    from matplotlib import pyplot as plt
    data = Data("tests/data/e-callisto/BIR/BIR_20220130_111500_01.fit")
    xd = data.as_xarray()
-   xd.plot(vmin=100, vmax=110)
+   xd["Flux Density"].plot(vmin=100, vmax=110)
    plt.title(xd.attrs['title'])
    plt.show()
 
@@ -357,7 +412,7 @@ srn_nda_routine_jup_edr
    from matplotlib import pyplot as plt
    data = Data("tests/data/nda/routine/srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf")
    xd = data.as_xarray()
-   xd.plot(vmin=40, vmax=120)
+   xd["LL"].plot(vmin=40, vmax=120)
    plt.title(xd.attrs['title'])
    plt.show()
 
@@ -371,6 +426,13 @@ STEREO-A and STEREO-B / Waves / LFR and HFR
 """""""""""""""""""""""""""""""""""""""""""
 
 .. _sta_l3_wav_lfr:
+
+.. _sta_l3_wav_hfr:
+
+.. _stb_l3_wav_lfr:
+
+.. _stb_l3_wav_hfr:
+
 
 sta_l3_wav_lfr
 ...............
@@ -393,6 +455,7 @@ sta_l3_wav_lfr
 
 
 
+.. _maser_plot:
 
 Plot radio data with maser-plot
 -------------------------------------
@@ -437,6 +500,8 @@ Which should give:
    :alt: solo_L2_rpw-tnr-surv_20211009 example plot
 
 .. note:: using matplotlib is not mandatory here, but permits to refine plotting options.
+
+.. _maser_tools:
 
 Extra tools from maser-tools
 -----------------------------

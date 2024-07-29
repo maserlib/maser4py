@@ -17,8 +17,8 @@ maxdepth: 2
 ---
 
 sections/installation
-sections/tutorial
 sections/user_guide
+sections/tutorial
 sections/api
 sections/developer
 
