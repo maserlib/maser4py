@@ -48,6 +48,10 @@ Following options are currently available:
 - ``jupytext`` to install Jupyter for notebook text support
 - ``all`` to install all the submodules above
 
+.. note::
+
+    We recommend to use the ``[all]`` option, unless you wish to have very specific modules installed.
+
 From source files
 -------------------
 
