@@ -132,14 +132,14 @@ example). If set to `None` (by default), the 'extra' dimension is kept.
 
    from maser.data import Data
    from matplotlib import pyplot as plt
-   expres_data = Data('tests/data/maser/expres/expres_earth_jupiter_io_jrm09_lossc-wid1deg_3kev_20220801_v01.cdf')
+   expres_data = Data(base_dir+'/maser/expres/expres_earth_jupiter_io_jrm09_lossc-wid1deg_3kev_20220801_v01.cdf')
    expres_data.source = 'Io NORTH'
    data = expres_data.as_xarray()
    data['Theta'].plot()
    plt.show()
 
 
-.. image:: figures/expres_example.png
+.. image:: figures/Example_padc_expres.png
    :width: 500
    :alt: expres example plot
 
@@ -181,11 +181,11 @@ the lowest (which is always 4 kHz), and information on the instrument status.
 
    from maser.data import Data
    from matplotlib import pyplot as plt
-   data = Data("tests/data/cdpp/interball/POLR_RSPN2_19990126")
+   data = Data(base_dir+"cdpp/interball/POLR_RSPN2_19990126")
    data.as_xarray()["EX"].plot(vmin=1e-20, vmax=1e-18)
    plt.show()
 
-.. image:: figures/cdpp_int_aur_polrad_rspn2.png
+.. image:: figures/Example_cdpp_int_aur_polrad_rspn2.png
    :width: 400
    :alt: cdpp_int_aur_polrad_rspn2 example plot
 
@@ -303,10 +303,18 @@ wi_wa_rad1_l3-akr
 
 .. code-block:: python
 
-   keys = [
-        "FLUX_DENSITY",
-        "SNR",
-    ]
+   from maser.data import Data
+   data = Data(base_dir+"maser/wind/wi_wa_rad1_l3-akr_19990101_v01.cdf")
+   xd = data.as_xarray()["FLUX_DENSITY"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot(vmin=-250, vmax=-180)
+   plt.show()
+
+.. image:: figures/Example_padc_wind_akr.png
+   :width: 400
+   :alt: padc wind waves akr example plot
+
 
 .. _tuto_wi_wav_rad1_l3_df_v02:
 
@@ -317,15 +325,19 @@ wi_wav_rad1_l3_df_v02
 
 .. code-block:: python
 
-   keys = [
-        "STOKES_I",
-        "SWEEP",
-        "WAVE_AZIMUTH_SRF",
-        "WAVE_COLATITUDE_SRF",
-        "SOURCE_SIZE",
-        "QUALITY_FLAG",
-        "MODULATION_RATE",
-    ]
+   from maser.data import Data
+   data = Data(base_dir+"maser/wind/wi_wa_rad1_l3_df_20230523_v02.cdf")
+   xd = data.as_xarray()["STOKES_I"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
+   plt.title(xd.attrs['title'])
+   plt.show()
+
+.. image:: figures/Example_padc_wind_df.png
+   :width: 400
+   :alt: padc wind waves df example plot
+
 
 Mars-Express / MARSIS
 """"""""""""""""""""""""""""""
@@ -337,9 +349,21 @@ MEX-M-MARSIS-3-RDR-AIS-V1.0
 
 * **Data Centre**: ESA/PSA
 
+.. code-block:: python
+
+   from maser.data import Data
+   data = Data(base_dir+"psa/mex/marsis/FRM_AIS_RDR_13714.LBL")
+   print(data.as_xarray())
+   data.as_xarray()["SPECTRAL_DENSITY"].isel(sample=56).plot(vmin=1e-16,vmax=1e-14)
+   plt.show()
+
 Sub-collections from ESA/PSA archive: ``MEX-M-MARSIS-3-RDR-AIS-V1.0``, ``MEX-M-MARSIS-3-RDR-AIS-EXT1-V1.0``,
 ``MEX-M-MARSIS-3-RDR-AIS-EXT2-V1.0``, ``MEX-M-MARSIS-3-RDR-AIS-EXT3-V1.0``, ``MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0``,
 ``MEX-M-MARSIS-3-RDR-AIS-EXT5-V1.0`` and ``MEX-M-MARSIS-3-RDR-AIS-EXT6-V1.0``.
+
+.. image:: figures/Example_psa_mex.png
+   :width: 400
+   :alt: psa mex example plot
 
 
 Juno / Waves
@@ -357,14 +381,15 @@ jno_wav_cdr_lesia
    from maser.data import Data
    import numpy as np
    from matplotlib import pyplot as plt
-   data = Data("tests/data/maser/juno/jno_wav_cdr_lesia_20170329_v02.cdf")
-   xd = data.as_xarray()
-   xd.values = 10 * np.log(xd.values)
+   data = Data(base_dir+"maser/juno/jno_wav_cdr_lesia_20170329_v02.cdf")
+   xs = data.as_xarray()
+   xd = xs["INTENSITY"]
+   xd.values = 10 * np.log10(xd.values)
    xd.attrs["units"] = f"dB ({xd.attrs['units']})"
    xd.plot(yscale="log")
    plt.show()
 
-.. image:: figures/jno_wav_cdr_lesia.png
+.. image:: figures/Example_padc_juno.png
    :width: 400
    :alt: jno_wav_cdr_lesia example plot
 
@@ -387,13 +412,12 @@ VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0
 
    from maser.data import Data
    from matplotlib import pyplot as plt
-   data = Data("tests/data/pds/VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1/T790306.LBL")
-   xd = data.as_xarray()
-   xd['L'].plot(vmin=40, vmax=70)
-   plt.title(f"{v.dataset}:{v.filepath.stem}")
+   data = Data(base_dir+"pds/VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1/T790306.LBL")
+   xd = data.as_xarray()['L']
+   xd.plot(vmin=40, vmax=70)
    plt.show()
 
-.. image:: figures/vg1_j_pra_3_rdr_lowband_6sec_v1.png
+.. image:: figures/Example_pds_vg1_j_pra_3_rdr_lowband_6sec_v1.png
    :width: 400
    :alt: vg1_j_pra_3_rdr_lowband_6sec_v1 example plot
 
@@ -427,13 +451,13 @@ ecallisto
 
    from maser.data import Data
    from matplotlib import pyplot as plt
-   data = Data("tests/data/e-callisto/BIR/BIR_20220130_111500_01.fit")
-   xd = data.as_xarray()
-   xd["Flux Density"].plot(vmin=100, vmax=110)
+   data = Data(base_dir+"e-callisto/BIR/BIR_20220130_111500_01.fit")
+   xd = data.as_xarray()["Flux Density"]
+   xd.plot(vmin=100, vmax=110)
    plt.title(xd.attrs['title'])
    plt.show()
 
-.. image:: figures/ecallisto.png
+.. image:: figures/Example_ecallisto.png
    :width: 400
    :alt: ecallisto example plot
 
@@ -451,15 +475,15 @@ srn_nda_routine_jup_edr
 
    from maser.data import Data
    from matplotlib import pyplot as plt
-   data = Data("tests/data/nda/routine/srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf")
-   xd = data.as_xarray()
-   xd["LL"].plot(vmin=40, vmax=120)
+   data = Data(base_dir+"nda/routine/srn_nda_routine_jup_edr_201601302247_201601310645_V12.cdf")
+   xd = data.as_xarray()["LL"]
+   xd.plot(vmin=40, vmax=120)
    plt.title(xd.attrs['title'])
    plt.show()
 
-.. image:: figures/srn_nda_routine_jup_edr.png
+.. image:: figures/Example_orn_nda_routine_jup.png
    :width: 400
-   :alt: NDA Routine example plot
+   :alt: NDA Routine jupiter example plot
 
 
 .. _tuto_srn_nda_routine_sun_edr:
@@ -471,8 +495,17 @@ srn_nda_routine_sun_edr
 
 .. code-block:: python
 
-   keys = ["LL", "RR"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"nda/routine/srn_nda_routine_sun_edr_202305231352_202305231534_V17.cdf")
+   xd = data.as_xarray()["LL"]
+   xd.plot(vmin=40, vmax=120)
+   plt.title(xd.attrs['title'])
+   plt.show()
 
+.. image:: figures/Example_orn_nda_routine_sun.png
+   :width: 400
+   :alt: NDA Routine sun example plot
 
 .. _tuto_orn_nda_newroutine_jup_edr:
 
@@ -483,7 +516,19 @@ orn_nda_newroutine_jup_edr
 
 .. code-block:: python
 
-   keys = ["LL", "RR", "TBD", "TBD"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"nda/newroutine/orn_nda_newroutine_jup_edr_202303060945_202303061745_v1.1.fits")
+   xd = data.as_xarray()["LL"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
+   plt.title(xd.attrs['title'])
+   plt.show()
+
+.. image:: figures/Example_orn_nda_newroutine_jup.png
+   :width: 400
+   :alt: NDA NewRoutine jupiter example plot
 
 .. _tuto_orn_nda_newroutine_sun_edr:
 
@@ -494,7 +539,19 @@ orn_nda_newroutine_sun_edr
 
 .. code-block:: python
 
-   keys = ["LL", "RR"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"nda/newroutine/orn_nda_newroutine_sun_edr_202303070802_202303070936_v1.1.fits")
+   xd = data.as_xarray()["LL"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
+   plt.title(xd.attrs['title'])
+   plt.show()
+
+.. image:: figures/Example_orn_nda_newroutine_sun.png
+   :width: 400
+   :alt: NDA NewRoutine sun example plot
 
 .. _tuto_orn_nda_newroutine_transit_edr:
 
@@ -516,7 +573,19 @@ orn_nda_mefisto_sun_edr
 
 .. code-block:: python
 
-   keys = ["LL", "RR"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"nda/mefisto/orn_nda_mefisto_sun_edr_202303070802_202303070937_v1.0.fits")
+   xd = data.as_xarray()["LL"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
+   plt.title(xd.attrs['title'])
+   plt.show()
+
+.. image:: figures/Example_orn_nda_mefisto_sun.png
+   :width: 400
+   :alt: NDA mefisto sun example plot
 
 
 Nançai / NenuFAR
@@ -531,7 +600,19 @@ orn_nenufar_bst
 
 .. code-block:: python
 
-   keys = ["NW", "NE"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"nenufar/bst/20220130_112900_20220130_123100_SUN_TRACKING/20220130_112900_BST.fits")
+   xd = data.as_xarray()["NW"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
+   plt.title(xd.attrs['title'])
+   plt.show()
+
+.. image:: figures/Example_orn_nenufar_bst.png
+   :width: 400
+   :alt: NenuFAR BST example plot
 
 
 STEREO-A and STEREO-B / Waves / LFR and HFR
@@ -555,15 +636,17 @@ sta_l3_wav_lfr
 
    from maser.data import Data
    from matplotlib import pyplot as plt
-   data = Data("tests/data/swaves/l3_cdf/sta_l3_wav_lfr_20200711_v01.cdf")
-   xd = data.as_xarray()
-   xd.plot(vmin=40, vmax=120)
-   plt.title(xd.attrs['title'])
+   data = Data(base_dir+"swaves/l3_cdf/sta_l3_wav_hfr_20200711_v01.cdf")
+   xs = data.as_xarray()
+   xd = xs["PSD_FLUX"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
    plt.show()
 
-.. image:: figures/srn_nda_routine_jup_edr.png
+.. image:: figures/Example_padc_stereo.png
    :width: 400
-   :alt: STEREO-A LFR example plot
+   :alt: PADC STEREO-A/B LFR/HFR L3 example plot
 
 
 .. _tuto_sta_l2_wav_lfr:
@@ -582,8 +665,19 @@ cdpp_sta_l2_wav_h_res_lfr
 
 .. code-block:: python
 
-   keys = ["agc1", "agc2", "auto1", "auto2", "crossr", "crossi"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"cdpp/stereo/STA_WAV_LFR_20070131.B3E")
+   xs = data.as_xarray()
+   xd = xs["auto2"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot(y="frequency",yscale="log")
+   plt.show()
 
+.. image:: figures/Example_cdpp_stereo.png
+   :width: 400
+   :alt: CDPP STEREO-A/B LFR/HFR L2 example plot
 
 
 BepiColombo / MMO Mio / PWI / SORBET
@@ -624,7 +718,19 @@ co_rpws_hfr_kronos_n1
 
 .. code-block:: python
 
-   keys = ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"kronos/2012_091_180/n1/R2012180.20")
+   xs = data.as_xarray()
+   xd = xs["auto2"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot(y="frequency",yscale="log")
+   plt.show()
+
+.. image:: figures/Example_padc_cassini_n1.png
+   :width: 400
+   :alt: PADC Cassini n1 example plot
 
 .. _tuto_co_rpws_hfr_kronos_n2:
 
@@ -635,7 +741,19 @@ co_rpws_hfr_kronos_n2
 
 .. code-block:: python
 
-   keys = ["autoX", "autoZ", "crossR", "crossI"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"kronos/2012_091_180/n2/P2012180.20")
+   xs = data.as_xarray()
+   xd = xs["autoX"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot(y="frequency",yscale="log")
+   plt.show()
+
+.. image:: figures/Example_padc_cassini_n2.png
+   :width: 400
+   :alt: PADC Cassini n2 example plot
 
 .. _tuto_co_rpws_hfr_kronos_n3d:
 
@@ -646,7 +764,19 @@ co_rpws_hfr_kronos_n3d
 
 .. code-block:: python
 
-   keys = ["s", "q", "u", "v", "snx", "snz"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"kronos/2012_181_270/n3d/N3d_dsq2012181.00")
+   xs = data.as_xarray()
+   xd = xs["s"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot(y="frequency",yscale="log")
+   plt.show()
+
+.. image:: figures/Example_padc_cassini_n3d.png
+   :width: 400
+   :alt: PADC Cassini n3d example plot
 
 .. _tuto_co_rpws_hfr_kronos_n3e:
 
@@ -657,7 +787,19 @@ co_rpws_hfr_kronos_n3e
 
 .. code-block:: python
 
-   keys = ["s", "v", "th", "ph", "snx", "snz"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"kronos/2012_181_270/n3e/N3e_dsq2012181.00")
+   xs = data.as_xarray()
+   xd = xs["s"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot(y="frequency",yscale="log")
+   plt.show()
+
+.. image:: figures/Example_padc_cassini_n3e.png
+   :width: 400
+   :alt: PADC Cassini n3e example plot
 
 
 SolarOrbiter / RPW / LFR - TNR - HFR
@@ -672,15 +814,20 @@ solo_L2_rpw-lfr-surv-bp1
 
 .. code-block:: python
 
-   keys = [
-        "PE",
-        "PB",
-        "DOP",
-        "ELLIP",
-        "SX_REA",
-        "DELTA_TIMES",
-        "MODE_NB",
-    ]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"solo/rpw/solo_L2_rpw-lfr-surv-bp1_20220326_V02.cdf")
+   xs = data.as_xarray()
+   xd = xs["PE"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.where(xs["MODE_NB"] == 1).dropna("frequency", how="all").plot()
+   xd.where(xs["MODE_NB"] == 2).dropna("frequency", how="all").plot(add_colorbar=False)
+   plt.show()
+
+.. image:: figures/Example_padc_solo_rpw_l2_lfr.png
+   :width: 400
+   :alt: PADC SolarOrbiter RPW L2 LFR example plot
 
 .. _tuto_solo_L2_rpw-tnr-surv:
 
@@ -691,23 +838,19 @@ solo_L2_rpw-tnr-surv
 
 .. code-block:: python
 
-   keys = [
-        "VOLTAGE_SPECTRAL_POWER_CH1",
-        "VOLTAGE_SPECTRAL_POWER_CH2",
-        "SENSOR_CH1",
-        "SENSOR_CH2",
-        "V1",
-        "V2",
-        "V3",
-        "V1-V2",
-        "V2-V3",
-        "V3-V1",
-        "B_MF",
-        "HF_V1-V2",
-        "HF_V2-V3",
-        "HF_V3-V1",
-        "DELTA_TIMES",
-    ]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"solo/rpw/solo_L2_rpw-tnr-surv_20220101_V02.cdf")
+   xs = data.as_xarray()
+   xd = xs["VOLTAGE_SPECTRAL_POWER_CH2"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot(yscale="log")
+   plt.show()
+
+.. image:: figures/Example_padc_solo_rpw_l2_tnr.png
+   :width: 400
+   :alt: PADC SolarOrbiter RPW L2 TNR example plot
 
 .. _tuto_solo_L2_rpw-hfr-surv:
 
@@ -718,25 +861,19 @@ solo_L2_rpw-hfr-surv
 
 .. code-block:: python
 
-   keys = [
-        "VOLTAGE_SPECTRAL_POWER",
-        "SENSOR",
-        "CHANNEL",
-        "V1",
-        "V2",
-        "V3",
-        "V1-V2",
-        "V2-V3",
-        "V3-V1",
-        "B_MF",
-        "HF_V1-V2",
-        "HF_V2-V3",
-        "HF_V3-V1",
-        "DELTA_TIMES",
-        "FREQ_INDICES",
-        "VOLTAGE_SPECTRAL_POWER_CH1",
-        "VOLTAGE_SPECTRAL_POWER_CH2",
-    ]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"solo/rpw/solo_L2_rpw-hfr-surv_20220101_V01.cdf")
+   xs = data.as_xarray()
+   xd = xs["VOLTAGE_SPECTRAL_POWER"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
+   plt.show()
+
+.. image:: figures/Example_padc_solo_rpw_l2_hfr.png
+   :width: 400
+   :alt: PADC SolarOrbiter RPW L2 HFR example plot
 
 .. _tuto_solo_L3_rpw-tnr-flux_:
 
@@ -747,7 +884,19 @@ solo_L3_rpw-tnr-flux
 
 .. code-block:: python
 
-   keys = ["PSD_V2", "PSD_FLUX", "PSD_SFU"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"solo/rpw/solo_L3_rpw-tnr-flux_20230101_V01.cdf")
+   xs = data.as_xarray()
+   xd = xs["PSD_FLUX"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
+   plt.show()
+
+.. image:: figures/Example_padc_solo_rpw_l3_tnr.png
+   :width: 400
+   :alt: PADC SolarOrbiter RPW L2 TNR example plot
 
 .. _tuto_solo_L3_rpw-hfr-flux_:
 
@@ -758,7 +907,19 @@ solo_L3_rpw-hfr-flux
 
 .. code-block:: python
 
-   keys = ["PSD_V2", "PSD_FLUX", "PSD_SFU"]
+   from maser.data import Data
+   from matplotlib import pyplot as plt
+   data = Data(base_dir+"solo/rpw/solo_L3_rpw-hfr-flux_20230101_V01.cdf")
+   xs = data.as_xarray()
+   xd = xs["PSD_FLUX"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
+   plt.show()
+
+.. image:: figures/Example_padc_solo_rpw_l3_hfr.png
+   :width: 400
+   :alt: PADC SolarOrbiter RPW L3 HFR example plot
 
 
 .. _tuto_maser_plot:

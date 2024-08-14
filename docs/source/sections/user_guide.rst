@@ -222,7 +222,7 @@ example). If set to `None` (by default), the 'extra' dimension is kept.
    plt.show()
 
 
-.. image:: figures/expres_example.png
+.. image:: figures/Example_padc_expres.png
    :width: 500
    :alt: expres example plot
 
