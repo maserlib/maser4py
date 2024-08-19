@@ -13,7 +13,7 @@ maser-data
 ----------
 
 This section contain a collection of examples for available datasets, with a short description (also available in the :ref:`User Guide<sec_user_guide>` section).
-The easiest is to directly use the table below to reach your prefered instrument/dataset.
+The easiest is to directly use the table below to reach your favorite instrument/dataset.
 
 Dataset Reference
 ~~~~~~~~~~~~~~~~~~
@@ -829,6 +829,18 @@ solo_L2_rpw-lfr-surv-bp1
    :width: 400
    :alt: PADC SolarOrbiter RPW L2 LFR example plot
 
+.. note::
+
+   In LFR L2 data from RPW, data aquired in *normal* and *burst* mode are not recorded at the same frequencies. As a result, displaying simply
+
+   .. code:: python
+
+       xd.plot()
+
+   leads to sliced graphs, each frequency being only recorded in 1 of the 2 modes (in data where both modes were observed). A good (although inperfect) way
+   of displaying these complex data is to display both modes independently but on the same figure, which is done in this example through *xd.where* and *.dropna*
+   (the later being required to not replace the previously ploted data by NaNs).
+
 .. _tuto_solo_L2_rpw-tnr-surv:
 
 solo_L2_rpw-tnr-surv
@@ -926,6 +938,45 @@ solo_L3_rpw-hfr-flux
 
 maser-plot
 ----------
+
+maser-plot offers "ready-to-use" data plotting capabilities in complement to maser-data.
+
+For the moment it only works with data from Solar Orbiter/RPW, but additional data should be added later.
+
+Here is a example to read and plot Solar Orbiter/RPW TNR receiver dynamical spectrum using maser-data, maser-plot and matplotlib:
+
+.. code:: python
+
+    from maser.data import Data
+    from maser.plot.rpw.tnr import plot_auto
+
+    # Parse TNR CDF file with maser.data.Data class
+    tnr_filepath = "solo_L2_rpw-tnr-surv_20211009_V02.cdf"
+    tnr_data = Data(filepath=tnr_filepath)
+
+     # Plot data "as is" (i.e., without any post-processing or filters)
+    import matplotlib.pyplot as plt
+    import matplotlib.colorbar as cbar
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    # Define plot main title
+    #fig.suptitle("RPW Tuto")
+    fig.tight_layout()
+    cbar_ax, kw = cbar.make_axes(ax, shrink=1.4)
+    # plot AUTO
+    plot_auto(tnr_data, ax=ax, figure=fig, cbar_ax=cbar_ax)
+    # Define plot subtitle
+    ax.set_title('RPW TNR spectral power density from ' + filepath.name)
+    plt.show()
+
+Which should give:
+
+.. image:: figures/solo_L2_rpw-tnr-surv_20211009_V02.png
+   :width: 400
+   :alt: solo_L2_rpw-tnr-surv_20211009 example plot
+
+.. note:: using matplotlib is not mandatory here, but allows to refine plotting options.
+
 
 .. _tuto_maser_tools:
 

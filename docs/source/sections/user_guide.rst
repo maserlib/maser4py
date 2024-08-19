@@ -26,7 +26,7 @@ the format of the file and use the appropriate class to read the data.
     data = Data(filepath=filepath)
 
 
-Methods and properties can then be called from this main `Data` class. For example, it is possible to retrieve the data under a `Dataset` format
+Methods and properties can then be called from this main `Data` class. For example, it is possible to retrieve the data under a `xarray.Dataset` format
 (a slightly upgraded `dict` of `DataArray`, see xarray documentation: <https://pypi.org/project/xarray/>) with:
 
 .. code:: python
@@ -69,13 +69,13 @@ A list of main properties and methods is shown on the diagram and table below:
 
     Amongst methods, only the `quicklook` method accepts additionnal optional arguments.
     `quicklook` accepts its own arguments on top of most `matplotlib.pyplot` typical arguments,
-    `quicklook` wrapping `pyplot.pcolormesh` through `xarray`. For a list of arguments, please use `help(Data.quicklook)` for own arguments and
+    `quicklook` being a wrapper of `pyplot.pcolormesh` through `xarray.plot`. For a list of arguments, please use `help(Data.quicklook)` for own arguments and
     refer to: <https://docs.xarray.dev/en/stable/user-guide/plotting.html> and <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.pcolormesh.html>
     for extra arguments.
 
 .. note::
     The `as_array()` method is not implemented yet, as `xarrays` can be converted to `numpy ndarrays`, while being more flexible, lighter and more powerful.
-    If you specifically need `numpy ndarray`, please have a look at <https://docs.xarray.dev/en/stable/generated/xarray.DataArray.to_numpy.html> .
+    For the time being, if you specifically need `numpy ndarray`, please have a look at <https://docs.xarray.dev/en/stable/generated/xarray.DataArray.to_numpy.html> .
 
 
 Dataset Reference
@@ -539,7 +539,7 @@ orn_nda_newroutine_jup_edr
 
 .. code-block:: python
 
-   keys = ["LL", "RR", "TBD", "TBD"]
+   keys = ["LL", "RR", "LR_RE", "LR_IM"]
 
 .. _orn_nda_newroutine_sun_edr:
 
@@ -711,6 +711,15 @@ co_rpws_hfr_kronos_n3d
 
    keys = ["s", "q", "u", "v", "snx", "snz"]
 
+.. note::
+
+   All n3 level Cassini datasets also need n2 level datasets (locally downloaded as well). n2 level data are expected in a given
+   directory architecture, with a path from n3* directory:
+
+   .. code:: python
+
+       "../n2/"
+
 .. _co_rpws_hfr_kronos_n3e:
 
 co_rpws_hfr_kronos_n3e
@@ -721,6 +730,15 @@ co_rpws_hfr_kronos_n3e
 .. code-block:: python
 
    keys = ["s", "v", "th", "ph", "snx", "snz"]
+
+.. note::
+
+   All n3 level Cassini datasets also need n2 level datasets (locally downloaded as well). n2 level data are expected in a given
+   directory architecture, with a path from n3* directory:
+
+   .. code:: python
+
+       "../n2/"
 
 
 SolarOrbiter / RPW / LFR - TNR - HFR
@@ -1009,7 +1027,7 @@ Converting skeleton CDF to binary CDF
 
 The *skeletoncdf* sub-command allows to convert CDF from skeleton table to binary CDF by calling the skeletoncdf NASA CDF software program.
 
-An option also permits to use Excel 2007 format file (.xlsx) as an input to the *skeletoncdf* sub-command.
+An option also allows to use Excel 2007 format file (.xlsx) as an input to the *skeletoncdf* sub-command.
 
 To display the help, enter:
 

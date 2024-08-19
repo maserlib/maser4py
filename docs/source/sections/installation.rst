@@ -50,7 +50,7 @@ Following options are currently available:
 
 .. note::
 
-    We recommend to use the ``[all]`` option, unless you wish to have very specific modules installed.
+    We recommend to use the ``[all]`` option, unless you wish to have very specific modules installed and specific others not installed.
 
 From source files
 -------------------
@@ -107,5 +107,5 @@ Finally install maser4py package, executing the following command from the maser
 .. note::
 
     By default poetry will install package in the editable mode.
-    Poetry also manages virtual environments and can be useful for development, but can be complex to handle with already existing envirnments.
+    Poetry also manages virtual environments and can be useful for development, but can be complex to handle with already existing environments.
     See poetry manual for more details.
