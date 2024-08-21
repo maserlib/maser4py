@@ -12,11 +12,18 @@ Additionnal tutorial notebooks can also be found in :ref:`notebooks<tuto_noteboo
 maser-data
 ----------
 
-This section contain a collection of examples for available datasets, with a short description (also available in the :ref:`User Guide<sec_user_guide>` section).
-The easiest is to directly use the table below to reach your favorite instrument/dataset.
+The examples section for *maser-data* countain 2 subsections of tutorials.
+First, the *Dataset Reference* subsection gives short examples with expected output for
+every supported dataset; then the :ref:`plotting subsection<tuto_maser_data_plot>` includes general advises and tutorials
+for generic usages of *maser-data*.
+
 
 Dataset Reference
 ~~~~~~~~~~~~~~~~~~
+
+This section contain a collection of examples for available datasets, with a short description (also available in the :ref:`User Guide<sec_user_guide>` section).
+The easiest is to directly use the table below to reach your favorite instrument/dataset.
+
 
 +-------------------+------------+-----------------------------------------------------------------------------------+--------+-------------+
 | Facility          | Instrument | Dataset                                                                           | Format | Data Center |
@@ -139,7 +146,7 @@ example). If set to `None` (by default), the 'extra' dimension is kept.
    plt.show()
 
 
-.. image:: figures/Example_padc_expres.png
+.. image:: figures/Example_padc_ExPRES.png
    :width: 500
    :alt: expres example plot
 
@@ -185,7 +192,7 @@ the lowest (which is always 4 kHz), and information on the instrument status.
    data.as_xarray()["EX"].plot(vmin=1e-20, vmax=1e-18)
    plt.show()
 
-.. image:: figures/Example_cdpp_int_aur_polrad_rspn2.png
+.. image:: figures/Example_cdpp_Interball_aur_POLRAD.png
    :width: 400
    :alt: cdpp_int_aur_polrad_rspn2 example plot
 
@@ -311,7 +318,7 @@ wi_wa_rad1_l3-akr
    xd.plot(vmin=-250, vmax=-180)
    plt.show()
 
-.. image:: figures/Example_padc_wind_akr.png
+.. image:: figures/Example_padc_Wind_WAVES_rad1_L3_akr.png
    :width: 400
    :alt: padc wind waves akr example plot
 
@@ -334,7 +341,7 @@ wi_wav_rad1_l3_df_v02
    plt.title(xd.attrs['title'])
    plt.show()
 
-.. image:: figures/Example_padc_wind_df.png
+.. image:: figures/Example_padc_Wind_WAVES_rad1_L3_df.png
    :width: 400
    :alt: padc wind waves df example plot
 
@@ -361,7 +368,7 @@ Sub-collections from ESA/PSA archive: ``MEX-M-MARSIS-3-RDR-AIS-V1.0``, ``MEX-M-M
 ``MEX-M-MARSIS-3-RDR-AIS-EXT2-V1.0``, ``MEX-M-MARSIS-3-RDR-AIS-EXT3-V1.0``, ``MEX-M-MARSIS-3-RDR-AIS-EXT4-V1.0``,
 ``MEX-M-MARSIS-3-RDR-AIS-EXT5-V1.0`` and ``MEX-M-MARSIS-3-RDR-AIS-EXT6-V1.0``.
 
-.. image:: figures/Example_psa_mex.png
+.. image:: figures/Example_psa_MEX_M_MARSIS_RDR_AIS.png
    :width: 400
    :alt: psa mex example plot
 
@@ -389,7 +396,7 @@ jno_wav_cdr_lesia
    xd.plot(yscale="log")
    plt.show()
 
-.. image:: figures/Example_padc_juno.png
+.. image:: figures/Example_padc_Juno_WAVES_cdr_lesia.png
    :width: 400
    :alt: jno_wav_cdr_lesia example plot
 
@@ -417,7 +424,7 @@ VG1-J-PRA-3-RDR-LOWBAND-6SEC-V1.0
    xd.plot(vmin=40, vmax=70)
    plt.show()
 
-.. image:: figures/Example_pds_vg1_j_pra_3_rdr_lowband_6sec_v1.png
+.. image:: figures/Example_pds_VG1_PRA_RDR_LOWBAND_6SEC.png
    :width: 400
    :alt: vg1_j_pra_3_rdr_lowband_6sec_v1 example plot
 
@@ -481,7 +488,7 @@ srn_nda_routine_jup_edr
    plt.title(xd.attrs['title'])
    plt.show()
 
-.. image:: figures/Example_orn_nda_routine_jup.png
+.. image:: figures/Example_cdn_nda_routine_jup.png
    :width: 400
    :alt: NDA Routine jupiter example plot
 
@@ -503,7 +510,7 @@ srn_nda_routine_sun_edr
    plt.title(xd.attrs['title'])
    plt.show()
 
-.. image:: figures/Example_orn_nda_routine_sun.png
+.. image:: figures/Example_cdn_nda_routine_sun.png
    :width: 400
    :alt: NDA Routine sun example plot
 
@@ -526,7 +533,7 @@ orn_nda_newroutine_jup_edr
    plt.title(xd.attrs['title'])
    plt.show()
 
-.. image:: figures/Example_orn_nda_newroutine_jup.png
+.. image:: figures/Example_cdn_nda_newroutine_jup.png
    :width: 400
    :alt: NDA NewRoutine jupiter example plot
 
@@ -549,7 +556,7 @@ orn_nda_newroutine_sun_edr
    plt.title(xd.attrs['title'])
    plt.show()
 
-.. image:: figures/Example_orn_nda_newroutine_sun.png
+.. image:: figures/Example_cdn_nda_newroutine_sun.png
    :width: 400
    :alt: NDA NewRoutine sun example plot
 
@@ -583,7 +590,7 @@ orn_nda_mefisto_sun_edr
    plt.title(xd.attrs['title'])
    plt.show()
 
-.. image:: figures/Example_orn_nda_mefisto_sun.png
+.. image:: figures/Example_cdn_nda_mefisto_sun.png
    :width: 400
    :alt: NDA mefisto sun example plot
 
@@ -610,7 +617,7 @@ orn_nenufar_bst
    plt.title(xd.attrs['title'])
    plt.show()
 
-.. image:: figures/Example_orn_nenufar_bst.png
+.. image:: figures/Example_cdn_NenuFAR_BST.png
    :width: 400
    :alt: NenuFAR BST example plot
 
@@ -644,7 +651,7 @@ sta_l3_wav_lfr
    xd.plot()
    plt.show()
 
-.. image:: figures/Example_padc_stereo.png
+.. image:: figures/Example_padc_STEREO_WAVES_L3.png
    :width: 400
    :alt: PADC STEREO-A/B LFR/HFR L3 example plot
 
@@ -675,7 +682,7 @@ cdpp_sta_l2_wav_h_res_lfr
    xd.plot(y="frequency",yscale="log")
    plt.show()
 
-.. image:: figures/Example_cdpp_stereo.png
+.. image:: figures/Example_cdpp_STEREO_WAVES_L2.png
    :width: 400
    :alt: CDPP STEREO-A/B LFR/HFR L2 example plot
 
@@ -728,7 +735,7 @@ co_rpws_hfr_kronos_n1
    xd.plot(y="frequency",yscale="log")
    plt.show()
 
-.. image:: figures/Example_padc_cassini_n1.png
+.. image:: figures/Example_padc_Cassini_RPWS_n1.png
    :width: 400
    :alt: PADC Cassini n1 example plot
 
@@ -751,7 +758,7 @@ co_rpws_hfr_kronos_n2
    xd.plot(y="frequency",yscale="log")
    plt.show()
 
-.. image:: figures/Example_padc_cassini_n2.png
+.. image:: figures/Example_padc_Cassini_RPWS_n2.png
    :width: 400
    :alt: PADC Cassini n2 example plot
 
@@ -774,7 +781,7 @@ co_rpws_hfr_kronos_n3d
    xd.plot(y="frequency",yscale="log")
    plt.show()
 
-.. image:: figures/Example_padc_cassini_n3d.png
+.. image:: figures/Example_padc_Cassini_RPWS_n3d.png
    :width: 400
    :alt: PADC Cassini n3d example plot
 
@@ -797,7 +804,7 @@ co_rpws_hfr_kronos_n3e
    xd.plot(y="frequency",yscale="log")
    plt.show()
 
-.. image:: figures/Example_padc_cassini_n3e.png
+.. image:: figures/Example_padc_Cassini_RPWS_n3e.png
    :width: 400
    :alt: PADC Cassini n3e example plot
 
@@ -825,7 +832,7 @@ solo_L2_rpw-lfr-surv-bp1
    xd.where(xs["MODE_NB"] == 2).dropna("frequency", how="all").plot(add_colorbar=False)
    plt.show()
 
-.. image:: figures/Example_padc_solo_rpw_l2_lfr.png
+.. image:: figures/Example_padc_SolarOrbiter_RPW_L2_lfr.png
    :width: 400
    :alt: PADC SolarOrbiter RPW L2 LFR example plot
 
@@ -860,7 +867,7 @@ solo_L2_rpw-tnr-surv
    xd.plot(yscale="log")
    plt.show()
 
-.. image:: figures/Example_padc_solo_rpw_l2_tnr.png
+.. image:: figures/Example_padc_SolarOrbiter_RPW_L2_tnr.png
    :width: 400
    :alt: PADC SolarOrbiter RPW L2 TNR example plot
 
@@ -883,7 +890,7 @@ solo_L2_rpw-hfr-surv
    xd.plot()
    plt.show()
 
-.. image:: figures/Example_padc_solo_rpw_l2_hfr.png
+.. image:: figures/Example_padc_SolarOrbiter_RPW_L2_hfr.png
    :width: 400
    :alt: PADC SolarOrbiter RPW L2 HFR example plot
 
@@ -906,7 +913,7 @@ solo_L3_rpw-tnr-flux
    xd.plot()
    plt.show()
 
-.. image:: figures/Example_padc_solo_rpw_l3_tnr.png
+.. image:: figures/Example_padc_SolarOrbiter_RPW_L3_tnr.png
    :width: 400
    :alt: PADC SolarOrbiter RPW L2 TNR example plot
 
@@ -929,9 +936,103 @@ solo_L3_rpw-hfr-flux
    xd.plot()
    plt.show()
 
-.. image:: figures/Example_padc_solo_rpw_l3_hfr.png
+.. image:: figures/Example_padc_SolarOrbiter_RPW_L3_hfr.png
    :width: 400
    :alt: PADC SolarOrbiter RPW L3 HFR example plot
+
+
+.. _tuto_maser_data_plot:
+
+Simple plotting strategy with maser-data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a short section helping to make simple plots with maser-data. It aims at giving a few examples of how to
+obtain better visuals in plots based on maser-data for single datasets, and a quick demonstration of a few usefull keywords proper to maser-data
+(for plotting combination of datasets, see next section :ref:`maser-plot<tuto_maser_plot>` ).
+
+
+Differences due to plot parameters
+"""""""""""""""""""""""""""""""""""
+
+Here is a short troubleshooting subsection in cases where the dynamic of a given plot is not satisfactory and does not
+allow to clearly see the expected features from a dataset.
+
+.. code-block:: python
+
+   from maser.data import Data
+
+   data = Data(base_dir+"maser/wind/wi_wa_rad1_l3_df_20230523_v02.cdf")
+
+   data.as_xarray()["STOKES_I"].plot()
+   plt.title("Direct plot")
+   plt.show()
+
+   plt.figure()
+   xd = data.as_xarray()["STOKES_I"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot()
+   plt.title("Playing with plot parameters")
+   plt.show()
+
+which gives:
+
+.. image:: figures/Example_plotting_param_1.png
+   :width: 400
+   :alt: Example of plot with bad dynamic
+
+.. image:: figures/Example_plotting_param_2.png
+   :width: 400
+   :alt: Example of the same plot with better dynamic
+
+
+Different ways of plotting with maser4py
+"""""""""""""""""""""""""""""""""""""""""
+
+Examples for plotting single datasets were made using the `xarray` *plot* function, wrapped by maser-data. There are
+however different ways of using it, and it is also possible to use the *quicklook* function of *Data*. following example
+shows three examples of displaying the same dataset:
+
+- first by directly wrapping *plot* in 1 line of code;
+
+- second by modifying the loaded `xarray` dataset to improve the plot;
+
+- third by using *quicklook* and the *nan_color* keyword to manage the rendered color of NaNs, numerous in this example.
+
+.. code-block:: python
+
+   from maser.data import Data
+
+   data = Data(base_dir+"maser/wind/wi_wa_rad1_l3-akr_19990101_v01.cdf")
+
+   data.as_xarray()["FLUX_DENSITY"].plot(vmin=1e-26, vmax=1e-22)
+   plt.title("From xarrays in 1 line")
+   plt.show()
+
+   plt.figure()
+   xd = data.as_xarray()["FLUX_DENSITY"]
+   xd.values = 10 * np.log10(xd.values)
+   xd.attrs["units"] = f"dB ({xd.attrs['units']})"
+   xd.plot(yscale="log", vmin=-250, vmax=-180)
+   plt.title("From xarrays")
+   plt.show()
+
+   data.quicklook(keys=["FLUX_DENSITY"],cmap="viridis",nan_color="black")
+   plt.show()
+
+which gives respectively:
+
+.. image:: figures/Example_plotting_xarray_direct.png
+   :width: 400
+   :alt: Example of calling xarray's plot in 1 line
+
+.. image:: figures/Example_plotting_xarray.png
+   :width: 400
+   :alt: Example of using xarray's plotting with upgraded xarray
+
+.. image:: figures/Example_plotting_quicklook.png
+   :width: 400
+   :alt: Example of using maser-data's quicklook
 
 
 .. _tuto_maser_plot:

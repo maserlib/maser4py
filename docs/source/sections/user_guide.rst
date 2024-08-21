@@ -39,7 +39,7 @@ Methods and properties can then be called from this main `Data` class. For examp
 
 A list of main properties and methods is shown on the diagram and table below:
 
-.. image:: figures/Maser_basic.png
+.. image:: figures/Maser_basic_v4.png
    :width: 500
    :alt: Maser4py basic routines diagram.
 
@@ -222,7 +222,7 @@ example). If set to `None` (by default), the 'extra' dimension is kept.
    plt.show()
 
 
-.. image:: figures/Example_padc_expres.png
+.. image:: figures/Example_padc_ExPRES.png
    :width: 500
    :alt: expres example plot
 
