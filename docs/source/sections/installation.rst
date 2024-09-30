@@ -80,6 +80,12 @@ Then, you can install the package locally, by using:
 Using ``poetry``
 ----------------
 
+.. note::
+
+    Poetry manages packages installations as well as virtual environments and can be useful for development, but can be complex to handle
+    with already existing environments. We do not recommend using poetry unless for developing purpose or advanced users.
+    See poetry manual for more details.
+
 Installation is also possible from source files by using ``poetry``: first install `poetry <https://python-poetry.org/>`_ package:
 
 .. code:: bash
@@ -107,5 +113,4 @@ Finally install maser4py package, executing the following command from the maser
 .. note::
 
     By default poetry will install package in the editable mode.
-    Poetry also manages virtual environments and can be useful for development, but can be complex to handle with already existing environments.
     See poetry manual for more details.
