@@ -271,7 +271,7 @@ class Vg2UPra3RdrLowband6secV1Data(
 # ===================================================================
 
 
-class VgPra4RSummBrowse48secV1Data(
+class VgPra4SummBrowse48secV1Data(
     FixedFrequencies,
     Pds3DataTimeSeries,
     dataset="VGX-X-PRA-4-SUMM-BROWSE-48SEC-V1.0",
@@ -440,7 +440,7 @@ class VgPra4RSummBrowse48secV1Data(
 
 
 class Vg1JPra4SummBrowse48secV1Data(
-    VgPra4RSummBrowse48secV1Data, dataset="VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1.0"
+    VgPra4SummBrowse48secV1Data, dataset="VG1-J-PRA-4-SUMM-BROWSE-48SEC-V1.0"
 ):
     """Class for the Voyager-1/PRA Jupiter Level 4 Summary Browse
     48sec PDS3 dataset.
@@ -451,7 +451,7 @@ class Vg1JPra4SummBrowse48secV1Data(
 
 
 class Vg2JPra4SummBrowse48secV1Data(
-    VgPra4RSummBrowse48secV1Data, dataset="VG2-J-PRA-4-SUMM-BROWSE-48SEC-V1.0"
+    VgPra4SummBrowse48secV1Data, dataset="VG2-J-PRA-4-SUMM-BROWSE-48SEC-V1.0"
 ):
     """Class for the Voyager-2/PRA Jupiter Level 4 Summary Browse
     48sec PDS3 dataset.
@@ -462,7 +462,7 @@ class Vg2JPra4SummBrowse48secV1Data(
 
 
 class Vg2NPra4SummBrowse48secV1Data(
-    VgPra4RSummBrowse48secV1Data, dataset="VG2-N-PRA-4-SUMM-BROWSE-48SEC-V1.0"
+    VgPra4SummBrowse48secV1Data, dataset="VG2-N-PRA-4-SUMM-BROWSE-48SEC-V1.0"
 ):
     """Class for the Voyager-2/PRA Neptune Level 4 Summary Browse
     48sec PDS3 dataset.
@@ -473,7 +473,7 @@ class Vg2NPra4SummBrowse48secV1Data(
 
 
 class Vg2UPra4SummBrowse48secV1Data(
-    VgPra4RSummBrowse48secV1Data, dataset="VG2-U-PRA-4-SUMM-BROWSE-48SEC-V1.0"
+    VgPra4SummBrowse48secV1Data, dataset="VG2-U-PRA-4-SUMM-BROWSE-48SEC-V1.0"
 ):
     """Class for the Voyager-2/PRA Uranus Level 4 Summary Browse
     48sec PDS3 dataset.
