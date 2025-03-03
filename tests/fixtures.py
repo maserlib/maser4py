@@ -101,7 +101,6 @@ def download_data_sample(database_name: str, reload: bool = False):
 
     # loop on subdirs and fix directory separator, depending on local platform:
     for cur_dir, file_items in files.items():
-
         # local path of current sub-directory (fix path separator for non unix os)
         cur_local_path = test_data_path / Path(cur_dir)
 

@@ -49,7 +49,7 @@ To contribute to the development of the package, you will need to install a loca
 git clone https://gitlab.obspm.fr/maser/maser4py.git
 ```
 
-Then, you can install the package locally
+Then, you can install the package locally, by using `pip install -e .[all]` or by using `poetry` (see below).
 
 ## Requirements
 

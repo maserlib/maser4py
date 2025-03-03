@@ -313,7 +313,6 @@ def main():
     # Loop on input Excel files
     output = None
     for file in args.skeleton_files:
-
         if outdir is not None:
             output = outdir / file.name
 
