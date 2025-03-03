@@ -20,7 +20,38 @@ Read maser4py [main documentation](https://maser.pages.obspm.fr/maser4py/) for d
 
 # Installation
 
+## With maser4py (recommanded)
+
 To install the package, run the following command:
+
+```
+pip install maser4py[data]
+```
+
+and use one of the extra options:
+
+- `jupyter` for Jupyter notebook support
+- `spacepy` for CDF data format support (note that this requires the [CDF library](https://cdf.gsfc.nasa.gov/html/sw_and_docs.html))
+
+For example use `maser4py[data,jupyter,spacepy]` if you want to use `maser-data` with spacepy and jupyter notebooks:
+
+```bash
+pip install maser4py[data,jupyter,spacepy]
+```
+
+You can also use other options from [maser4py](https://pypi.org/project/maser4py/) such as:
+
+- `tools` for [maser-tools](https://pypi.org/project/maser-tools/) submodule
+- `plot` for [maser-plot](https://pypi.org/project/maser-plot/) submodule
+- `all` to install all the above
+
+```bash
+pip install maser4py[all]
+```
+
+## As a standalone submodule
+
+An alternative way of installing the package is to run the following command:
 
 ```
 pip install maser-data
@@ -59,7 +90,7 @@ To contribute to the development of the package, you will need to install a loca
 git clone https://gitlab.obspm.fr/maser/maser4py.git
 ```
 
-Then, you can install the package locally
+Then, you can install the package locally, by using `pip install -e .[all]` or by using `poetry` (see below).
 
 ## Requirements
 
