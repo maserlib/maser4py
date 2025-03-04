@@ -32,7 +32,8 @@ TEST_FILES = [  # {
 
 # create a decorator to test each file in the list
 for_each_test_file = pytest.mark.parametrize(
-    "filepath", TEST_FILES  # ["jno_wav_cdr_lesia"]
+    "filepath",
+    TEST_FILES,  # ["jno_wav_cdr_lesia"]
 )
 
 

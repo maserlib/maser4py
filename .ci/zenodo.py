@@ -158,7 +158,6 @@ class Zenodo:
         bucket: str,
         paths: Iterable[pathlib.Path],
     ) -> List[requests.Response]:
-
         response_list = []
         # see https://developers.zenodo.org/#quickstart-upload
         for path in paths:
@@ -188,7 +187,6 @@ def get_author_name(author):
 
 
 def make_metadata(project_metadata):
-
     creators = [
         {"name": get_author_name(author)} for author in project_metadata["authors"]
     ]
@@ -218,7 +216,6 @@ def deposit(
     publish=False,
     sandbox,
 ):
-
     with open(project_root_path / "pyproject.toml", "rb") as f:
         data = tomli.load(f)
         project_metadata = data["tool"]["poetry"]

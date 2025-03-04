@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "maser4py"
-version = "0.16.1"
+version = "0.17.0"
 description = "maser4py offers tools to handle low frequency radioastronomy data"
 authors = ["Baptiste CECCONI <baptiste.cecconi@obspm.fr>", "Xavier BONNIN <xavier.bonnin@obspm.fr>", "Alan Loh <alan.loh@obspm.fr>", "Lucas Grosset <lucas.grosset@obspm.fr>", "Sonny LION <sonny.lion@obspm.fr>", "Quynh Nhu Nguyen <quynh-nhu.nguyen@obspm.fr>"]
 readme = "README.md"
@@ -32,15 +32,26 @@ python = ">=3.8,<4"
 jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
 spacepy = {version = ">=0.4,<1.0", optional = true}
-maser-data = {version = ">=0.4.0,<1.0", optional = true}
-maser-plot = {version = ">=0.3.0,<1.0", optional = true}
-maser-tools = {version = ">=0.1.0,<1.0", optional = true}
+maser-data = {version = ">=0.5.0,<1.0", optional = true}
+maser-plot = {version = ">=0.4.0,<1.0", optional = true}
+maser-tools = {version = ">=0.3.0,<1.0", optional = true}
+pytest = {version = "^7.0.1", optional = true}
+pytest-cov = {version = "^3.0.0", optional = true}
+pre-commit = {version = "^2.17.0", optional = true}
+requests = {version = "^2.27.1", optional = true}
+Sphinx = {version = "^5.0.2", optional = true}
+sphinx-rtd-theme = {version = "^1.0.0", optional = true}
+tomli = {version = "^2.0.1", optional = true}
+myst-parser = {version = "^0.18.0", optional = true}
+mypy = {version = "^1.10", optional = true}  # "^0.961"
+black = {version = "^22.6.0", optional = true}
 
 [tool.poetry.extras]
 jupyter = ["jupyter", "jupytext"]
 data = ["maser-data", "spacepy"]
-plot = ["maser-plot"]
-tools = ['maser-tools']
+plot = ["maser-plot", "maser_data", "spacepy"]
+tools = ["maser-tools", "spacepy"]
+dev = ["pytest", "pytest-cov", "pre-commit", "mypy", "black", "requests", "Sphinx", "sphinx-rtd-theme", "tomli", "myst-parser"]
 all = ["jupyter", "jupytext", "spacepy", "maser-data", "maser-plot", "maser-tools"]
 
 
@@ -53,7 +64,7 @@ Sphinx = "^5.0.2"
 sphinx-rtd-theme = "^1.0.0"
 tomli = "^2.0.1"
 myst-parser = "^0.18.0"
-mypy = "^0.961"
+mypy = "^1.10"  # "^0.961"
 black = "^22.6.0"
 "maser-tools" = { path = "src/maser_tools", develop = true }
 "maser-das2" = { path = "src/maser_das2", develop = true }
@@ -83,9 +94,18 @@ exclude = '''
 '''
 
 [tool.pytest.ini_options]
+addopts = [
+    #"--import-mode=importlib",
+    "--import-mode=append",
+]
 markers = [
     "test_data_required: mark tests that require downloading test data",
     "spacepy_required: mark tests that require the spacepy package",
+]
+pythonpath = [
+    "src/maser_data/src",
+    "src/maser_plot/src",
+    "src/maser_tools/src",
 ]
 
 [tool.jupytext]
@@ -101,6 +121,7 @@ module = [
     "matplotlib.*",
     "numpy.*",
     "xarray.*",
+    "maser.*",  # required as long as mypy is bugged
 ]
 ignore_missing_imports = true
 
