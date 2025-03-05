@@ -72,7 +72,7 @@ class JuiceRPWIhfL1aCdf(JuiceRPWIhfL1CdfData, dataset="JUICE_L1a_RPWI-HF-SID_"):
         self,
         file_png: Union[str, Path, None] = None,
         yscale: str = "log",
-        keys: List[str] = None,
+        keys: Union[List[str], None] = None,
         **kwargs,
     ):
         if keys is None:

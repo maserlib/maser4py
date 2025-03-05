@@ -13,7 +13,7 @@ class RadioJoveSpsSweeps:
     pass
 
 
-class RadioJoveSpxData(BinData, dataset="radiojove_spx"):
+class RadioJoveSpxData(BinData, dataset="radiojove_spx"):  # type: ignore
     def extract_radiojove_spx_header(self):
         """
         Extracts fixed length header keywords from Raw data
@@ -637,7 +637,7 @@ class RadioJoveSpxData(BinData, dataset="radiojove_spx"):
         return raw
 
 
-class RadioJoveSpsData(RadioJoveSpxData, dataset="radiojove_sps"):
+class RadioJoveSpsData(RadioJoveSpxData, dataset="radiojove_sps"):  # type: ignore
     _iter_sweep_class = RadioJoveSpsSweeps
 
     def __init__(
@@ -650,12 +650,12 @@ class RadioJoveSpsData(RadioJoveSpxData, dataset="radiojove_sps"):
         self._data = None
         self._nsweep = None
         self._data = self._loader()
-        self.fields = []
-        self.units = []
+        self.fields: list = []
+        self.units: list = []
 
     def _loader(self):
         pass
 
 
-class RadioJoveCdfData(CdfData, dataset="radiojove_cdf"):
+class RadioJoveCdfData(CdfData, dataset="radiojove_cdf"):  # type: ignore
     pass
