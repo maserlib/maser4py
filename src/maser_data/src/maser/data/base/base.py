@@ -566,12 +566,22 @@ class CdfData(Data, dataset="cdf"):
             dataset = c.attrs["Logical_source"][...][0]
 
             # required dataset mapping
+            # name change
             if dataset == "srn_nda_routine_jup_edr":
                 dataset = "orn_nda_routine_jup_edr"
             if dataset == "srn_nda_routine_sun_edr":
                 dataset = "orn_nda_routine_sun_edr"
+
+            # complex dataset id
             if dataset == "wi_wav_rad1_l3_df":
                 dataset = f"{dataset}_v{c.attrs['Skeleton_version']}"
+
+            # temporary fixes
+            if dataset == "JUICE_H0_RPWI":
+                dataset = (
+                    "JUICE_L1a_RPWI-HF-SID"
+                    + c.attrs["Logical_source_description"][...][0][40:]
+                )
             if dataset == "solo_l3_rpw-hfr":
                 if "tnr" in str(filepath):
                     dataset = "solo_L3_rpw-tnr-flux_"
