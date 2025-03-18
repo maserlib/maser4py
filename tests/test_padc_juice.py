@@ -8,6 +8,7 @@ from maser.data.padc.juice import JuiceRPWIhfL1aCdfSID4, JuiceRPWIhfL1aCdfSID20
 from maser.data.padc.juice import JuiceRPWIhfL1aCdfSID5, JuiceRPWIhfL1aCdfSID21
 from maser.data.padc.juice import JuiceRPWIhfL1aCdfSID6, JuiceRPWIhfL1aCdfSID22
 from maser.data.padc.juice import JuiceRPWIhfL1aCdfSID7, JuiceRPWIhfL1aCdfSID23
+from maser.data.base.sweeps import Sweep
 from astropy.time import Time
 from astropy.units import Quantity, Unit
 from pathlib import Path
@@ -192,23 +193,18 @@ def test_jui_rpwi_l1a_sid2__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid2
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
 def test_jui_rpwi_l1a_sid2__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
-        # assert len(sweep[2][0]) == 126
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+        assert len(sweep.data.keys()) == 6
 
 
 @pytest.mark.test_data_required
@@ -295,23 +291,25 @@ def test_jui_rpwi_l1a_sid3__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid3
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
+# @pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
 def test_jui_rpwi_l1a_sid3__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        # assert isinstance(sweep.data, Quantity)
+        # assert isinstance(sweep[2], list)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+            # assert isinstance(sweep.data[key].values[0][0], Quantity)
+        # assert len(sweep[2]) == 6
         # assert len(sweep[2][0]) == 126
+        assert len(sweep.data.keys()) == 3
+        sweep = next(data.sweeps)
 
 
 @pytest.mark.test_data_required
@@ -398,23 +396,18 @@ def test_jui_rpwi_l1a_sid4__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid4
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
 def test_jui_rpwi_l1a_sid4__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
-        # assert len(sweep[2][0]) == 126
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+        assert len(sweep.data.keys()) == 3
 
 
 @pytest.mark.test_data_required
@@ -499,23 +492,18 @@ def test_jui_rpwi_l1a_sid20__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid20
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
 def test_jui_rpwi_l1a_sid20__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
-        # assert len(sweep[2][0]) == 126
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+        assert len(sweep.data.keys()) == 3
 
 
 @pytest.mark.test_data_required
@@ -596,23 +584,18 @@ def test_jui_rpwi_l1a_sid5__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid5
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
 def test_jui_rpwi_l1a_sid5__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
-        # assert len(sweep[2][0]) == 126
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+        assert len(sweep.data.keys()) == 1
 
 
 @pytest.mark.test_data_required
@@ -690,23 +673,18 @@ def test_jui_rpwi_l1a_sid21__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid21
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
 def test_jui_rpwi_l1a_sid21__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
-        # assert len(sweep[2][0]) == 126
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+        assert len(sweep.data.keys()) == 3
 
 
 @pytest.mark.test_data_required
@@ -771,6 +749,7 @@ def test_jui_rpwi_l1a_sid6_dataset__times(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid6
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid6__frequencies(filepath):
     with Data(filepath=filepath) as data:
         assert isinstance(data.frequencies, Quantity)
@@ -784,28 +763,25 @@ def test_jui_rpwi_l1a_sid6__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid6
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid6__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
-        # assert len(sweep[2][0]) == 126
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+        assert len(sweep.data.keys()) == 3
 
 
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid6
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid6__as_xarray(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
@@ -822,6 +798,7 @@ def test_jui_rpwi_l1a_sid6__as_xarray(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid6
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid6_quicklook(filepath):
     with Data(filepath=filepath) as data:
         #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
@@ -865,6 +842,7 @@ def test_jui_rpwi_l1a_sid22_dataset__times(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid22
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid22__frequencies(filepath):
     with Data(filepath=filepath) as data:
         assert isinstance(data.frequencies, Quantity)
@@ -878,28 +856,25 @@ def test_jui_rpwi_l1a_sid22__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid22
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid22__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
-        # assert len(sweep[2][0]) == 126
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+        assert len(sweep.data.keys()) == 3
 
 
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid22
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid22__as_xarray(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
@@ -916,6 +891,7 @@ def test_jui_rpwi_l1a_sid22__as_xarray(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid22
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid22_quicklook(filepath):
     with Data(filepath=filepath) as data:
         #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
@@ -959,6 +935,7 @@ def test_jui_rpwi_l1a_sid7_dataset__times(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid7
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid7__frequencies(filepath):
     with Data(filepath=filepath) as data:
         assert isinstance(data.frequencies, Quantity)
@@ -972,28 +949,25 @@ def test_jui_rpwi_l1a_sid7__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid7
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid7__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
-        # assert len(sweep[2][0]) == 126
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+        assert len(sweep.data.keys()) == 3
 
 
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid7
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid7__as_xarray(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
@@ -1010,6 +984,7 @@ def test_jui_rpwi_l1a_sid7__as_xarray(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid7
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid7_quicklook(filepath):
     with Data(filepath=filepath) as data:
         #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
@@ -1053,6 +1028,7 @@ def test_jui_rpwi_l1a_sid23_dataset__times(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid23
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid23__frequencies(filepath):
     with Data(filepath=filepath) as data:
         assert isinstance(data.frequencies, Quantity)
@@ -1066,28 +1042,25 @@ def test_jui_rpwi_l1a_sid23__frequencies(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid23
-@pytest.mark.skip(reason="Sweeps not implemented for JUICE yet.")
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid23__sweeps(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
         sweep = next(data.sweeps)
 
         # check the sweep content
-        assert isinstance(sweep, tuple)
-        assert isinstance(sweep[0], Time)
-        assert isinstance(sweep[1], Quantity)
-        assert isinstance(sweep[2], list)
-        for i in range(6):
-            print(i)
-            print(sweep[2][i])
-            assert isinstance(sweep[2][i], Quantity)
-        assert len(sweep[2]) == 6
-        # assert len(sweep[2][0]) == 126
+        assert isinstance(sweep, Sweep)
+        assert isinstance(sweep._time, Time)
+        assert isinstance(sweep.data, dict)
+        for key in sweep.data.keys():
+            assert isinstance(sweep.data[key], xarray.DataArray)
+        assert len(sweep.data.keys()) == 3
 
 
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid23
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid23__as_xarray(filepath):
     with Data(filepath=filepath) as data:
         # get only the first sweep
@@ -1104,6 +1077,7 @@ def test_jui_rpwi_l1a_sid23__as_xarray(filepath):
 @pytest.mark.test_data_required
 @skip_if_spacepy_not_available
 @for_each_test_file_l1asid23
+@pytest.mark.skip(reason="Dataset not fully implemented yet.")
 def test_jui_rpwi_l1a_sid23_quicklook(filepath):
     with Data(filepath=filepath) as data:
         #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"

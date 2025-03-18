@@ -5,6 +5,7 @@ Module to define generic iterator class for sweep-based access.
 """
 
 from .records import Records, Record
+import warnings
 
 
 class Sweep(Record):
@@ -18,6 +19,8 @@ class Sweep(Record):
 
 
 class Sweeps(Records):
+    warnings.warn("Sweep format will be changed.", FutureWarning)
+
     @property
     def generator(self):
         for sweep in self.data_reference._data:

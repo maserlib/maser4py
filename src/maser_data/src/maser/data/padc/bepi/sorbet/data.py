@@ -13,8 +13,8 @@ from astropy.units import Unit
 class SorbetL1CdfData(CdfData, dataset="mmo_pwi_sorbet_l1_"):  # type: ignore
     """Class for `sorbet` L1 CDF files."""
 
-    # def __init_subclass__(cls, *args, dataset: str, **kwargs) -> None:
-    #     return super().__init_subclass__(*args, dataset=dataset, **kwargs)
+    def __init_subclass__(cls, *args, dataset: str, **kwargs) -> None:
+        return super().__init_subclass__(*args, dataset=dataset, **kwargs)
 
     # _dataset_keys = ["sorbet_WPT_spectra"]
 

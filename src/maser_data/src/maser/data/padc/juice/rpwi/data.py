@@ -10,6 +10,9 @@ from typing import Union, List
 from pathlib import Path
 from astropy.time import Time
 from astropy.units import Unit
+from .sweeps import JuiceCdfDataSweeps
+import warnings
+
 
 """
 class JuiceCdfDataSweep(Sweep):
@@ -157,8 +160,10 @@ class JuiceRPWIhfL1aPOLSEPSweeps(Sweeps):
 class JuiceRPWIhfL1CdfData(CdfData, FixedFrequencies, dataset="jui_rpwi_hf_l1_"):  # type: ignore
     """Class for `rpwi-hf` L1 (a and b) CDF files."""
 
-    # def __init_subclass__(cls, *args, dataset: str, **kwargs) -> None:
-    #     return super().__init_subclass__(*args, dataset=dataset, **kwargs)
+    _iter_sweep_class = JuiceCdfDataSweeps
+
+    def __init_subclass__(cls, *args, dataset: str, **kwargs) -> None:
+        return super().__init_subclass__(*args, dataset=dataset, **kwargs)
 
     @property
     def times(self):
@@ -287,6 +292,8 @@ class JuiceRPWIhfL1aCdfSID6(JuiceRPWIhfL1aCdf, dataset="JUICE_L1a_RPWI-HF-SID6")
     _dataset_keys = ["auto_corr"]
     _display_keys = ["auto_corr"]
     _db_disp = [True]
+    # raise NotImplementedError()
+    warnings.warn("Dataset not fully supported yet")
 
 
 class JuiceRPWIhfL1aCdfSID22(JuiceRPWIhfL1aCdf, dataset="JUICE_L1a_RPWI-HF-SID22"):
@@ -295,6 +302,8 @@ class JuiceRPWIhfL1aCdfSID22(JuiceRPWIhfL1aCdf, dataset="JUICE_L1a_RPWI-HF-SID22
     _dataset_keys = ["auto_corr"]
     _display_keys = ["auto_corr"]
     _db_disp = [True]
+    # raise NotImplementedError()
+    warnings.warn("Dataset not fully supported yet")
 
 
 class JuiceRPWIhfL1aCdfSID7(JuiceRPWIhfL1aCdf, dataset="JUICE_L1a_RPWI-HF-SID7"):
@@ -303,6 +312,8 @@ class JuiceRPWIhfL1aCdfSID7(JuiceRPWIhfL1aCdf, dataset="JUICE_L1a_RPWI-HF-SID7")
     _dataset_keys = ["auto_corr"]
     _display_keys = ["auto_corr"]
     _db_disp = [True]
+    # raise NotImplementedError()
+    warnings.warn("Dataset not fully supported yet")
 
 
 class JuiceRPWIhfL1aCdfSID23(JuiceRPWIhfL1aCdf, dataset="JUICE_L1a_RPWI-HF-SID23"):
@@ -311,6 +322,8 @@ class JuiceRPWIhfL1aCdfSID23(JuiceRPWIhfL1aCdf, dataset="JUICE_L1a_RPWI-HF-SID23
     _dataset_keys = ["Eu_i", "Eu_q", "Ev_i", "Ev_q", "Ew_i", "Ew_q"]
     _display_keys = ["Eu_i", "Eu_q", "Ev_i", "Ev_q", "Ew_i", "Ew_q"]
     _db_disp = [True, True, True, True, True, True]
+    # raise NotImplementedError()
+    warnings.warn("Dataset not fully supported yet")
 
 
 class JuiceRPWIhfL1bCdf(JuiceRPWIhfL1CdfData, dataset="JUICE_L1b_RPWI-HF-SID3"):
