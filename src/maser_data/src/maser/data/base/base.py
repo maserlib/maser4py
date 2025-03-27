@@ -19,6 +19,7 @@ import re
 import math
 from astropy.io import fits
 import numpy
+import warnings
 from .sweeps import Sweeps
 from .records import Records
 
@@ -565,28 +566,50 @@ class CdfData(Data, dataset="cdf"):
         with cls.open(filepath) as c:
             dataset = c.attrs["Logical_source"][...][0]
 
-            # required dataset mapping
-            # name change
-            if dataset == "srn_nda_routine_jup_edr":
-                dataset = "orn_nda_routine_jup_edr"
-            if dataset == "srn_nda_routine_sun_edr":
-                dataset = "orn_nda_routine_sun_edr"
+            # REQUIRED DATASET MAPPING AND WARNINGS
+            dataset_requiring_modification = [
+                "srn_nda_routine_jup_edr",
+                "srn_nda_routine_sun_edr",
+                "JUICE_H0_RPWI",
+                "wi_wav_rad1_l3_df",
+                "solo_l3_rpw-hfr",
+            ]
+            if dataset in dataset_requiring_modification:
+                # name change
+                if dataset == "srn_nda_routine_jup_edr":
+                    dataset = "orn_nda_routine_jup_edr"
+                elif dataset == "srn_nda_routine_sun_edr":
+                    dataset = "orn_nda_routine_sun_edr"
 
-            # complex dataset id
-            if dataset == "wi_wav_rad1_l3_df":
-                dataset = f"{dataset}_v{c.attrs['Skeleton_version']}"
+                # complex dataset id
+                if dataset == "wi_wav_rad1_l3_df":
+                    dataset = f"{dataset}_v{c.attrs['Skeleton_version']}"
 
-            # temporary fixes
-            if dataset == "JUICE_H0_RPWI":
-                dataset = (
-                    "JUICE_L1a_RPWI-HF-SID"
-                    + c.attrs["Logical_source_description"][...][0][40:]
-                )
-            if dataset == "solo_l3_rpw-hfr":
-                if "tnr" in str(filepath):
-                    dataset = "solo_L3_rpw-tnr-flux_"
-                else:
-                    dataset = "solo_L3_rpw-hfr-flux_"
+                # temporary fixes
+                if dataset == "JUICE_H0_RPWI":
+                    dataset = (
+                        "JUICE_L1a_RPWI-HF-SID"
+                        + c.attrs["Logical_source_description"][...][0][40:]
+                    )
+                    if (
+                        "SID6" in dataset
+                        or "SID7" in dataset
+                        or "SID22" in dataset
+                        or "SID23" in dataset
+                    ):
+                        warnings.warn("Dataset not fully supported yet")
+                elif dataset == "solo_l3_rpw-hfr":
+                    if "tnr" in str(filepath):
+                        dataset = "solo_L3_rpw-tnr-flux_"
+                    else:
+                        dataset = "solo_L3_rpw-hfr-flux_"
+
+                # warnings
+                if dataset == "wi_wav_rad1_l3_df_v01":
+                    warnings.warn(
+                        "Rad1 v01 dataset is deprecated, consider using Rad1 v02.",
+                        DeprecationWarning,
+                    )
 
         return dataset
 
