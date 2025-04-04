@@ -125,7 +125,8 @@ publish-maser_tools:
     include: .ci/publish_package.yml
     strategy: depend
   variables:
-    PACKAGE_DIR: 'src/user_guide.rst'
+    # PACKAGE_DIR: 'src/user_guide.rst'
+    PACKAGE_DIR: 'src/maser_tools'
     PYPI_TOKEN: $MASER_TOOLS_PYPI_TOKEN
   only:
     - tags
