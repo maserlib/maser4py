@@ -142,7 +142,7 @@ publish-maser4py:
     PYPI_TOKEN: $MASER4PY_PYPI_TOKEN
     # TODO: This ID comes from the sandbox server.
     # You will have to change it with one generated from the production server
-    ZENODO_DEPOSIT_ID: 1096032
+    ZENODO_DEPOSIT_ID: 15126233  # 1096032
   only:
     - tags
     - web
