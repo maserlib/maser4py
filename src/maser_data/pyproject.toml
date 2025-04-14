@@ -12,7 +12,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
+python = ">=3.9,<4"
 spacepy = {version = ">=0.5,<1.0", optional = true}
 numpy = ">=1.26,<2"
 astropy = "^5.0.4"

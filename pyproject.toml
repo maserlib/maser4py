@@ -28,7 +28,7 @@ packages = [
 maser = 'maser.script:main'
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
+python = ">=3.9,<4"
 jupyter = {version = "^1.0.0", optional = true}
 jupytext = {version = "^1.13.8", optional = true}
 spacepy = {version = ">=0.4,<1.0", optional = true}
