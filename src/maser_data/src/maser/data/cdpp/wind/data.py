@@ -409,7 +409,7 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
                         dtmin[loc : loc + nzpalf],
                     )
                 for i in range(len(sweep_freq_list)):
-                    freq_out = int(np.where(sweep_freq_list[i] == freq_ref)[0])
+                    freq_out = int(np.where(sweep_freq_list[i] == freq_ref)[0][0])
                     freq = sweep_freq_list[i]
                     freq_in = []
                     time_out_final = np.arange(t_out_min, t_out_max, 1)

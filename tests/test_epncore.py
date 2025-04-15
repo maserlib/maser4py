@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .fixtures import test_filepaths
+from .fixtures import filepaths_test
 from .constants import BASEDIR
 import pytest
 from maser.data import Data
@@ -58,7 +58,7 @@ def epncore_expected():
 
 
 @pytest.mark.test_data_required
-@pytest.mark.parametrize("filepath,dataset", test_filepaths())
+@pytest.mark.parametrize("filepath,dataset", filepaths_test())
 def test_any_dataset(filepath, dataset, epncore_expected):
     if (expected_md := epncore_expected[dataset][filepath.name])[
         "granule_uid"

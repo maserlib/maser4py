@@ -49,7 +49,7 @@ def download_file(url: str, filepath: Path, chunk_size=8192):
     return filepath
 
 
-def test_filepaths():
+def filepaths_test():
     filepaths = []
     for database_name in DATA_FILES.keys():
         cur_db_name = Path(ROOT_DATA_DIRECTORY) / database_name
