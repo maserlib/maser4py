@@ -55,7 +55,7 @@ dev = ["pytest", "pytest-cov", "pre-commit", "mypy", "black", "requests", "Sphin
 all = ["jupyter", "jupytext", "spacepy", "maser-data", "maser-plot", "maser-tools"]
 
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 pre-commit = "^2.17.0"
