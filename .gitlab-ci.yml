@@ -49,7 +49,8 @@ type-check-job:
     - poetry install
   script:
     # run mypy
-    - poetry run mypy src/maser_data #
+    # poetry run mypy --follow-imports=skip src/maser_data/src/maser/data/base/base.py #
+    - poetry run mypy --follow-imports=skip src/maser_data/src #
   only:
     - develop
     - master
@@ -124,7 +125,8 @@ publish-maser_tools:
     include: .ci/publish_package.yml
     strategy: depend
   variables:
-    PACKAGE_DIR: 'src/user_guide.rst'
+    # PACKAGE_DIR: 'src/user_guide.rst'
+    PACKAGE_DIR: 'src/maser_tools'
     PYPI_TOKEN: $MASER_TOOLS_PYPI_TOKEN
   only:
     - tags
@@ -138,9 +140,9 @@ publish-maser4py:
   variables:
     PACKAGE_DIR: '.'
     PYPI_TOKEN: $MASER4PY_PYPI_TOKEN
-    # TODO: This ID comes from the sandbox server.
+    # TODO: This ID comes from the sandbox server (1096032).
     # You will have to change it with one generated from the production server
-    ZENODO_DEPOSIT_ID: 1096032
+    ZENODO_DEPOSIT_ID: 15126233
   only:
     - tags
     - web

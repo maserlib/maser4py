@@ -1,19 +1,19 @@
 [tool.poetry]
 name = "maser-plot"
-version = "0.2.7"
+version = "0.4.0"
 description = "Maser4py submodule to plot radio data"
 readme = "README.md"
-authors = ["Baptiste Cecconi <baptiste.cecconi@obspm.fr>", "Sonny Lion <sonny.lion@obspm.fr>", "Xavier Bonnin <xavier.bonnin@obspm.fr>"]
-license = "CeCILL"
+authors = ["MASER team <contact.maser@obspm.fr>"]
+license = "CeCILL-B"
 
 # handle namespace with poetry
 packages = [
-    { include = "maser" }
+    { include = "maser", from = "src" }
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
-matplotlib = "^3.5.2"
+python = ">=3.9,<4"
+matplotlib = ">=3.5,<4"
 
 [build-system]
 requires = ["poetry>=1.1.4", "setuptools"]

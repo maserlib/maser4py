@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.16.1
+
+- Release maser-data 0.4.1
+- Release maser-plot 0.3.1
+
 ## 0.15.3
 
 - Release maser-data 0.3.5

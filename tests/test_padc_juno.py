@@ -6,6 +6,7 @@ from maser.data.base import CdfData
 from maser.data.padc.juno import JnoWavLesiaL3aV02Data
 from astropy.time import Time
 from astropy.units import Quantity, Unit
+from pathlib import Path
 import xarray
 from .fixtures import skip_if_spacepy_not_available
 
@@ -77,7 +78,28 @@ def test_jno_wav_cdr_lesia__as_xarray(filepath):
         test_array = data.as_xarray()
 
         # check the sweep content
-        assert isinstance(test_array, xarray.DataArray)
+        assert isinstance(test_array, xarray.Dataset)
         assert test_array.coords["frequency"].data[0] == pytest.approx(0.048828)
-        assert test_array.attrs["units"] == "V**2 m**-2 Hz**-1"
-        assert test_array.data[0][0] == pytest.approx(3.211884e-06)
+        assert test_array["INTENSITY"].attrs["units"] == "V**2 m**-2 Hz**-1"
+        assert test_array["INTENSITY"].data[0][0] == pytest.approx(3.211884e-06)
+        assert set(data.dataset_keys) == set(list(test_array.keys()))
+
+
+@pytest.mark.test_data_required
+@skip_if_spacepy_not_available
+@for_each_test_file
+def test_jno_wav_cdr_lesia_quicklook(filepath):
+    with Data(filepath=filepath) as data:
+        #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+        # checking default
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()

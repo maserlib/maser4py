@@ -8,7 +8,9 @@ from maser.data.psa import (
 )
 from maser.data.pds import Pds3Data
 import pytest
+from pathlib import Path
 from astropy.units import Quantity
+import xarray
 
 
 TEST_FILES = {
@@ -67,3 +69,54 @@ def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__iter_method__sweeps(mex_data):
         "data_type",
         "mode_selection",
     }
+
+
+@pytest.mark.test_data_required
+def test_mex_m_marsis_3_rdr_ais_ext4_v1_0__as_xarray(mex_data):
+    data = mex_data
+    xr = data.as_xarray()
+    assert isinstance(xr, xarray.Dataset)
+    assert set(xr.keys()) == {
+        "SPECTRAL_DENSITY",
+        "SPECTRAL_DENSITY_AVG",
+        "SPECTRAL_DENSITY_MED",
+        "SPECTRAL_DENSITY_MIN",
+        "SPECTRAL_DENSITY_MAX",
+    }
+    # assert "SPECTRAL_DENSITY_MED" in xr.keys()
+    # assert "SPECTRAL_DENSITY_AVG" in xr.keys()
+    # assert "SPECTRAL_DENSITY_MIN" in xr.keys()
+    # assert "SPECTRAL_DENSITY_MAX" in xr.keys()
+    # assert "SPECTRAL_DENSITY_01" in xr.keys()
+    # assert "SPECTRAL_DENSITY_80" in xr.keys()
+    assert xr.coords.dims == {"time": 1057, "frequency": 160, "sample": 80}
+    assert xr["SPECTRAL_DENSITY"].dims == ("frequency", "time", "sample")
+    assert xr["SPECTRAL_DENSITY_MED"].dims == ("frequency", "time")
+    assert xr["SPECTRAL_DENSITY_MED"].shape == (160, 1057)
+    assert xr["SPECTRAL_DENSITY_MED"].units == "W m^-2 Hz^-1"
+    assert set(data.dataset_keys) == set(list(xr.keys()))
+
+
+@pytest.mark.test_data_required
+def test_mex_m_marsis_3_rdr_ais_ext4_v1_0_quicklook():
+    for dataset in TEST_FILES.keys():
+        for filepath in TEST_FILES[dataset]:
+            #  ql_path = BASEDIR.parent / "quicklook" / "nda" / f"{filepath.stem}.png"
+            ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+            data = Data(filepath=filepath)
+            #  assert open(ql_path, "rb").read() == open(ql_path_tmp, "rb").read()
+
+            # checking default
+            data.quicklook(ql_path_tmp)
+            assert ql_path_tmp.is_file()
+            ql_path_tmp.unlink()
+
+            # checking all
+            forbbiden_keys = ["SPECTRAL_DENSITY"]
+            test_keys = []
+            for key in data.dataset_keys:
+                if key not in forbbiden_keys:
+                    test_keys.append(key)
+            data.quicklook(ql_path_tmp, keys=test_keys)
+            assert ql_path_tmp.is_file()
+            ql_path_tmp.unlink()

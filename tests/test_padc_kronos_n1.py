@@ -9,6 +9,8 @@ from astropy.time import Time
 from astropy.units import Quantity, Unit
 
 from xarray.core.dataarray import DataArray
+from pathlib import Path
+import xarray
 
 TEST_FILES = {
     "co_rpws_hfr_kronos_n1": [
@@ -37,7 +39,7 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__len():
     data = Data(filepath=filepath)
     assert data._nsweep == 219
     assert data._nrecord == 78621
-    assert data.file_size == 2201388
+    assert data.file_size.value == 2201388
 
 
 @pytest.mark.test_data_required
@@ -58,7 +60,7 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__len_sweeps():
 def test_co_rpws_hfr_kronos_n1_bin_dataset__len_file():
     for filepath in TEST_FILES["co_rpws_hfr_kronos_n1"]:
         data = Data(filepath=filepath, access_mode="file")
-        assert len(data) == data.file_size
+        assert len(data) == data.file_size.value
 
 
 @pytest.mark.test_data_required
@@ -133,10 +135,12 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__as_xarray():
     filepath = TEST_FILES["co_rpws_hfr_kronos_n1"][0]
     data = Data(filepath=filepath)
     xarr = data.as_xarray()
+    assert isinstance(xarr, xarray.Dataset)
     xarr_keys = xarr.keys()
     assert set(xarr_keys) == set(data._format["vars"].keys())
     for k in xarr_keys:
         assert isinstance(xarr[k], DataArray)
+    assert set(data.dataset_keys) == set(list(xarr.keys()))
 
 
 @pytest.mark.test_data_required
@@ -144,3 +148,20 @@ def test_co_rpws_hfr_kronos_n1_bin_dataset__records_data():
     filepath = TEST_FILES["co_rpws_hfr_kronos_n1"][0]
     data = Data(filepath=filepath)
     assert all(dd == rd for dd, rd in zip(data._data, data.records))
+
+
+@pytest.mark.test_data_required
+def test_co_rpws_hfr_kronos_n1_bin_dataset_quicklook():
+    for filepath in TEST_FILES["co_rpws_hfr_kronos_n1"]:
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+
+        # checking default
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        data.quicklook(ql_path_tmp, keys=data.dataset_keys)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
