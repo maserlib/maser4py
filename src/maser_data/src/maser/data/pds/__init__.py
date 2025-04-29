@@ -1,0 +1,51 @@
+# -*- coding: utf-8 -*-
+
+"""
+Classes for PDS datasets.
+
+.. list-table:: Dataset Table
+   :widths: 20 20 20 20 10 10
+   :header-rows: 1
+
+   * - Observatory
+     - Instrument
+     - Repository
+     - Dataset-id
+     - Format
+     - Requires
+   * - Cassini
+     - RPWS
+     - TBD
+     - `CO-V/E/J/S/SS-RPWS-_`
+     - PDS3
+     - N/A
+   * - Voyager
+     - PRA
+     - TBD
+     - `VGX-X-PRA-_`
+     - PDS3
+     - N/A
+
+"""
+
+from .data import (  # noqa: F401
+    Pds3Data,
+)
+from .vg import (  # noqa: F401
+    Vg1JPra3RdrLowband6secV1Data,
+    Vg1JPra4SummBrowse48secV1Data,
+    Vg1SPra3RdrLowband6secV1Data,
+    Vg2JPra4SummBrowse48secV1Data,
+    Vg2NPra2RdrHighrate60msV1Data,
+    Vg2NPra3RdrLowband6secV1Data,
+    Vg2NPra4SummBrowse48secV1Data,
+    Vg2UPra3RdrLowband6secV1Data,
+    Vg2UPra4SummBrowse48secV1Data,
+    VgPra3RdrLowband6secV1Sweep,
+    VgPra3RdrLowband6secV1Sweeps,
+    VgPra4SummBrowse48secV1Sweeps,
+)
+from .co import (  # noqa: F401
+    CoVEJSSSRpws2RefdrWbrFullV1Data,
+    CoVEJSSSRpws3RdrLrFullV1Data,
+)

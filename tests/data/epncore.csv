@@ -6,7 +6,7 @@
 "cdpp_stb_l2_wav_h_res_lfr","STB_WAV_LFR_20070131.B3E",,,,,"STB_WAV_LFR_20070131.B3E","cdpp_stb_l2_wav_h_res_lfr","cdpp_stb_l2_wav_h_res_lfr:STB_WAV_LFR_20070131.B3E",,,,,,,,,,,,,
 "cdpp_sta_l2_wav_h_res_hfr","STA_WAV_HFR_20070131.B3E",,,,,"STA_WAV_HFR_20070131.B3E","cdpp_sta_l2_wav_h_res_hfr","cdpp_sta_l2_wav_h_res_hfr:STA_WAV_HFR_20070131.B3E",,,,,,,,,,,,,
 "cdpp_stb_l2_wav_h_res_hfr","STB_WAV_HFR_20070131.B3E",,,,,"STB_WAV_HFR_20070131.B3E","cdpp_stb_l2_wav_h_res_hfr","cdpp_stb_l2_wav_h_res_hfr:STB_WAV_HFR_20070131.B3E",,,,,,,,,,,,,
-"cdpp_wi_wa_rad1_l2","wi_wa_rad1_l2_19941110_v01.dat",1428,"application/octet-stream","ds","AKR#Auroral Kilometric Radiation#Solar bursts#Type II#Type III","wi_wa_rad1_l2_19941110_v01.dat","cdpp_wi_wa_rad1_l2","cdpp_wi_wa_rad1_l2:wi_wa_rad1_l2_19941110_v01","wi_wa_rad1_19941110","wind","waves","CNES/CDPP",1040000.0,20000.0,"planet#star","Earth#Sun","magnetosphere#heliopshere",2449667.4968402777,2449667.193125,2092.0,91.0
+"cdpp_wi_wa_rad1_l2","wi_wa_rad1_l2_19941110_v01.dat",1428,"application/octet-stream","ds","AKR#Auroral Kilometric Radiation#Solar bursts#Type II#Type III","wi_wa_rad1_l2_19941110_v01.dat","cdpp_wi_wa_rad1_l2","cdpp_wi_wa_rad1_l2:wi_wa_rad1_l2_19941110_v01","wi_wa_rad1_19941110","wind","waves","CNES/CDPP",1040000.0,20000.0,"planet#star","Earth#Sun","magnetosphere#heliopshere",2449667.4968402777,2449667.193125,1929.17,0.35786438
 "cdpp_wi_wa_rad1_l2_60s_v2","wi_wa_rad1_l2_60s_19941114_v01.dat",,,,,,,"__skip__",,,,,,,,,,,,,
 "cdpp_wi_wa_rad2_l2_60s_v2","wi_wa_rad2_l2_60s_19941114_v01.dat",,,,,,,"__skip__",,,,,,,,,,,,,
 "cdpp_wi_wa_tnr_l2_60s_v2","wi_wa_tnr_l2_60s_19941114_v01.dat",,,,,,,"__skip__",,,,,,,,,,,,,
@@ -152,3 +152,4 @@
 "wi_wav_rad1_l3_df_v02","wi_wa_rad1_l3_df_20230523_v02.cdf",,,,,,,"__skip__",,,,,,,,,,,,,
 "mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_","mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_20211001_v00.cdf",,,,,,,"__skip__",,,,,,,,,,,,,
 "mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_","mmo_pwi_sorbet_l1_ex_specdB-tnr-qtn_20211002_v00.cdf",,,,,,,"__skip__",,,,,,,,,,,,,
+"mmo_pwi_sorbet_l1_bz-ex_complex-specdB-tnr","mmo_pwi_sorbet_l1_bz-ex_complex-specdB-tnr_20220623_v00.cdf",,,,,,,"__skip__",,,,,,,,,,,,,
