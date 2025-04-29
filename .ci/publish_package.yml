@@ -47,3 +47,4 @@ publish-zenodo:
   # TODO: remove the sandbox argument and use the real Zenodo API
   script:
     - python .ci/zenodo.py -p ${PACKAGE_DIR} -t ${ZENODO_TOKEN} -id ${ZENODO_DEPOSIT_ID} --sandbox
+    # python .ci/zenodo.py -p ${PACKAGE_DIR} -t ${ZENODO_TOKEN} -id ${ZENODO_DEPOSIT_ID}

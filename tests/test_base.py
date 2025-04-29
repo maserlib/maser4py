@@ -5,7 +5,7 @@ from maser.data.base import (
     CdfData,
     FitsData,
 )
-from .fixtures import test_filepaths
+from .fixtures import filepaths_test
 from pathlib import Path
 import pytest
 from .fixtures import skip_if_spacepy_not_available
@@ -42,7 +42,7 @@ def test_bin_dataset():
 
 
 @pytest.mark.test_data_required
-@pytest.mark.parametrize("filepath,dataset", test_filepaths())
+@pytest.mark.parametrize("filepath,dataset", filepaths_test())
 def test_any_dataset(filepath, dataset):
     data = Data(filepath)
     assert data.dataset == dataset

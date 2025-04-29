@@ -1,26 +1,30 @@
 [tool.poetry]
 name = "maser-tools"
-version = "0.2.0"
-description = ""
-authors = ["MASER Team"]
-license = "CeCILL"
+version = "0.3.0"
+description = "Tools to handle some file formats supported in maser-data package"
+authors = ["MASER team <contact.maser@obspm.fr>"]
+license = "CeCILL-B"
+homepage = "https://pypi.org/project/maser-tools"
+repository = "https://github.com/maserlib/maser4py"
+keywords = ["maser", "data science", "radioastronomy"]
 
 # handle namespace with poetry
 packages = [
-    { include = "maser" }
+    { include = "maser", from = "src" }
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
+python = ">=3.9,<4"
 numpy = ">=1.23,<2.0"
-spacepy = {version = ">=0.5,<1.0", optional = true}
+# spacepy = {version = ">=0.5,<1.0", optional = true}
+spacepy = ">=0.5,<1.0"
 openpyxl = "^3.0.10"
 pytz = "^2022.4"
 jinja2 = "^3.1.2"
 
-[tool.poetry.extras]
-spacepy = ["spacepy"]
-all = ["spacepy"]
+# [tool.poetry.extras]
+# spacepy = ["spacepy"]
+# all = ["spacepy"]
 
 [build-system]
 requires = ["poetry>=1.1.4", "setuptools"]
