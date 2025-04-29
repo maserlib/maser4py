@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "maser-tools"
 version = "0.3.0"
-description = ""
-authors = ["MASER Team"]
-license = "CeCILL"
+description = "Tools to handle some file formats supported in maser-data package"
+authors = ["MASER team <contact.maser@obspm.fr>"]
+license = "CeCILL-B"
+homepage = "https://pypi.org/project/maser-tools"
+repository = "https://github.com/maserlib/maser4py"
+keywords = ["maser", "data science", "radioastronomy"]
 
 # handle namespace with poetry
 packages = [

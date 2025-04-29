@@ -4,7 +4,7 @@ version = "0.4.0"
 description = "Maser4py submodule to plot radio data"
 readme = "README.md"
 authors = ["MASER team <contact.maser@obspm.fr>"]
-license = "CeCILL"
+license = "CeCILL-B"
 
 # handle namespace with poetry
 packages = [

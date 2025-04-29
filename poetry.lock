@@ -2079,7 +2079,7 @@ url = "src/maser_plot"
 [[package]]
 name = "maser-tools"
 version = "0.3.0"
-description = ""
+description = "Tools to handle some file formats supported in maser-data package"
 optional = false
 python-versions = ">=3.9,<4"
 groups = ["main", "dev"]
