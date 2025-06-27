@@ -28,7 +28,7 @@
 {% for key, val in gattrs.items() %}
 
     "{{ key }}"{% for entry in val %}
-           {{ entry["Entry Number"] }}:  {{ entry["Data Type"] }}    { "{{ entry["Value"] }}" }
+           {{ entry["Entry Number"] }}:  {{ entry["Data Type"] }}    { '{{ entry["Value"] }}' }
     {% endfor %} .
 {% endfor %}
 
@@ -62,7 +62,7 @@
   ! --------     ----   -----
 
     {% for key, val in vattrs.items() %}{% if key == zvar %}{% for vattr, entry in val.items() %}
-    "{{ vattr }}"   {{ entry["Data Type"] }}  {% if entry["Data Type"] == "CDF_CHAR" %}{ "{{ entry["Value"] }}" }{% else %}{ {{ entry["Value"] }} }{% endif %}
+    "{{ vattr }}"   {{ entry["Data Type"] }}  {% if entry["Data Type"] == "CDF_CHAR" %}{ '{{ entry["Value"] }}' }{% else %}{ {{ entry["Value"] }} }{% endif %}
     {% endfor %}{% endif %}{% endfor %} .
 
 {% if val["NRV"] %}
