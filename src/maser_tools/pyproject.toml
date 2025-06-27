@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "maser-tools"
-version = "0.3.0"
+version = "0.3.1"
 description = "Tools to handle some file formats supported in maser-data package"
 authors = ["MASER team <contact.maser@obspm.fr>"]
 license = "CeCILL-B"
