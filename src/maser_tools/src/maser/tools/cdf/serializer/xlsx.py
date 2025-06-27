@@ -279,8 +279,9 @@ class Xlsx2skt:
 
                 if not sheet_data:
                     raise InvalidFile(
-                        "{0} is invalid: "
-                        "{1} sheet has no header nor data!".format(xlsx_file, shtn)
+                        "{0} is invalid: {1} sheet has no header nor data!".format(
+                            xlsx_file, shtn
+                        )
                     )
 
                 sheets[shtn] = sheet_data
@@ -397,8 +398,9 @@ class Xlsx2skt:
                         vattrs[zvar][sheets[VATTRS]["Attribute Name"][j]] = fields
         except Exception:
             logger.exception(
-                "{0}, {1} or {2} sheet is badly formatted, "
-                "please check!".format(ZVARS, VATTRS, NRV)
+                "{0}, {1} or {2} sheet is badly formatted, please check!".format(
+                    ZVARS, VATTRS, NRV
+                )
             )
             raise InvalidFile(message="{0} is invalid!".format(self.file))
 

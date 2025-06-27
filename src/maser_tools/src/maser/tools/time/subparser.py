@@ -36,8 +36,7 @@ def add_leapsec_subparser(subparser):
         "--filepath",
         nargs=1,
         default=[LS_FILE_DEF_PATH],
-        help="CDFLeapSeconds.txt filepath.\n "
-        "Default is ${0}".format(LS_FILE_DEF_PATH),
+        help="CDFLeapSeconds.txt filepath.\n Default is ${0}".format(LS_FILE_DEF_PATH),
     )
     leapsec_parser.add_argument(
         "-d",

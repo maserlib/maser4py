@@ -55,7 +55,7 @@ class VgPra3RdrLowband6secV1Sweeps(Sweeps):
             self.data_reference.sweep_mapping,
         ):
             header = {"frequencies": self.data_reference.frequencies, "time": t}
-            data = self.data_reference.table[f"SWEEP{sm[1]+1}"][sm[0], :]
+            data = self.data_reference.table[f"SWEEP{sm[1] + 1}"][sm[0], :]
             header["status_word"] = data[0]
 
             yield VgPra3RdrLowband6secV1Sweep(header, data[1:] / 100 * Unit("dB"))

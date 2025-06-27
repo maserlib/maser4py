@@ -21,7 +21,7 @@ from maser.utils.cdf.serializer import Skeleton
 # Mandatory
 __version__ = "0.3.0"
 __author__ = "X.Bonnin"
-__date__ = "2019-04-23" ""
+__date__ = "2019-04-23"
 
 # Optional
 __license__ = "MIT"

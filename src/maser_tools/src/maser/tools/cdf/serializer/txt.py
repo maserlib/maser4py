@@ -117,7 +117,7 @@ class Skt2txt:
                         value += char
                         counter += 1
                         if counter > length:
-                            value += '\' - \n \''
+                            value += "' - \n '"
                             counter = 0
 
                 gattrs[gattr][i]["Value"] = value
@@ -146,7 +146,7 @@ class Skt2txt:
                         value += char
                         counter += 1
                         if counter > length:
-                            value += '\' - \n \''
+                            value += "' - \n '"
                             counter = 0
 
                 vattrs[zvar][vatt]["Value"] = value

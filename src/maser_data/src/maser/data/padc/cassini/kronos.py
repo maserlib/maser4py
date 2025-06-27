@@ -216,5 +216,5 @@ def ydh_datetime(ydh: Union[int, str]):
     if isinstance(ydh, str):
         ydh_str = ydh
     else:
-        ydh_str = f"{ydh//100}.{ydh%100}"
+        ydh_str = f"{ydh // 100}.{ydh % 100}"
     return datetime.datetime.strptime(ydh_str, "%Y%j.%H")

@@ -172,7 +172,7 @@ class OrnNdaNewRoutineSunEdrFitsData(
     @property
     def fields(self):
         if self._fields is None:
-            self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
+            self._fields = [self.file[0].header[f"CHANNEL{i + 1}"] for i in range(2)]
         return self._fields
 
     def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"], **kwargs):
@@ -211,7 +211,7 @@ class OrnNdaNewRoutineJupEdrFitsData(
     @property
     def fields(self):
         if self._fields is None:
-            self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(4)]
+            self._fields = [self.file[0].header[f"CHANNEL{i + 1}"] for i in range(4)]
         return self._fields
 
     def quicklook(
@@ -246,7 +246,7 @@ class OrnNdaNewRoutineTransitEdrFitsData(
     @property
     def fields(self):
         if self._fields is None:
-            self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
+            self._fields = [self.file[0].header[f"CHANNEL{i + 1}"] for i in range(2)]
         return self._fields
 
     def quicklook(
@@ -281,7 +281,7 @@ class OrnNdaMefistoSunEdrFitsData(
     @property
     def fields(self):
         if self._fields is None:
-            self._fields = [self.file[0].header[f"CHANNEL{i+1}"] for i in range(2)]
+            self._fields = [self.file[0].header[f"CHANNEL{i + 1}"] for i in range(2)]
         return self._fields
 
     def quicklook(self, file_png=None, keys: List[str] = ["LL", "RR"], **kwargs):

@@ -125,7 +125,6 @@ class RadioJoveSpxData(BinData, dataset="radiojove_spx"):  # type: ignore
 
         # Looping on note items to identify what keys are present
         for item in note_list:
-
             note_item = item.decode("ascii")
 
             if self.debug:
@@ -133,19 +132,16 @@ class RadioJoveSpxData(BinData, dataset="radiojove_spx"):  # type: ignore
 
             # looping on known key items
             for key_item in key_list:
-
                 # getting length of key name
                 key_len = len(key_item)
 
                 # checking if current note item contains current key item
                 if note_item[0:key_len] == key_item:
-
                     if self.debug:
                         print("Detected Key = {}".format(key_item))
 
                     # if current key item has multiple values, do this
                     if key_item in key_list_multi:
-
                         # if current key item has multiple values, initializing a list for the values
                         if key_item not in notes.keys():
                             notes[key_item] = []
@@ -175,7 +171,6 @@ class RadioJoveSpxData(BinData, dataset="radiojove_spx"):  # type: ignore
                             notes[key_item].append(note_value)
 
                     else:
-
                         # key has single value, extracting the value (no delimiter)
                         note_value = note_item[key_len:]
 
@@ -232,7 +227,6 @@ class RadioJoveSpxData(BinData, dataset="radiojove_spx"):  # type: ignore
         notes["free_text"] = raw_notes[0:start_index]
         note_list = raw_notes[start_index + 4 : stop_index].split("\xff")
         for note_item in note_list:
-
             if note_item == "Logged Using UT":
                 notes["Logged Using UT"] = True
             else:
@@ -374,11 +368,9 @@ class RadioJoveSpxData(BinData, dataset="radiojove_spx"):  # type: ignore
         if header["file_type"] == "SPS":
             header["nfreq"] = header["nchannels"]
             if notes["DUALSPECFILE"]:
-
                 header["nfeed"] = 2
 
                 if "banner0" in header.keys():
-
                     if "RCP" in header["banner0"]:
                         header["polar0"] = "RR"
                     elif "LCP" in header["banner0"]:
@@ -395,7 +387,6 @@ class RadioJoveSpxData(BinData, dataset="radiojove_spx"):  # type: ignore
                         header["polar1"] = "S"
 
                 else:
-
                     header["polar0"] = "S"
                     header["polar1"] = "S"
 
@@ -403,11 +394,9 @@ class RadioJoveSpxData(BinData, dataset="radiojove_spx"):  # type: ignore
                 header["feeds"].append(feed_tmp[header["polar1"]])
 
             else:
-
                 header["nfeed"] = 1
 
                 if "banner0" in header.keys():
-
                     if "RCP" in header["banner0"]:
                         header["polar0"] = "RR"
                     elif "LCP" in header["banner0"]:
@@ -416,7 +405,6 @@ class RadioJoveSpxData(BinData, dataset="radiojove_spx"):  # type: ignore
                         header["polar0"] = "S"
 
                 else:
-
                     header["polar0"] = "S"
 
                 header["feeds"].append(feed_tmp[header["polar0"]])

@@ -90,7 +90,7 @@ def plot_lfr_bp1_field(
 
     # set the color bar title
     if data_array.attrs.get("units"):
-        cbar_label = f'{field} [${data_array.attrs["units"]}$]'
+        cbar_label = f"{field} [${data_array.attrs['units']}$]"
     else:
         cbar_label = field
     cbar_ax.set_ylabel(cbar_label)

@@ -48,7 +48,7 @@ class MaserDas2StreamReader:
         return "[01]{:06d}{}".format(len(header), header)
 
     def packet(self):
-        packet = "<packet>\n" '    <x type="time27" units="us2000"></x>\n'
+        packet = '<packet>\n    <x type="time27" units="us2000"></x>\n'
         for var in self.vars:
             packet = (
                 packet + '    <y type="ascii{}" name="{}" units="{}">\n'
