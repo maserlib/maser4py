@@ -97,7 +97,7 @@ class Skt2txt:
 
     def reform_gattr(self, gattrs, length=48):
         """
-        Re-format the global attributess to fit inside skeleton table
+        Re-format the global attributes to fit inside skeleton table
         (i.e., break too long line.)
 
         :param gattrs: list of g. attributes
@@ -117,7 +117,7 @@ class Skt2txt:
                         value += char
                         counter += 1
                         if counter > length:
-                            value += '" - \n "'
+                            value += '\' - \n \''
                             counter = 0
 
                 gattrs[gattr][i]["Value"] = value
@@ -126,7 +126,7 @@ class Skt2txt:
 
     def reform_vattr(self, vattrs, length=60):
         """
-        Re-format the variable attributess to fit inside skeleton table
+        Re-format the variable attributes to fit inside skeleton table
         (i.e., break too long line.)
 
         :param vattrs: list of v. attributes
@@ -142,11 +142,11 @@ class Skt2txt:
                 elif entry["Data Type"] != "CDF_CHAR":
                     continue
                 else:
-                    for char in entry["Value"]:
+                    for char in str(entry["Value"]):
                         value += char
                         counter += 1
                         if counter > length:
-                            value += '" - \n "'
+                            value += '\' - \n \''
                             counter = 0
 
                 vattrs[zvar][vatt]["Value"] = value
