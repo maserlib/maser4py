@@ -46,6 +46,7 @@ from .wind import (  # noqa: F401
     WindWavesRad2L260sV1BinData,
     WindWavesTnrL260sV1BinData,
     WindWavesRad1L2BinData,
+    WindWavesRad2L2BinData,
     WindWavesTnrL3NnBinData,
     WindWavesTnrL260sV2BinData,
     WindWavesRad2L260sV2BinData,

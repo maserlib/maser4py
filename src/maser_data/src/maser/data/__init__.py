@@ -6,6 +6,7 @@ from .cdpp import (  # noqa: F401
     WindWavesRad1L260sV2BinData,
     WindWavesRad1L2BinData,
     WindWavesRad2L260sV2BinData,
+    WindWavesRad2L2BinData,
     WindWavesTnrL260sV2BinData,
     WindWavesTnrL3Bqt1mnBinData,
     WindWavesTnrL3NnBinData,
