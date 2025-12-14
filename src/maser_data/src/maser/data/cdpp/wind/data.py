@@ -564,6 +564,12 @@ class WindWavesRad1L2BinData(WindWavesL2BinData, dataset="cdpp_wi_wa_rad1_l2"): 
     pass
 
 
+class WindWavesRad2L2BinData(WindWavesL2BinData, dataset="cdpp_wi_wa_rad2_l2"):  # type: ignore
+    """Class for `cdpp_wi_wa_rad2_l2` binary data."""
+
+    pass
+
+
 class WindWavesRad2L260sV2BinData(BinData, dataset="cdpp_wi_wa_rad2_l2_60s_v2"):  # type: ignore
     """Class for `cdpp_wi_wa_rad2_l2_60s_v2` binary data."""
 
