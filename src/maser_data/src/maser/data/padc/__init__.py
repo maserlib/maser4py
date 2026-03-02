@@ -65,6 +65,7 @@ from .juno import (  # noqa: F401
 from .cassini import (  # noqa: F401
     CoRpwsHfrKronosN1Data,
     CoRpwsHfrKronosN2Data,
+    CoRpwsHfrKronosBgData,
 )
 from .stereo import (  # noqa: F401
     StaWavLfrL2Bin,

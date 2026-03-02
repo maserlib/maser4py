@@ -96,7 +96,11 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
                 format_data["record_def"]["np_dtype"],
                 format_data["record_def"]["units"],
             ):
-                self.__format["vars"][key] = (dtype, unit)
+                if isinstance(dtype, list):
+                    self.__format["vars"][key] = (tuple(dtype), unit)
+                else:
+                    self.__format["vars"][key] = (dtype, unit)
+        print(self.__format)
         return self.__format
 
     def _filepath_to_level(self, level):
@@ -407,3 +411,29 @@ class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
             # vmax=[-120, 1, 1, 1, 40, 40],
             **kwargs,
         )
+
+
+class CoRpwsHfrKronosBgData(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_bg"):
+    @property
+    def times(self):
+        from datetime import datetime
+        from calendar import isleap
+
+        period = self.file.name[3:]
+
+        period_times = {  # First list special cases
+            "Turn_on": ("1997298", "1997299"),
+            "Venus1": ("1998116", "1998116"),
+            "Ico_m14": ("1998364", "1999005"),
+            "Venus2": ("1999175", "1999175"),
+            "Earth": ("1999227", "1999257"),
+        }
+        # then process the current period, if not a special one
+        if period not in period_times:
+            yyyy, ddb, dde = period.split("_")
+            if dde == "366":
+                if not isleap(int(yyyy)):
+                    dde = "365"
+            period_times[period] = (f"{yyyy}{ddb}", f"{yyyy}{dde}")
+
+        return Time(datetime.strptime(period_times[period][0], "'%Y%j'"))

@@ -31,6 +31,7 @@ from .padc import (  # noqa: F401
     JnoWavLesiaL3aV02Data,
     CoRpwsHfrKronosN1Data,
     CoRpwsHfrKronosN2Data,
+    CoRpwsHfrKronosBgData,
     StaWavLfrL3DfCdf,
     StbWavLfrL3DfCdf,
     StaWavHfrL3DfCdf,
