@@ -4,8 +4,9 @@ import pytest
 from maser.data import Data
 from maser.data.base import BinData
 from maser.data.padc.cassini.data import (
-    CoRpwsHfrKronosN3eData,
     CoRpwsHfrKronosN3dData,
+    CoRpwsHfrKronosN3eData,
+    CoRpwsHfrKronosN3gData,
     CoRpwsHfrKronosN2Data,
     CoRpwsHfrKronosN1Data,
 )
@@ -71,7 +72,11 @@ TEST_FILES = {
         BASEDIR / "kronos" / "2012_181_270" / "n3d" / "N3d_dsq2012181.22",
         BASEDIR / "kronos" / "2012_181_270" / "n3d" / "N3d_dsq2012181.23",
     ],
+    "co_rpws_hfr_kronos_n3g": [
+        BASEDIR / "kronos" / "2012_181_270" / "n3g" / "F2012181.00",
+    ],
 }
+
 
 # Cassini/RPWS/HFR Kronos N3d TESTS ==== co_rpws_hfr_kronos_n3d
 
@@ -196,3 +201,15 @@ def test_co_rpws_hfr_kronos_n3e_quicklook():
         data.quicklook(ql_path_tmp, keys=data.dataset_keys)
         assert ql_path_tmp.is_file()
         ql_path_tmp.unlink()
+
+
+# Cassini/RPWS/HFR Kronos N3g TESTS ==== co_rpws_hfr_kronos_n3g
+
+
+@pytest.mark.test_data_required
+def test_co_rpws_hfr_kronos_n3g_bin_dataset():
+    for filepath in TEST_FILES["co_rpws_hfr_kronos_n3g"]:
+        data = Data(filepath=filepath)
+        assert isinstance(data, BinData)
+        assert isinstance(data, CoRpwsHfrKronosN3gData)
+        assert data.level == "n3g"

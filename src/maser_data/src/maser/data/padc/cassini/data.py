@@ -485,6 +485,41 @@ class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
         )
 
 
+class CoRpwsHfrKronosN3gData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3g"):  # type: ignore
+    def quicklook(
+        self,
+        file_png=None,
+        keys: List[str] = ["fluxX", "fluxZ"],
+        yscale: str = "log",
+        **kwargs,
+    ):
+        default_keys = ["fluxX", "fluxZ"]
+        db_tab = numpy.array([True, True])
+        vmin_tab = numpy.array([-160, -160])
+        vmax_tab = numpy.array([-120, -120])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(
+            keys=keys,
+            # db=[True, False, False, False, True, True],
+            file_png=file_png,
+            y="frequency",
+            yscale=yscale,
+            # vmin=[-160, -1, -1, -1, 10, 10],
+            # vmax=[-120, 1, 1, 1, 40, 40],
+            **kwargs,
+        )
+
+
 class CoRpwsHfrKronosBgData(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_bg"):
     _iter_sweep_class = CoRpwsHfrKronosFixedFrequencyDataSweeps
     _iter_record_class = CoRpwsHfrKronosDataRecords

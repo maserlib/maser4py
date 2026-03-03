@@ -246,7 +246,8 @@
       ["N3e_dsq2012181.21", "co_rpws_hfr_kronos_n3e"],
       ["N3e_dsq2012181.22", "co_rpws_hfr_kronos_n3e"],
       ["N3e_dsq2012181.23", "co_rpws_hfr_kronos_n3e"]
-    ]
+    ],
+    "2012_181_270/n3g": [["F2012181.00", "co_rpws_hfr_kronos_n3g"]]
   },
   "maser": {
     "juno": [["jno_wav_cdr_lesia_20170329_v02.cdf", "jno_wav_cdr_lesia"]],

@@ -39,13 +39,13 @@
         "<i2"
       ],
       "units": [
-        "",
-        "",
-        "",
-        "",
-        "",
+        null,
+        null,
+        null,
+        null,
+        null,
         "cs",
-        "",
+        null,
         "ADU",
         "ADU",
         "ADU",
@@ -136,9 +136,25 @@
         ["<f4", 2],
         ["<f4", 2]
       ],
+      "units": [
+        null,
+        null,
+        "V**2/Hz",
+        null,
+        null,
+        null,
+        "rad",
+        "rad",
+        null,
+        null,
+        null
+      ],
       "length": 72
     },
     "description": "Cassini/RPWS/HFR Kronos Level 3b (Generic 3 antenna GP)",
+    "reference": {
+      "doi": "10.1029/2004RS003070"
+    },
     "depends": ["n1", "n2"]
   },
   "n3c": {
@@ -171,9 +187,25 @@
         ["<f4", 2],
         ["<f4", 2]
       ],
+      "units": [
+        null,
+        null,
+        "V**2/Hz",
+        null,
+        null,
+        null,
+        "rad",
+        "rad",
+        null,
+        null,
+        null
+      ],
       "length": 68
     },
     "description": "Cassini/RPWS/HFR Kronos Level 3c (Circular polarization 3 antenna GP)",
+    "reference": {
+      "doi": "10.1029/2004RS003070"
+    },
     "depends": ["n1", "n2"]
   },
   "n3d": {
@@ -208,6 +240,9 @@
       "length": 38
     },
     "description": "Cassini/RPWS/HFR Kronos Level 3d (Known source position 2 antenna GP)",
+    "reference": {
+      "doi": "10.1029/2004RS003070"
+    },
     "depends": ["n1", "n2"]
   },
   "n3e": {
@@ -242,6 +277,24 @@
       "length": 38
     },
     "description": "Cassini/RPWS/HFR Kronos Level 3e (Circular polarization 2 antenna GP)",
+    "reference": {
+      "doi": "10.1029/2004RS003070"
+    },
+    "depends": ["n1", "n2"]
+  },
+  "n3g": {
+    "file-format": "binary-fixed-record-length",
+    "record_def": {
+      "fields": ["ydh", "num", "fluxX", "fluxZ"],
+      "dtype": "<LLff",
+      "np_dtype": ["<u4", "<u4", "<f4", "<f4"],
+      "units": [null, null, "W/m**2/Hz", "W/m**2/Hz"],
+      "length": 16
+    },
+    "description": "Cassini/RPWS/HFR Kronos Level 3g (Calibrated flux densities)",
+    "reference": {
+      "doi": "10.1029/2003ja010260"
+    },
     "depends": ["n1", "n2"]
   },
   "bg": {
