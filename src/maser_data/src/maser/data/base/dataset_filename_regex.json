@@ -14,7 +14,7 @@
     ["cdpp_int_aur_polrad_rspn2", "^POLR_RSPN2_\\d{8}$"],
     [
       "co_rpws_hfr_kronos_bg",
-      "^bg_(?:20(?:0[0-9]|1[0-7])(?:_001_090|_091_180|_181_270|_271_366)|Earth|Ico_m14|Turn_on|Venus1|Venus2|)$"
+      "^bg_(?:20(?:0[0-9]|1[0-7])(?:_001_090|_091_180|_181_270|_271_366)|Earth|Ico_m14|Turn_on|Venus1|Venus2)$"
     ],
     ["co_rpws_hfr_kronos_n1", "^R\\d{7}\\.\\d{2}$"],
     ["co_rpws_hfr_kronos_n2", "^P\\d{7}\\.\\d{2}$"],
