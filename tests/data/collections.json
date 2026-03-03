@@ -54,6 +54,7 @@
     ]
   },
   "kronos": {
+    "2012_091_180/bg": [["bg_2012_091_180", "co_rpws_hfr_kronos_bg"]],
     "2012_091_180/n1": [
       ["R2012180.20", "co_rpws_hfr_kronos_n1"],
       ["R2012180.21", "co_rpws_hfr_kronos_n1"],
