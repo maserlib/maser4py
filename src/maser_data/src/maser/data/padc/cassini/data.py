@@ -3,7 +3,6 @@
 """
 Classes for Cassini datasets.
 """
-
 from typing import Iterable, Union, List, Any
 
 from maser.data.base import Data, BinData, Sweeps, Records, VariableFrequencies
@@ -51,6 +50,21 @@ class CoRpwsHfrKronosDataSweeps(Sweeps):
             )
 
 
+class CoRpwsHfrKronosFixedFrequencyDataSweeps(Sweeps):
+    @property
+    def generator(self):
+        for t in self.data_reference.times:
+            yield CoRpwsHfrKronosDataSweep(
+                {
+                    "frequencies": self.data_reference.frequencies,
+                    "time": t,
+                    "level": self.data_reference.level,
+                    "file": self.data_reference.filepath.name,
+                },
+                self.data_reference._data,
+            )
+
+
 class CoRpwsHfrKronosDataRecords(Records):
     @property
     def generator(self):
@@ -58,11 +72,14 @@ class CoRpwsHfrKronosDataRecords(Records):
             yield self.data_reference._data[i]
 
 
-class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kronos"):  # type: ignore
-    _iter_sweep_class = CoRpwsHfrKronosDataSweeps
-    _iter_record_class = CoRpwsHfrKronosDataRecords
-
-    _dataset_keys = None
+class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
+    _static_period_times = {
+        "Turn_on": ("1997298", "1997299"),
+        "Venus1": ("1998116", "1998116"),
+        "Ico_m14": ("1998364", "1999005"),
+        "Venus2": ("1999175", "1999175"),
+        "Earth": ("1999227", "1999257"),
+    }
 
     def __init__(
         self,
@@ -71,20 +88,29 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         access_mode: str = "sweeps",
     ):
         BinData.__init__(self, filepath, dataset, access_mode)
-        VariableFrequencies.__init__(self)
         self.__format = None
         self.level = self.dataset[19:]
-        self._levels = None
         self._data = self.read_data_binary()
-        self._nrecord = len(self._data)
-        self._nsweep = len(self.sweep_masks)
         self._depend_datasets: Iterable[str] = []
-        self.fields = self._format["vars"].keys()
-        self.units = [self._format["vars"][field][1] for field in self.fields]
+        self._dataset_keys = self._format["vars"].keys()
+        self.units = [self._format["vars"][field][1] for field in self._dataset_keys]
 
     @property
-    def _ydh(self):
-        return self.filepath.name[-10:]
+    def period_name(self):
+        return self.filepath.parents[1].name
+
+    @property
+    def _period_times(self) -> tuple:
+        if self.period_name in self._static_period_times:
+            return self._static_period_times[self.period_name]
+        else:
+            from calendar import isleap
+
+            yyyy, ddb, dde = self.period_name.split("_")
+            if dde == "366":
+                if not isleap(int(yyyy)):
+                    dde = "365"
+            return f"{yyyy}{ddb}", f"{yyyy}{dde}"
 
     @property
     def _format(self):
@@ -100,25 +126,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
                     self.__format["vars"][key] = (tuple(dtype), unit)
                 else:
                     self.__format["vars"][key] = (dtype, unit)
-        print(self.__format)
         return self.__format
-
-    def _filepath_to_level(self, level):
-        switcher = {
-            "n1": self.filepath.parents[1] / "n1" / f"R{self._ydh}",
-            "n2": self.filepath.parents[1] / "n2" / f"P{self._ydh}",
-        }
-        if level not in switcher.keys():
-            raise ValueError()
-        return switcher[level]
-
-    def levels(self, level):
-        if self._levels is None:
-            self._levels = {level: Data(self._filepath_to_level(level))}
-        elif level not in self._levels.keys():
-            self._levels[level] = Data(self._filepath_to_level(level))
-
-        return self._levels[level]
 
     def read_data_binary(self):
         file_size = self.file_size.value
@@ -142,6 +150,80 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
             mode="r",
         )
         return data
+
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
+    def as_xarray(self):
+        import xarray
+
+        units = self.units
+
+        dataset_keys = self._dataset_keys
+        data_vars = {}
+        for key, unit in zip(dataset_keys, units):
+            data_vars[key] = (
+                ["frequency"],
+                self._data[key][...].T,
+                {
+                    "units": unit,
+                },
+            )
+
+        datasets = xarray.Dataset(
+            data_vars=data_vars,
+            coords={
+                "frequency": (
+                    ["frequency"],
+                    self.frequencies.value,
+                    {"units": self.frequencies.unit},
+                ),
+            },
+        ).sortby("frequency")
+        # for key in dataset_keys:
+        #    datasets[key] = datasets[key].where(datasets[key] != self.file[key].attrs["FILLVAL"])
+        return datasets
+
+
+class CoRpwsHfrKronosNxData(VariableFrequencies, CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_nx"):  # type: ignore
+    _iter_sweep_class = CoRpwsHfrKronosDataSweeps
+    _iter_record_class = CoRpwsHfrKronosDataRecords
+
+    _dataset_keys = None
+
+    def __init__(
+        self,
+        filepath: Path,
+        dataset: Union[None, str] = "__auto__",
+        access_mode: str = "sweeps",
+    ):
+        VariableFrequencies.__init__(self)
+        CoRpwsHfrKronosData.__init__(self, filepath, dataset, access_mode)
+        self._levels = None
+        self._nrecord = len(self._data)
+        self._nsweep = len(self.sweep_masks)
+
+    @property
+    def _ydh(self):
+        return self.filepath.name[-10:]
+
+    def _filepath_to_level(self, level):
+        switcher = {
+            "n1": self.filepath.parents[1] / "n1" / f"R{self._ydh}",
+            "n2": self.filepath.parents[1] / "n2" / f"P{self._ydh}",
+        }
+        if level not in switcher.keys():
+            raise ValueError()
+        return switcher[level]
+
+    def levels(self, level):
+        if self._levels is None:
+            self._levels = {level: Data(self._filepath_to_level(level))}
+        elif level not in self._levels.keys():
+            self._levels[level] = Data(self._filepath_to_level(level))
+
+        return self._levels[level]
 
     @property
     def sweep_masks(self):
@@ -219,16 +301,6 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
                 ]
         return self._frequencies
 
-    @property
-    def dataset_keys(self):
-        if self._dataset_keys is None:
-            self._dataset_keys = self.fields  # self._format["vars"].keys()
-            # N1: ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"]
-            # N2: ["autoX", "autoZ", "crossR", "crossI"]
-            # N3e:["s", "v", "th", "ph", "snx", "snz"]
-            # N3d:["s", "q", "u", "v", "snx", "snz"]
-        return self._dataset_keys
-
     def epncore(self):
         md = BinData.epncore(self)
         md["obs_id"] = f"K{self._ydh}"
@@ -252,7 +324,7 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         return md
 
 
-class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"):  # type: ignore
+class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosNxData, dataset="co_rpws_hfr_kronos_n1"):  # type: ignore
     def _decode_times(self) -> Time:
         return Time(
             list(
@@ -296,7 +368,7 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
         )
 
 
-class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"):  # type: ignore
+class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosNxData, dataset="co_rpws_hfr_kronos_n2"):  # type: ignore
     def _decode_times(self) -> Time:
         return Time(list(map(t97_datetime, self._data["t97"])))
 
@@ -333,7 +405,7 @@ class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"
         )
 
 
-class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n3"):  # type: ignore
+class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosNxData, dataset="co_rpws_hfr_kronos_n3"):  # type: ignore
     def _decode_times(self) -> Time:
         return Time(
             list(map(t97_datetime, (self.levels("n2")._data["t97"])[self._data["num"]]))
@@ -414,26 +486,69 @@ class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
 
 
 class CoRpwsHfrKronosBgData(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_bg"):
+    _iter_sweep_class = CoRpwsHfrKronosFixedFrequencyDataSweeps
+    _iter_record_class = CoRpwsHfrKronosDataRecords
+
+    _dataset_keys = None
+
+    def __init__(
+        self,
+        filepath: Path,
+        dataset: Union[None, str] = "__auto__",
+        access_mode: str = "sweeps",
+    ):
+        CoRpwsHfrKronosData.__init__(self, filepath, dataset, access_mode)
+        self._nrecord = len(self._data)
+        self._nsweep = 1
+
+    @property
+    def _ydh(self):
+        return None
+        # return f"{self._period_times[0]}.00"
+
     @property
     def times(self):
         from datetime import datetime
-        from calendar import isleap
 
-        period = self.file.name[3:]
+        return Time([datetime.strptime(self._period_times[0], "%Y%j")])
 
-        period_times = {  # First list special cases
-            "Turn_on": ("1997298", "1997299"),
-            "Venus1": ("1998116", "1998116"),
-            "Ico_m14": ("1998364", "1999005"),
-            "Venus2": ("1999175", "1999175"),
-            "Earth": ("1999227", "1999257"),
-        }
-        # then process the current period, if not a special one
-        if period not in period_times:
-            yyyy, ddb, dde = period.split("_")
-            if dde == "366":
-                if not isleap(int(yyyy)):
-                    dde = "365"
-            period_times[period] = (f"{yyyy}{ddb}", f"{yyyy}{dde}")
+    @property
+    def frequencies(self):
+        return self._data["xf"] * Unit("kHz")
 
-        return Time(datetime.strptime(period_times[period][0], "'%Y%j'"))
+    def as_xarray(self):
+        import xarray
+
+        dataset_keys = self.dataset_keys
+        units = self.units
+        antennas = ["Z", "-X", "+X", "D"]
+        bins = numpy.linspace(-170, -90, 1601)
+        dependencies = [
+            ["frequency", "antenna", "bin"],
+            ["frequency", "antenna"],
+            ["frequency", "antenna"],
+            ["frequency"],
+            ["frequency"],
+            ["frequency", "antenna"],
+            ["frequency", "antenna"],
+            ["frequency", "antenna"],
+            ["frequency", "antenna"],
+        ]
+
+        data_vars = {}
+        for key, units, deps in zip(dataset_keys, units, dependencies):
+            data_vars[key] = (
+                deps,
+                self._data[key],
+                {"units": units},
+            )
+
+        datasets = xarray.Dataset(
+            data_vars=data_vars,
+            coords={
+                "frequency": (["frequency"], self.frequencies, {"units": "kHz"}),
+                "antenna": (["antenna"], antennas),
+                "bin": (["bin"], bins, {"units": "dB"}),
+            },
+        )
+        return datasets.sortby("frequency")
