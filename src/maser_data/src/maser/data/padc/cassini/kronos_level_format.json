@@ -2,6 +2,9 @@
   "k": {
     "format-type": "byte-stream",
     "description": "Cassini/RPWS/HFR Kronos Level 0 (Telemetry)",
+    "reference": {
+      "doi": "10.1007/s11214-004-1434-0"
+    },
     "depend": [null]
   },
   "n1": {
@@ -56,6 +59,9 @@
       "length": 28
     },
     "description": "Cassini/RPWS/HFR Kronos Level 1 (Receiver units)",
+    "reference": {
+      "doi": "10.1007/s11214-004-1434-0"
+    },
     "depend": [null]
   },
   "n2": {
@@ -104,6 +110,9 @@
       "length": 45
     },
     "description": "Cassini/RPWS/HFR Kronos Level 2 (Physical units)",
+    "reference": {
+      "doi": "10.1007/s11214-004-1434-0"
+    },
     "depends": ["n1"]
   },
   "n3b": {
@@ -327,6 +336,9 @@
       "length": 19624360
     },
     "description": "Cassini/RPWS/HFR Kronos Background derived from Level 2 dataset",
+    "reference": {
+      "doi": "10.1029/2004RS003070"
+    },
     "depends": []
   }
 }
