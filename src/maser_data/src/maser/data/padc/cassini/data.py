@@ -116,16 +116,26 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
     def _format(self):
         if self.__format is None:
             format_data = kronos_level_format[self.level]
-            self.__format = {"length": format_data["record_def"]["length"], "vars": {}}
-            for key, dtype, unit in zip(
-                format_data["record_def"]["fields"],
-                format_data["record_def"]["np_dtype"],
-                format_data["record_def"]["units"],
-            ):
-                if isinstance(dtype, list):
-                    self.__format["vars"][key] = (tuple(dtype), unit)
-                else:
-                    self.__format["vars"][key] = (dtype, unit)
+            self.__format = {
+                "length": format_data["record-def"]["length"],
+                "vars": {},
+                "metadata": {
+                    "description": format_data["description"],
+                    "format-type": format_data["format-type"],
+                    "reference": format_data["reference"],
+                },
+            }
+            if format_data["format-type"] != "byte-stream":
+                # For `byte-stream` data format, no description of the internal data
+                for key, dtype, unit in zip(
+                    format_data["record-def"]["fields"],
+                    format_data["record-def"]["np_dtype"],
+                    format_data["record-def"]["units"],
+                ):
+                    if isinstance(dtype, list):
+                        self.__format["vars"][key] = (tuple(dtype), unit)
+                    else:
+                        self.__format["vars"][key] = (dtype, unit)
         return self.__format
 
     def read_data_binary(self):
@@ -150,6 +160,27 @@ class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
             mode="r",
         )
         return data
+
+    def epncore(self):
+        md = BinData.epncore(self)
+        md["instrument_host_name"] = "cassini-orbiter"
+        md["instrument_name"] = "rpws"
+        md["target_name"] = "Saturn"
+        md["target_class"] = "planet"
+        md["target_region"] = "magnetosphere"
+        md["feature_name"] = "SKR#Saturn Auroral Kilometric Radiation"
+
+        md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = min(
+            [min(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+        md["spectral_range_max"] = max(
+            [max(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+        md["bib_reference"] = self.__format["metadata"]["reference"]["doi"]
+        md["publisher"] = "PADC"
+        return md
 
     @property
     def dataset_keys(self):
@@ -302,25 +333,8 @@ class CoRpwsHfrKronosNxData(VariableFrequencies, CoRpwsHfrKronosData, dataset="c
         return self._frequencies
 
     def epncore(self):
-        md = BinData.epncore(self)
+        md = CoRpwsHfrKronosData.epncore(self)
         md["obs_id"] = f"K{self._ydh}"
-        md["instrument_host_name"] = "cassini-orbiter"
-        md["instrument_name"] = "rpws"
-        md["target_name"] = "Saturn"
-        md["target_class"] = "planet"
-        md["target_region"] = "magnetosphere"
-        md["feature_name"] = "SKR#Saturn Auroral Kilometric Radiation"
-
-        md["dataproduct_type"] = "ds"
-
-        md["spectral_range_min"] = min(
-            [min(freqs.to("Hz").value) for freqs in self.frequencies]
-        )
-        md["spectral_range_max"] = max(
-            [max(freqs.to("Hz").value) for freqs in self.frequencies]
-        )
-
-        md["publisher"] = "PADC"
         return md
 
 
