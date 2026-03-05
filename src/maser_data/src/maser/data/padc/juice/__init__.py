@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Classes for BepiColombo datasets.
+Classes for JUICE datasets.
 """
 
 from .rpwi import (  # noqa: F401
