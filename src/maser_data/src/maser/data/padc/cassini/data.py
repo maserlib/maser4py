@@ -601,3 +601,86 @@ class CoRpwsHfrKronosBgData(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_bg"
             },
         )
         return datasets.sortby("frequency")
+
+    def quicklook(
+        self,
+        file_png=None,
+        keys: List[str] = ["Z", "D", "-X", "+X"],
+        curve_key=["fon", "fon5", "fon10"],
+        db: Union[None, bool] = False,
+        yscale: str = "log",
+        xscale: str = "log",
+        **kwargs,
+    ):
+        from matplotlib import pyplot as plt
+
+        # import matplotlib.dates as mdates
+
+        # import warnings
+
+        # hhmm_format = mdates.DateFormatter("%H:%M")
+
+        # *** setting defaults ***
+        # keys and landscape
+        if keys is None:
+            raise ValueError()
+
+        xr = self.as_xarray()
+        figsize = (11.69, 8.27)
+        fig, axs = plt.subplots(
+            nrows=2,
+            ncols=2,
+            sharex=True,
+            sharey=True,
+            figsize=figsize,  # A4 portrait
+            dpi=100,
+        )
+        axs = axs.reshape((4))
+        for j, curve_k in enumerate(curve_key):
+            xr_k = xr[curve_k]
+            xr_k_unit_label = f"{xr_k.units}" if xr_k.units is not None else ""
+            if db is not None and db:
+                xr_k.values = 10.0 * numpy.log10(xr_k)
+                clabel = f"[dB({xr_k_unit_label})]" if xr_k_unit_label != "" else "[dB]"
+            else:
+                clabel = f"[{xr_k_unit_label}]" if xr_k_unit_label != "" else f"{k}"
+            for i, k in enumerate(keys):
+                ii = numpy.argwhere(k == xr["antenna"].values)[0][0]
+                # print(i, ii)
+                axx = axs[i]
+                axx.plot(
+                    xr["frequency"],
+                    xr_k[:, ii],  # .plot(
+                    # ax=axx,
+                    # vmin=vmin_i,
+                    # vmax=vmax_i,
+                    # cbar_kwargs={"label": clabel},
+                    "o",
+                    label=curve_k,
+                    **kwargs,
+                )
+                # axx.get_xaxis().set_visible(False)
+                if j == 0:
+                    if yscale == "log":
+                        axx.set_yscale("log")
+                    if xscale == "log":
+                        axx.set_xscale("log")
+                    axx.set_title(k)
+                    if i == 0:
+                        axs[0].set_ylabel(clabel)
+                    elif i == 2:
+                        axs[2].set_ylabel(clabel)
+                        axs[2].set_xlabel("frequency [" + xr["frequency"].units + "]")
+                    elif i == 3:
+                        axs[3].set_xlabel("frequency [" + xr["frequency"].units + "]")
+        # axs[0].set_title(f"{self.filepath.name} [{self.dataset}]")
+        # axs[-1].get_xaxis().set_visible(True)
+        # axs[-1].set_xlabel(f"time of day ({self.times[0].isot.split('T')[0]})")
+        # axs[-1].xaxis.set_major_formatter(hhmm_format)
+        plt.tight_layout()
+        plt.legend()
+        if file_png is None:
+            plt.show()
+        else:
+            plt.savefig(file_png)
+            plt.close(fig)

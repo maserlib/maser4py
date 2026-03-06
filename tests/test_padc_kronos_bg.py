@@ -6,6 +6,7 @@ from maser.data.base import BinData
 from maser.data.padc.cassini.data import CoRpwsHfrKronosBgData
 
 from astropy.time import Time
+from pathlib import Path
 
 from xarray.core.dataarray import DataArray
 import xarray
@@ -69,3 +70,22 @@ def test_co_rpws_hfr_kronos_bg_bin_dataset__as_xarray():
     for k in xarr_keys:
         assert isinstance(xarr[k], DataArray)
     assert set(data.dataset_keys) == set(list(xarr.keys()))
+
+
+@pytest.mark.test_data_required
+def test_co_rpws_hfr_kronos_bg_bin_dataset__quicklook():
+    for filepath in TEST_FILES["co_rpws_hfr_kronos_bg"]:
+        # ql_path = BASEDIR.parent / "quicklook" / "kronos" / f"{filepath.name}.png"
+        ql_path_tmp = Path("/tmp") / f"{filepath.stem}.png"
+        data = Data(filepath=filepath)
+        # data.quicklook(ql_path)
+
+        # checking default
+        data.quicklook(ql_path_tmp)
+        assert ql_path_tmp.is_file()
+        ql_path_tmp.unlink()
+
+        # checking all
+        # data.quicklook(ql_path_tmp, keys=data.dataset_keys)  # will not work for bg since keys are not used as keys
+        # assert ql_path_tmp.is_file()
+        # ql_path_tmp.unlink()
