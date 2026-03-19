@@ -6,7 +6,7 @@ repos:
         args: [--config=pyproject.toml]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v5.0.0
     hooks:
       # check config files are parsable
       - id: check-xml
@@ -18,7 +18,6 @@ repos:
       - id: check-merge-conflict
       # code quality
       - id: end-of-file-fixer
-      - id: fix-encoding-pragma
       - id: mixed-line-ending
       - id: requirements-txt-fixer
       - id: trailing-whitespace
@@ -26,6 +25,12 @@ repos:
       - id: mixed-line-ending
         args: ['--fix=lf']
         description: Forces to replace line ending by the UNIX 'lf' character.
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.2
+    hooks:
+      - id: pyupgrade
+        args: [--py3-plus]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v4.0.0-alpha.8

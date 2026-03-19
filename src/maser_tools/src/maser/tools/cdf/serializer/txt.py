@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 # ________________ HEADER _________________________
 
@@ -40,7 +39,6 @@ from maser.tools.cdf.serializer.globals import (
     NO_NRV,
     NEW_NRV,
 )
-
 
 __all__ = ["Skt2txt", "Txt2skt"]
 
@@ -180,10 +178,10 @@ class Skt2txt:
             filew.write(self.render)
 
         if os.path.isfile(txt):
-            logger.info("{0} has been saved correctly".format(txt))
+            logger.info("{} has been saved correctly".format(txt))
             return txt
         else:
-            logger.error("{0} has not been saved correctly!".format(txt))
+            logger.error("{} has not been saved correctly!".format(txt))
             return None
 
 
@@ -205,7 +203,7 @@ class Txt2skt:
         """
         self.file = txt_file
         if not os.path.isfile(txt_file):
-            logger.error("{0} NOT FOUND, ABORTING!".format(txt_file))
+            logger.error("{} NOT FOUND, ABORTING!".format(txt_file))
             raise FileNotFoundError
         else:
             self.file = txt_file
@@ -259,7 +257,7 @@ class Txt2skt:
                     # Then append the name of g. attribute for the field
                     # extraction
                     if gattname:
-                        self.row = '"{0}" '.format(gattname) + self.row
+                        self.row = '"{}" '.format(gattname) + self.row
                     # Extract field for the current g.attribute entry
                     gatt_desc = self._extract_attr()
                     # Store the g.attribute fields into self.skeleton.gattrs
@@ -396,7 +394,7 @@ class Txt2skt:
                     # object
                     if vatt_desc["Attribute Name"] in self.skeleton.vattrs[zvar]:
                         logger.error(
-                            "{0} is defined twice for {1} variable!".format(
+                            "{} is defined twice for {} variable!".format(
                                 vatt_desc["Attribute Name"], zvar
                             )
                         )
@@ -430,7 +428,7 @@ class Txt2skt:
         :return: row
         """
 
-        with open(self.file, "rt") as txt:
+        with open(self.file) as txt:
             for row in txt.readlines():
                 logger.debug(row)
 
@@ -458,19 +456,19 @@ class Txt2skt:
                 elif row.startswith("#" + END):
                     # check that everything is correctly defined
                     if not self.skeleton.header:
-                        logger.warning("{0} is missing".format(HEADER))
+                        logger.warning("{} is missing".format(HEADER))
                     else:
                         logger.debug(HEADER + ":" + str(self.skeleton.header))
                     if not self.skeleton.gattrs:
-                        logger.warning("{0} is missing".format(GATTRS))
+                        logger.warning("{} is missing".format(GATTRS))
                     else:
                         logger.debug(GATTRS + ":" + str(self.skeleton.gattrs))
                     if not self.skeleton.vattrs:
-                        logger.warning("{0} is missing".format(VATTRS))
+                        logger.warning("{} is missing".format(VATTRS))
                     else:
                         logger.debug(VATTRS + ":" + str(self.skeleton.vattrs))
                     if not self.skeleton.zvars:
-                        logger.warning("{0} is missing".format(ZVARS))
+                        logger.warning("{} is missing".format(ZVARS))
                     else:
                         logger.debug(ZVARS + ":" + str(self.skeleton.zvars))
 
@@ -528,7 +526,7 @@ class Txt2skt:
         value = re.findall(att_pattern, value)
 
         if not value:
-            logger.error("No value for {0}".format(attname))
+            logger.error("No value for {}".format(attname))
             raise InvalidFile
         else:
             return dict(zip(SHEETS[GATTRS], [attname, entry, dtype, value[0]]))
@@ -542,7 +540,7 @@ class Txt2skt:
         """
         items = row.strip().split("=")
         if len(items) != 2:
-            logger.error("Wrong NRV for {0}".format(zvar))
+            logger.error("Wrong NRV for {}".format(zvar))
             raise InvalidFile
 
         index = items[0].strip()[1:-1]
