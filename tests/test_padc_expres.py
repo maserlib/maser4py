@@ -6,7 +6,6 @@ from maser.data import Data
 from maser.data.base.sweeps import Sweep
 from maser.data.padc import ExpresCdfData
 import pytest
-from .fixtures import skip_if_spacepy_not_available
 import xarray
 from pathlib import Path
 
@@ -23,7 +22,7 @@ TEST_FILES = {
 }
 
 
-@skip_if_spacepy_not_available
+# @skip_if_spacepy_not_available
 @pytest.fixture(scope="class", params=TEST_FILES.values(), ids=TEST_FILES.keys())
 def get_data_instance(request):
     return Data(filepath=request.param)
