@@ -12,7 +12,6 @@ from astropy.time import Time
 from astropy.units import Unit
 from .sweeps import JuiceCdfDataSweeps
 
-
 """
 class JuiceCdfDataSweep(Sweep):
     def __init__(self, header, data, time, frequencies):

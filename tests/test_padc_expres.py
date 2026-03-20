@@ -9,7 +9,6 @@ import pytest
 import xarray
 from pathlib import Path
 
-
 TEST_FILES = {
     "expres_juno_jupiter_ganymede": BASEDIR
     / "maser"

@@ -11,7 +11,6 @@ from astropy.io import fits
 import pytest
 import xarray
 
-
 TEST_FILES = {
     "srn_nenufar_bst": [
         BASEDIR

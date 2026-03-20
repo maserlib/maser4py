@@ -3,6 +3,7 @@
 """
 Classes for Cassini datasets.
 """
+
 from typing import Iterable, Union, List, Any
 
 from maser.data.base import Data, BinData, Sweeps, Records, VariableFrequencies
@@ -16,7 +17,6 @@ import numpy.typing
 import json
 import math
 from pathlib import Path
-
 
 KRONOS_LEVEL_FORMAT_JSON_FILE = Path(__file__).parent / "kronos_level_format.json"
 
@@ -72,7 +72,7 @@ class CoRpwsHfrKronosDataRecords(Records):
             yield self.data_reference._data[i]
 
 
-class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):
+class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):  # type: ignore
     _static_period_times = {
         "Turn_on": ("1997298", "1997299"),
         "Venus1": ("1998116", "1998116"),
@@ -534,7 +534,7 @@ class CoRpwsHfrKronosN3gData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
         )
 
 
-class CoRpwsHfrKronosBgData(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_bg"):
+class CoRpwsHfrKronosBgData(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_bg"):  # type: ignore
     _iter_sweep_class = CoRpwsHfrKronosFixedFrequencyDataSweeps
     _iter_record_class = CoRpwsHfrKronosDataRecords
 
@@ -643,7 +643,9 @@ class CoRpwsHfrKronosBgData(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_bg"
                 xr_k.values = 10.0 * numpy.log10(xr_k)
                 clabel = f"[dB({xr_k_unit_label})]" if xr_k_unit_label != "" else "[dB]"
             else:
-                clabel = f"[{xr_k_unit_label}]" if xr_k_unit_label != "" else f"{k}"
+                clabel = (
+                    f"[{xr_k_unit_label}]" if xr_k_unit_label != "" else f"{curve_k}"
+                )
             for i, k in enumerate(keys):
                 ii = numpy.argwhere(k == xr["antenna"].values)[0][0]
                 # print(i, ii)

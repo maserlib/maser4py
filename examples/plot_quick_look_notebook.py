@@ -7,7 +7,6 @@ from maser.plot.rpw.quick_look import quick_look
 import datetime
 from typing import Dict
 
-
 # %% [markdown]
 # Define a function to load and plot the LFR and TNR datasets
 

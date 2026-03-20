@@ -125,12 +125,12 @@ class PDSLabelDict(dict):
 
             # looping on Label list item, with enumerate, so that we get the item index in the list
             for ii, item in enumerate(self.__iter__()):
-                (cur_key, cur_value) = item
+                cur_key, cur_value = item
 
                 # in case of multiple line values, key is an empty string
                 if cur_key == "":
                     # fetching last previous line with non empty key
-                    (prev_key, prev_value) = self[prev_ii]
+                    prev_key, prev_value = self[prev_ii]
                     cur_value = "{} {}".format(prev_value, cur_value)
 
                     # appending current value to value of previous line with non empty key
@@ -157,7 +157,7 @@ class PDSLabelDict(dict):
             remove_list = []
 
             for ii, item in enumerate(self.__iter__()):
-                (cur_key, cur_value) = item
+                cur_key, cur_value = item
 
                 # flag END_OBJECT line and removing the last element of the depth list
                 if cur_key == "END_OBJECT":
@@ -195,7 +195,7 @@ class PDSLabelDict(dict):
         """This function transforms PDS3 Label list into a PDS3 Label dict"""
 
         for item in label_list:
-            (cur_key, cur_value, cur_depth) = item
+            cur_key, cur_value, cur_depth = item
 
             cur_dict = self
             if len(cur_depth) > 0:

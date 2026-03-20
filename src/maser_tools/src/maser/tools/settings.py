@@ -6,7 +6,6 @@
 import os
 from importlib import metadata
 
-
 __all__ = ["ROOT_DIRECTORY", "MASER_LIB_DIR", "SUPPORT_DIR", "__version__"]
 
 ROOT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))

@@ -12,7 +12,6 @@ import pytest
 import xarray
 from pathlib import Path
 
-
 TEST_FILES = {
     "cdpp_int_aur_polrad_rspn2": [
         BASEDIR / "cdpp" / "interball" / "POLR_RSPN2_19971116",
