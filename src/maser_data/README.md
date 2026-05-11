@@ -41,7 +41,8 @@ maser-data (through [spacepy](https://pypi.org/project/spacepy/) ), requires the
 It is also possible to use the extra option `jupyter` when installing maser-data:
 
 - `jupyter` for Jupyter notebook support
-  (- `all` is equivalent to the line above)
+
+- (`all` is equivalent to the line above)
 
 For example use `maser-data[jupyter,spacepy]` if you want to use `maser-data` with spacepy and jupyter notebooks:
 
@@ -70,7 +71,6 @@ pip install maser4py[data,jupyter]
 You can also use other options from [maser4py](https://pypi.org/project/maser4py/) such as:
 
 - `tools` for [maser-tools](https://pypi.org/project/maser-tools/) submodule
-- `plot` for [maser-plot](https://pypi.org/project/maser-plot/) submodule
 - `all` to install all the above
 
 ```bash
