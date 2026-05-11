@@ -14,7 +14,7 @@ from .tnr import RpwTnrSurv  # noqa: F401
 from .lfr import RpwLfrSurvBp1  # noqa: F401
 
 
-class RpwHfrL3Cdf(CdfData, dataset="solo_L3_rpw-hfr-flux_"):  # type: ignore
+class RpwHfrL3Cdf(CdfData, dataset="solo_L3_rpw-hfr-surv-flux"):  # type: ignore
     _dataset_keys = ["PSD_V2", "PSD_FLUX", "PSD_SFU"]
 
     @property
@@ -86,7 +86,7 @@ class RpwHfrL3Cdf(CdfData, dataset="solo_L3_rpw-hfr-flux_"):  # type: ignore
         self._quicklook(keys=keys, file_png=file_png, **kwargs)
 
 
-class RpwTnrL3Cdf(CdfData, dataset="solo_L3_rpw-tnr-flux_"):  # type: ignore
+class RpwTnrL3Cdf(CdfData, dataset="solo_L3_rpw-tnr-surv-flux"):  # type: ignore
     _dataset_keys = ["PSD_V2", "PSD_FLUX", "PSD_SFU"]
 
     @property

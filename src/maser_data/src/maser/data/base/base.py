@@ -600,9 +600,9 @@ class CdfData(Data, dataset="cdf"):
                         warnings.warn("Dataset not fully supported yet")
                 elif dataset == "solo_l3_rpw-hfr":
                     if "tnr" in str(filepath):
-                        dataset = "solo_L3_rpw-tnr-flux_"
+                        dataset = "solo_L3_rpw-tnr-surv-flux"
                     else:
-                        dataset = "solo_L3_rpw-hfr-flux_"
+                        dataset = "solo_L3_rpw-hfr-surv-flux"
 
                 # warnings
                 if dataset == "wi_wav_rad1_l3_df_v01":
