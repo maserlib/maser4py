@@ -370,8 +370,8 @@
       ["solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf", "solo_L2_rpw-lfr-surv-bp1"],
       ["solo_L2_rpw-tnr-surv_20220101_V02.cdf", "solo_L2_rpw-tnr-surv"],
       ["solo_L2_rpw-hfr-surv_20220101_V01.cdf", "solo_L2_rpw-hfr-surv"],
-      ["solo_L3_rpw-hfr-flux_20230101_V01.cdf", "solo_L3_rpw-hfr-flux_"],
-      ["solo_L3_rpw-tnr-flux_20230101_V01.cdf", "solo_L3_rpw-tnr-flux_"]
+      ["solo_L3_rpw-hfr-flux_20230101_V01.cdf", "solo_L3_rpw-hfr-surv-flux"],
+      ["solo_L3_rpw-tnr-flux_20230101_V01.cdf", "solo_L3_rpw-tnr-surv-flux"]
     ]
   },
   "swaves": {
