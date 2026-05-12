@@ -148,4 +148,7 @@ And then publish the package on pypi (and/or on Gitlab, see https://python-poetr
 poetry publish
 ```
 
-Commands above must be run from `src/maser_data` directory.
+Notes:
+
+    - The commands above must be run from `src/maser_data` directory.
+    - A valid token is required to publish on pypi. Run `poetry config pypi-token.pypi <your_token>` to set it.
