@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Classes for Wind WAVES CDPP datasets.
 """
@@ -532,18 +530,18 @@ class WindWavesL2BinData(VariableFrequencies, BinData, dataset="cdpp_wi_wa_l2"):
     def epncore(self):
         md = BinData.epncore(self)
         md["granule_uid"] = f"{self.dataset}:{self.filepath.stem}"
-        md[
-            "obs_id"
-        ] = f"wi_wa_{self._parse_file_name['receiver']}_{self._parse_file_name['date']}"
+        md["obs_id"] = (
+            f"wi_wa_{self._parse_file_name['receiver']}_{self._parse_file_name['date']}"
+        )
 
         md["instrument_host_name"] = "wind"
         md["instrument_name"] = "waves"
         md["target_name"] = "Earth#Sun"
         md["target_class"] = "planet#star"
         md["target_region"] = "magnetosphere#heliopshere"
-        md[
-            "feature_name"
-        ] = "AKR#Auroral Kilometric Radiation#Solar bursts#Type II#Type III"
+        md["feature_name"] = (
+            "AKR#Auroral Kilometric Radiation#Solar bursts#Type II#Type III"
+        )
 
         md["dataproduct_type"] = "ds"
 

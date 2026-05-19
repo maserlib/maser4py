@@ -73,7 +73,7 @@ class VariableFrequencies:
     def as_xarray(self):
         import xarray
 
-        fields = self.fields
+        fields = self.dataset_keys
         units = self.units
 
         freq_arr = numpy.full((self._nsweep, self.max_sweep_length), numpy.nan)

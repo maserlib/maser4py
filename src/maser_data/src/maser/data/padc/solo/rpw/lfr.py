@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Classes for RPW/LFR L2 datasets.
 """
@@ -351,9 +349,9 @@ class RpwLfrSurvBp1(CdfData, dataset="solo_L2_rpw-lfr-surv-bp1"):  # type: ignor
                     attrs = {}
                     attrs["units"] = "jd"
                     attrs["fieldnam"] = "Time shifts between frequency measurements"
-                    attrs[
-                        "catdesc"
-                    ] = "Time difference to reference time for each frequency"
+                    attrs["catdesc"] = (
+                        "Time difference to reference time for each frequency"
+                    )
                     attrs["validmin"] = -1e30
                     attrs["validmax"] = 1e30
                     attrs["scalemin"] = -1e30

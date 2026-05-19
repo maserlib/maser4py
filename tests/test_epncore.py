@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .fixtures import filepaths_test
 from .constants import BASEDIR
 import pytest
@@ -47,13 +46,11 @@ def epncore_expected():
             if _dataset not in data.keys():
                 data[_dataset] = {}
             # fill in for each `file`, removing empty keywords on the fly
-            data[_dataset][_file] = dict(
-                [
-                    (k, EPNCORE_TYPES[k](v))
-                    for k, v in row.items()
-                    if ((v != "") and (v is not None))
-                ]
-            )
+            data[_dataset][_file] = {
+                k: EPNCORE_TYPES[k](v)
+                for k, v in row.items()
+                if ((v != "") and (v is not None))
+            }
     return data
 
 

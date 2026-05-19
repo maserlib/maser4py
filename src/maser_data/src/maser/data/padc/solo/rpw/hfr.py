@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Classes for RPW/HFR L2 datasets.
 """
@@ -54,7 +52,7 @@ GET_FREQ_INDEX = {
 
 
 def get_freq_indices(freq, band):
-    return list(map(lambda freq, band: (GET_FREQ_INDEX[band](freq)), freq, band))
+    return list(map(lambda freq, band: GET_FREQ_INDEX[band](freq), freq, band))
 
 
 def get_sweep_start_index(sweep_num):
@@ -351,13 +349,13 @@ class RpwHfrSurv(CdfData, dataset="solo_L2_rpw-hfr-surv"):  # type: ignore
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore", message="All-NaN slice encountered")
                 # Computing delta_times
-                nanline = np.empty((nt - 2))
+                nanline = np.empty(nt - 2)
                 nanline[:] = np.nan
                 # delta_times = Time([], format="jd")
                 timeref = Time(self.file["Epoch"][...])
                 delta_times = []
-                delta_times_first = np.empty((nf))
-                delta_times_last = np.empty((nf))
+                delta_times_first = np.empty(nf)
+                delta_times_last = np.empty(nf)
                 delta_times_first[:] = np.nan
                 delta_times_last[:] = np.nan
                 isweep_r = isweep[1:-2]

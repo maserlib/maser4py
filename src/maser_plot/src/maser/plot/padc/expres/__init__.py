@@ -4,7 +4,6 @@
 from maser.data.base.class_factory import data_class_factory
 from .plot import ExpresCdfPlot
 
-
 observer_list = [
     "earth",
     "cassini",

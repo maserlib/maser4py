@@ -18,7 +18,6 @@ import json
 import math
 from pathlib import Path
 
-
 KRONOS_LEVEL_FORMAT_JSON_FILE = Path(__file__).parent / "kronos_level_format.json"
 
 with open(KRONOS_LEVEL_FORMAT_JSON_FILE, "r") as f:
@@ -51,6 +50,21 @@ class CoRpwsHfrKronosDataSweeps(Sweeps):
             )
 
 
+class CoRpwsHfrKronosFixedFrequencyDataSweeps(Sweeps):
+    @property
+    def generator(self):
+        for t in self.data_reference.times:
+            yield CoRpwsHfrKronosDataSweep(
+                {
+                    "frequencies": self.data_reference.frequencies,
+                    "time": t,
+                    "level": self.data_reference.level,
+                    "file": self.data_reference.filepath.name,
+                },
+                self.data_reference._data,
+            )
+
+
 class CoRpwsHfrKronosDataRecords(Records):
     @property
     def generator(self):
@@ -58,11 +72,14 @@ class CoRpwsHfrKronosDataRecords(Records):
             yield self.data_reference._data[i]
 
 
-class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kronos"):  # type: ignore
-    _iter_sweep_class = CoRpwsHfrKronosDataSweeps
-    _iter_record_class = CoRpwsHfrKronosDataRecords
-
-    _dataset_keys = None
+class CoRpwsHfrKronosData(BinData, dataset="co_rpws_hfr_kronos"):  # type: ignore
+    _static_period_times = {
+        "Turn_on": ("1997298", "1997299"),
+        "Venus1": ("1998116", "1998116"),
+        "Ico_m14": ("1998364", "1999005"),
+        "Venus2": ("1999175", "1999175"),
+        "Earth": ("1999227", "1999257"),
+    }
 
     def __init__(
         self,
@@ -71,50 +88,55 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
         access_mode: str = "sweeps",
     ):
         BinData.__init__(self, filepath, dataset, access_mode)
-        VariableFrequencies.__init__(self)
         self.__format = None
         self.level = self.dataset[19:]
-        self._levels = None
         self._data = self.read_data_binary()
-        self._nrecord = len(self._data)
-        self._nsweep = len(self.sweep_masks)
         self._depend_datasets: Iterable[str] = []
-        self.fields = self._format["vars"].keys()
-        self.units = [self._format["vars"][field][1] for field in self.fields]
+        self._dataset_keys = self._format["vars"].keys()
+        self.units = [self._format["vars"][field][1] for field in self._dataset_keys]
 
     @property
-    def _ydh(self):
-        return self.filepath.name[-10:]
+    def period_name(self):
+        return self.filepath.parents[1].name
+
+    @property
+    def _period_times(self) -> tuple:
+        if self.period_name in self._static_period_times:
+            return self._static_period_times[self.period_name]
+        else:
+            from calendar import isleap
+
+            yyyy, ddb, dde = self.period_name.split("_")
+            if dde == "366":
+                if not isleap(int(yyyy)):
+                    dde = "365"
+            return f"{yyyy}{ddb}", f"{yyyy}{dde}"
 
     @property
     def _format(self):
         if self.__format is None:
             format_data = kronos_level_format[self.level]
-            self.__format = {"length": format_data["record_def"]["length"], "vars": {}}
-            for key, dtype, unit in zip(
-                format_data["record_def"]["fields"],
-                format_data["record_def"]["np_dtype"],
-                format_data["record_def"]["units"],
-            ):
-                self.__format["vars"][key] = (dtype, unit)
+            self.__format = {
+                "length": format_data["record-def"]["length"],
+                "vars": {},
+                "metadata": {
+                    "description": format_data["description"],
+                    "format-type": format_data["format-type"],
+                    "reference": format_data["reference"],
+                },
+            }
+            if format_data["format-type"] != "byte-stream":
+                # For `byte-stream` data format, no description of the internal data
+                for key, dtype, unit in zip(
+                    format_data["record-def"]["fields"],
+                    format_data["record-def"]["np_dtype"],
+                    format_data["record-def"]["units"],
+                ):
+                    if isinstance(dtype, list):
+                        self.__format["vars"][key] = (tuple(dtype), unit)
+                    else:
+                        self.__format["vars"][key] = (dtype, unit)
         return self.__format
-
-    def _filepath_to_level(self, level):
-        switcher = {
-            "n1": self.filepath.parents[1] / "n1" / f"R{self._ydh}",
-            "n2": self.filepath.parents[1] / "n2" / f"P{self._ydh}",
-        }
-        if level not in switcher.keys():
-            raise ValueError()
-        return switcher[level]
-
-    def levels(self, level):
-        if self._levels is None:
-            self._levels = {level: Data(self._filepath_to_level(level))}
-        elif level not in self._levels.keys():
-            self._levels[level] = Data(self._filepath_to_level(level))
-
-        return self._levels[level]
 
     def read_data_binary(self):
         file_size = self.file_size.value
@@ -138,6 +160,101 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
             mode="r",
         )
         return data
+
+    def epncore(self):
+        md = BinData.epncore(self)
+        md["instrument_host_name"] = "cassini-orbiter"
+        md["instrument_name"] = "rpws"
+        md["target_name"] = "Saturn"
+        md["target_class"] = "planet"
+        md["target_region"] = "magnetosphere"
+        md["feature_name"] = "SKR#Saturn Auroral Kilometric Radiation"
+
+        md["dataproduct_type"] = "ds"
+
+        md["spectral_range_min"] = min(
+            [min(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+        md["spectral_range_max"] = max(
+            [max(freqs.to("Hz").value) for freqs in self.frequencies]
+        )
+        md["bib_reference"] = self.__format["metadata"]["reference"]["doi"]
+        md["publisher"] = "PADC"
+        return md
+
+    @property
+    def dataset_keys(self):
+        return self._dataset_keys
+
+    def as_xarray(self):
+        import xarray
+
+        units = self.units
+
+        dataset_keys = self._dataset_keys
+        data_vars = {}
+        for key, unit in zip(dataset_keys, units):
+            data_vars[key] = (
+                ["frequency"],
+                self._data[key][...].T,
+                {
+                    "units": unit,
+                },
+            )
+
+        datasets = xarray.Dataset(
+            data_vars=data_vars,
+            coords={
+                "frequency": (
+                    ["frequency"],
+                    self.frequencies.value,
+                    {"units": self.frequencies.unit},
+                ),
+            },
+        ).sortby("frequency")
+        # for key in dataset_keys:
+        #    datasets[key] = datasets[key].where(datasets[key] != self.file[key].attrs["FILLVAL"])
+        return datasets
+
+
+class CoRpwsHfrKronosNxData(VariableFrequencies, CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_nx"):  # type: ignore
+    _iter_sweep_class = CoRpwsHfrKronosDataSweeps
+    _iter_record_class = CoRpwsHfrKronosDataRecords
+
+    _dataset_keys = None
+
+    def __init__(
+        self,
+        filepath: Path,
+        dataset: Union[None, str] = "__auto__",
+        access_mode: str = "sweeps",
+    ):
+        VariableFrequencies.__init__(self)
+        CoRpwsHfrKronosData.__init__(self, filepath, dataset, access_mode)
+        self._levels = None
+        self._nrecord = len(self._data)
+        self._nsweep = len(self.sweep_masks)
+
+    @property
+    def _ydh(self):
+        return self.filepath.name[-10:]
+
+    def _filepath_to_level(self, level):
+        switcher = {
+            "n1": self.filepath.parents[1] / "n1" / f"R{self._ydh}",
+            "n2": self.filepath.parents[1] / "n2" / f"P{self._ydh}",
+        }
+        if level not in switcher.keys():
+            raise ValueError()
+        return switcher[level]
+
+    def levels(self, level):
+        if self._levels is None:
+            self._levels = {level: Data(self._filepath_to_level(level))}
+        elif level not in self._levels.keys():
+            self._levels[level] = Data(self._filepath_to_level(level))
+
+        return self._levels[level]
 
     @property
     def sweep_masks(self):
@@ -215,40 +332,13 @@ class CoRpwsHfrKronosData(VariableFrequencies, BinData, dataset="co_rpws_hfr_kro
                 ]
         return self._frequencies
 
-    @property
-    def dataset_keys(self):
-        if self._dataset_keys is None:
-            self._dataset_keys = self.fields  # self._format["vars"].keys()
-            # N1: ["agc1", "auto1", "agc2", "auto2", "cross1", "cross2"]
-            # N2: ["autoX", "autoZ", "crossR", "crossI"]
-            # N3e:["s", "v", "th", "ph", "snx", "snz"]
-            # N3d:["s", "q", "u", "v", "snx", "snz"]
-        return self._dataset_keys
-
     def epncore(self):
-        md = BinData.epncore(self)
+        md = CoRpwsHfrKronosData.epncore(self)
         md["obs_id"] = f"K{self._ydh}"
-        md["instrument_host_name"] = "cassini-orbiter"
-        md["instrument_name"] = "rpws"
-        md["target_name"] = "Saturn"
-        md["target_class"] = "planet"
-        md["target_region"] = "magnetosphere"
-        md["feature_name"] = "SKR#Saturn Auroral Kilometric Radiation"
-
-        md["dataproduct_type"] = "ds"
-
-        md["spectral_range_min"] = min(
-            [min(freqs.to("Hz").value) for freqs in self.frequencies]
-        )
-        md["spectral_range_max"] = max(
-            [max(freqs.to("Hz").value) for freqs in self.frequencies]
-        )
-
-        md["publisher"] = "PADC"
         return md
 
 
-class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"):  # type: ignore
+class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosNxData, dataset="co_rpws_hfr_kronos_n1"):  # type: ignore
     def _decode_times(self) -> Time:
         return Time(
             list(
@@ -292,7 +382,7 @@ class CoRpwsHfrKronosN1Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n1"
         )
 
 
-class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"):  # type: ignore
+class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosNxData, dataset="co_rpws_hfr_kronos_n2"):  # type: ignore
     def _decode_times(self) -> Time:
         return Time(list(map(t97_datetime, self._data["t97"])))
 
@@ -329,7 +419,7 @@ class CoRpwsHfrKronosN2Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n2"
         )
 
 
-class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_n3"):  # type: ignore
+class CoRpwsHfrKronosN3Data(CoRpwsHfrKronosNxData, dataset="co_rpws_hfr_kronos_n3"):  # type: ignore
     def _decode_times(self) -> Time:
         return Time(
             list(map(t97_datetime, (self.levels("n2")._data["t97"])[self._data["num"]]))
@@ -407,3 +497,192 @@ class CoRpwsHfrKronosN3dData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_
             # vmax=[-120, 1, 1, 1, 40, 40],
             **kwargs,
         )
+
+
+class CoRpwsHfrKronosN3gData(CoRpwsHfrKronosN3Data, dataset="co_rpws_hfr_kronos_n3g"):  # type: ignore
+    def quicklook(
+        self,
+        file_png=None,
+        keys: List[str] = ["fluxX", "fluxZ"],
+        yscale: str = "log",
+        **kwargs,
+    ):
+        default_keys = ["fluxX", "fluxZ"]
+        db_tab = numpy.array([True, True])
+        vmin_tab = numpy.array([-160, -160])
+        vmax_tab = numpy.array([-120, -120])
+        for qkey, tab in zip(["db", "vmin", "vmax"], [db_tab, vmin_tab, vmax_tab]):
+            if qkey not in kwargs:
+                qkey_tab = []
+                for key in keys:
+                    if key in default_keys:
+                        qkey_tab.append(
+                            tab[numpy.where(key == numpy.array(default_keys))][0]
+                        )
+                    else:
+                        qkey_tab.append(None)
+                kwargs[qkey] = list(qkey_tab)
+        self._quicklook(
+            keys=keys,
+            # db=[True, False, False, False, True, True],
+            file_png=file_png,
+            y="frequency",
+            yscale=yscale,
+            # vmin=[-160, -1, -1, -1, 10, 10],
+            # vmax=[-120, 1, 1, 1, 40, 40],
+            **kwargs,
+        )
+
+
+class CoRpwsHfrKronosBgData(CoRpwsHfrKronosData, dataset="co_rpws_hfr_kronos_bg"):  # type: ignore
+    _iter_sweep_class = CoRpwsHfrKronosFixedFrequencyDataSweeps
+    _iter_record_class = CoRpwsHfrKronosDataRecords
+
+    _dataset_keys = None
+
+    def __init__(
+        self,
+        filepath: Path,
+        dataset: Union[None, str] = "__auto__",
+        access_mode: str = "sweeps",
+    ):
+        CoRpwsHfrKronosData.__init__(self, filepath, dataset, access_mode)
+        self._nrecord = len(self._data)
+        self._nsweep = 1
+
+    @property
+    def _ydh(self):
+        return None
+        # return f"{self._period_times[0]}.00"
+
+    @property
+    def times(self):
+        from datetime import datetime
+
+        return Time([datetime.strptime(self._period_times[0], "%Y%j")])
+
+    @property
+    def frequencies(self):
+        return self._data["xf"] * Unit("kHz")
+
+    def as_xarray(self):
+        import xarray
+
+        dataset_keys = self.dataset_keys
+        units = self.units
+        antennas = ["Z", "-X", "+X", "D"]
+        bins = numpy.linspace(-170, -90, 1601)
+        dependencies = [
+            ["frequency", "antenna", "bin"],
+            ["frequency", "antenna"],
+            ["frequency", "antenna"],
+            ["frequency"],
+            ["frequency"],
+            ["frequency", "antenna"],
+            ["frequency", "antenna"],
+            ["frequency", "antenna"],
+            ["frequency", "antenna"],
+        ]
+
+        data_vars = {}
+        for key, units, deps in zip(dataset_keys, units, dependencies):
+            data_vars[key] = (
+                deps,
+                self._data[key],
+                {"units": units},
+            )
+
+        datasets = xarray.Dataset(
+            data_vars=data_vars,
+            coords={
+                "frequency": (["frequency"], self.frequencies, {"units": "kHz"}),
+                "antenna": (["antenna"], antennas),
+                "bin": (["bin"], bins, {"units": "dB"}),
+            },
+        )
+        return datasets.sortby("frequency")
+
+    def quicklook(
+        self,
+        file_png=None,
+        keys: List[str] = ["Z", "D", "-X", "+X"],
+        curve_key=["fon", "fon5", "fon10"],
+        db: Union[None, bool] = False,
+        yscale: str = "log",
+        xscale: str = "log",
+        **kwargs,
+    ):
+        from matplotlib import pyplot as plt
+
+        # import matplotlib.dates as mdates
+
+        # import warnings
+
+        # hhmm_format = mdates.DateFormatter("%H:%M")
+
+        # *** setting defaults ***
+        # keys and landscape
+        if keys is None:
+            raise ValueError()
+
+        xr = self.as_xarray()
+        figsize = (11.69, 8.27)
+        fig, axs = plt.subplots(
+            nrows=2,
+            ncols=2,
+            sharex=True,
+            sharey=True,
+            figsize=figsize,  # A4 portrait
+            dpi=100,
+        )
+        axs = axs.reshape((4))
+        for j, curve_k in enumerate(curve_key):
+            xr_k = xr[curve_k]
+            xr_k_unit_label = f"{xr_k.units}" if xr_k.units is not None else ""
+            if db is not None and db:
+                xr_k.values = 10.0 * numpy.log10(xr_k)
+                clabel = f"[dB({xr_k_unit_label})]" if xr_k_unit_label != "" else "[dB]"
+            else:
+                clabel = (
+                    f"[{xr_k_unit_label}]" if xr_k_unit_label != "" else f"{curve_k}"
+                )
+            for i, k in enumerate(keys):
+                ii = numpy.argwhere(k == xr["antenna"].values)[0][0]
+                # print(i, ii)
+                axx = axs[i]
+                axx.plot(
+                    xr["frequency"],
+                    xr_k[:, ii],  # .plot(
+                    # ax=axx,
+                    # vmin=vmin_i,
+                    # vmax=vmax_i,
+                    # cbar_kwargs={"label": clabel},
+                    "o",
+                    label=curve_k,
+                    **kwargs,
+                )
+                # axx.get_xaxis().set_visible(False)
+                if j == 0:
+                    if yscale == "log":
+                        axx.set_yscale("log")
+                    if xscale == "log":
+                        axx.set_xscale("log")
+                    axx.set_title(k)
+                    if i == 0:
+                        axs[0].set_ylabel(clabel)
+                    elif i == 2:
+                        axs[2].set_ylabel(clabel)
+                        axs[2].set_xlabel("frequency [" + xr["frequency"].units + "]")
+                    elif i == 3:
+                        axs[3].set_xlabel("frequency [" + xr["frequency"].units + "]")
+        # axs[0].set_title(f"{self.filepath.name} [{self.dataset}]")
+        # axs[-1].get_xaxis().set_visible(True)
+        # axs[-1].set_xlabel(f"time of day ({self.times[0].isot.split('T')[0]})")
+        # axs[-1].xaxis.set_major_formatter(hhmm_format)
+        plt.tight_layout()
+        plt.legend()
+        if file_png is None:
+            plt.show()
+        else:
+            plt.savefig(file_png)
+            plt.close(fig)

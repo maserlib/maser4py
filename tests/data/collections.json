@@ -54,6 +54,7 @@
     ]
   },
   "kronos": {
+    "2012_091_180/bg": [["bg_2012_091_180", "co_rpws_hfr_kronos_bg"]],
     "2012_091_180/n1": [
       ["R2012180.20", "co_rpws_hfr_kronos_n1"],
       ["R2012180.21", "co_rpws_hfr_kronos_n1"],
@@ -245,7 +246,8 @@
       ["N3e_dsq2012181.21", "co_rpws_hfr_kronos_n3e"],
       ["N3e_dsq2012181.22", "co_rpws_hfr_kronos_n3e"],
       ["N3e_dsq2012181.23", "co_rpws_hfr_kronos_n3e"]
-    ]
+    ],
+    "2012_181_270/n3g": [["F2012181.00", "co_rpws_hfr_kronos_n3g"]]
   },
   "maser": {
     "juno": [["jno_wav_cdr_lesia_20170329_v02.cdf", "jno_wav_cdr_lesia"]],
@@ -368,8 +370,8 @@
       ["solo_L2_rpw-lfr-surv-bp1_20201227_V02.cdf", "solo_L2_rpw-lfr-surv-bp1"],
       ["solo_L2_rpw-tnr-surv_20220101_V02.cdf", "solo_L2_rpw-tnr-surv"],
       ["solo_L2_rpw-hfr-surv_20220101_V01.cdf", "solo_L2_rpw-hfr-surv"],
-      ["solo_L3_rpw-hfr-flux_20230101_V01.cdf", "solo_L3_rpw-hfr-flux_"],
-      ["solo_L3_rpw-tnr-flux_20230101_V01.cdf", "solo_L3_rpw-tnr-flux_"]
+      ["solo_L3_rpw-hfr-flux_20230101_V01.cdf", "solo_L3_rpw-hfr-surv-flux"],
+      ["solo_L3_rpw-tnr-flux_20230101_V01.cdf", "solo_L3_rpw-tnr-surv-flux"]
     ]
   },
   "swaves": {

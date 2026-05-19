@@ -8,7 +8,6 @@ from maser.plot.rpw.lfr import plot_lfr_bp1_data
 from pathlib import Path
 import datetime
 
-
 # %% [markdown]
 # Define a function to load and plot the LFR BP1 dataset
 
